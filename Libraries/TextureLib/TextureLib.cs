@@ -311,21 +311,16 @@ namespace TextureLib
 		/// <param name="useCompressed">Use VQ compression formats.</param>
 		/// <returns>A PVR texture.</returns>
 		/// <exception cref="Exception"></exception>
-		public PvrTexture ToPvr(bool maxQuality = false, bool forceMipmaps = false, bool useCompressed = false)
+		public PvrTexture ToPvr(bool maxQuality = false, bool useCompressed = false, bool forceMipmaps = false)
 		{
-			switch (this)
+			return this switch
 			{
-				case PvrTexture:
-					return (PvrTexture)this;
-				case GvrTexture gvr:
-					return new PvrTexture(gvr, forceMipmaps, true, maxQuality);
-				case DdsTexture dds:
-					return new PvrTexture(dds, forceMipmaps);
-				case GdiTexture gdi:
-					return new PvrTexture(gdi, forceMipmaps);
-				default:
-					throw new Exception("Cannot convert texture to PVR");
-			}
+				PvrTexture => (PvrTexture)this,
+				GvrTexture gvr => new PvrTexture(gvr, forceMipmaps, true, maxQuality),
+				DdsTexture dds => new PvrTexture(dds, forceMipmaps),
+				GdiTexture gdi => new PvrTexture(gdi, forceMipmaps),
+				_ => throw new Exception("Cannot convert texture to PVR"),
+			};
 		}
 
 		/// <summary>
@@ -335,21 +330,15 @@ namespace TextureLib
 		/// <exception cref="Exception"></exception>
 		public GdiTexture ToGdi()
 		{
-			switch (this)
+			return this switch
 			{
-				case GdiTexture gdi:
-					return (GdiTexture)this;
-				case PvrTexture pvr:
-					return new GdiTexture(pvr.Image, pvr.HasMipmaps, pvr.Gbix, pvr.Name);
-				case GvrTexture gvr:
-					return new GdiTexture(gvr.Image, gvr.HasMipmaps, gvr.Gbix, gvr.Name);
-				case XvrTexture xvr:
-					return new GdiTexture(xvr.Image, xvr.HasMipmaps, xvr.Gbix, xvr.Name); ;
-				case DdsTexture dds:
-					return new GdiTexture(dds.Image, dds.HasMipmaps, dds.Gbix, dds.Name); ;
-				default:
-					throw new Exception("Cannot convert texture to GDI");
-			}
+				GdiTexture gdi => (GdiTexture)this,
+				PvrTexture pvr => new GdiTexture(pvr.Image, pvr.HasMipmaps, pvr.Gbix, pvr.Name),
+				GvrTexture gvr => new GdiTexture(gvr.Image, gvr.HasMipmaps, gvr.Gbix, gvr.Name),
+				XvrTexture xvr => new GdiTexture(xvr.Image, xvr.HasMipmaps, xvr.Gbix, xvr.Name),
+				DdsTexture dds => new GdiTexture(dds.Image, dds.HasMipmaps, dds.Gbix, dds.Name),
+				_ => throw new Exception("Cannot convert texture to GDI"),
+			};
 		}
 
 		/// <summary>
@@ -360,21 +349,16 @@ namespace TextureLib
 		/// <param name="maxQuality">Use higher quality formats to avoid data loss.</param>
 		/// <returns>A GVR texture.</returns>
 		/// <exception cref="Exception"></exception>
-		public GvrTexture ToGvr(bool forceMipmaps = false, bool useCompressed = false, bool maxQuality = false)
+		public GvrTexture ToGvr(bool maxQuality = false, bool useCompressed = false, bool forceMipmaps = false)
 		{
-			switch (this)
+			return this switch
 			{
-				case GvrTexture:
-					return (GvrTexture)this;
-				case PvrTexture pvr:
-					return new GvrTexture(pvr, forceMipmaps, useCompressed, maxQuality);
-				case DdsTexture gvr:
-					return new GvrTexture(gvr, forceMipmaps, maxQuality);
-				case GdiTexture gdi:
-					return new GvrTexture(gdi);
-				default:
-					throw new Exception("Cannot convert texture to GVR");
-			}
+				GvrTexture => (GvrTexture)this,
+				PvrTexture pvr => new GvrTexture(pvr, forceMipmaps, useCompressed, maxQuality),
+				DdsTexture gvr => new GvrTexture(gvr, forceMipmaps, maxQuality),
+				GdiTexture gdi => new GvrTexture(gdi),
+				_ => throw new Exception("Cannot convert texture to GVR"),
+			};
 		}
 
 		/// <summary>
@@ -385,22 +369,16 @@ namespace TextureLib
 		/// <param name="maxQuality">Prefer maximum quality.</param>
 		/// <returns>A DDS texture.</returns>
 		/// <exception cref="Exception"></exception>
-		public DdsTexture ToDds(bool forceMipmaps = false, bool useCompressed = false, bool maxQuality = false)
+		public DdsTexture ToDds(bool maxQuality = false, bool useCompressed = false, bool forceMipmaps = false)
 		{
-			switch (this)
+			return this switch
 			{
-				case XvrTexture:
-				case DdsTexture:
-					return (DdsTexture)this;
-				case PvrTexture pvr:
-					return new DdsTexture(pvr, forceMipmaps, maxQuality);
-				case GvrTexture gvr:
-					return new DdsTexture(gvr, forceMipmaps, maxQuality);
-				case GdiTexture gdi:
-					return new DdsTexture(gdi, forceMipmaps, maxQuality, useCompressed);
-				default:
-					throw new Exception("Cannot convert texture to DDS");
-			}
+				XvrTexture or DdsTexture => (DdsTexture)this,
+				PvrTexture pvr => new DdsTexture(pvr, forceMipmaps, maxQuality),
+				GvrTexture gvr => new DdsTexture(gvr, forceMipmaps, maxQuality),
+				GdiTexture gdi => new DdsTexture(gdi, forceMipmaps, maxQuality, useCompressed),
+				_ => throw new Exception("Cannot convert texture to DDS"),
+			};
 		}
 
 		/// <summary>
@@ -411,22 +389,16 @@ namespace TextureLib
 		/// <param name="maxQuality">Prefer maximum quality.</param>
 		/// <returns>An XVR texture.</returns>
 		/// <exception cref="Exception"></exception>
-		public XvrTexture ToXvr(bool forceMipmaps = false, bool useCompressed = false, bool maxQuality = false)
+		public XvrTexture ToXvr(bool maxQuality = false, bool useCompressed = false, bool forceMipmaps = false)
 		{
-			switch (this)
+			return this switch
 			{
-				case XvrTexture:
-				case DdsTexture:
-					return (XvrTexture)this;
-				case PvrTexture pvr:
-					return (XvrTexture)(new DdsTexture(pvr, forceMipmaps, maxQuality));
-				case GvrTexture gvr:
-					return (XvrTexture)(new DdsTexture(gvr, forceMipmaps, maxQuality));
-				case GdiTexture gdi:
-					return (XvrTexture)(new DdsTexture(gdi, forceMipmaps, maxQuality, useCompressed));
-				default:
-					throw new Exception("Cannot convert texture to XVR");
-			}
+				XvrTexture or DdsTexture => (XvrTexture)this,
+				PvrTexture pvr => (XvrTexture)(new DdsTexture(pvr, forceMipmaps, maxQuality)),
+				GvrTexture gvr => (XvrTexture)(new DdsTexture(gvr, forceMipmaps, maxQuality)),
+				GdiTexture gdi => (XvrTexture)(new DdsTexture(gdi, forceMipmaps, maxQuality, useCompressed)),
+				_ => throw new Exception("Cannot convert texture to XVR"),
+			};
 		}
 	}
 }

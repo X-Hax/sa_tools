@@ -31,19 +31,17 @@ namespace TextureLib
 		{
 			switch (ddsFormat)
 			{
-				case DdsFormat.Argb1555:
-				case DdsFormat.Argb4444:
-					return maxQuality ? GvrDataFormat.Argb8888 : GvrDataFormat.Rgb5a3;
 				case DdsFormat.Dxt1:
 					return GvrDataFormat.Dxt1;
 				case DdsFormat.Rgb565:
 					return GvrDataFormat.Rgb565;
-				case DdsFormat.Argb8888:
-					return GvrDataFormat.Argb8888;
 				case DdsFormat.Rgb888:
 					return maxQuality ? GvrDataFormat.Argb8888 : GvrDataFormat.Rgb565;
 				case DdsFormat.Dxt3:
 				case DdsFormat.Dxt5:
+				case DdsFormat.Argb1555:
+				case DdsFormat.Argb4444:
+				case DdsFormat.Argb8888: // This will not be a lossless conversion if maxQuality is off. Had to do this because of Texture Editor's "High quality GVMs" option.
 				default:
 					return maxQuality ? GvrDataFormat.Argb8888 : GvrDataFormat.Rgb5a3;
 			}
