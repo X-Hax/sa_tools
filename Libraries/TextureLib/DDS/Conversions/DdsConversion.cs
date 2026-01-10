@@ -60,12 +60,15 @@ namespace TextureLib
 			int mipLevels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
 			MipmapImages = new Bitmap[mipLevels];
 			MipmapImages[0] = new Bitmap(Image);
+			int mipWidth = Math.Max(1, Width >> 1);
+			int mipHeight = Math.Max(1, Height >> 1);
 			// DDS mipmap order: from largest to smallest
-			int mipLevel = 1;
-			for (int size = Image.Width >> 1; size > 0; size >>= 1)
+			for (int mipLevel = 1; mipLevel < mipLevels; mipLevel++)
 			{
-				MipmapImages[mipLevel] = new Bitmap(Image, size, size);
-				outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(MipmapImages[mipLevel]), size, size));
+				MipmapImages[mipLevel] = new Bitmap(Image, mipWidth, mipHeight);
+				outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(MipmapImages[mipLevel]), mipWidth, mipHeight));
+				mipWidth = Math.Max(1, mipWidth >>= 1);
+				mipHeight = Math.Max(1, mipHeight >>= 1);
 			}
 			HasMipmaps = true;
 			// Update raw data arrays
