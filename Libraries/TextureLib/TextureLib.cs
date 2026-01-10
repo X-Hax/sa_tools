@@ -273,7 +273,7 @@ namespace TextureLib
 		}
 
 		/// <summary>
-		/// Loads texture data at the specified offset and returns a PVR, GVR, XVR, DDS or Invalid texture.
+		/// Loads texture data at the specified offset and returns a PVR, GVR, XVR, DDS, GDI or Invalid texture.
 		/// </summary>
 		/// <param name="data">Byte array to load.</param>
 		/// <param name="offset">Offset to load.</param>
@@ -288,6 +288,8 @@ namespace TextureLib
 				return new XvrTexture(data, offset);
 			else if (DdsTexture.Identify(data, offset))
 				return new DdsTexture(data, offset);
+			else if (GdiTexture.Identify(data, offset))
+				return new GdiTexture(data, offset);
 			return new InvalidTexture(data, offset);
 		}
 

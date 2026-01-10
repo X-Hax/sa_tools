@@ -122,8 +122,8 @@ namespace TextureLib
 			for (int m = 0; m < levels - 1; m++)
 			{
 				// Divide original or previous dimensions by two for each mipmap
-				mipWidth = mipWidth / 2;
-				mipHeight = mipHeight / 2;
+				mipWidth = Math.Max(1, mipWidth >>= 1); // The Max check is necessary for rectangular mipmaps
+				mipHeight = Math.Max(1, mipHeight >>= 1);
 				Bitmap mip = new Bitmap(mipWidth, mipHeight);
 				// Write mipmap image onto the bitmap from largest to smallest
 				using (Graphics gfx = Graphics.FromImage(mip))

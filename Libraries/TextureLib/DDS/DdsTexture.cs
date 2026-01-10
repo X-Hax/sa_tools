@@ -116,16 +116,18 @@ namespace TextureLib
 			{
 				int mipCount = (int)header.MipMapCount;
 				int mipmapOffset = 0;
-				int mipSize = Width;
+				int mipWidth = Width;
+				int mipHeight = Height;
 				MipmapImages = new Bitmap[mipCount];
 				for (int m = 0; m < mipCount; m++)
 				{
-					int mipDataSize = dataCodec.CalculateTextureSize(mipSize, mipSize);
+					int mipDataSize = dataCodec.CalculateTextureSize(mipWidth, mipHeight);
 					ReadOnlySpan<byte> mipData = HeaderlessData[mipmapOffset..];
-					byte[] mipmapResult = dataCodec.Decode(mipData, mipSize, mipSize, null);
-					MipmapImages[m] = new Bitmap(mipSize, mipSize, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+					byte[] mipmapResult = dataCodec.Decode(mipData, mipWidth, mipHeight, null);
+					MipmapImages[m] = new Bitmap(mipWidth, mipHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 					TextureFunctions.RawToBitmap(MipmapImages[m], mipmapResult);
-					mipSize >>= 1;
+					mipWidth = Math.Max(1, mipWidth >>= 1); // The Max check is necessary for rectangular mipmaps such as those in omocha.dds in SOC\tipsK5.PAK
+					mipHeight = Math.Max(1, mipHeight >>= 1);
 					mipmapOffset += mipDataSize;
 				}
 			}
@@ -149,12 +151,15 @@ namespace TextureLib
 				int mipLevels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
 				MipmapImages = new Bitmap[mipLevels];
 				MipmapImages[0] = new Bitmap(Image);
+				int mipWidth = Math.Max(1, Width >> 1);
+				int mipHeight = Math.Max(1, Height >> 1);
 				// DDS mipmap order: from largest to smallest
-				int mipLevel = 1;
-				for (int size = Image.Width >> 1; size > 0; size >>= 1)
+				for (int mipLevel = 1; mipLevel < mipLevels; mipLevel++)
 				{
-					MipmapImages[mipLevel] = new Bitmap(Image, size, size);
-					outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(MipmapImages[mipLevel]), size, size));
+					MipmapImages[mipLevel] = new Bitmap(Image, mipWidth, mipHeight);
+					outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(MipmapImages[mipLevel]), mipWidth, mipHeight));
+					mipWidth = Math.Max(1, mipWidth >>= 1);
+					mipHeight = Math.Max(1, mipHeight >>= 1);
 				}
 			}
 			// Set data arrays
