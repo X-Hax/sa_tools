@@ -215,8 +215,8 @@ namespace TextureLib
 
 		public override bool CanHaveMipmaps()
 		{
-			// Technically even rectangular DDS textures have mipmaps I think, but the games' main formats only allow for square mipmaps.
-			return Width == Height;
+			// DDS textures support rectangular mipmaps (e.g. omocha.dds in SOC\tips0.pak), so the check should always return true
+			return true;
 		}
 
 		public override string Info()
