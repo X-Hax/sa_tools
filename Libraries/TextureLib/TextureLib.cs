@@ -9,15 +9,10 @@ using System.Drawing;
 namespace TextureLib
 {
 	/// <summary>Texture file types used in texture identification.</summary>
-	public enum TextureFileFormat
-	{
-		Pvr,
-		Gvr,
-		Dds,
-		Xvr,
-		Png,
-		Unknown
-	}
+	public enum TextureFileFormat {	Pvr, Gvr, Dds, Xvr, Png, Jpg, Gif, Bmp, Unknown, Invalid }
+
+	/// <summary>Indexed texture types used in texture identification.</summary>
+	public enum IndexedTextureFormat { Index4, Index8, Index14, NotIndexed }
 
 	public abstract class GenericTexture
     {
@@ -188,20 +183,93 @@ namespace TextureLib
 		/// </summary>
 		/// <param name="data">Byte array to check.</param>
 		/// <param name="offset">Offset where texture header starts.</param>
-		/// <returns>TextureFileFormat value (Pvr, Gvr etc.).</returns>
+		/// <returns>TextureFileFormat value, such as Pvr, Gvr etc.</returns>
 		public static TextureFileFormat GetTextureFileType(byte[] data, int offset = 0)
 		{
+			const ushort MagicBMP = 0x4D42;
+			const uint MagicJPG = 0xE0FFD8FF;
+			const uint MagicGIF = 0x38464947;
+			const uint MagicPNG = 0x474E5089;
+
+			// Invalid
+			if (data == null || data.Length < 4)
+				return TextureFileFormat.Invalid;
+
+			// Textures with GBIX
 			if (PvrTexture.Identify(data, offset))
 				return TextureFileFormat.Pvr;
-			else if (GvrTexture.Identify(data, offset))
+			if (GvrTexture.Identify(data, offset))
 				return TextureFileFormat.Gvr;
-			else if (XvrTexture.Identify(data, offset))
+			if (XvrTexture.Identify(data, offset))
 				return TextureFileFormat.Xvr;
-			else if (DdsTexture.Identify(data, offset))
+
+			// DDS
+			if (DdsTexture.Identify(data, offset))
 				return TextureFileFormat.Dds;
-			else if (GdiTexture.Identify(data,offset))
-				return TextureFileFormat.Png;
-			return TextureFileFormat.Unknown;
+
+			// BMP
+			if (BitConverter.ToUInt16(data, offset) == MagicBMP)
+				return TextureFileFormat.Bmp;
+
+			// GIF, JPG, PNG or unsupported
+			return BitConverter.ToUInt32(data, offset) switch
+			{
+				MagicJPG => TextureFileFormat.Jpg,
+				MagicGIF => TextureFileFormat.Gif,
+				MagicPNG => TextureFileFormat.Png,
+				_ => TextureFileFormat.Unknown,
+			};
+		}
+
+		/// <summary>
+		/// Returns the extension string by identifying texture file format in a byte array.
+		/// </summary>
+		public static string IdentifyTextureFileExtension(byte[] file)
+		{
+			return GetTextureFileType(file) switch
+			{
+				TextureFileFormat.Bmp => ".bmp",
+				TextureFileFormat.Gif => ".gif",
+				TextureFileFormat.Jpg => ".jpg",
+				TextureFileFormat.Png => ".png",
+				TextureFileFormat.Dds => ".dds",
+				TextureFileFormat.Pvr => ".pvr",
+				TextureFileFormat.Gvr => ".gvr",
+				TextureFileFormat.Xvr => ".xvr",
+				TextureFileFormat.Invalid => throw new Exception("Invalid texture data"),
+				_ => throw new Exception("Unknown texture file format"),
+			};
+		}
+
+		/// <summary>
+		/// Returns the texture's indexed data format.
+		/// </summary>
+		/// <returns>IndexedTextureFormat value (Index4, Index8 or Non-Indexed).</returns>
+		public IndexedTextureFormat GetIndexedFormat()
+		{
+			return this switch
+			{
+				PvrTexture pvr => pvr.PvrDataFormat switch
+				{
+					PvrDataFormat.Index4 or PvrDataFormat.Index4Mipmaps => IndexedTextureFormat.Index4,
+					PvrDataFormat.Index8 or PvrDataFormat.Index8Mipmaps => IndexedTextureFormat.Index8,
+					_ => IndexedTextureFormat.NotIndexed,
+				},
+				GvrTexture gvr => gvr.GvrDataFormat switch
+				{
+					GvrDataFormat.Index4 => IndexedTextureFormat.Index4,
+					GvrDataFormat.Index8 => IndexedTextureFormat.Index8,
+					GvrDataFormat.Index14 => IndexedTextureFormat.Index14,
+					_ => IndexedTextureFormat.NotIndexed,
+				},
+				GdiTexture gdi => gdi.GdiPixelFormat switch
+				{
+					System.Drawing.Imaging.PixelFormat.Format4bppIndexed => IndexedTextureFormat.Index4,
+					System.Drawing.Imaging.PixelFormat.Format8bppIndexed => IndexedTextureFormat.Index8,
+					_ => IndexedTextureFormat.NotIndexed,
+				},
+				_ => IndexedTextureFormat.NotIndexed,
+			};
 		}
 
 		/// <summary>

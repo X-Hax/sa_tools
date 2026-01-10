@@ -231,6 +231,10 @@ namespace TextureTool
 					programError = true;
 					return;
 				}
+				if (args.Contains("-p_sa"))
+				{
+					saCompatibleGvrPalettes = true;
+				}
 			}
 			// Set output filename
 			if (autoOutputFilename)

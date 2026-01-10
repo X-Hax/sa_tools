@@ -75,6 +75,21 @@ namespace TextureLib
 			return targetDataFormat;
 		}
 
+		public static GvrPaletteFormat AutoGvrPaletteFormatFromImage(System.Drawing.Bitmap image, bool maxQuality, bool saCompatible)
+		{
+			BitmapAlphaLevel alphaLevel = TextureFunctions.GetAlphaLevelFromBitmap(image);
+			switch (alphaLevel)
+			{
+				case BitmapAlphaLevel.None:
+					return GvrPaletteFormat.Rgb565;
+				case BitmapAlphaLevel.OneBitAlpha:
+					return (saCompatible ? GvrPaletteFormat.IntensityA8orArgb1555 : GvrPaletteFormat.Rgb5A3orArgb4444);
+				case BitmapAlphaLevel.FullAlpha:
+				default:
+					return (maxQuality ? GvrPaletteFormat.Argb8888 : GvrPaletteFormat.Rgb5A3orArgb4444);
+			}
+		}
+
 		public override void AddMipmaps()
 		{
 			// If the texture already has mipmaps, don't do anything

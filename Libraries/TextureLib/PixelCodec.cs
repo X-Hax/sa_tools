@@ -46,9 +46,9 @@ namespace TextureLib
                 case GvrPaletteFormat.IntensityA8orArgb1555:
                     return saCompatible ? new ARGB1555PixelCodec() { BigEndian = true } : new IntensityA8PixelCodec();
                 case GvrPaletteFormat.Rgb565:
-                    return new RGB565PixelCodec();
+                    return new RGB565PixelCodec { BigEndian = true };
                 case GvrPaletteFormat.Rgb5A3orArgb4444:
-                    return saCompatible ? new ARGB4444PixelCodec() { BigEndian = true } : new RGB5A3PixelCodec();
+                    return saCompatible ? new ARGB4444PixelCodec() { BigEndian = true } : new RGB5A3PixelCodec { BigEndian = true };
                 case GvrPaletteFormat.Argb8888:
                     return new ARGB8888PixelCodec() { BigEndian = true };
                 default:

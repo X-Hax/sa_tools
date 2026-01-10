@@ -22,7 +22,7 @@
 		/// <summary>
 		/// Same as NJD_TEXFMT_ARGB_8888.
 		/// This ID is not defined in official Ninja headers, but there are several textures in Kamui samples and Naomi games (Initial D) using it. 
-		/// Palette only.
+		/// Paletted textures only.
 		/// Example: DCSDK8\Shinobi\Sample\Kamui1\TestSamples\Txtest13\P4S256T1.C
 		/// </summary>
 		Argb8888Alt = 0x07,
@@ -31,7 +31,6 @@
     public enum PvrDataFormat : byte
     {
         None = 0x00, // Doesn't exist?
-
 		/// <summary>NJD_TEXFMT_TWIDDLED.</summary>
 		SquareTwiddled = 0x01,
 		/// <summary>NJD_TEXFMT_TWIDDLED_MM.</summary>

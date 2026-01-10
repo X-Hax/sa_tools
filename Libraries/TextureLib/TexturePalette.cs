@@ -23,7 +23,7 @@ namespace TextureLib
 		/// <summary>Default palette color ID (stored in the PVP/GVP file, not implemented).</summary>
 		public int StartColor;
 		
-		/// <summary>Decoded ARGB8888 color data.</summary>
+		/// <summary>Decoded ARGB8888 color data (Little Endian).</summary>
 		public byte[] DecodedData;
 
 		/// <summary>Encoded data without header.</summary>
@@ -243,7 +243,6 @@ namespace TextureLib
         {
             byte[] colorsBitmap = new byte[DecodedData.Length];
             Array.Copy(DecodedData, 0, colorsBitmap, 0, DecodedData.Length);
-            //TextureFunctions.RGBAtoBGRA(colorsBitmap);
             Bitmap img = new Bitmap(GetNumColors(), 1, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             TextureFunctions.RawToBitmap(img, colorsBitmap);
             img.Save(outputPath, System.Drawing.Imaging.ImageFormat.Png);
@@ -278,20 +277,7 @@ namespace TextureLib
             return new TexturePalette(rawData, codec, numColors);
         }
 
-		/// <summary>Converts the palette's raw data to an array of System.Drawing.Color.</summary>
-        public Color[] ToColorArray()
-        {
-            List<Color> colors = new List<Color>();
-            for (int entry = 0; entry < GetNumColors(); entry++)
-            {
-                int argb = BitConverter.ToInt32(DecodedData, 4 * entry);
-				// Might need BGRA conversion?
-                colors.Add(Color.FromArgb(argb));
-            }
-            return colors.ToArray();
-        }
-
-		/// <summary>Retrieves a specific palette color as a System.Drawing.Color.</summary>
+		/// <summary>Retrieves a specific palette color from the palette's decoded data as a System.Drawing.Color.</summary>
 		/// <param name="colorID">Color to retrieve.</param>
 		/// <param name="bankID">Bank ID to use (optional).</param>
 		/// <param name="colorOffset">Offset start color ID (optional).</param>
@@ -301,15 +287,11 @@ namespace TextureLib
 			int retrieveColorID = bankID * numColorsInBank + colorOffset + colorID;
 			if (retrieveColorID > GetNumColors() - 1)
 				return Color.FromArgb(0, 0, 0);
-			return Color.FromArgb(isBigEndian ? ByteConverter.ToInt32BE(DecodedData, retrieveColorID * 4) : ByteConverter.ToInt32(DecodedData, retrieveColorID * 4));
-		}
-
-		/// <summary>
-		/// Removes all colors in the palette. Used by Texture Editor.
-		/// </summary>
-		public void Clear()
-		{
-			DecodedData = new byte[0];
+			int r = DecodedData[retrieveColorID * 4 + 0];
+			int g = DecodedData[retrieveColorID * 4 + 1];
+			int b = DecodedData[retrieveColorID * 4 + 2];
+			int a = DecodedData[retrieveColorID * 4 + 3];
+			return Color.FromArgb(a, r, g, b);
 		}
 
 		/// <summary>
@@ -320,16 +302,14 @@ namespace TextureLib
 		{
 			byte[] newData = new byte[DecodedData.Length + 4];
 			Array.Copy(DecodedData, 0, newData, 0, DecodedData.Length);
-			newData[DecodedData.Length] = color.B;
+			newData[DecodedData.Length + 0] = color.R;
 			newData[DecodedData.Length + 1] = color.G;
-			newData[DecodedData.Length + 2] = color.R;
+			newData[DecodedData.Length + 2] = color.B;
 			newData[DecodedData.Length + 3] = color.A;
 			DecodedData = newData;
 		}
 
-		/// <summary>
-		/// Adds new colors to the palette.
-		/// </summary>
+		/// <summary>Adds new colors to the palette.</summary>
 		/// <param name="colors">Color array to add.</param>
 		public void AddColors(Color[] colors)
 		{
@@ -337,9 +317,9 @@ namespace TextureLib
 			Array.Copy(DecodedData, 0, newData, 0, DecodedData.Length);
 			for (int i = 0; i < colors.Length; i++)
 			{
-				newData[DecodedData.Length + 4 * i + 0] = colors[i].B;
+				newData[DecodedData.Length + 4 * i + 0] = colors[i].R;
 				newData[DecodedData.Length + 4 * i + 1] = colors[i].G;
-				newData[DecodedData.Length + 4 * i + 2] = colors[i].R;
+				newData[DecodedData.Length + 4 * i + 2] = colors[i].B;
 				newData[DecodedData.Length + 4 * i + 3] = colors[i].A;
 			}
 			DecodedData = newData;
@@ -432,9 +412,7 @@ namespace TextureLib
 			DecodedData = newPalette;
 		}
 
-		/// <summary>
-		/// Outputs a string containing basic information about the palette's data.
-		/// </summary>
+		/// <summary>Outputs a string containing basic information about the palette's data.</summary>
 		public string Info()
 		{
 			StringBuilder sb = new StringBuilder();
@@ -445,7 +423,30 @@ namespace TextureLib
 			sb.AppendLine(string.Format("Start color: {0}", StartColor.ToString()));
 			sb.AppendLine(string.Format("Max banks 4-bit: {0}", GetMaxBanks(false).ToString()));
 			sb.AppendLine(string.Format("Max banks 8-bit: {0}", GetMaxBanks(true).ToString()));
+			sb.AppendLine(string.Format("Big Endian: {0}", isBigEndian.ToString()));
 			return sb.ToString();
+		}
+
+		/// <summary>Outputs a string containing the palette's color format.</summary>
+		public string GetEncodedColorFormat()
+		{
+			switch (paletteCodec)
+			{
+				case IntensityA8PixelCodec:
+					return "IntensityA8";
+				case ARGB1555PixelCodec:
+					return "ARGB1555";
+				case RGB565PixelCodec:
+					return "RGB565";
+				case RGB5A3PixelCodec:
+					return "RGB5A3";
+				case ARGB4444PixelCodec:
+					return "ARGB4444";
+				case ARGB8888PixelCodec:
+					return "ARGB8888";
+				default:
+					return paletteCodec.Info();
+			}
 		}
 	}
 }

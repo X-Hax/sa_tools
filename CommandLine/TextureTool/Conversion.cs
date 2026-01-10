@@ -15,10 +15,12 @@ namespace TextureTool
 			Console.WriteLine("Target format: {0}", targetFileFormat.ToString().ToUpperInvariant());
 			// Read palette file if specified
 			inputPalette = string.IsNullOrEmpty(paletteFilename) ? null :
-				new TexturePalette(File.ReadAllBytes(paletteFilename), false);
+				new TexturePalette(File.ReadAllBytes(paletteFilename), saCompatibleGvrPalettes);
 			if (inputPalette != null)
 			{
 				Console.WriteLine("Input palette: {0}", paletteFilename);
+				if (saCompatibleGvrPalettes)
+					Console.WriteLine("Using SA compatible GVP formats");
 				Console.WriteLine("\n--INPUT PALETTE--\n" + inputPalette.Info());
 			}
 			else
@@ -77,6 +79,8 @@ namespace TextureTool
 						case GvrDataFormat.Index8:
 						case GvrDataFormat.Index14:
 							Console.WriteLine("GVR palette mode: {0}", encodeExternalPalette ? "External" : "Internal");
+							if (autoGvrPaletteFormat)
+								targetGvrPaletteFormat = GvrTexture.AutoGvrPaletteFormatFromImage(inputTexture.Image, false, saCompatibleGvrPalettes);
 							string gvrpalfmt = targetGvrPaletteFormat.ToString();
 							switch (targetGvrPaletteFormat)
 							{
@@ -105,7 +109,7 @@ namespace TextureTool
 				targetPvrFormat == PvrDataFormat.Index4 || targetPvrFormat == PvrDataFormat.Index8 ||
 				targetPvrFormat == PvrDataFormat.Index4Mipmaps || targetPvrFormat == PvrDataFormat.Index8Mipmaps)
 				Console.WriteLine("Use dithering: {0}", useDitheringForIndexed.ToString());
-			// Read the input texture
+			// Read the input palette
 			if (inputPalette != null)
 				inputTexture.Palette = inputPalette;
 			GenericTexture result = null;

@@ -157,10 +157,14 @@ namespace TextureLib
 
 		public static bool Identify(byte[] data, int offset = 0)
 		{
+			const ushort MagicBMP = 0x4D42;
 			const uint MagicJPG = 0xE0FFD8FF;
 			const uint MagicGIF = 0x38464947;
 			const uint MagicPNG = 0x474E5089;
-			if (BitConverter.ToUInt32(data,offset) == MagicPNG)
+			
+			if (BitConverter.ToUInt16(data, 0) == MagicBMP)
+				return true;
+			else if (BitConverter.ToUInt32(data, offset) == MagicPNG)
 				return true;
 			else if (BitConverter.ToUInt32(data, offset) == MagicJPG)
 				return true;

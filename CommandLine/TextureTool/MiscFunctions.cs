@@ -61,6 +61,7 @@ namespace TextureTool
 			Console.WriteLine("-i8 : Encode to Indexed 8-bit format.");
 			Console.WriteLine("-dxt or -dxt1 : Encode to DXT1 format.");
 			Console.WriteLine("\nGVR PALETTE FORMAT OPTIONS:");
+			Console.WriteLine("-p_sa : Treat IntensityA8 and RGB5A3 as ARGB1555 and ARGB4444 (SADX GC/SA2B GC).");
 			Console.WriteLine("-p_565 : Palette is in RGB565 format.");
 			Console.WriteLine("-p_1555 : Palette is in ARGB1555 format.");
 			Console.WriteLine("-p_4444 : Palette is in ARGB4444 format.");

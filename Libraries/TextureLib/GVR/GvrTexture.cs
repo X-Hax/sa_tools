@@ -355,7 +355,7 @@ namespace TextureLib
 			sb.AppendLine("Width: " + Width.ToString());
 			sb.AppendLine("Height: " + Height.ToString());
 			sb.AppendLine("Gbix: " + Gbix.ToString());
-			sb.AppendLine(string.Format("Data format: {0} (0x{1})" + GvrDataFormat.ToString(), ((int)(GvrDataFormat)).ToString("X")));
+			sb.AppendLine(string.Format("Data format: {0} (0x{1})", GvrDataFormat.ToString(), ((int)(GvrDataFormat)).ToString("X")));
 			sb.AppendLine("Palette format: " + (RequiresPaletteFile ? "External" : GvrPaletteFormat.ToString()));
 			sb.AppendLine("Mipmaps: " + HasMipmaps.ToString());
 			sb.AppendLine("Indexed: " + Indexed.ToString());

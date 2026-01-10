@@ -43,7 +43,7 @@ namespace TextureLib
 			if (pvr.PvrDataFormat == PvrDataFormat.Vq || pvr.PvrDataFormat == PvrDataFormat.VqMipmaps ||
 				pvr.PvrDataFormat == PvrDataFormat.SmallVq || pvr.PvrDataFormat == PvrDataFormat.SmallVqMipmaps)
 				if (!maxQuality)
-					targetFormat = AutoDdsFormatFromImage(pvr.Image, maxQuality, maxQuality ? false : true);
+					targetFormat = AutoDdsFormatFromImage(pvr.Image, false, true);
 			ConvertFromPvr(pvr, targetFormat, forceMipmaps);
 		}
 
