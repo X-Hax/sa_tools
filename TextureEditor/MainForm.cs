@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using SAModel.SAEditorCommon;
@@ -796,6 +794,7 @@ namespace TextureEditor
 			SavePaletteDialog(textures[listBox1.SelectedIndex].Name);
 		}
 
+		#region Texture information and preview
 		private Bitmap GeneratePalettePreview()
 		{
 			int rows = currentPalette.GetNumColors() / 16;
@@ -853,13 +852,32 @@ namespace TextureEditor
 					mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
 				if (currentFormat == TextureArchiveFormat.PAK && !usingSocPak)
 				{
-					pixelFormatLabel.Text = $"Surface Flags: {GetSurfaceFlagsString(currentTexture.PakMetadata.PakNinjaFlags)}";
-					extraFormatLabel.Text = $"PAK GVR Format: {currentTexture.PakMetadata.PakGvrFormat}";
-					pixelFormatLabel.Show();
+					// Display PAK metadata
 					extraFormatLabel.Show();
+					extraFormatLabel.Text = $"PAK GVR Format: {currentTexture.PakMetadata.PakGvrFormat}";
+					// Enable the PAK alpha flag
 					checkBoxPAKUseAlpha.Enabled = true;
 					checkBoxPAKUseAlpha.Show();
 					checkBoxPAKUseAlpha.Checked = currentTexture.PakMetadata.PakGvrFormat == GvrDataFormat.Rgb5a3;
+					// Display Ninja surface flags (maybe have checkboxes for them instead?)
+					NinjaSurfaceFlags njflags = currentTexture.PakMetadata.PakNinjaFlags;
+					List<string> flags = new List<string>();
+					if ((njflags & NinjaSurfaceFlags.NotTwiddled) != 0)
+						flags.Add("Not Twiddled");
+					else
+						flags.Add("Twiddled");
+					if ((njflags & NinjaSurfaceFlags.Mipmapped) != 0)
+						flags.Add("Mipmapped");
+					if ((njflags & NinjaSurfaceFlags.Palettized) != 0)
+						flags.Add("Palettized");
+					if ((njflags & NinjaSurfaceFlags.Stride) != 0)
+						flags.Add("Stride");
+					if ((njflags & NinjaSurfaceFlags.VQ) != 0)
+						flags.Add("VQ");
+					string ninjaFlagsString = string.Join(", ", flags);
+					pixelFormatLabel.Text = $"PAK Ninja Surface Flags: {ninjaFlagsString}";
+					pixelFormatLabel.Show();
+
 				}
 				else if (currentFormat == TextureArchiveFormat.PVMX)
 				{
@@ -979,8 +997,7 @@ namespace TextureEditor
 						textureSizeLabel.Hide();
 						break;
 					case DdsTexture dds:
-						dataFormatLabel.Text = "Data Format: DDS";
-						pixelFormatLabel.Text = $"DDS Pixel Format: {dds.DdsFormat}";
+						dataFormatLabel.Text = $"Data Format: DDS ({dds.DdsFormat})";
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						break;
 					case GdiTexture gdi:
@@ -1010,6 +1027,136 @@ namespace TextureEditor
 				UpdateTextureView();
 				ShowHidePaletteInfo();
 			}
+		}
+		#endregion
+
+		#region Loading
+		private bool LoadFile(string filename)
+		{
+			// Load file
+			byte[] datafile = File.ReadAllBytes(filename);
+			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				datafile = PRS.Decompress(datafile);
+
+			// Check if the file is a PVR/GVR/XVR
+			PuyoArchiveType puyotype = PuyoArchiveType.Unknown;
+			if (PvrTexture.Identify(datafile))
+			{
+				puyotype = PuyoArchiveType.PVMFile;
+				currentFormat = TextureArchiveFormat.PVM;
+			}
+			else if (GvrTexture.Identify(datafile))
+			{
+				puyotype = PuyoArchiveType.GVMFile;
+				currentFormat = TextureArchiveFormat.GVM;
+			}
+			else if (XvrTexture.Identify(datafile))
+			{
+				puyotype = PuyoArchiveType.XVMFile;
+				currentFormat = TextureArchiveFormat.XVM;
+			}
+			// If the file is a single PVR/GVR/XVR, create a PVM/GVM/XVM archive and add the texture to it.
+			if (puyotype != PuyoArchiveType.Unknown)
+			{
+				string[] otherfiles = Directory.GetFiles(Path.GetDirectoryName(filename), "*" + Path.GetExtension(filename), SearchOption.TopDirectoryOnly);
+				PuyoFile arc = new PuyoFile(puyotype);
+				textures.Clear();
+				// Set selected texture index
+				int selIndex = 0;
+				// Set added entry index
+				int entryID = 0;
+				for (int i = 0; i < otherfiles.Length; i++)
+				{
+					try
+					{
+						string nameNoExt = Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0];
+						datafile = File.ReadAllBytes(otherfiles[i]);
+						// Decompress if PRS compressed
+						if (Path.GetExtension(otherfiles[i]).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+							datafile = PRS.Decompress(datafile);
+						// Set selection
+						if (Path.GetFileName(otherfiles[i]) == Path.GetFileName(filename))
+							selIndex = entryID;
+						switch (puyotype)
+						{
+							case PuyoArchiveType.PVMFile:
+								if (PvrTexture.Identify(datafile))
+								{
+									arc.Entries.Add(new PVMEntry(datafile, nameNoExt + ".pvr"));
+									textures.Add(new PvrTexture(arc.Entries[entryID].Data) { Name = nameNoExt });
+									entryID++;
+								}
+								break;
+							case PuyoArchiveType.GVMFile:
+								if (GvrTexture.Identify(datafile))
+								{
+									arc.Entries.Add(new GVMEntry(datafile, nameNoExt + ".gvr"));
+									textures.Add(new GvrTexture(arc.Entries[entryID].Data) { Name = nameNoExt });
+									entryID++;
+								}
+								break;
+							case PuyoArchiveType.XVMFile:
+								if (XvrTexture.Identify(datafile))
+								{
+									arc.Entries.Add(new XVMEntry(datafile, nameNoExt + ".xvr"));
+									textures.Add(new XvrTexture(arc.Entries[entryID].Data) { Name = nameNoExt });
+									entryID++;
+								}
+								break;
+						}
+					}
+					catch (Exception ex)
+					{
+						MessageBox.Show(this, "Folder loading cancelled. Could not add texture " + otherfiles[i] + ": " + ex.ToString(), "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						break;
+					}
+				}
+				listBox1.Items.Clear();
+				listBox1.Items.AddRange(textures.Select((item) => item.Name).ToArray());
+				UpdateTextureCount();
+				UpdateMRUList(Path.GetFullPath(filename));
+				listBox1.SelectedIndex = listBox1.Items.Count == 0 ? -1 : selIndex;
+				return true;
+			}
+			// Otherwise load the file as an archive
+			if (PVMXFile.Identify(datafile))
+				currentFormat = TextureArchiveFormat.PVMX;
+			else if (PAKFile.Identify(filename))
+				currentFormat = TextureArchiveFormat.PAK;
+			else
+			{
+				if (PBFile.Identify(datafile))
+					datafile = new PBFile(datafile).GetPVM().GetBytes();
+				PuyoArchiveType identifyResult = PuyoFile.Identify(datafile);
+				switch (identifyResult)
+				{
+					case PuyoArchiveType.PVMFile:
+						currentFormat = TextureArchiveFormat.PVM;
+						break;
+					case PuyoArchiveType.GVMFile:
+						currentFormat = TextureArchiveFormat.GVM;
+						break;
+					case PuyoArchiveType.XVMFile:
+						currentFormat = TextureArchiveFormat.XVM;
+						break;
+					case PuyoArchiveType.Unknown:
+					default:
+						MessageBox.Show(this, "Unknown archive type: \"" + filename + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						return false;
+				}
+			}
+
+			// Load textures
+			List<GenericTexture> newtextures = GetTexturesFromFile(filename);
+			if (newtextures == null || newtextures.Count == 0)
+				return false;
+			textures.Clear();
+			textures.AddRange(newtextures);
+			listBox1.Items.Clear();
+			listBox1.Items.AddRange(textures.Select((item) => item.Name).ToArray());
+			UpdateTextureCount();
+			UpdateMRUList(Path.GetFullPath(filename));
+			return true;
 		}
 
 		private List<GenericTexture> GetTexturesFromFile(string fname)
@@ -1095,7 +1242,7 @@ namespace TextureEditor
 						}
 						catch (Exception ex)
 						{
-							MessageBox.Show(this, $"Could not add texture {entry.GetFilename().Trim() + ".dds: " + ex.Message.ToString() + "."}", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							MessageBox.Show(this, $"Could not add texture {entry.GetFilename().Trim() + ".dds: " + ex.Message.ToString()}", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 						}
 					}
 				}
@@ -1117,14 +1264,15 @@ namespace TextureEditor
 				foreach (GenericArchive.GenericArchiveEntry file in arc.Entries)
 				{
 					if (file is PVMEntry pvme)
-						newtextures.Add(new PvrTexture(file.Data) { Name = file.Name });
+						newtextures.Add(new PvrTexture(file.Data) { Name = Path.GetFileNameWithoutExtension(file.Name) });
 					else if (file is GVMEntry gvme)
-						newtextures.Add(new GvrTexture(file.Data) { Name = file.Name });
+						newtextures.Add(new GvrTexture(file.Data) { Name = Path.GetFileNameWithoutExtension(file.Name) });
 					else if (file is XVMEntry xvme)
-						newtextures.Add(new XvrTexture(file.Data) { Name = file.Name });
+						newtextures.Add(new XvrTexture(file.Data) { Name = Path.GetFileNameWithoutExtension(file.Name) });
 				}
 			}
-			// Check if GenericTexture match the current format and convert if necessary
+			// Check if GenericTexture match the current format and convert if necessary.
+			// This part is here because GetTexturesFromArchive() can also be called when adding PVM/GVM etc. using the "Add Texture..." button.
 			for (int i = 0; i < newtextures.Count; i++)
 			{
 				switch (currentFormat)
@@ -1138,11 +1286,11 @@ namespace TextureEditor
 							newtextures[i] = newtextures[i].ToGvr(preferHighQualityToolStripMenuItem.Checked && highQualityGVMsToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
 						break;
 					case TextureArchiveFormat.PVMX:
-						if (!(newtextures[i] is GdiTexture))
+						if ((!useDDSInPVMXToolStripMenuItem.Checked && !(newtextures[i] is GdiTexture)) || (useDDSInPVMXToolStripMenuItem.Checked && !(newtextures[i] is DdsTexture)))
 							newtextures[i] = useDDSInPVMXToolStripMenuItem.Checked ? newtextures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : newtextures[i].ToGdi();
 						break;
 					case TextureArchiveFormat.PAK:
-						if (!(newtextures[i] is GvrTexture) && !(newtextures[i] is DdsTexture) && !(newtextures[i] is GdiTexture) && !(newtextures[i] is InvalidTexture))
+						if ((!useDDSInPAKsToolStripMenuItem.Checked && !(newtextures[i] is GdiTexture)) || (useDDSInPAKsToolStripMenuItem.Checked && !(newtextures[i] is DdsTexture)) || !(newtextures[i] is InvalidTexture))
 							newtextures[i] = useDDSInPAKsToolStripMenuItem.Checked ? newtextures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : newtextures[i].ToGdi();
 						break;
 					case TextureArchiveFormat.XVM:
@@ -1153,133 +1301,7 @@ namespace TextureEditor
 			}
 			return newtextures;
 		}
-
-		private bool LoadFile(string filename)
-		{
-			// Load file
-			byte[] datafile = File.ReadAllBytes(filename);
-			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				datafile = PRS.Decompress(datafile);
-
-			// Check if the file is a PVR/GVR/XVR
-			PuyoArchiveType puyotype = PuyoArchiveType.Unknown;
-			if (PvrTexture.Identify(datafile))
-			{
-				puyotype = PuyoArchiveType.PVMFile;
-				currentFormat = TextureArchiveFormat.PVM;
-			}
-			else if (GvrTexture.Identify(datafile))
-			{
-				puyotype = PuyoArchiveType.GVMFile;
-				currentFormat = TextureArchiveFormat.GVM;
-			}
-			else if (XvrTexture.Identify(datafile))
-			{
-				puyotype = PuyoArchiveType.XVMFile;
-				currentFormat = TextureArchiveFormat.XVM;
-			}
-			// If the file is a single PVR/GVR/XVR, create a PVM/GVM/XVM archive and add the texture to it.
-			if (puyotype != PuyoArchiveType.Unknown)
-			{
-				string[] otherfiles = Directory.GetFiles(Path.GetDirectoryName(filename), "*" + Path.GetExtension(filename), SearchOption.TopDirectoryOnly);
-				PuyoFile arc = new PuyoFile(puyotype);
-				textures.Clear();
-				// Set selected texture index
-				int selIndex = 0;
-				// Set added entry index
-				int entryID = 0;
-				for (int i = 0; i < otherfiles.Length; i++)
-				{
-					try
-					{
-						string nameNoExt = Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0];
-						datafile = File.ReadAllBytes(otherfiles[i]);
-						// Decompress if PRS compressed
-						if (Path.GetExtension(otherfiles[i]).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-							datafile = PRS.Decompress(datafile);
-						// Set selection
-						if (Path.GetFileName(otherfiles[i]) == Path.GetFileName(filename))
-							selIndex = entryID;
-						switch (puyotype)
-						{
-							case PuyoArchiveType.PVMFile:
-								if (PvrTexture.Identify(datafile))
-								{
-									arc.Entries.Add(new PVMEntry(datafile, nameNoExt + ".pvr"));
-									textures.Add(new PvrTexture(arc.Entries[entryID].Data) { Name = nameNoExt });								
-									entryID++;
-								}
-								break;
-							case PuyoArchiveType.GVMFile:
-								if (GvrTexture.Identify(datafile))
-								{
-									arc.Entries.Add(new GVMEntry(datafile, nameNoExt + ".gvr"));
-									textures.Add(new GvrTexture(arc.Entries[entryID].Data) { Name = nameNoExt });
-									entryID++;
-								}
-								break;
-							case PuyoArchiveType.XVMFile:
-								if (XvrTexture.Identify(datafile))
-								{
-									arc.Entries.Add(new XVMEntry(datafile, nameNoExt + ".xvr"));
-									textures.Add(new XvrTexture(arc.Entries[entryID].Data) { Name = nameNoExt });
-									entryID++;
-								}
-								break;
-						}
-					}
-					catch (Exception ex)
-					{
-						MessageBox.Show(this, "Folder loading cancelled. Could not add texture " + otherfiles[i] + ": " + ex.ToString(), "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-						break;
-					}
-				}
-				listBox1.Items.Clear();
-				listBox1.Items.AddRange(textures.Select((item) => item.Name).ToArray());
-				UpdateTextureCount();
-				UpdateMRUList(Path.GetFullPath(filename));
-				listBox1.SelectedIndex = listBox1.Items.Count == 0 ? -1 : selIndex;
-				return true;
-			}
-			// Otherwise load the file as an archive
-			if (PVMXFile.Identify(datafile))
-				currentFormat = TextureArchiveFormat.PVMX;
-			else if (PAKFile.Identify(filename))
-				currentFormat = TextureArchiveFormat.PAK;
-			else
-			{
-				if (PBFile.Identify(datafile))
-					datafile = new PBFile(datafile).GetPVM().GetBytes();
-				PuyoArchiveType identifyResult = PuyoFile.Identify(datafile);
-				switch (identifyResult)
-				{
-					case PuyoArchiveType.PVMFile:
-						currentFormat = TextureArchiveFormat.PVM;
-						break;
-					case PuyoArchiveType.GVMFile:
-						currentFormat = TextureArchiveFormat.GVM;
-						break;
-					case PuyoArchiveType.XVMFile:
-						currentFormat = TextureArchiveFormat.XVM;
-						break;
-					case PuyoArchiveType.Unknown:
-						MessageBox.Show(this, "Unknown archive type: \"" + filename + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						return false;
-				}
-			}
-
-			// Load textures
-			List<GenericTexture> newtextures = GetTexturesFromFile(filename);
-			if (newtextures == null || newtextures.Count == 0)
-				return false;
-			textures.Clear();
-			textures.AddRange(newtextures);
-			listBox1.Items.Clear();
-			listBox1.Items.AddRange(textures.Select((item) => item.Name).ToArray());
-			UpdateTextureCount();
-			UpdateMRUList(Path.GetFullPath(filename));
-			return true;
-		}
+		#endregion
 
 		private void SaveTextures()
 		{
@@ -1373,48 +1395,6 @@ namespace TextureEditor
 			unsaved = false;
 		}
 
-		private void ConvertTextures(TextureArchiveFormat newfmt)
-		{
-			for (int i = 0; i < textures.Count; i++)
-			{
-				if (textures[i] is InvalidTexture)
-					continue;
-				switch (newfmt)
-				{
-					case TextureArchiveFormat.PVM:
-						if (textures[i] is PvrTexture)
-							continue;
-						textures[i] = textures[i].ToPvr(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
-						break;
-					case TextureArchiveFormat.GVM:
-						if (textures[i] is GvrTexture)
-							continue;
-						textures[i] = textures[i].ToGvr(preferHighQualityToolStripMenuItem.Checked && highQualityGVMsToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
-						break;
-					case TextureArchiveFormat.XVM:
-						if (textures[i] is XvrTexture)
-							continue;
-						textures[i] = textures[i].ToXvr(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
-						break;
-					case TextureArchiveFormat.PVMX:
-						if (textures[i] is DdsTexture)
-							continue;
-						else if (textures[i] is GdiTexture)
-							continue;
-						textures[i] = useDDSInPVMXToolStripMenuItem.Checked ? textures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : textures[i].ToGdi();
-						break;
-					case TextureArchiveFormat.PAK:
-						if (textures[i] is GvrTexture)
-							continue;
-						else if (textures[i] is DdsTexture)
-							continue;
-						textures[i] = useDDSInPAKsToolStripMenuItem.Checked ? textures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : textures[i].ToGdi();
-						break;
-				}
-			}
-			currentFormat = newfmt;
-		}
-
 		private void SaveAs(TextureArchiveFormat savefmt)
 		{
 			string ext;
@@ -1452,6 +1432,48 @@ namespace TextureEditor
 					unsaved = false;
 				}
 			}
+		}
+
+		private void ConvertTextures(TextureArchiveFormat newfmt)
+		{
+			for (int i = 0; i < textures.Count; i++)
+			{
+				if (textures[i] is InvalidTexture)
+					continue;
+				switch (newfmt)
+				{
+					case TextureArchiveFormat.PVM:
+						if (textures[i] is PvrTexture)
+							continue;
+						textures[i] = textures[i].ToPvr(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
+						break;
+					case TextureArchiveFormat.GVM:
+						if (textures[i] is GvrTexture)
+							continue;
+						textures[i] = textures[i].ToGvr(preferHighQualityToolStripMenuItem.Checked && highQualityGVMsToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
+						break;
+					case TextureArchiveFormat.XVM:
+						if (textures[i] is XvrTexture)
+							continue;
+						textures[i] = textures[i].ToXvr(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
+						break;
+					case TextureArchiveFormat.PVMX:
+						if (textures[i] is DdsTexture && useDDSInPVMXToolStripMenuItem.Checked)
+							continue;
+						else if (textures[i] is GdiTexture && !useDDSInPVMXToolStripMenuItem.Checked)
+							continue;
+						textures[i] = useDDSInPVMXToolStripMenuItem.Checked ? textures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : textures[i].ToGdi();
+						break;
+					case TextureArchiveFormat.PAK:
+						if (textures[i] is DdsTexture && useDDSInPAKsToolStripMenuItem.Checked)
+							continue;
+						else if (textures[i] is GdiTexture && !useDDSInPAKsToolStripMenuItem.Checked)
+							continue;
+						textures[i] = useDDSInPAKsToolStripMenuItem.Checked ? textures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : textures[i].ToGdi();
+						break;
+				}
+			}
+			currentFormat = newfmt;
 		}
 
 		private void ExportAllAs(TextureFileFormat expfmt)
@@ -1542,16 +1564,20 @@ namespace TextureEditor
 											if (dim.Length > 1)
 												tex.PvmxOriginalDimensions = new Size(int.Parse(dim[0]), int.Parse(dim[1]));
 										}
-										if (tex is DdsTexture)
+										if (tex is DdsTexture && useDDSInPVMXToolStripMenuItem.Checked)
+											textures.Add(tex);
+										else if (tex is GdiTexture && !useDDSInPVMXToolStripMenuItem.Checked)
 											textures.Add(tex);
 										else
-											textures.Add(tex.ToGdi());
+											textures.Add(useDDSInPVMXToolStripMenuItem.Checked ? tex.ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : tex.ToGdi());
 										break;
 									case TextureArchiveFormat.PAK:
-										if (tex is DdsTexture)
+										if (tex is DdsTexture && useDDSInPAKsToolStripMenuItem.Checked)
+											textures.Add(tex);
+										else if (tex is GdiTexture && !useDDSInPAKsToolStripMenuItem.Checked)
 											textures.Add(tex);
 										else
-											textures.Add(tex.ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked));
+											textures.Add(useDDSInPAKsToolStripMenuItem.Checked ? tex.ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : tex.ToGdi());
 										break;
 									case TextureArchiveFormat.XVM:
 										textures.Add(tex.ToXvr(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked));
@@ -1588,7 +1614,7 @@ namespace TextureEditor
 					{
 						foreach (GenericTexture tex in textures)
 						{
-							byte[] exportData = useDDSInTexturePacksToolStripMenuItem.Checked ? tex.ToDds().RawData : tex.ToGdi().RawData;
+							byte[] exportData = useDDSInTexturePacksToolStripMenuItem.Checked ? tex.ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked).RawData : tex.ToGdi().RawData;
 							if (tex.PvmxOriginalDimensions.Width != 0)
 								texList.WriteLine("{0},{1},{2}x{3}", tex.Gbix, tex.Name + GenericTexture.IdentifyTextureFileExtension(exportData), tex.PvmxOriginalDimensions.Width, tex.PvmxOriginalDimensions.Height);
 							else
@@ -1677,13 +1703,17 @@ namespace TextureEditor
 												textures.Add(tx.ToXvr(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked));
 											break;
 										case TextureArchiveFormat.PVMX:
-											if (tx is DdsTexture || tx is GdiTexture)
+											if (tx is DdsTexture && useDDSInPVMXToolStripMenuItem.Checked)
+												textures.Add(tx);
+											else if (tx is GdiTexture && !useDDSInPVMXToolStripMenuItem.Checked)
 												textures.Add(tx);
 											else
 												textures.Add(useDDSInPVMXToolStripMenuItem.Checked ? tx.ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : tx.ToGdi());
 											break;
 										case TextureArchiveFormat.PAK:
-											if (tx is DdsTexture || tx is GvrTexture || (tx is GdiTexture && GenericTexture.GetTextureFileType(dt) == TextureFileFormat.Png))
+											if (tx is DdsTexture && useDDSInPAKsToolStripMenuItem.Checked)
+												textures.Add(tx);
+											else if (tx is GdiTexture && !useDDSInPAKsToolStripMenuItem.Checked)
 												textures.Add(tx);
 											else
 												textures.Add(useDDSInPAKsToolStripMenuItem.Checked ? tx.ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : tx.ToGdi());
@@ -1704,6 +1734,7 @@ namespace TextureEditor
 			}
 		}
 
+		/// <summary>Import a texture and convert it to the most appropriate format based on its image data.</summary>		
 		private void importButton_Click(object sender, EventArgs e)
 		{
 			OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "png", Filter = "Texture Files|*.pvr;*.gvr;*.xvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.dds" };
@@ -1740,16 +1771,30 @@ namespace TextureEditor
 						break;
 					case TextureArchiveFormat.PVMX:
 						GenericTexture oldpvmx = textures[listBox1.SelectedIndex];
-						tex.Name = oldpvmx.Name;
-						tex.Gbix = oldpvmx.Gbix;
-						textures[listBox1.SelectedIndex] = tex.ToGdi();
+						if (tex is DdsTexture && useDDSInPVMXToolStripMenuItem.Checked)
+							textures[listBox1.SelectedIndex] = new DdsTexture(data) { Name = oldpvmx.Name, Gbix = oldpvmx.Gbix };
+						else if (tex is GdiTexture && !useDDSInPVMXToolStripMenuItem.Checked)
+							textures[listBox1.SelectedIndex] = new GdiTexture(data) { Name = oldpvmx.Name, Gbix = oldpvmx.Gbix };
+						else
+						{
+							tex.Name = oldpvmx.Name;
+							tex.Gbix = oldpvmx.Gbix;
+							textures[listBox1.SelectedIndex] = useDDSInPVMXToolStripMenuItem.Checked ? tex.ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : tex.ToGdi();
+						}
 						break;
 					case TextureArchiveFormat.PAK:
 						GenericTexture oldpak = textures[listBox1.SelectedIndex];
-						tex.Name = oldpak.Name;
-						tex.Gbix = oldpak.Gbix;
-						tex.PakMetadata = oldpak.PakMetadata;
-						textures[listBox1.SelectedIndex] = tex.ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
+						if (tex is DdsTexture && useDDSInPAKsToolStripMenuItem.Checked)
+							textures[listBox1.SelectedIndex] = new DdsTexture(data) { Name = oldpak.Name, Gbix = oldpak.Gbix, PakMetadata = oldpak.PakMetadata };
+						else if (tex is GdiTexture && !useDDSInPAKsToolStripMenuItem.Checked)
+							textures[listBox1.SelectedIndex] = new GdiTexture(data) { Name = oldpak.Name, Gbix = oldpak.Gbix, PakMetadata = oldpak.PakMetadata };
+						else
+						{
+							tex.Name = oldpak.Name;
+							tex.Gbix = oldpak.Gbix;
+							tex.PakMetadata = oldpak.PakMetadata;
+							textures[listBox1.SelectedIndex] = useDDSInPAKsToolStripMenuItem.Checked ? tex.ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : tex.ToGdi();
+						}						
 						break;
 					default:
 						break;
@@ -1807,6 +1852,15 @@ namespace TextureEditor
 		}
 
 		#region Palette related functions
+
+		private void palettePreview_Click(object sender, EventArgs e)
+		{
+			MouseEventArgs me = (MouseEventArgs)e;
+			Point coordinates = me.Location;
+			int colorID = (coordinates.Y / 17) * 16 + coordinates.X / 17;
+			Color c = currentPalette.GetColorAnyBank(colorID);
+			labelCurrentPaletteColor.Text = $"Color {colorID}: A{c.A} R{c.R} G{c.G} B{c.B}";
+		}
 
 		private void ShowHidePaletteInfo()
 		{
@@ -2027,73 +2081,5 @@ namespace TextureEditor
 			listBox1.Select();
 		}
 		#endregion
-
-		private void palettePreview_Click(object sender, EventArgs e)
-		{
-			MouseEventArgs me = (MouseEventArgs)e;
-			Point coordinates = me.Location;
-			int colorID = (coordinates.Y / 17) * 16 + coordinates.X / 17;
-			Color c = currentPalette.GetColorAnyBank(colorID);
-			labelCurrentPaletteColor.Text = $"Color {colorID}: A{c.A} R{c.R} G{c.G} B{c.B}";
-		}
-
-		public static string GetSurfaceFlagsString(NinjaSurfaceFlags njflags)
-		{
-			List<string> flags = new List<string>();
-			if ((njflags & NinjaSurfaceFlags.NotTwiddled) != 0)
-				flags.Add("Not Twiddled");
-			else
-				flags.Add("Twiddled");
-			if ((njflags & NinjaSurfaceFlags.Mipmapped) != 0)
-				flags.Add("Mipmapped");
-			if ((njflags & NinjaSurfaceFlags.Palettized) != 0)
-				flags.Add("Palettized");
-			if ((njflags & NinjaSurfaceFlags.Stride) != 0)
-				flags.Add("Stride");
-			if ((njflags & NinjaSurfaceFlags.VQ) != 0)
-				flags.Add("VQ");
-			return string.Join(", ", flags);
-		}
-
-		/// <summary>
-		/// Manipulates pixel data in indexed Bitmaps. 
-		/// <param name="bmp">Indexed Bitmap to modify.</param>
-		/// <param name="x">X coordinate.</param>
-		/// <param name="y">Y coordinate.</param>
-		/// <param name="pixelIndex">Palette color ID to set.</param>
-		/// </summary>
-		public static void SetPixelIndex(Bitmap bmp, int x, int y, int pixelIndex)
-		{
-			switch (bmp.PixelFormat)
-			{
-				case PixelFormat.Format8bppIndexed:
-					BitmapData data8 = bmp.LockBits(new Rectangle(new Point(0, 0), new Size(bmp.Width, bmp.Height)), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
-					int offset = y * data8.Stride + (x);
-					Marshal.WriteByte(data8.Scan0, offset, (byte)pixelIndex);
-					bmp.UnlockBits(data8);
-					return;
-				case PixelFormat.Format4bppIndexed:
-					BitmapData data4 = bmp.LockBits(new Rectangle(new Point(0, 0), new Size(bmp.Width, bmp.Height)), ImageLockMode.ReadWrite, PixelFormat.Format4bppIndexed);
-					// Bit index
-					int biti = (data4.Stride > 0 ? y : y - bmp.Height + 1) * data4.Stride * 8 + x * 4;
-					// Pixel index
-					int i = biti / 8;
-					// Retrieve byte
-					byte b = Marshal.ReadByte(data4.Scan0, i);
-					// Write byte
-					if (biti % 8 == 0)
-					{
-						Marshal.WriteByte(data4.Scan0, i, (byte)(b & 0xf | (pixelIndex << 4)));
-					}
-					else
-					{
-						Marshal.WriteByte(data4.Scan0, i, (byte)(b & 0xf0 | pixelIndex));
-					}
-					bmp.UnlockBits(data4);
-					return;
-				default:
-					return;
-			}
-		}
 	}
 }
