@@ -88,9 +88,12 @@ namespace TextureLib
 		/// <param name="startColor">Adjust the bank's start color index (optional).</param>
 		public void SetPalette(TexturePalette newPalette, int bankID = 0, int startColor = 0)
 		{
+			// Assign the new palette.
 			Palette = newPalette;
-			PaletteBank = bankID;
-			PaletteStartIndex = startColor;
+			// Decode() overwrites the texture's StartBank and StartColor, so the ones in the palette should be used.
+			Palette.StartBank = bankID;
+			Palette.StartColor = startColor;
+			// Decode the texture with the new palette.
 			Decode();
 		}
 
@@ -144,7 +147,7 @@ namespace TextureLib
                     decodedID = decodedID >> 4; // This is because the Index4 codec expects 8 bit
                 }
 				// Add bank and color offset if specified
-				decodedID += PaletteBank * 4 + PaletteStartIndex;
+				decodedID += Palette.StartBank * (index8 ? 256 : 16) + Palette.StartColor;
 				// Get color
                 result[colorID * 4 + 0] = Palette.DecodedData[decodedID * 4 + 0];
                 result[colorID * 4 + 1] = Palette.DecodedData[decodedID * 4 + 1];
