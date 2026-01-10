@@ -245,24 +245,27 @@ namespace SAModel.SAEditorCommon
 		{
 			[DefaultValue(false)]
 			public bool HighQualityGVM { get; set; }
+
 			[DefaultValue(true)]
 			public bool SACompatiblePalettes { get; set; }
+
 			[DefaultValue(true)]
 			public bool EnableFiltering { get; set; }
-			[DefaultValue(false)]
-			public bool UseDDSUncompressedForPAK { get; set; }
+
 			[DefaultValue(true)]
 			public bool UseDDSforPAK { get; set; }
-			[DefaultValue(false)]
-			public bool UseDDSColorSpace { get; set; }
-			[DefaultValue(false)]
-			public bool UsePNGforPAK { get; set; }
-			[DefaultValue(false)]
-			public bool UseHQDDS { get; set; }
-			[DefaultValue(false)]
-			public bool UseDDSforTexPack { get; set; }
-			[DefaultValue(false)]
+
+			[DefaultValue(true)]
 			public bool UseDDSforPVMX { get; set; }
+
+			[DefaultValue(true)]
+			public bool UseDDSforTexPack { get; set; }
+
+			[DefaultValue(true)]
+			public bool TexEncodeAutoHighQuality { get; set; }
+
+			[DefaultValue(false)]
+			public bool TexEncodeUseCompressed { get; set; }
 
 			public Settings_TextureEditor()
 			{
@@ -270,12 +273,10 @@ namespace SAModel.SAEditorCommon
 				SACompatiblePalettes = true;
 				EnableFiltering = true;
 				UseDDSforPAK = true;
-				UseHQDDS = false;
-				UseDDSforTexPack = false;
-				UseDDSUncompressedForPAK = false;
-				UseDDSforPVMX = false;
-				UseDDSColorSpace = false;
-				UsePNGforPAK = false;
+				UseDDSforTexPack = true;
+				UseDDSforPVMX = true;
+				TexEncodeAutoHighQuality = true;
+				TexEncodeUseCompressed = false;
 			}
 
 			public static Settings_TextureEditor Load()

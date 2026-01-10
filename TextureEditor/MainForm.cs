@@ -4,17 +4,13 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using SAModel.SAEditorCommon;
-using PSO.PRS;
 using ArchiveLib;
 using TextureLib;
-
-using static ArchiveLib.GenericArchive;
-using static SAModel.SAEditorCommon.SettingsFile;
-using static TextureEditor.TextureFunctions;
-using Application = System.Windows.Forms.Application;
+using PSO.PRS;
 
 namespace TextureEditor
 {
@@ -23,18 +19,32 @@ namespace TextureEditor
 
 	public partial class MainForm : Form
 	{
-		readonly Properties.Settings Settings = Properties.Settings.Default; // MRU list
-		Settings_TextureEditor settingsfile; // User settings
-		bool unsaved; // Unsaved changes
-		int currentTextureID = -1; // Currently selected texture, only used in the UI
-		TextureFormat currentFormat; // PVM, GVM, PAK etc.
-		string archiveFilename; // Current name of the PVM, GVM, PAK etc.
-		List<GenericTexture> textures = new List<GenericTexture>(); // List of textures
-		bool suppress = false; // Suppress UI updates
-		bool nonIndexedPAK = false; // SOC PAK
+		/// <summary>
+		/// User settings stored in the INI file. These should only be checked or set when the program loads or closes.
+		/// For other purposes, use the Checked values in corresponding toolstrip menu items.
+		/// </summary>
+		SAModel.SAEditorCommon.SettingsFile.Settings_TextureEditor settingsfile;
+		/// <summary>List of recently accessed files.</summary>
+		readonly Properties.Settings Settings = Properties.Settings.Default;
+		/// <summary>Set to true to make the program ask to save unsaved changes before quitting.</summary>
+		bool unsaved;
+		/// <summary>Currently selected texture, only used for refreshing the UI.</summary>
+		int currentTextureID = -1;
+		/// <summary>Currently opened archive format. PVM, GVM, PAK etc.</summary>
+		TextureFormat currentFormat;
+		/// <summary>Current name of the PVM, GVM, PAK etc.</summary>
+		string archiveFilename;
+		/// <summary>List of loaded textures.</summary>
+		List<GenericTexture> textures = new List<GenericTexture>();
+		/// <summary>True when UI updates are suppressed.</summary>
+		bool suppress = false;
+		/// <summary>True when an SOC PAK without an INF file is open.</summary>
+		bool nonIndexedPAK = false;
+		/// <summary>Currently loaded texture palette.</summary>
 		TexturePalette currentPalette = TexturePalette.CreateDefaultPalette(true);
-		TexturePalette defaultPalette = TexturePalette.CreateDefaultPalette(true);
-		int paletteSet; // Current palette bank ID
+		/// <summary>Current palette bank ID for Chao textures.</summary>
+		int paletteSet;
+
 		public MainForm()
 		{
 			Application.ThreadException += Application_ThreadException;
@@ -100,7 +110,7 @@ namespace TextureEditor
 
 		private void MainForm_Shown(object sender, EventArgs e)
 		{
-			settingsfile = Settings_TextureEditor.Load();
+			settingsfile = SAModel.SAEditorCommon.SettingsFile.Settings_TextureEditor.Load();
 			System.Collections.Specialized.StringCollection newlist = new System.Collections.Specialized.StringCollection();
 
 			if (Settings.MRUList != null)
@@ -117,22 +127,19 @@ namespace TextureEditor
 
 			Settings.MRUList = newlist;
 
-			highQualityGVMsToolStripMenuItem.Checked = settingsfile.HighQualityGVM;
+			// View menu
 			textureFilteringToolStripMenuItem.Checked = settingsfile.EnableFiltering;
+			// Edit menu - GVR settings
+			highQualityGVMsToolStripMenuItem.Checked = settingsfile.HighQualityGVM;
 			compatibleGVPToolStripMenuItem.Checked = settingsfile.SACompatiblePalettes;
-			ddsPakCompressToolStripMenuItem.Checked = settingsfile.UseDDSforPAK;
-			ddsPvmxHighQualityToolStripMenuItem.Checked = settingsfile.UseHQDDS;
-			ddsPvmxToolStripMenuItem.Checked = settingsfile.UseDDSforPVMX;
-			ddsPakHighQualityToolStripMenuItem.Checked = settingsfile.UseDDSUncompressedForPAK;
-			ddsTexturePacksToolStripMenuItem.Checked = settingsfile.UseDDSforTexPack;
-			pngPakToolStripMenuItem.Checked = settingsfile.UsePNGforPAK;
-			ddsPakBestFitToolStripMenuItem.Checked = settingsfile.UseDDSColorSpace;
+			// Edit menu - Texture conversion settings
+			allowCompressedFormatsToolStripMenuItem.Checked = settingsfile.TexEncodeUseCompressed;
+			preferHighQualityToolStripMenuItem.Checked = settingsfile.TexEncodeAutoHighQuality;
+			// Edit menu - DDS/PNG settings
+			useDDSInPAKsToolStripMenuItem.Checked = settingsfile.UseDDSforPAK;
+			useDDSInPVMXToolStripMenuItem.Checked = settingsfile.UseDDSforPVMX;
+			useDDSInTexturePacksToolStripMenuItem.Checked = settingsfile.UseDDSforTexPack;
 
-			System.Windows.Forms.ToolTip toolTip = new System.Windows.Forms.ToolTip();
-			toolTip.AutoPopDelay = 5000;
-			toolTip.InitialDelay = 1000;
-			toolTip.ReshowDelay = 500;
-			toolTip.SetToolTip(checkBoxPAKUseAlpha, "Disables Alpha Test and Z Write for the selected texture.\nThis can make some transparent textures blend better or worse. Use with caution.");
 			if (Program.Arguments.Length > 0 && !LoadArchive(Program.Arguments[0]))
 				Close();
 		}
@@ -193,7 +200,6 @@ namespace TextureEditor
 				listBox1_SelectedIndexChanged(sender, e);
 				unsaved = false;
 			}
-
 		}
 
 		private void NewFile(TextureFormat newfilefmt)
@@ -307,7 +313,6 @@ namespace TextureEditor
 				image = texinfo.Image;
 			textureImage.Image = ScaleBitmapToWindow(image, textureFilteringToolStripMenuItem.Checked ? System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic : System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor);
 		}
-
 
 		private void removeTextureButton_Click(object sender, EventArgs e)
 		{
@@ -496,11 +501,6 @@ namespace TextureEditor
 			listBox1.Select();
 		}
 
-		private void highQualityGVMsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.HighQualityGVM = highQualityGVMsToolStripMenuItem.Checked;
-		}
-
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			if (unsaved)
@@ -523,6 +523,19 @@ namespace TextureEditor
 			}
 			try
 			{
+				// View menu
+				settingsfile.EnableFiltering = textureFilteringToolStripMenuItem.Checked;
+				// Edit menu - GVR settings
+				settingsfile.HighQualityGVM = highQualityGVMsToolStripMenuItem.Checked;
+				settingsfile.SACompatiblePalettes = compatibleGVPToolStripMenuItem.Checked;
+				// Edit menu - Texture conversion settings
+				settingsfile.TexEncodeAutoHighQuality = preferHighQualityToolStripMenuItem.Checked;
+				settingsfile.TexEncodeUseCompressed = allowCompressedFormatsToolStripMenuItem.Checked;
+				// Edit menu - DDS/PNG settings
+				settingsfile.UseDDSforPAK = useDDSInPAKsToolStripMenuItem.Checked;
+				settingsfile.UseDDSforPVMX = useDDSInPVMXToolStripMenuItem.Checked;
+				settingsfile.UseDDSforTexPack = useDDSInTexturePacksToolStripMenuItem.Checked;
+
 				Settings.Save();
 				settingsfile.Save();
 			}
@@ -677,16 +690,6 @@ namespace TextureEditor
 			UpdateTextureInformation();
 		}
 
-		private void textureFilteringToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.EnableFiltering = textureFilteringToolStripMenuItem.Checked;
-		}
-
-		private void compatibleGVPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.SACompatiblePalettes = compatibleGVPToolStripMenuItem.Checked;
-		}
-
 		private void generateNewGbixToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (textures.Count < 1)
@@ -713,21 +716,6 @@ namespace TextureEditor
 			unsaved = true;
 		}
 
-		private void useDDSInPAKsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.UseDDSforPAK = ddsPakCompressToolStripMenuItem.Checked;
-		}
-
-		private void useDDSInTexturePacksToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.UseDDSforTexPack = ddsTexturePacksToolStripMenuItem.Checked;
-		}
-
-		private void useDDSInPVMXToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.UseDDSforPVMX = ddsPvmxToolStripMenuItem.Checked;
-		}
-
 		private void checkBoxPAKUseAlpha_CheckedChanged(object sender, EventArgs e)
 		{
 			GenericTexture pk = textures[listBox1.SelectedIndex];
@@ -742,146 +730,42 @@ namespace TextureEditor
 				pk.PakMetadata.PakGvrFormat = GvrDataFormat.Dxt1;
 			UpdateTextureInformation();
 		}
+
 		private void checkBoxPAKUseAlpha_Click(object sender, EventArgs e)
 		{
 			checkBoxPAKUseAlpha_CheckedChanged(sender, e);
 			unsaved = true;
 		}
+
 		private void exportAllPVRToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ExportAllAs(TextureFiles.PVR);
 		}
+
 		private void exportAllGVRToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ExportAllAs(TextureFiles.GVR);
 		}
+
 		private void exportAllXVRToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ExportAllAs(TextureFiles.XVR);
 		}
+
 		private void exportAllDDSToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ExportAllAs(TextureFiles.DDS);
 		}
+
 		private void exportAllPNGToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ExportAllAs(TextureFiles.PNG);
-		}
-		private void useHQDDSToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.UseHQDDS = ddsPvmxHighQualityToolStripMenuItem.Checked;
-		}
-
-		private void useDDSColorSpaceToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.UseDDSColorSpace = ddsPakBestFitToolStripMenuItem.Checked;
-		}
-
-		private void usePNGToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.UsePNGforPAK = pngPakToolStripMenuItem.Checked;
-		}
-		private void useDDSInPAKsUncompressedLargestSizeToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.UseDDSUncompressedForPAK = ddsPakHighQualityToolStripMenuItem.Checked;
-		}
-
-		private void useDDSInPAKsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			ddsPakCompressToolStripMenuItem.Checked = true;
-			ddsPakBestFitToolStripMenuItem.Checked = false;
-			ddsPakHighQualityToolStripMenuItem.Checked = false;
-			pngPakToolStripMenuItem.Checked = false;
-		}
-
-		private void useDDSColorSpaceToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			ddsPakCompressToolStripMenuItem.Checked = false;
-			ddsPakBestFitToolStripMenuItem.Checked = true;
-			ddsPakHighQualityToolStripMenuItem.Checked = false;
-			pngPakToolStripMenuItem.Checked = false;
-		}
-
-		private void usePNGToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			ddsPakCompressToolStripMenuItem.Checked = false;
-			ddsPakBestFitToolStripMenuItem.Checked = false;
-			ddsPakHighQualityToolStripMenuItem.Checked = false;
-			pngPakToolStripMenuItem.Checked = true;
-		}
-
-		private void useDDSInPAKsUncompressedLargestSizeToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			ddsPakCompressToolStripMenuItem.Checked = false;
-			ddsPakBestFitToolStripMenuItem.Checked = false;
-			ddsPakHighQualityToolStripMenuItem.Checked = true;
-			pngPakToolStripMenuItem.Checked = false;
-		}
-
-
-		private void exportMaskToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			exportMaskToolStripMenuItem.Checked = true;
-			exportPalettedIndexedToolStripMenuItem.Checked = exportPalettedFullToolStripMenuItem.Checked = false;
-		}
-
-		private void exportPalettedIndexedToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			exportPalettedIndexedToolStripMenuItem.Checked = true;
-			exportMaskToolStripMenuItem.Checked = exportPalettedFullToolStripMenuItem.Checked = false;
-		}
-
-		private void exportPalettedFullToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			exportPalettedFullToolStripMenuItem.Checked = true;
-			exportMaskToolStripMenuItem.Checked = exportPalettedIndexedToolStripMenuItem.Checked = false;
 		}
 
 		private void numericUpDownStartBank_ValueChanged(object sender, EventArgs e)
 		{
 			if (currentPalette != null)
 				currentPalette.StartBank = (short)numericUpDownStartBank.Value;
-		}
-
-		private PalettedTextureFormat GetPalettedTextureFormat(GenericTexture info)
-		{
-			if (info is PvrTexture pvri)
-				switch (pvri.PvrDataFormat)
-				{
-					case PvrDataFormat.Index4:
-					case PvrDataFormat.Index4Mipmaps:
-						return PalettedTextureFormat.Index4;
-					case PvrDataFormat.Index8:
-					case PvrDataFormat.Index8Mipmaps:
-						return PalettedTextureFormat.Index8;
-					default:
-						return PalettedTextureFormat.NotIndexed;
-				}
-			else if (info is GvrTexture gvri)
-				switch (gvri.GvrDataFormat)
-				{
-					case GvrDataFormat.Index4:
-						return PalettedTextureFormat.Index4;
-					case GvrDataFormat.Index8:
-						return PalettedTextureFormat.Index8;
-					default:
-						return PalettedTextureFormat.NotIndexed;
-				}
-			else return PalettedTextureFormat.NotIndexed;
-		}
-
-		private void addMipmapsToAllToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			foreach (GenericTexture info in textures)
-				if (info.CanHaveMipmaps())
-				{
-					info.HasMipmaps = true;
-					info.PakMetadata.PakNinjaFlags |= NinjaSurfaceFlags.Mipmapped;
-					info.Encode();
-				}
-			if (listBox1.SelectedIndex != -1 && textures[listBox1.SelectedIndex].HasMipmaps)
-				mipmapCheckBox.Checked = true;
-			unsaved = true;
 		}
 
 		private void recentFilesToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -925,10 +809,13 @@ namespace TextureEditor
 					int offset_x = 0;
 					for (int x = 0; x < 16; x++)
 					{
+						Color c = currentPalette.GetColorAnyBank(y * 16 + x);
 						// Draw a 16x16 square
 						for (int z = 0; z < 16; z++)
 							for (int h = 0; h < 16; h++)
-								snoop_r.SetPixel(offset_x + x * 16 + z, offset_y + y * 16 + h, currentPalette.GetColorAnyBank(y * 16 + x));
+							{
+								snoop_r.SetPixel(offset_x + x * 16 + z, offset_y + y * 16 + h, c);
+							}
 						offset_x += 1;
 					}
 					offset_y += 1;
@@ -940,9 +827,8 @@ namespace TextureEditor
 		private void UpdateTextureInformation()
 		{
 			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
-			int actualPaletteColors = 0;
 			bool en = listBox1.SelectedIndex != -1;
-			removeTextureButton.Enabled = textureName.Enabled = importButton.Enabled = exportButton.Enabled = saveTextureButton.Enabled = en;
+			removeTextureButton.Enabled = textureName.Enabled = importButton.Enabled = buttonExportImage.Enabled = saveTextureButton.Enabled = en;
 			globalIndex.Enabled = (en && !nonIndexedPAK);
 			if (en)
 			{
@@ -1013,15 +899,15 @@ namespace TextureEditor
 								string pvppath = folder + pvr.Name + ".pvp";
 								if (File.Exists(pvppath))
 								{
-									currentPalette = new TexturePalette(File.ReadAllBytes(pvppath), settingsfile.SACompatiblePalettes);
-									paletteSet = 0;//Math.Min(currentPalette.GetMaxBanks(pvr.PvrDataFormat == PvrDataFormat.Index8 || pvr.PvrDataFormat == PvrDataFormat.Index8Mipmaps), paletteSet);
+									currentPalette = new TexturePalette(File.ReadAllBytes(pvppath));
+									paletteSet = 0;
 								}
-								actualPaletteColors = currentPalette.GetNumColors();
-
+								int actualPaletteColors = currentPalette.GetNumColors();
 								// Failsafe check if the palette has a smaller number of colors than the indexed image expects
 								int neededcolors = (pvr.PvrDataFormat == PvrDataFormat.Index4 | pvr.PvrDataFormat == PvrDataFormat.Index4Mipmaps) ? 16 : 256;
 								if (neededcolors - actualPaletteColors > 0)
 									currentPalette.AddColors(new Color[neededcolors - actualPaletteColors]);
+								// Set palette
 								try
 								{
 									pvr.SetPalette(currentPalette, paletteSet);
@@ -1029,8 +915,8 @@ namespace TextureEditor
 								catch (Exception ex)
 								{
 									MessageBox.Show(this, "Palette data couldn't be applied: " + ex.Message.ToString(), "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-									currentPalette = defaultPalette;
-									pvr.SetPalette(defaultPalette, 0);
+									currentPalette = TexturePalette.CreateDefaultPalette(pvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
+									pvr.SetPalette(currentPalette, 0);
 								}
 								break;
 							default:
@@ -1051,48 +937,33 @@ namespace TextureEditor
 						{
 							case GvrDataFormat.Index4:
 							case GvrDataFormat.Index8:
-							/*
-								actualPaletteColors = currentPalette.GetNumColors()();
 								string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
 								string gvppath = folder + gvr.Name + ".gvp";
-								if (!customPaletteLoaded && File.Exists(gvppath))
+								if (File.Exists(gvppath))
 								{
-									currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), settingsfile.SACompatiblePalettes);
-									paletteSet = Math.Min(currentPalette.GetMaxBanks(gvr.DataFormat == GvrDataFormat.Index8), paletteSet);
+									currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), compatibleGVPToolStripMenuItem.Checked);
+									paletteSet = 0;
 								}
-								if (!paletteApplied)
+								int actualPaletteColors = currentPalette.GetNumColors();
+								// Failsafe check if the palette has a smaller number of colors than the indexed image expects
+								int neededcolors = (gvr.GvrDataFormat == GvrDataFormat.Index4) ? 16 : 256;
+								if (neededcolors - actualPaletteColors > 0)
 								{
-									if (gvr.TextureData == null)
-									{
-										gvr.PixelFormat = GvrPixelFormat.IntensityA8; // Indexed GVRs seem to have this set always
-										GvrTextureEncoder enc = new GvrTextureEncoder(gvr.Image, gvr.PixelFormat, gvr.DataFormat);
-										gvr.TextureData = new MemoryStream();
-										enc.Save(gvr.TextureData);
-										gvr.TextureData.Seek(0, SeekOrigin.Begin);
-									}
-									GvrTexture gt = new GvrTexture(gvr.TextureData.ToArray());
-									currentPalette.IsGVP = true;
-									// Failsafe check if the palette has a smaller number of colors than the indexed image expects
-									int neededcolors = (gvr.DataFormat == GvrDataFormat.Index4) ? 16 : 256;
-									if (neededcolors - actualPaletteColors > 0)
-									{
-										for (int i = 0; i < neededcolors - actualPaletteColors; i++)
-											currentPalette.Colors.Add(Color.Black);
-									}
-									try
-									{
-										gt.SetPalette(new GvpPalette(currentPalette.GetBytes()), paletteSet);
-									}
-									catch (Exception)
-									{
-										MessageBox.Show(this, "Palette data couldn't be applied. This can be caused by using 16-color palettes on 256-color indexed images. Select a correct palette file and try again.", "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-										currentPalette = new TexturePalette(defaultPalette.GetBytes());
-										gt.SetPalette(new GvpPalette(currentPalette.GetBytes()), 0);
-									}
-									paletteApplied = true;
-									gvr.Image = gt.ToBitmap();
+									for (int i = 0; i < neededcolors - actualPaletteColors; i++)
+										currentPalette.AddColors(new Color[neededcolors - actualPaletteColors]);
 								}
-								break;*/
+								// Set palette
+								try
+								{
+									gvr.SetPalette(currentPalette, paletteSet);
+								}
+								catch (Exception)
+								{
+									MessageBox.Show(this, "Palette data couldn't be applied. This can be caused by using 16-color palettes on 256-color indexed images. Select a correct palette file and try again.", "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+									currentPalette = TexturePalette.CreateDefaultPalette(gvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
+									gvr.SetPalette(currentPalette, 0);
+								}
+								break;
 							default:
 								break;
 						}
@@ -1121,7 +992,7 @@ namespace TextureEditor
 				suppress = false;
 				UpdateTextureMipmap();
 				UpdateTextureView();
-				ShowHidePaletteInfo(actualPaletteColors);				
+				ShowHidePaletteInfo();
 			}
 			else
 			{
@@ -1135,7 +1006,7 @@ namespace TextureEditor
 				textureImage.Image = new Bitmap(64, 64);
 				UpdateTextureMipmap();
 				UpdateTextureView();
-				ShowHidePaletteInfo(actualPaletteColors);
+				ShowHidePaletteInfo();
 			}
 		}
 
@@ -1240,7 +1111,7 @@ namespace TextureEditor
 				}
 				PuyoFile arc = new PuyoFile(datafile);
 				newtextures = new List<GenericTexture>(arc.Entries.Count);
-				foreach (GenericArchiveEntry file in arc.Entries)
+				foreach (GenericArchive.GenericArchiveEntry file in arc.Entries)
 				{
 					if (file is PVMEntry pvme)
 						newtextures.Add(new PvrTexture(file.Data) { Name = file.Name });
@@ -1425,7 +1296,7 @@ namespace TextureEditor
 							Size size = new Size(tex.Image.Width, tex.Image.Height);
 							if (tex.PvmxOriginalDimensions.Width != 0)
 								size = new Size(tex.PvmxOriginalDimensions.Width, tex.PvmxOriginalDimensions.Height);
-							pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name + TextureFunctions.IdentifyTextureFileExtension(tex.RawData), tex.Gbix, tex.GetBytes(), size.Width, size.Height));
+							pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name + GenericTexture.IdentifyTextureFileExtension(tex.RawData), tex.Gbix, tex.GetBytes(), size.Width, size.Height));
 						}
 						File.WriteAllBytes(archiveFilename, pvmx.GetBytes());
 						unsaved = false;
@@ -1600,7 +1471,7 @@ namespace TextureEditor
 									exportData = tex.ToGdi().RawData;
 									break;
 							}
-							texList.WriteLine("{0},{1},{2}x{3}", tex.Gbix, tex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), tex.Image.Width, tex.Image.Height);
+							texList.WriteLine("{0},{1},{2}x{3}", tex.Gbix, tex.Name + GenericTexture.IdentifyTextureFileExtension(exportData), tex.Image.Width, tex.Image.Height);
 							File.WriteAllBytes(Path.Combine(dir, tex.Name + ext), exportData);
 						}
 					}
@@ -1627,7 +1498,6 @@ namespace TextureEditor
 							{
 								uint gbix = uint.Parse(split[0]);
 								string name = Path.ChangeExtension(split[1], null);
-								Bitmap bmp;
 								byte[] file = File.ReadAllBytes(Path.Combine(dir, split[1]));
 								uint check = BitConverter.ToUInt32(file, 0);
 								MemoryStream str = new MemoryStream(file);
@@ -1692,31 +1562,12 @@ namespace TextureEditor
 					{
 						foreach (GenericTexture tex in textures)
 						{
-							byte[] exportData;
-							PalettedTextureFormat indexedfmt = GetPalettedTextureFormat(tex);
-							// Indexed
-							if (indexedfmt != PalettedTextureFormat.NotIndexed)
-							{
-								System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
-								bmp = ProcessIndexedBitmap(tex, indexedfmt);
-								MemoryStream ms = new MemoryStream();
-								bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-								File.WriteAllBytes(Path.Combine(dir, tex.Name + ".png"), ms.ToArray());
-								exportData = tex.RawData = ms.ToArray();
-							}
-							// Non-indexed
-							else
-							{
-								if (ddsTexturePacksToolStripMenuItem.Checked)
-									exportData = tex.ToDds().RawData;
-								else
-									exportData = tex.ToGdi().RawData;
-							}
+							byte[] exportData = useDDSInTexturePacksToolStripMenuItem.Checked ? tex.ToDds().RawData : tex.ToGdi().RawData;
 							if (tex.PvmxOriginalDimensions.Width != 0)
-								texList.WriteLine("{0},{1},{2}x{3}", tex.Gbix, tex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), tex.PvmxOriginalDimensions.Width, tex.PvmxOriginalDimensions.Height);
+								texList.WriteLine("{0},{1},{2}x{3}", tex.Gbix, tex.Name + GenericTexture.IdentifyTextureFileExtension(exportData), tex.PvmxOriginalDimensions.Width, tex.PvmxOriginalDimensions.Height);
 							else
-								texList.WriteLine("{0},{1},{2}x{3}", tex.Gbix, tex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), tex.Image.Width, tex.Image.Height);
-							File.WriteAllBytes(Path.Combine(dir, tex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData)), exportData.ToArray());
+								texList.WriteLine("{0},{1},{2}x{3}", tex.Gbix, tex.Name + GenericTexture.IdentifyTextureFileExtension(exportData), tex.Image.Width, tex.Image.Height);
+							File.WriteAllBytes(Path.Combine(dir, tex.Name + GenericTexture.IdentifyTextureFileExtension(exportData)), exportData.ToArray());
 						}
 					}
 				}
@@ -1932,7 +1783,7 @@ namespace TextureEditor
 
 		#region Palette related functions
 
-		private void ShowHidePaletteInfo(int palcolors)
+		private void ShowHidePaletteInfo()
 		{
 			if (listBox1.SelectedIndex == -1)
 			{
@@ -1944,12 +1795,15 @@ namespace TextureEditor
 				panelPaletteInfo.Hide();
 				return;
 			}
-			PalettedTextureFormat dataformat = GetPalettedTextureFormat(textures[listBox1.SelectedIndex]);
+			IndexedTextureFormat dataformat = textures[listBox1.SelectedIndex].GetIndexedFormat();
 			switch (dataformat)
 			{
-				case PalettedTextureFormat.Index4:
-				case PalettedTextureFormat.Index8:
-					int rowsize = dataformat == PalettedTextureFormat.Index8 ? 256 : 16;
+				case IndexedTextureFormat.Index4:
+				case IndexedTextureFormat.Index8:
+					// If this is a GVR with an internal palette, load its palette
+					if (textures[listBox1.SelectedIndex] is GvrTexture g && !g.RequiresPaletteFile)
+						currentPalette = g.Palette;
+					int rowsize = dataformat == IndexedTextureFormat.Index8 ? 256 : 16;
 					int rowsize_stored = rowsize - currentPalette.StartColor;
 					int numrows = currentPalette.GetNumColors() / rowsize_stored;
 					comboBoxCurrentPaletteBank.Items.Clear();
@@ -1964,7 +1818,8 @@ namespace TextureEditor
 							comboBoxCurrentPaletteBank.Items.Add((currentPalette.StartBank + i).ToString());
 					paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = Math.Min(comboBoxCurrentPaletteBank.Items.Count - 1, paletteSet);
 					palettePreview.Image = GeneratePalettePreview();
-					labelPaletteFormat.Text = currentPalette.Info() + " : " + palcolors.ToString() + "/" + currentPalette.GetNumColors().ToString() + " colors";
+					string extint = textures[listBox1.SelectedIndex].RequiresPaletteFile ? "External" : "Internal";
+					labelPaletteFormat.Text = $"Palette: {currentPalette.GetEncodedColorFormat()} ({extint}), {currentPalette.GetNumColors().ToString()} colors";
 					labelPaletteFormat.Show();
 					palettePreview.Show();
 					panelPaletteInfo.Show();
@@ -1986,15 +1841,12 @@ namespace TextureEditor
 			}
 		}
 
-
-
 		private void buttonResetPalette_Click(object sender, EventArgs e)
 		{
 			currentPalette = TexturePalette.CreateDefaultPalette(true);
 			paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = 0;
 			UpdateTextureInformation();
 		}
-
 
 		private void comboBoxCurrentPaletteBank_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -2048,8 +1900,10 @@ namespace TextureEditor
 					switch (Path.GetExtension(fd.FileName).ToLowerInvariant())
 					{
 						case ".pvp":
+							currentPalette.SavePVP(fd.FileName);
+							break;
 						case ".gvp":
-							File.WriteAllBytes(fd.FileName, currentPalette.GetBytes(Path.GetExtension(fd.FileName).ToLowerInvariant() == ".gvp"));
+							currentPalette.SaveGVP(fd.FileName);
 							break;
 						case ".png":
 							currentPalette.SavePNG(fd.FileName);
@@ -2059,156 +1913,6 @@ namespace TextureEditor
 			}
 		}
 
-		private Bitmap ProcessIndexedBitmap(GenericTexture tex, PalettedTextureFormat indxfmt)
-		{
-			// Prepare the mask
-			Bitmap unpalettedBitmap;
-			if (tex is PvrTexture pvri)
-			{
-				PvrTexture pvrt = new PvrTexture(pvri.RawData);
-				pvrt.SetPalette(TexturePalette.CreateDefaultPalette(true));
-				unpalettedBitmap = pvrt.Image;
-			}
-			else if (tex is GvrTexture gvri)
-			{
-				GvrTexture gvrt = new GvrTexture(gvri.RawData);
-				gvrt.SetPalette(TexturePalette.CreateDefaultPalette(true));
-				unpalettedBitmap = gvrt.Image;
-			}
-			else return tex.Image;
-			TexturePalette applyPalette;
-			int applySet;
-
-			// Set the default palette if exporting mask, otherwise use current palette and bank
-			if (exportMaskToolStripMenuItem.Checked)
-			{
-				applyPalette = defaultPalette;
-				applySet = 0;
-			}
-			else
-			{
-				applyPalette = currentPalette;
-				applySet = paletteSet;
-			}
-
-			// Palettize
-			Bitmap result;
-			int setsize = 16;
-			switch (indxfmt)
-			{
-				case PalettedTextureFormat.Index4:
-					result = new Bitmap(unpalettedBitmap.Width, unpalettedBitmap.Height, PixelFormat.Format4bppIndexed);
-					break;
-				case PalettedTextureFormat.Index8:
-					setsize = 256;
-					result = new Bitmap(unpalettedBitmap.Width, unpalettedBitmap.Height, PixelFormat.Format8bppIndexed);
-					break;
-				default:
-					return unpalettedBitmap;
-			}
-			Color[] defaultpaletteSet = defaultPalette.ToColorArray();
-			List<Color> usedPaletteSet = new List<Color>();
-			Color[] colorArray = applyPalette.ToColorArray();
-			for (int i = 0; i < setsize; i++)
-				usedPaletteSet.Add(colorArray[applySet * setsize + i]);
-
-			// Replace the palette in the Bitmap
-			var newAliasForPalette = result.Palette;
-			for (int i = 0; i < usedPaletteSet.Count; i++)
-			{
-				newAliasForPalette.Entries[i] = usedPaletteSet[i];
-			}
-			result.Palette = newAliasForPalette;
-
-			// Set pixels in the indexed image
-			int remaining = unpalettedBitmap.Height * unpalettedBitmap.Width;
-			using (var snoop_u = new BmpPixelSnoop(new Bitmap(unpalettedBitmap)))
-			{
-				for (int y = 0; y < unpalettedBitmap.Height; y++)
-					for (int x = 0; x < unpalettedBitmap.Width; x++)
-					{
-						for (int p = 0; p < setsize; p++)
-						{
-							if (snoop_u.GetPixel(x, y) == defaultpaletteSet[p])
-							{
-								remaining--;
-								TextureFunctions.SetPixelIndex(result, x, y, p);
-								break;
-							}
-						}
-					}
-			}
-			if (remaining > 0)
-				System.Windows.Forms.MessageBox.Show(remaining.ToString() + " pixels were not found in the palette.",
-					"Texture Editor Export Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
-			if (exportPalettedFullToolStripMenuItem.Checked)
-				return new Bitmap(result);
-			else
-				return result;
-		}
-
-		private void RetrievePaletteFromIndexedBitmap(Bitmap bitmap, PalettedTextureFormat texfmt, PixelCodec codec, bool gvp = false)
-		{
-			if (bitmap.PixelFormat != PixelFormat.Format4bppIndexed && bitmap.PixelFormat != PixelFormat.Format8bppIndexed)
-				return;
-			currentPalette.Clear();
-
-			for (int c = 0; c < bitmap.Palette.Entries.Length; c++)
-				currentPalette.AddColor(bitmap.Palette.Entries[c]);
-
-			// Add more colors if an Index4 image was imported as Index8
-			int rowsize = texfmt == PalettedTextureFormat.Index8 ? 256 : 16;
-			if (currentPalette.GetNumColors() < rowsize)
-				do
-					currentPalette.AddColor(Color.Black);
-				while (currentPalette.GetNumColors() < rowsize);
-
-			currentPalette.Encode(codec);
-
-			// Refresh bank preview
-			int rowsize_stored = rowsize - currentPalette.StartColor;
-			int numrows = currentPalette.GetNumColors() / rowsize_stored;
-			comboBoxCurrentPaletteBank.Items.Clear();
-			for (int i = 0; i < numrows; i++)
-				comboBoxCurrentPaletteBank.Items.Add((currentPalette.StartBank + i).ToString());
-			comboBoxCurrentPaletteBank.SelectedIndex = paletteSet;
-			paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = 0;
-		}
-
-		private Bitmap RetrieveMaskFromIndexedBitmap(Bitmap bitmap, PalettedTextureFormat palettedTextureFormat)
-		{
-			PixelFormat pxfmt = PixelFormat.Format4bppIndexed;
-			int stepsize = 16;
-			if (palettedTextureFormat == PalettedTextureFormat.Index8)
-			{
-				stepsize = 256;
-				pxfmt = PixelFormat.Format8bppIndexed;
-			}
-			Bitmap result = new Bitmap(bitmap.Width, bitmap.Height, pxfmt);
-			using (var snoop_b = new BmpPixelSnoop(new Bitmap(bitmap)))
-			{
-				for (int y = 0; y < bitmap.Height; y++)
-					for (int x = 0; x < bitmap.Width; x++)
-					{
-						for (int p = 0; p < stepsize; p++)
-						{
-							if (snoop_b.GetPixel(x, y) == currentPalette.GetColorAnyBank(p))
-							{
-								TextureFunctions.SetPixelIndex(result, x, y, p);
-								break;
-							}
-						}
-					}
-			}
-			// Replace the palette in the Bitmap
-			var newAliasForPalette = result.Palette;
-			for (int i = 0; i < currentPalette.GetNumColors(); i++)
-			{
-				newAliasForPalette.Entries[i] = defaultPalette.GetColorAnyBank(i);
-			}
-			result.Palette = newAliasForPalette;
-			return result;
-		}
 		#endregion
 
 		#region Mipmap preview
@@ -2228,6 +1932,7 @@ namespace TextureEditor
 				GenericTexture currentTexture = textures[listBox1.SelectedIndex];
 				if (currentTexture.HasMipmaps)
 				{
+					trackBarMipmapLevel.Visible = labelMipmapLevel.Visible = true;
 					trackBarMipmapLevel.Maximum = currentTexture.MipmapImages.Length - 1;
 					trackBarMipmapLevel.Value = Math.Min(trackBarMipmapLevel.Value, currentTexture.MipmapImages.Length - 1);
 					trackBarMipmapLevel.Enabled = true;
@@ -2241,7 +1946,129 @@ namespace TextureEditor
 			trackBarMipmapLevel.Value = 0;
 			trackBarMipmapLevel.Enabled = false;
 			labelMipmapLevel.Text = "Mipmap Level: N/A";
+			trackBarMipmapLevel.Visible = labelMipmapLevel.Visible = false;
 		}
 		#endregion
+
+		#region Help menu
+		private void textureEditorHelpToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void textureEditingGuideToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
+		}
+		#endregion
+
+		#region Tools menu
+		private void addMipmapsToAllToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			foreach (GenericTexture info in textures)
+				if (info.CanHaveMipmaps())
+					info.AddMipmaps();
+			if (listBox1.SelectedIndex != -1 && textures[listBox1.SelectedIndex].HasMipmaps)
+				mipmapCheckBox.Checked = true;
+			unsaved = true;
+		}
+
+		private void removeMipmapsFromAllToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			foreach (GenericTexture info in textures)
+				info.RemoveMipmaps();
+			if (listBox1.SelectedIndex != -1 && textures[listBox1.SelectedIndex].HasMipmaps)
+				mipmapCheckBox.Checked = true;
+			unsaved = true;
+		}
+
+		private void exportMipmapsAsPNGToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (listBox1.SelectedIndex == -1)
+				return;
+			if (!textures[listBox1.SelectedIndex].HasMipmaps)
+				return;
+			if (textures[listBox1.SelectedIndex].MipmapImages.Length == 0)
+				return;
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "png", FileName = textures[listBox1.SelectedIndex].Name + ".png", Filter = "PNG Files|*.png" })
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					for (int i = 0; i < textures[listBox1.SelectedIndex].MipmapImages.Length; i++)
+					{
+						Bitmap bmp = new Bitmap(textures[listBox1.SelectedIndex].MipmapImages[i]);
+						bmp.Save(Path.ChangeExtension(dlg.FileName, null) + "_" + i.ToString() + ".png");
+					}
+				}
+			listBox1.Select();
+		}
+		#endregion
+
+		private void palettePreview_Click(object sender, EventArgs e)
+		{
+			MouseEventArgs me = (MouseEventArgs)e;
+			Point coordinates = me.Location;
+			int colorID = (coordinates.Y / 17) * 16 + coordinates.X / 17;
+			Color c = currentPalette.GetColorAnyBank(colorID);
+			labelCurrentPaletteColor.Text = $"Color {colorID}: A{c.A} R{c.R} G{c.G} B{c.B}";
+		}
+
+		public static string GetSurfaceFlagsString(NinjaSurfaceFlags njflags)
+		{
+			List<string> flags = new List<string>();
+			if ((njflags & NinjaSurfaceFlags.NotTwiddled) != 0)
+				flags.Add("Not Twiddled");
+			else
+				flags.Add("Twiddled");
+			if ((njflags & NinjaSurfaceFlags.Mipmapped) != 0)
+				flags.Add("Mipmapped");
+			if ((njflags & NinjaSurfaceFlags.Palettized) != 0)
+				flags.Add("Palettized");
+			if ((njflags & NinjaSurfaceFlags.Stride) != 0)
+				flags.Add("Stride");
+			if ((njflags & NinjaSurfaceFlags.VQ) != 0)
+				flags.Add("VQ");
+			return string.Join(", ", flags);
+		}
+
+		/// <summary>
+		/// Manipulates pixel data in indexed Bitmaps. 
+		/// <param name="bmp">Indexed Bitmap to modify.</param>
+		/// <param name="x">X coordinate.</param>
+		/// <param name="y">Y coordinate.</param>
+		/// <param name="pixelIndex">Palette color ID to set.</param>
+		/// </summary>
+		public static void SetPixelIndex(Bitmap bmp, int x, int y, int pixelIndex)
+		{
+			switch (bmp.PixelFormat)
+			{
+				case PixelFormat.Format8bppIndexed:
+					BitmapData data8 = bmp.LockBits(new Rectangle(new Point(0, 0), new Size(bmp.Width, bmp.Height)), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
+					int offset = y * data8.Stride + (x);
+					Marshal.WriteByte(data8.Scan0, offset, (byte)pixelIndex);
+					bmp.UnlockBits(data8);
+					return;
+				case PixelFormat.Format4bppIndexed:
+					BitmapData data4 = bmp.LockBits(new Rectangle(new Point(0, 0), new Size(bmp.Width, bmp.Height)), ImageLockMode.ReadWrite, PixelFormat.Format4bppIndexed);
+					// Bit index
+					int biti = (data4.Stride > 0 ? y : y - bmp.Height + 1) * data4.Stride * 8 + x * 4;
+					// Pixel index
+					int i = biti / 8;
+					// Retrieve byte
+					byte b = Marshal.ReadByte(data4.Scan0, i);
+					// Write byte
+					if (biti % 8 == 0)
+					{
+						Marshal.WriteByte(data4.Scan0, i, (byte)(b & 0xf | (pixelIndex << 4)));
+					}
+					else
+					{
+						Marshal.WriteByte(data4.Scan0, i, (byte)(b & 0xf0 | pixelIndex));
+					}
+					bmp.UnlockBits(data4);
+					return;
+				default:
+					return;
+			}
+		}
 	}
 }

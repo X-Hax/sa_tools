@@ -120,6 +120,9 @@
   <metadata name="label1.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>456, 17</value>
+  </metadata>
   <metadata name="label2.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
@@ -135,30 +138,33 @@
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="ddsPakHighQualityToolStripMenuItem.ToolTipText" xml:space="preserve">
-    <value>All texture images will be saved as DDS files using the ARGB8888 pixel format.
-Mipmaps will be generated and no quality loss will be seen, but the overall file size will be large.
-NOTE: This will not apply to pre-existing DDS files.</value>
+  <data name="compatibleGVPToolStripMenuItem.ToolTipText" xml:space="preserve">
+    <value>Use ARGB4444 and ARGB1555 pixel formats for Gamecube paletted textures.
+Required for SA2 PC, SADX GC and SA2B GC. Other Gamecube games such as Billy Hatcher and Phantasy Star Online require this option to be unchecked.</value>
   </data>
-  <data name="ddsPakBestFitToolStripMenuItem.ToolTipText" xml:space="preserve">
-    <value>(Experimental)
-All texture images will be saved as DDS files with limited color space within the PAK container.
-This is an uncompressed option, so the filesize will be larger than both PNG and DDS (Compressed).
-Best used with texture packs containing PVR/GVR textures, as their color spaces will be mostly retained,
-resulting in virtually no quality loss.
-Mipmaps will be generated when applicable.
-NOTE: This will not apply to pre-existing DDS files.</value>
+  <data name="preferHighQualityToolStripMenuItem.ToolTipText" xml:space="preserve">
+    <value>Try to avoid reducing available colors whenever possible during automatic texture format conversion.
+For example, when converting ARGB4444 PVR to GVR, having this option checked will convert to ARGB8888 instead of RGB5A3.
+Note that "High Quality GVMs" and "Allow DXT and VQ Formats" also influence the final format selection for automatic conversion.</value>
   </data>
-  <data name="ddsPakCompressToolStripMenuItem.ToolTipText" xml:space="preserve">
-    <value>All texture images will be saved as DDS files with compression applied within the PAK container. 
-This yields the smallest filesize and generates mipmaps, but all textures will suffer from quality loss.
-NOTE: This will not apply to pre-existing DDS files.</value>
+  <data name="allowCompressedFormatsToolStripMenuItem.ToolTipText" xml:space="preserve">
+    <value>Allow DXT1 (GVR), DXT1/3/5 (DDS) and VQ/SmalLVQ (PVR) formats in automatic texture format conversion.
+For example, when converting an ARGB1555 PVR texture to GVR, having this option checked will convert to DXT1 instead of RGB5A3.
+Note that "Prefer High Quality" also influences the final format selection for automatic conversion.
+</value>
+  </data>
+  <data name="useDDSInTexturePacksToolStripMenuItem.ToolTipText" xml:space="preserve">
+    <value>If this option is checked, newly encoded textures in folder texture packs will be in the DDS format.
+If this option is unchecked, newly encoded textures in folder texture packs will be in the PNG format.</value>
   </data>
   <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>132, 17</value>
   </metadata>
   <metadata name="contextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>248, 17</value>
+  </metadata>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>47</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

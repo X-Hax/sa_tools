@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using TextureLib;
-using static TextureEditor.TextureFunctions;
 
 namespace TextureEditor
 {
@@ -13,7 +12,7 @@ namespace TextureEditor
         GenericTexture texinfo;
         bool SACompatible;
         bool gamecube;
-        public PalettedTextureFormat outFormat;
+        public IndexedTextureFormat outFormat;
         public PixelCodec outCodec;
 
 		public IndexedImageImportDialog(Bitmap setbitmap, GenericTexture settexinfo, bool setSACompatible = true)
@@ -131,11 +130,11 @@ namespace TextureEditor
 				outCodec = new RGB5A3PixelCodec();
             // Indexed format
             if (radioButtonIndex8.Checked)
-                outFormat = PalettedTextureFormat.Index8;
+                outFormat = IndexedTextureFormat.Index8;
             else if (radioButtonIndex4.Checked)
-                outFormat = PalettedTextureFormat.Index4;
+                outFormat = IndexedTextureFormat.Index4;
             else
-                outFormat = PalettedTextureFormat.NotIndexed;
+                outFormat = IndexedTextureFormat.NotIndexed;
         }
 	}
 }
