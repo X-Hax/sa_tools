@@ -566,7 +566,7 @@
 			// generateNewGbixToolStripMenuItem
 			// 
 			generateNewGbixToolStripMenuItem.Name = "generateNewGbixToolStripMenuItem";
-			generateNewGbixToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			generateNewGbixToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
 			generateNewGbixToolStripMenuItem.Text = "Generate New Gbix";
 			generateNewGbixToolStripMenuItem.Click += generateNewGbixToolStripMenuItem_Click;
 			// 
@@ -574,7 +574,7 @@
 			// 
 			mipmapsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { addMipmapsToAllToolStripMenuItem, removeMipmapsFromAllToolStripMenuItem, exportMipmapsAsPNGToolStripMenuItem });
 			mipmapsToolStripMenuItem.Name = "mipmapsToolStripMenuItem";
-			mipmapsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			mipmapsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
 			mipmapsToolStripMenuItem.Text = "Mipmaps";
 			// 
 			// addMipmapsToAllToolStripMenuItem
@@ -605,7 +605,7 @@
 			alphaSortingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { enablePAKAlphaForAllToolStripMenuItem, disablePAKAlphaForAllToolStripMenuItem });
 			alphaSortingToolStripMenuItem.Enabled = false;
 			alphaSortingToolStripMenuItem.Name = "alphaSortingToolStripMenuItem";
-			alphaSortingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			alphaSortingToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
 			alphaSortingToolStripMenuItem.Text = "PAK Alpha Flags";
 			alphaSortingToolStripMenuItem.ToolTipText = "Transparency flags for SA2 PC PAKs.";
 			// 
@@ -908,6 +908,7 @@
 			buttonReplaceImage.Text = "Replace Image...";
 			toolTip1.SetToolTip(buttonReplaceImage, "Loads a texture and converts it to the same format as the currently selected texture.");
 			buttonReplaceImage.UseVisualStyleBackColor = true;
+			buttonReplaceImage.Click += buttonReplaceImage_Click;
 			// 
 			// saveTextureButton
 			// 
