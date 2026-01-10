@@ -39,7 +39,7 @@ namespace TextureEditor
 		/// <summary>True when UI updates are suppressed.</summary>
 		bool suppress = false;
 		/// <summary>True when an SOC PAK without an INF file is open.</summary>
-		bool nonIndexedPAK = false;
+		bool usingSocPak = false;
 		/// <summary>Currently loaded texture palette.</summary>
 		TexturePalette currentPalette = TexturePalette.CreateDefaultPalette(true);
 		/// <summary>Current palette bank ID for Chao textures.</summary>
@@ -396,8 +396,8 @@ namespace TextureEditor
 				else
 					ti.AddMipmaps();
 			}
-			// Update surface flags for PAK textures (this should be handled in the library though...)
-			if (currentFormat == TextureFormat.PAK)
+			// Update surface flags for PAK textures
+			if (currentFormat == TextureFormat.PAK && !usingSocPak)
 			{
 				if (!mipmapCheckBox.Checked)
 					ti.PakMetadata.PakNinjaFlags &= ~NinjaSurfaceFlags.Mipmapped;
@@ -826,7 +826,7 @@ namespace TextureEditor
 			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
 			bool en = listBox1.SelectedIndex != -1;
 			removeTextureButton.Enabled = textureName.Enabled = importButton.Enabled = buttonExportImage.Enabled = saveTextureButton.Enabled = en;
-			globalIndex.Enabled = (en && !nonIndexedPAK);
+			globalIndex.Enabled = (en && !usingSocPak);
 			if (en)
 			{
 				suppress = true;
@@ -852,7 +852,7 @@ namespace TextureEditor
 				}
 				else
 					mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
-				if (currentFormat == TextureFormat.PAK)
+				if (currentFormat == TextureFormat.PAK && !usingSocPak)
 				{
 					pixelFormatLabel.Text = $"Surface Flags: {GetSurfaceFlagsString(currentTexture.PakMetadata.PakNinjaFlags)}";
 					extraFormatLabel.Text = $"PAK GVR Format: {currentTexture.PakMetadata.PakGvrFormat}";
@@ -881,8 +881,8 @@ namespace TextureEditor
 				switch (currentTexture)
 				{
 					case PvrTexture pvr:
-						dataFormatLabel.Text = $"Data Format: {pvr.PvrDataFormat}";
-						pixelFormatLabel.Text = $"Pixel Format: {pvr.PvrPixelFormat}";
+						dataFormatLabel.Text = $"PVR Data Format: {pvr.PvrDataFormat}";
+						pixelFormatLabel.Text = $"PVR Pixel Format: {pvr.PvrPixelFormat}";
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = pvr.Image.Width;
 						numericUpDownOrigSizeY.Value = pvr.Image.Height;
@@ -966,11 +966,11 @@ namespace TextureEditor
 						}
 						break;
 					case XvrTexture xvr:
-						pixelFormatLabel.Text = $"XVR format: {xvr.XvrType}";
 						dataFormatLabel.Text = $"Data Format: DDS";
 						dataFormatLabel.Hide();
 						dataFormatLabel.Show();
 						pixelFormatLabel.Show();
+						pixelFormatLabel.Text = $"XVR Format: {xvr.XvrType}";
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = xvr.Image.Width;
 						numericUpDownOrigSizeY.Value = xvr.Image.Height;
@@ -980,7 +980,13 @@ namespace TextureEditor
 						textureSizeLabel.Hide();
 						break;
 					case DdsTexture dds:
-						dataFormatLabel.Text = $"DDS Data Format: {dds.DdsFormat}";
+						dataFormatLabel.Text = "Data Format: DDS";
+						pixelFormatLabel.Text = $"DDS Pixel Format: {dds.DdsFormat}";
+						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+						break;
+					case GdiTexture gdi:
+						dataFormatLabel.Text = "Data Format: " + GenericTexture.GetTextureFileType(gdi.RawData).ToString().ToUpperInvariant();
+						pixelFormatLabel.Text = $"GDI Pixel Format: {gdi.GdiPixelFormat}";
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						break;
 					default:
@@ -1009,7 +1015,7 @@ namespace TextureEditor
 
 		private List<GenericTexture> GetTexturesFromFile(string fname)
 		{
-			nonIndexedPAK = false;
+			usingSocPak = false;
 			byte[] datafile = File.ReadAllBytes(fname);
 			if (Path.GetExtension(fname).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				datafile = PRS.Decompress(datafile);
@@ -1054,18 +1060,19 @@ namespace TextureEditor
 				// Handle non-indexed PAKs in the SOC folder
 				if (!hasIndex)
 				{
-					nonIndexedPAK = true;
+					usingSocPak = true;
 					newtextures = new List<GenericTexture>(pak.Entries.Count);
 					foreach (PAKFile.PAKEntry fl in pak.Entries)
 					{
 						GenericTexture paktex = GenericTexture.LoadTexture(fl.Data);
-						fl.Name = Path.GetFileNameWithoutExtension(fl.Name);
+						paktex.Name = Path.GetFileNameWithoutExtension(fl.Name);
+						newtextures.Add(paktex);
 					}
 				}
 				// Handle indexed PAKs
 				else
 				{
-					nonIndexedPAK = false;
+					usingSocPak = false;
 					byte[] inf = pak.Entries.Single((file) => file.Name.Equals(indexName, StringComparison.OrdinalIgnoreCase)).Data;
 					newtextures = new List<GenericTexture>(inf.Length / 0x3C);
 					for (int i = 0; i < inf.Length; i += 0x3C)
@@ -1133,11 +1140,11 @@ namespace TextureEditor
 						break;
 					case TextureFormat.PVMX:
 						if (!(newtextures[i] is GdiTexture))
-							newtextures[i] = newtextures[i].ToGdi();
+							newtextures[i] = useDDSInPVMXToolStripMenuItem.Checked ? newtextures[i].ToDds() : newtextures[i].ToGdi();
 						break;
 					case TextureFormat.PAK:
-						if (!(newtextures[i] is GvrTexture) && !(newtextures[i] is DdsTexture) && !(newtextures[i] is GdiTexture))
-							newtextures[i] = newtextures[i].ToDds();
+						if (!(newtextures[i] is GvrTexture) && !(newtextures[i] is DdsTexture) && !(newtextures[i] is GdiTexture) && !(newtextures[i] is InvalidTexture))
+							newtextures[i] = useDDSInPAKsToolStripMenuItem.Checked ? newtextures[i].ToDds() : newtextures[i].ToGdi();
 						break;
 					case TextureFormat.XVM:
 						if (!(newtextures[i] is XvrTexture))
@@ -1302,7 +1309,7 @@ namespace TextureEditor
 						PAKFile pak = new PAKFile();
 						string filenoext = Path.GetFileNameWithoutExtension(archiveFilename).ToLowerInvariant();
 						pak.FolderName = filenoext;
-						string longdir = nonIndexedPAK ? "..\\..\\..\\sonic2\\resource\\gd_pc\\soc\\" + filenoext : "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
+						string longdir = usingSocPak ? "..\\..\\..\\sonic2\\resource\\gd_pc\\soc\\" + filenoext : "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
 						List<byte> inf = new List<byte>(textures.Count * 0x3C);
 						// Add individual PAK entries
 						foreach (GenericTexture item in textures)
@@ -1327,7 +1334,7 @@ namespace TextureEditor
 							inf.AddRange(entry.GetBytes());
 						}
 						// Insert the INF file
-						if (!nonIndexedPAK)
+						if (!usingSocPak)
 							pak.Entries.Insert(0, new PAKFile.PAKEntry(filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
 						pak.Save(archiveFilename);
 						unsaved = false;
@@ -1933,8 +1940,8 @@ namespace TextureEditor
 					trackBarMipmapLevel.Maximum = currentTexture.MipmapImages.Length - 1;
 					trackBarMipmapLevel.Value = Math.Min(trackBarMipmapLevel.Value, currentTexture.MipmapImages.Length - 1);
 					trackBarMipmapLevel.Enabled = true;
-					int mipmapW = currentTexture.Image.Width / (int)Math.Pow(2, trackBarMipmapLevel.Value);
-					int mipmapH = currentTexture.Image.Width / (int)Math.Pow(2, trackBarMipmapLevel.Value);
+					int mipmapW = Math.Max(1, currentTexture.Image.Width / (int)Math.Pow(2, trackBarMipmapLevel.Value));
+					int mipmapH = Math.Max(1, currentTexture.Image.Height / (int)Math.Pow(2, trackBarMipmapLevel.Value));
 					labelMipmapLevel.Text = $"Mipmap Level: {trackBarMipmapLevel.Value} ({mipmapW}x{mipmapH})";
 					return;
 				}
