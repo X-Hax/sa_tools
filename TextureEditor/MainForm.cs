@@ -801,25 +801,22 @@ namespace TextureEditor
 		{
 			int rows = currentPalette.GetNumColors() / 16;
 			Bitmap result = new Bitmap(256 + 16, rows * 16 + rows);
-			using (var snoop_r = new BmpPixelSnoop(result))
-			{
 				int offset_y = 0;
-				for (int y = 0; y < rows; y++)
+			for (int y = 0; y < rows; y++)
+			{
+				int offset_x = 0;
+				for (int x = 0; x < 16; x++)
 				{
-					int offset_x = 0;
-					for (int x = 0; x < 16; x++)
-					{
-						Color c = currentPalette.GetColorAnyBank(y * 16 + x);
-						// Draw a 16x16 square
-						for (int z = 0; z < 16; z++)
-							for (int h = 0; h < 16; h++)
-							{
-								snoop_r.SetPixel(offset_x + x * 16 + z, offset_y + y * 16 + h, c);
-							}
-						offset_x += 1;
-					}
-					offset_y += 1;
+					Color c = currentPalette.GetColorAnyBank(y * 16 + x);
+					// Draw a 16x16 square
+					for (int z = 0; z < 16; z++)
+						for (int h = 0; h < 16; h++)
+						{
+							result.SetPixel(offset_x + x * 16 + z, offset_y + y * 16 + h, c);
+						}
+					offset_x += 1;
 				}
+				offset_y += 1;
 			}
 			return result;
 		}

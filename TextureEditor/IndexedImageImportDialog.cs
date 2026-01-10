@@ -25,78 +25,74 @@ namespace TextureEditor
 			labelPaletteInfo.Text = "Counting colors, please wait...";
 		}
 
-        private void ProcessBitmap()
-        {
-            int usedColors = 0;
-            int totalColors = bitmap.Palette.Entries.Length;
-            if (texinfo is PvrTexture)
-            {
-                radioButtonRGB5A3.Enabled = radioButtonIntensity8A.Enabled = false;
-            }
-
-			using (var snoop_u = new BmpPixelSnoop(new Bitmap(bitmap)))
+		private void ProcessBitmap()
+		{
+			int usedColors = 0;
+			int totalColors = bitmap.Palette.Entries.Length;
+			if (texinfo is PvrTexture)
 			{
-				List<Color> cols = new();
-				for (int h = 0; h < bitmap.Height; h++)
+				radioButtonRGB5A3.Enabled = radioButtonIntensity8A.Enabled = false;
+			}
+			List<Color> cols = new();
+			for (int h = 0; h < bitmap.Height; h++)
+			{
+				for (int w = 0; w < bitmap.Width; w++)
 				{
-					for (int w = 0; w < bitmap.Width; w++)
+					Color color = bitmap.GetPixel(w, h);
+					if (!cols.Contains(color))
 					{
-						Color color = snoop_u.GetPixel(w, h);
-						if (!cols.Contains(color))
-						{
-							cols.Add(color);
-						}
+						cols.Add(color);
 					}
 				}
-				usedColors = cols.Count;
+			}
+			usedColors = cols.Count;
+
+			if (usedColors <= 16)
+			{
+				radioButtonIndex4.Checked = true;
+				radioButtonIndex4.Enabled = true;
+			}
+			else if (usedColors <= 256)
+			{
+				radioButtonIndex8.Checked = true;
+				radioButtonIndex4.Enabled = false;
+			}
+			else
+			{
+				radioButtonIndex4.Enabled = radioButtonIndex8.Enabled = false;
+				radioButtonNonIndexed.Checked = true;
+			}
+			BitmapAlphaLevel tlevel = TextureLib.TextureFunctions.GetAlphaLevelFromBitmap(bitmap);
+			string transparency = "";
+			switch (tlevel)
+			{
+				case BitmapAlphaLevel.None:
+					radioButtonRGB565.Checked = true;
+					transparency = "no transparency";
+					break;
+				case BitmapAlphaLevel.OneBitAlpha:
+					transparency = "1-bit transparency";
+					if (SACompatible || !gamecube)
+						radioButtonARGB1555.Checked = true;
+					else
+						radioButtonRGB5A3.Checked = true;
+					break;
+				case BitmapAlphaLevel.FullAlpha:
+					transparency = "partial transparency";
+					if (SACompatible || !gamecube)
+						radioButtonARGB4444.Checked = true;
+					else
+						radioButtonRGB5A3.Checked = true;
+					break;
 			}
 
-            if (usedColors <= 16)
-            {
-                radioButtonIndex4.Checked = true;
-                radioButtonIndex4.Enabled = true;
-            }
-            else if (usedColors <= 256)
-            {
-                radioButtonIndex8.Checked = true;
-                radioButtonIndex4.Enabled = false;
-            }
-            else
-            {
-                radioButtonIndex4.Enabled = radioButtonIndex8.Enabled = false;
-                radioButtonNonIndexed.Checked = true;
-            }
-			BitmapAlphaLevel tlevel = TextureLib.TextureFunctions.GetAlphaLevelFromBitmap(bitmap);
-            string transparency = "";
-            switch (tlevel)
-            {
-                case BitmapAlphaLevel.None:
-                    radioButtonRGB565.Checked = true;
-                    transparency = "no transparency";
-                    break;
-                case BitmapAlphaLevel.OneBitAlpha:
-                    transparency = "1-bit transparency";
-                    if (SACompatible || !gamecube) 
-                        radioButtonARGB1555.Checked = true;
-                    else
-                        radioButtonRGB5A3.Checked = true;
-                    break;
-                case BitmapAlphaLevel.FullAlpha:
-                    transparency = "partial transparency";
-                    if (SACompatible || !gamecube)
-                        radioButtonARGB4444.Checked = true;
-                    else
-                        radioButtonRGB5A3.Checked = true;
-                    break;
-            }
-
-            labelPaletteInfo.Text = "Palette: " + totalColors.ToString() + " colors (" + usedColors.ToString() + " colors used), " + transparency;
-            groupBoxMask.Enabled = groupBoxPalette.Enabled = buttonAuto.Enabled = buttonOK.Enabled = true;
-            if (!gamecube)
-                radioButtonIntensity8A.Enabled = radioButtonRGB5A3.Enabled = false;
-            else
-                radioButtonIntensity8A.Enabled = radioButtonRGB5A3.Enabled = true;
-        }
+			labelPaletteInfo.Text = "Palette: " + totalColors.ToString() + " colors (" + usedColors.ToString() + " colors used), " + transparency;
+			groupBoxMask.Enabled = groupBoxPalette.Enabled = buttonAuto.Enabled = buttonOK.Enabled = true;
+			if (!gamecube)
+				radioButtonIntensity8A.Enabled = radioButtonRGB5A3.Enabled = false;
+			else
+				radioButtonIntensity8A.Enabled = radioButtonRGB5A3.Enabled = true;
+		}
 
 		private void IndexedImageImportDialog_Shown(object sender, EventArgs e)
 		{
