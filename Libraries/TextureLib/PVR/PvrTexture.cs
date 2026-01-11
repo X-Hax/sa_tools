@@ -31,8 +31,8 @@ namespace TextureLib
 			result.AddRange(BitConverter.GetBytes((uint)(HeaderlessData.Length + (PvrDataFormat == PvrDataFormat.SquareTwiddledMipmapsDma ? 12 : 8))));
 			result.Add((byte)PvrPixelFormat);
 			result.Add((byte)PvrDataFormat);
-			result.Add((byte)PaletteBank);
-			result.Add((byte)PaletteStartIndex);			
+			result.Add((byte)0); // Palette bank
+			result.Add((byte)0); // Palette start index
 			result.AddRange(BitConverter.GetBytes((ushort)Width));
 			result.AddRange(BitConverter.GetBytes((ushort)Height));
 			if (PvrDataFormat == PvrDataFormat.SquareTwiddledMipmapsDma)

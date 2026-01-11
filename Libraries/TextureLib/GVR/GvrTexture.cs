@@ -38,8 +38,8 @@ namespace TextureLib
 			}
 			result.AddRange(BitConverter.GetBytes(Magic_GVRT));
 			result.AddRange(BitConverter.GetBytes((uint)(HeaderlessData.Length + 8)));
-			result.Add((byte)PaletteBank);
-			result.Add((byte)PaletteStartIndex);
+			result.Add((byte)0); // PaletteBank
+			result.Add((byte)0); // PaletteStartIndex
 			int flag = ((byte)GvrPaletteFormat << 4) | (byte)GvrDataFlags;
 			result.Add((byte)flag);
 			result.Add((byte)GvrDataFormat);

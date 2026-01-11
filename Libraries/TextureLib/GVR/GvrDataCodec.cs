@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TextureLib
 {
-	internal abstract class GvrDataCodec: DataCodec
+	public abstract class GvrDataCodec: DataCodec
 	{
 		private static readonly Dictionary<GvrDataFormat, GvrDataCodec> _codecs = new()
 		{

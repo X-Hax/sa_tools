@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal abstract class PvrDataCodec: DataCodec
+	public abstract class PvrDataCodec: DataCodec
 	{
 		public PixelCodec PixelCodec { get; }
 

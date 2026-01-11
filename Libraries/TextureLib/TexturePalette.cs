@@ -137,7 +137,7 @@ namespace TextureLib
         /// Creates a palette from a Bitmap containing colors for the palette (width = number of colors, height = 1).
         /// </summary>
         /// <param name="bitmap">Loaded Bitmap.</param>
-        /// <param name="codec">The pixel codec for the format of the data.</param>
+        /// <param name="codec">The pixel codec for the format of the data (ARGB8888 if not specified).</param>
         /// <param name="startBank">The "starting bank" of the palette.</param>
         /// <param name="startColor">The "starting color" of the palette bank.</param>
         /// <param name="bigEndian">Whether the data will be encoded in Big Endian or not.</param>
@@ -147,7 +147,6 @@ namespace TextureLib
             StartColor = startColor;
             paletteCodec = codec != null ? codec : new ARGB8888PixelCodec();
             TextureFunctions.BitmapToRaw(bitmap, DecodedData);
-			//TextureFunctions.RGBAtoBGRA(DecodedData);
             Encode(codec, bigEndian);
         }
 
@@ -356,6 +355,20 @@ namespace TextureLib
 			}
             return new TexturePalette(colorData, new ARGB8888PixelCodec(), index8 ? 256 : 16);
         }
+
+		/// <summary>
+		/// Exports the palette as an array of System.Drawing.Color.
+		/// </summary>
+		/// <returns>Array of System.Drawing.Color.</returns>
+		public Color[] GetColors()
+		{
+			List<Color> result = new List<Color>();
+			for (int i = 0; i < GetNumColors(); i++)
+			{
+				result.Add(GetColorAnyBank(i));
+			}
+			return result.ToArray();
+		}
 
         /// <summary>
         /// Creates a palette quantizer that can be used to convert a color image to an indexed image.
