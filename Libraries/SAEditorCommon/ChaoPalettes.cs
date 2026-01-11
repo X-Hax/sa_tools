@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using ArchiveLib;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 // Functionality to retrieve palette filenames and bank IDs for palettized Chao textures.
@@ -123,12 +125,25 @@ namespace SAModel.SAEditorCommon
 			};
 		}
 
-		/// <summary>Checks whether the texture's filename (without extension) is a known Chao paletted texture filename.</summary>
+		/// <summary>Checks whether the texture's filename (without extension) is a known paletted Chao texture filename.</summary>
 		/// <param name="textureName">Texture name, such as "al_child02".</param>
 		/// <returns>True if the texture is a known Chao paletted texture.</returns>
 		public static bool CheckIfTextureIsChaoPalettedTexture(string textureName)
 		{
 			return ChaoPalettedTextures.Contains(textureName.ToLowerInvariant());
+		}
+
+		/// <summary>Checks whether the specified archive contains known paletted Chao textures.</summary>
+		/// <param name="arc">Texture archive.</param>
+		/// <returns>True if the archive contains any known paletted Chao textures.</returns>
+		public static bool CheckIfArchiveHasPalettedChaoTextures(GenericArchive arc)
+		{
+			foreach (GenericArchive.GenericArchiveEntry file in arc.Entries)
+			{
+				if (CheckIfTextureIsChaoPalettedTexture(Path.GetFileNameWithoutExtension(file.Name).ToLowerInvariant()))
+					return true;
+			}
+			return false;
 		}
 	}
 }
