@@ -134,7 +134,7 @@ namespace TextureEditor
 			}
 
 			// Load textures
-			List<GenericTexture> newtextures = GetTexturesFromFile(filename);
+			List<GenericTexture> newtextures = GetTexturesFromFile(filename, false);
 			if (newtextures == null || newtextures.Count == 0)
 				return false;
 			textures.Clear();
@@ -150,8 +150,9 @@ namespace TextureEditor
 		/// Processes a texture archive and retrieves a list of textures from it.
 		/// </summary>
 		/// <param name="fname">Path to the archive file.</param>
+		/// <param name="convert">Check and convert the textures to match the current archive format if necessary (when importing).</param>
 		/// <returns>A List of GenericTexture entries.</returns>
-		private List<GenericTexture> GetTexturesFromFile(string fname)
+		private List<GenericTexture> GetTexturesFromFile(string fname, bool convert)
 		{
 			usingSocPak = false;
 			byte[] datafile = File.ReadAllBytes(fname);
@@ -270,30 +271,33 @@ namespace TextureEditor
 			}
 			// Check if GenericTexture match the current format and convert if necessary.
 			// This part is here because GetTexturesFromArchive() can also be called when adding PVM/GVM etc. using the "Add Texture..." button.
-			for (int i = 0; i < newtextures.Count; i++)
+			if (convert)
 			{
-				switch (currentFormat)
+				for (int i = 0; i < newtextures.Count; i++)
 				{
-					case TextureArchiveFormat.PVM:
-						if (!(newtextures[i] is PvrTexture))
-							newtextures[i] = newtextures[i].ToPvr(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
-						break;
-					case TextureArchiveFormat.GVM:
-						if (!(newtextures[i] is GvrTexture))
-							newtextures[i] = newtextures[i].ToGvr(preferHighQualityToolStripMenuItem.Checked && highQualityGVMsToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
-						break;
-					case TextureArchiveFormat.PVMX:
-						if ((!useDDSInPVMXToolStripMenuItem.Checked && !(newtextures[i] is GdiTexture)) || (useDDSInPVMXToolStripMenuItem.Checked && !(newtextures[i] is DdsTexture)))
-							newtextures[i] = useDDSInPVMXToolStripMenuItem.Checked ? newtextures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : newtextures[i].ToGdi();
-						break;
-					case TextureArchiveFormat.PAK:
-						if ((!useDDSInPAKsToolStripMenuItem.Checked && !(newtextures[i] is GdiTexture)) || (useDDSInPAKsToolStripMenuItem.Checked && !(newtextures[i] is DdsTexture)) || !(newtextures[i] is InvalidTexture))
-							newtextures[i] = useDDSInPAKsToolStripMenuItem.Checked ? newtextures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : newtextures[i].ToGdi();
-						break;
-					case TextureArchiveFormat.XVM:
-						if (!(newtextures[i] is XvrTexture))
-							newtextures[i] = newtextures[i].ToXvr(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
-						break;
+					switch (currentFormat)
+					{
+						case TextureArchiveFormat.PVM:
+							if (!(newtextures[i] is PvrTexture))
+								newtextures[i] = newtextures[i].ToPvr(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
+							break;
+						case TextureArchiveFormat.GVM:
+							if (!(newtextures[i] is GvrTexture))
+								newtextures[i] = newtextures[i].ToGvr(preferHighQualityToolStripMenuItem.Checked && highQualityGVMsToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
+							break;
+						case TextureArchiveFormat.PVMX:
+							if ((!useDDSInPVMXToolStripMenuItem.Checked && !(newtextures[i] is GdiTexture)) || (useDDSInPVMXToolStripMenuItem.Checked && !(newtextures[i] is DdsTexture)))
+								newtextures[i] = useDDSInPVMXToolStripMenuItem.Checked ? newtextures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : newtextures[i].ToGdi();
+							break;
+						case TextureArchiveFormat.PAK:
+							if ((!useDDSInPAKsToolStripMenuItem.Checked && !(newtextures[i] is GdiTexture)) || (useDDSInPAKsToolStripMenuItem.Checked && !(newtextures[i] is DdsTexture)) || !(newtextures[i] is InvalidTexture))
+								newtextures[i] = useDDSInPAKsToolStripMenuItem.Checked ? newtextures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : newtextures[i].ToGdi();
+							break;
+						case TextureArchiveFormat.XVM:
+							if (!(newtextures[i] is XvrTexture))
+								newtextures[i] = newtextures[i].ToXvr(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
+							break;
+					}
 				}
 			}
 			return newtextures;

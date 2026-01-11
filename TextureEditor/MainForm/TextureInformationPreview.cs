@@ -217,7 +217,8 @@ namespace TextureEditor
 						textureSizeLabel.Hide();
 						break;
 					case DdsTexture dds:
-						dataFormatLabel.Text = $"Data Format: DDS ({dds.DdsFormat})";
+						dataFormatLabel.Text = $"Data Format: DDS";
+						pixelFormatLabel.Text = $"DDS Pixel Format: {dds.DdsFormat}"; 
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						break;
 					case GdiTexture gdi:

@@ -310,7 +310,7 @@ namespace TextureEditor
 							case ".xvm":
 							case ".pak":
 							case ".pvmx":
-								foreach (GenericTexture tex in GetTexturesFromFile(file))
+								foreach (GenericTexture tex in GetTexturesFromFile(file, true))
 								{
 									textures.Add(tex);
 									listBox1.Items.Add(tex.Name);
