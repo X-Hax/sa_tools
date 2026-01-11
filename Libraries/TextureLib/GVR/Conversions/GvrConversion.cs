@@ -115,6 +115,7 @@ namespace TextureLib
 			// Get original texture raw data
 			byte[] encodedBytes = new byte[Image.Width * Image.Height * 4];
 			TextureFunctions.BitmapToRaw(Image, encodedBytes);
+			int mipLevels = 1; // Keep track of how many mipmaps were generated
 			// Write mipmaps for regular textures
 			if (!Indexed)
 			{
@@ -122,6 +123,7 @@ namespace TextureLib
 				for (int size = Image.Width >> 1; size > 0; size >>= 1)
 				{
 					TextureFunctions.EncodeMipMap(SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(encodedBytes, Image.Width, Image.Height), null, dataCodec, size, outputStream);
+					mipLevels++;
 				}
 			}
 			// Write mipmaps for Indexed texture
@@ -132,7 +134,16 @@ namespace TextureLib
 				for (int size = Image.Width >> 1; size > 0; size >>= 1)
 				{
 					TextureFunctions.EncodeMipMap(TextureFunctions.BitmapToImageSharp(Image), quantizer.CreatePixelSpecificQuantizer<Rgba32>(SixLabors.ImageSharp.Configuration.Default), dataCodec, size, outputStream);
+					mipLevels++;
 				}
+			}
+			// Update mipmap preview images (for more accurate images need to call Decode() again)
+			MipmapImages = new System.Drawing.Bitmap[mipLevels];
+			int mipSize = Image.Width;
+			for (int i = 0; i < mipLevels; i++)
+			{
+				MipmapImages[i] = new System.Drawing.Bitmap(Image, mipSize, mipSize);
+				mipSize >>= 1;
 			}
 			// Update flags
 			HasMipmaps = true;

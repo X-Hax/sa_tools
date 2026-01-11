@@ -111,6 +111,7 @@ namespace TextureLib
 					dataSize += dataCodec.CalculateTextureSize(size, size);
 				}
 			}
+			int mipLevels = 1; // Keep track of how many mipmaps were generated
 			// Get the original texture address
 			int textureAddress = HeaderlessData.Length - dataCodec.CalculateTextureSize(Width, Height);
 			// Retrieve the original texture data
@@ -129,7 +130,10 @@ namespace TextureLib
 				PaletteQuantizer quantizer = TexturePalette.CreatePaletteQuantizer(Palette, Palette.GetNumColors(), 0, useDithering);
 				// PVR mipmap order: from smallest to largest
 				for (int size = 1; size < Image.Width; size <<= 1)
+				{
 					TextureFunctions.EncodeMipMap(TextureFunctions.BitmapToImageSharp(Image), quantizer.CreatePixelSpecificQuantizer<Rgba32>(Configuration.Default), dataCodec, size, outputStream);
+					mipLevels++;
+				}
 			}
 			// Add mipmaps to a regular texture
 			else
@@ -140,7 +144,18 @@ namespace TextureLib
 				SixLabors.ImageSharp.Image<Rgba32> orginalTextureImage = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(decodedTexture, Width, Height);
 				// Encode mipmaps. PVR mipmap order: from smallest to largest
 				for (int size = 1; size < orginalTextureImage.Width; size <<= 1)
+				{
 					TextureFunctions.EncodeMipMap(orginalTextureImage, null, dataCodec, size, outputStream);
+					mipLevels++;
+				}
+			}
+			// Update mipmap preview images (for more accurate images need to call Decode() again)
+			MipmapImages = new System.Drawing.Bitmap[mipLevels];
+			int mipSize = Image.Width;
+			for (int i = 0; i < mipLevels; i++)
+			{
+				MipmapImages[i] = new System.Drawing.Bitmap(Image, mipSize, mipSize);
+				mipSize >>= 1;
 			}
 			// Write the original texture
 			outputStream.Write(originalTexture);
