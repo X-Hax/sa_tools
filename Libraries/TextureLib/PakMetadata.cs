@@ -46,6 +46,12 @@ namespace TextureLib
 		/// Example: `..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\stg_title08\\stg_title08.dds`
 		/// </summary>
 		public string PakLongPath;
+
+		public PakMetadata()
+		{
+			PakGvrFormat = GvrDataFormat.Rgb5a3;
+			PakNinjaFlags = NinjaSurfaceFlags.NotTwiddled;
+		}
 	}
 
 	/// <summary>Class for entries in the INF file inside SA2 PAK files.</summary>

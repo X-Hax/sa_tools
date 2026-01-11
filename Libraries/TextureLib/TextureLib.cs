@@ -44,7 +44,7 @@ namespace TextureLib
 		/// <summary>Original texture dimensions for the PVMX archive.</summary>
 		public Size PvmxOriginalDimensions;
 		/// <summary>Additional fields for the PAK archive.</summary>
-		public PakMetadata PakMetadata;
+		public PakMetadata PakMetadata = new();
 		/// <summary>Texture converted to Bitmap.</summary>
 		public Bitmap Image;
 		/// <summary>Texture mipmaps converted to Bitmaps. The first item (0) is the full size image.</summary>
@@ -62,8 +62,6 @@ namespace TextureLib
             // Set texture name
             if (!string.IsNullOrEmpty(name))
                 Name = name;
-			// Init metadata
-			PakMetadata = new PakMetadata();
 			// Copy raw data
 			if (data != null)
             {
