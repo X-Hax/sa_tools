@@ -132,10 +132,6 @@
 			importButton = new System.Windows.Forms.Button();
 			buttonExportImage = new System.Windows.Forms.Button();
 			palettePreview = new System.Windows.Forms.PictureBox();
-			panel3 = new System.Windows.Forms.Panel();
-			buttonLoadPalette = new System.Windows.Forms.Button();
-			buttonSavePalette = new System.Windows.Forms.Button();
-			buttonResetPalette = new System.Windows.Forms.Button();
 			textureImage = new System.Windows.Forms.PictureBox();
 			trackBarMipmapLevel = new System.Windows.Forms.TrackBar();
 			labelZoomInfo = new System.Windows.Forms.Label();
@@ -146,6 +142,9 @@
 			textureSizeLabel = new System.Windows.Forms.Label();
 			labelMipmapLevel = new System.Windows.Forms.Label();
 			panelPaletteInfo = new System.Windows.Forms.Panel();
+			buttonResetPalette = new System.Windows.Forms.Button();
+			buttonSavePalette = new System.Windows.Forms.Button();
+			buttonLoadPalette = new System.Windows.Forms.Button();
 			labelPaletteBankPreview = new System.Windows.Forms.Label();
 			numericUpDownStartColor = new System.Windows.Forms.NumericUpDown();
 			labelStartColor = new System.Windows.Forms.Label();
@@ -180,7 +179,6 @@
 			tableLayoutPanel1.SuspendLayout();
 			importExportPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)palettePreview).BeginInit();
-			panel3.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)textureImage).BeginInit();
 			((System.ComponentModel.ISupportInitialize)trackBarMipmapLevel).BeginInit();
 			((System.ComponentModel.ISupportInitialize)texturePreviewZoomTrackBar).BeginInit();
@@ -1050,7 +1048,6 @@
 			tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			tableLayoutPanel1.Controls.Add(importExportPanel, 0, 9);
 			tableLayoutPanel1.Controls.Add(palettePreview, 0, 11);
-			tableLayoutPanel1.Controls.Add(panel3, 0, 13);
 			tableLayoutPanel1.Controls.Add(textureImage, 0, 8);
 			tableLayoutPanel1.Controls.Add(trackBarMipmapLevel, 0, 5);
 			tableLayoutPanel1.Controls.Add(labelZoomInfo, 0, 6);
@@ -1064,8 +1061,7 @@
 			tableLayoutPanel1.Location = new System.Drawing.Point(5, 122);
 			tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			tableLayoutPanel1.Name = "tableLayoutPanel1";
-			tableLayoutPanel1.RowCount = 14;
-			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			tableLayoutPanel1.RowCount = 13;
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -1080,7 +1076,7 @@
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			tableLayoutPanel1.Size = new System.Drawing.Size(498, 564);
+			tableLayoutPanel1.Size = new System.Drawing.Size(498, 556);
 			tableLayoutPanel1.TabIndex = 13;
 			// 
 			// importExportPanel
@@ -1162,64 +1158,6 @@
 			palettePreview.TabStop = false;
 			palettePreview.Visible = false;
 			palettePreview.Click += palettePreview_Click;
-			// 
-			// panel3
-			// 
-			panel3.AutoSize = true;
-			panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			panel3.Controls.Add(buttonLoadPalette);
-			panel3.Controls.Add(buttonSavePalette);
-			panel3.Controls.Add(buttonResetPalette);
-			panel3.Location = new System.Drawing.Point(4, 499);
-			panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			panel3.Name = "panel3";
-			panel3.Size = new System.Drawing.Size(191, 62);
-			panel3.TabIndex = 32;
-			// 
-			// buttonLoadPalette
-			// 
-			buttonLoadPalette.AutoSize = true;
-			buttonLoadPalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			buttonLoadPalette.Location = new System.Drawing.Point(4, 3);
-			buttonLoadPalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			buttonLoadPalette.Name = "buttonLoadPalette";
-			buttonLoadPalette.Size = new System.Drawing.Size(91, 25);
-			buttonLoadPalette.TabIndex = 33;
-			buttonLoadPalette.Text = "Load Palette...";
-			toolTip1.SetToolTip(buttonLoadPalette, "Loads a palette file and applies the new palette to the current texture.");
-			buttonLoadPalette.UseVisualStyleBackColor = true;
-			buttonLoadPalette.Visible = false;
-			buttonLoadPalette.Click += buttonLoadPalette_Click;
-			// 
-			// buttonSavePalette
-			// 
-			buttonSavePalette.AutoSize = true;
-			buttonSavePalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			buttonSavePalette.Location = new System.Drawing.Point(4, 34);
-			buttonSavePalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			buttonSavePalette.Name = "buttonSavePalette";
-			buttonSavePalette.Size = new System.Drawing.Size(89, 25);
-			buttonSavePalette.TabIndex = 34;
-			buttonSavePalette.Text = "Save Palette...";
-			toolTip1.SetToolTip(buttonSavePalette, "Saves the current palette as a PVP/GVP/PNG.");
-			buttonSavePalette.UseVisualStyleBackColor = true;
-			buttonSavePalette.Visible = false;
-			buttonSavePalette.Click += buttonSavePalette_Click;
-			// 
-			// buttonResetPalette
-			// 
-			buttonResetPalette.AutoSize = true;
-			buttonResetPalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			buttonResetPalette.Location = new System.Drawing.Point(103, 3);
-			buttonResetPalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			buttonResetPalette.Name = "buttonResetPalette";
-			buttonResetPalette.Size = new System.Drawing.Size(84, 25);
-			buttonResetPalette.TabIndex = 35;
-			buttonResetPalette.Text = "Reset Palette";
-			toolTip1.SetToolTip(buttonResetPalette, "Replaces the current palette with the default palette.");
-			buttonResetPalette.UseVisualStyleBackColor = true;
-			buttonResetPalette.Visible = false;
-			buttonResetPalette.Click += buttonResetPalette_Click;
 			// 
 			// textureImage
 			// 
@@ -1330,6 +1268,9 @@
 			// 
 			// panelPaletteInfo
 			// 
+			panelPaletteInfo.Controls.Add(buttonResetPalette);
+			panelPaletteInfo.Controls.Add(buttonSavePalette);
+			panelPaletteInfo.Controls.Add(buttonLoadPalette);
 			panelPaletteInfo.Controls.Add(labelPaletteBankPreview);
 			panelPaletteInfo.Controls.Add(numericUpDownStartColor);
 			panelPaletteInfo.Controls.Add(labelStartColor);
@@ -1341,9 +1282,54 @@
 			panelPaletteInfo.Location = new System.Drawing.Point(247, 370);
 			panelPaletteInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			panelPaletteInfo.Name = "panelPaletteInfo";
-			panelPaletteInfo.Size = new System.Drawing.Size(247, 123);
+			panelPaletteInfo.Size = new System.Drawing.Size(247, 183);
 			panelPaletteInfo.TabIndex = 24;
 			panelPaletteInfo.Visible = false;
+			// 
+			// buttonResetPalette
+			// 
+			buttonResetPalette.AutoSize = true;
+			buttonResetPalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			buttonResetPalette.Location = new System.Drawing.Point(5, 132);
+			buttonResetPalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			buttonResetPalette.Name = "buttonResetPalette";
+			buttonResetPalette.Size = new System.Drawing.Size(84, 25);
+			buttonResetPalette.TabIndex = 35;
+			buttonResetPalette.Text = "Reset Palette";
+			toolTip1.SetToolTip(buttonResetPalette, "Replaces the current palette with the default palette.");
+			buttonResetPalette.UseVisualStyleBackColor = true;
+			buttonResetPalette.Visible = false;
+			buttonResetPalette.Click += buttonResetPalette_Click;
+			// 
+			// buttonSavePalette
+			// 
+			buttonSavePalette.AutoSize = true;
+			buttonSavePalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			buttonSavePalette.Location = new System.Drawing.Point(103, 101);
+			buttonSavePalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			buttonSavePalette.Name = "buttonSavePalette";
+			buttonSavePalette.Size = new System.Drawing.Size(89, 25);
+			buttonSavePalette.TabIndex = 34;
+			buttonSavePalette.Text = "Save Palette...";
+			toolTip1.SetToolTip(buttonSavePalette, "Saves the current palette as a PVP/GVP/PNG.");
+			buttonSavePalette.UseVisualStyleBackColor = true;
+			buttonSavePalette.Visible = false;
+			buttonSavePalette.Click += buttonSavePalette_Click;
+			// 
+			// buttonLoadPalette
+			// 
+			buttonLoadPalette.AutoSize = true;
+			buttonLoadPalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			buttonLoadPalette.Location = new System.Drawing.Point(4, 101);
+			buttonLoadPalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			buttonLoadPalette.Name = "buttonLoadPalette";
+			buttonLoadPalette.Size = new System.Drawing.Size(91, 25);
+			buttonLoadPalette.TabIndex = 33;
+			buttonLoadPalette.Text = "Load Palette...";
+			toolTip1.SetToolTip(buttonLoadPalette, "Loads a palette file and applies the new palette to the current texture.");
+			buttonLoadPalette.UseVisualStyleBackColor = true;
+			buttonLoadPalette.Visible = false;
+			buttonLoadPalette.Click += buttonLoadPalette_Click;
 			// 
 			// labelPaletteBankPreview
 			// 
@@ -1426,7 +1412,7 @@
 			// labelCurrentPaletteColor
 			// 
 			labelCurrentPaletteColor.AutoSize = true;
-			labelCurrentPaletteColor.Location = new System.Drawing.Point(3, 98);
+			labelCurrentPaletteColor.Location = new System.Drawing.Point(5, 160);
 			labelCurrentPaletteColor.Name = "labelCurrentPaletteColor";
 			labelCurrentPaletteColor.Size = new System.Drawing.Size(174, 15);
 			labelCurrentPaletteColor.TabIndex = 35;
@@ -1552,8 +1538,6 @@
 			importExportPanel.ResumeLayout(false);
 			importExportPanel.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)palettePreview).EndInit();
-			panel3.ResumeLayout(false);
-			panel3.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)textureImage).EndInit();
 			((System.ComponentModel.ISupportInitialize)trackBarMipmapLevel).EndInit();
 			((System.ComponentModel.ISupportInitialize)texturePreviewZoomTrackBar).EndInit();
@@ -1638,7 +1622,6 @@
 		private System.Windows.Forms.Label labelStartColor;
 		private System.Windows.Forms.Label labelStartBank;
 		private System.Windows.Forms.NumericUpDown numericUpDownStartBank;
-		private System.Windows.Forms.Panel panel3;
 		private System.Windows.Forms.ToolStripMenuItem compatibleGVPToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.TrackBar texturePreviewZoomTrackBar;

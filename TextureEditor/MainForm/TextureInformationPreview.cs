@@ -125,6 +125,8 @@ namespace TextureEditor
 										toolStripStatusLabelPalette.Text = "Palette: " + Path.GetFileName(pvppath);
 										paletteSet = 0;
 									}
+									else
+										currentPalette = TexturePalette.CreateDefaultPalette(pvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
 								}
 								int actualPaletteColors = currentPalette.GetNumColors();
 								// Failsafe check if the palette has a smaller number of colors than the indexed image expects
@@ -177,6 +179,8 @@ namespace TextureEditor
 										toolStripStatusLabelPalette.Text = "Palette: " + Path.GetFileName(gvppath);
 										paletteSet = 0;
 									}
+									else
+										TexturePalette.CreateDefaultPalette(gvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
 								}
 								int actualPaletteColors = currentPalette.GetNumColors();
 								// Failsafe check if the palette has a smaller number of colors than the indexed image expects

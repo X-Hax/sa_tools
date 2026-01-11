@@ -94,10 +94,13 @@ namespace TextureEditor
 		/// <summary>Creates a default palette and replaces the current palette with it.</summary>
 		private void ResetPalette()
 		{
-			currentPalette = TexturePalette.CreateDefaultPalette(true);
+
+			currentPalette = TexturePalette.CreateDefaultPalette(textures[listBox1.SelectedIndex].GetIndexedFormat() == IndexedTextureFormat.Index8);
 			toolStripStatusLabelPalette.Text = "Palette: default";
 			paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = 0;
-			UpdateTextureInformation();
+			textures[listBox1.SelectedIndex].SetPalette(currentPalette, paletteSet);
+			UpdateTextureView();
+			ShowHidePaletteInfo();
 		}
 
 		/// <summary>Sets the currently selected palette bank ID and updates the texture preview.</summary>
@@ -290,16 +293,27 @@ namespace TextureEditor
 		{
 			byte[] origData; // Original texture's encoded data
 			DataCodec codec; // Codec used to decode the original texture's encoded data
+			int offset = 0; // Location of texture data (Needed for mipmapped PVR formats and GVRs with CLUT)
 			GenericTexture texture = textures[currentTextureID];
 			switch (texture)
 			{
 				case PvrTexture pvr:
 					codec = PvrDataCodec.Create(pvr.PvrDataFormat, PixelCodec.GetPixelCodec(pvr.PvrPixelFormat));
+					PvrDataCodec c = (PvrDataCodec)codec;
 					origData = pvr.HeaderlessData;
+					offset = pvr.HeaderlessData.Length - c.CalculateTextureSize(pvr.Width, pvr.Height);
 					break;
 				case GvrTexture gvr:
 					codec = GvrDataCodec.GetDataCodec(gvr.GvrDataFormat);
 					origData = gvr.HeaderlessData;
+					GvrDataCodec g = (GvrDataCodec)codec;
+					// Check for CLUT
+					if (g.PaletteEntries != 0 && !gvr.RequiresPaletteFile)
+					{
+						PixelCodec paletteCodec = PixelCodec.GetPixelCodec(gvr.GvrPaletteFormat, settingsfile.SACompatiblePalettes);
+						int paletteSize = paletteCodec.BytesPerPixel * g.PaletteEntries;
+						offset += paletteSize;
+					}
 					break;
 				default:
 					MessageBox.Show(this, "Currently selected texture is not a PVR or GVR texture.", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -335,12 +349,15 @@ namespace TextureEditor
 				replacePalette.Entries[i] = colors[bankSize * texture.PaletteBank + i];
 			targetBitmap.Palette = replacePalette;
 			// Decode to Index8
-			byte[] indexData = codec.Decode(origData, texture.Width, texture.Height, null);
+			byte[] indexData = codec.Decode(origData[offset..], texture.Width, texture.Height, null);
 			// Set pixels in the target Bitmap
 			for (int y = 0; y < texture.Height; y++)
 				for (int x = 0; x < texture.Width; x++)
 				{
 					int pixIndex = indexData[y* texture.Width + x];
+					// Index4 hack
+					if (sourceFormat == IndexedTextureFormat.Index4)
+						pixIndex = pixIndex & 0x0F;
 					TextureFunctions.SetPixelIndex(targetBitmap, x, y, pixIndex);
 				}
 			return targetBitmap;
