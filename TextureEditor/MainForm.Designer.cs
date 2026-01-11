@@ -89,6 +89,9 @@
 			helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			textureEditorHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			textureEditingGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+			listOfTexturesSA1SADXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			listOfTexturesSA2SA2BToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			splitContainer1 = new System.Windows.Forms.SplitContainer();
 			listBox1 = new System.Windows.Forms.ListBox();
@@ -480,6 +483,7 @@
 			highQualityGVMsToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
 			highQualityGVMsToolStripMenuItem.Text = "High &Quality GVMs (GC only)";
 			highQualityGVMsToolStripMenuItem.ToolTipText = "Enable support for ARGB8888 textures in GVM files. Only supported by SA2B Gamecube.";
+			highQualityGVMsToolStripMenuItem.Click += highQualityGVMsToolStripMenuItem_Click;
 			// 
 			// compatibleGVPToolStripMenuItem
 			// 
@@ -490,6 +494,7 @@
 			compatibleGVPToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
 			compatibleGVPToolStripMenuItem.Text = "SADX/SA2 compatible GVPs";
 			compatibleGVPToolStripMenuItem.ToolTipText = resources.GetString("compatibleGVPToolStripMenuItem.ToolTipText");
+			compatibleGVPToolStripMenuItem.Click += compatibleGVPToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator5
 			// 
@@ -510,6 +515,7 @@
 			preferHighQualityToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
 			preferHighQualityToolStripMenuItem.Text = "Prefer High Quality";
 			preferHighQualityToolStripMenuItem.ToolTipText = resources.GetString("preferHighQualityToolStripMenuItem.ToolTipText");
+			preferHighQualityToolStripMenuItem.Click += preferHighQualityToolStripMenuItem_Click;
 			// 
 			// allowCompressedFormatsToolStripMenuItem
 			// 
@@ -518,6 +524,7 @@
 			allowCompressedFormatsToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
 			allowCompressedFormatsToolStripMenuItem.Text = "Allow Compressed Formats";
 			allowCompressedFormatsToolStripMenuItem.ToolTipText = resources.GetString("allowCompressedFormatsToolStripMenuItem.ToolTipText");
+			allowCompressedFormatsToolStripMenuItem.Click += allowCompressedFormatsToolStripMenuItem_Click;
 			// 
 			// dDSPNGSettingsToolStripMenuItem
 			// 
@@ -535,6 +542,7 @@
 			useDDSInPAKsToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
 			useDDSInPAKsToolStripMenuItem.Text = "Use DDS in PAKs";
 			useDDSInPAKsToolStripMenuItem.ToolTipText = "If this option is checked, newly encoded PAK textures will be in the DDS format.\r\nIf this option is unchecked, newly encoded PAK textures will be in the PNG format.";
+			useDDSInPAKsToolStripMenuItem.Click += useDDSInPAKsToolStripMenuItem_Click;
 			// 
 			// useDDSInPVMXToolStripMenuItem
 			// 
@@ -545,6 +553,7 @@
 			useDDSInPVMXToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
 			useDDSInPVMXToolStripMenuItem.Text = "Use DDS in PVMX";
 			useDDSInPVMXToolStripMenuItem.ToolTipText = "If this option is checked, newly encoded PVMX textures will be in the DDS format.\r\nIf this option is unchecked, newly encoded PVMX textures will be in the PNG format.";
+			useDDSInPVMXToolStripMenuItem.Click += useDDSInPVMXToolStripMenuItem_Click;
 			// 
 			// useDDSInTexturePacksToolStripMenuItem
 			// 
@@ -555,6 +564,7 @@
 			useDDSInTexturePacksToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
 			useDDSInTexturePacksToolStripMenuItem.Text = "Use DDS in Texture Packs";
 			useDDSInTexturePacksToolStripMenuItem.ToolTipText = resources.GetString("useDDSInTexturePacksToolStripMenuItem.ToolTipText");
+			useDDSInTexturePacksToolStripMenuItem.Click += useDDSInTexturePacksToolStripMenuItem_Click;
 			// 
 			// toolsToolStripMenuItem
 			// 
@@ -566,7 +576,7 @@
 			// generateNewGbixToolStripMenuItem
 			// 
 			generateNewGbixToolStripMenuItem.Name = "generateNewGbixToolStripMenuItem";
-			generateNewGbixToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+			generateNewGbixToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			generateNewGbixToolStripMenuItem.Text = "Generate New Gbix";
 			generateNewGbixToolStripMenuItem.Click += generateNewGbixToolStripMenuItem_Click;
 			// 
@@ -574,7 +584,7 @@
 			// 
 			mipmapsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { addMipmapsToAllToolStripMenuItem, removeMipmapsFromAllToolStripMenuItem, exportMipmapsAsPNGToolStripMenuItem });
 			mipmapsToolStripMenuItem.Name = "mipmapsToolStripMenuItem";
-			mipmapsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+			mipmapsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			mipmapsToolStripMenuItem.Text = "Mipmaps";
 			// 
 			// addMipmapsToAllToolStripMenuItem
@@ -605,7 +615,7 @@
 			alphaSortingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { enablePAKAlphaForAllToolStripMenuItem, disablePAKAlphaForAllToolStripMenuItem });
 			alphaSortingToolStripMenuItem.Enabled = false;
 			alphaSortingToolStripMenuItem.Name = "alphaSortingToolStripMenuItem";
-			alphaSortingToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+			alphaSortingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			alphaSortingToolStripMenuItem.Text = "PAK Alpha Flags";
 			alphaSortingToolStripMenuItem.ToolTipText = "Transparency flags for SA2 PC PAKs.";
 			// 
@@ -627,7 +637,7 @@
 			// 
 			// helpToolStripMenuItem
 			// 
-			helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { textureEditorHelpToolStripMenuItem, textureEditingGuideToolStripMenuItem });
+			helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { textureEditorHelpToolStripMenuItem, textureEditingGuideToolStripMenuItem, toolStripSeparator6, listOfTexturesSA1SADXToolStripMenuItem, listOfTexturesSA2SA2BToolStripMenuItem });
 			helpToolStripMenuItem.Name = "helpToolStripMenuItem";
 			helpToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
 			helpToolStripMenuItem.Text = "Help";
@@ -635,16 +645,35 @@
 			// textureEditorHelpToolStripMenuItem
 			// 
 			textureEditorHelpToolStripMenuItem.Name = "textureEditorHelpToolStripMenuItem";
-			textureEditorHelpToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+			textureEditorHelpToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
 			textureEditorHelpToolStripMenuItem.Text = "Texture Editor Help";
 			textureEditorHelpToolStripMenuItem.Click += textureEditorHelpToolStripMenuItem_Click;
 			// 
 			// textureEditingGuideToolStripMenuItem
 			// 
 			textureEditingGuideToolStripMenuItem.Name = "textureEditingGuideToolStripMenuItem";
-			textureEditingGuideToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+			textureEditingGuideToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
 			textureEditingGuideToolStripMenuItem.Text = "Texture Editing Guide";
 			textureEditingGuideToolStripMenuItem.Click += textureEditingGuideToolStripMenuItem_Click;
+			// 
+			// toolStripSeparator6
+			// 
+			toolStripSeparator6.Name = "toolStripSeparator6";
+			toolStripSeparator6.Size = new System.Drawing.Size(214, 6);
+			// 
+			// listOfTexturesSA1SADXToolStripMenuItem
+			// 
+			listOfTexturesSA1SADXToolStripMenuItem.Name = "listOfTexturesSA1SADXToolStripMenuItem";
+			listOfTexturesSA1SADXToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+			listOfTexturesSA1SADXToolStripMenuItem.Text = "List of Textures (SA1/SADX)";
+			listOfTexturesSA1SADXToolStripMenuItem.Click += listOfTexturesSA1SADXToolStripMenuItem_Click;
+			// 
+			// listOfTexturesSA2SA2BToolStripMenuItem
+			// 
+			listOfTexturesSA2SA2BToolStripMenuItem.Name = "listOfTexturesSA2SA2BToolStripMenuItem";
+			listOfTexturesSA2SA2BToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+			listOfTexturesSA2SA2BToolStripMenuItem.Text = "List of Textures (SA2/SA2B)";
+			listOfTexturesSA2SA2BToolStripMenuItem.Click += listOfTexturesSA2SA2BToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator4
 			// 
@@ -1465,5 +1494,8 @@
 		private System.Windows.Forms.ToolStripMenuItem textureEditingGuideToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportMipmapsAsPNGToolStripMenuItem;
 		private System.Windows.Forms.Label labelCurrentPaletteColor;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+		private System.Windows.Forms.ToolStripMenuItem listOfTexturesSA1SADXToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem listOfTexturesSA2SA2BToolStripMenuItem;
 	}
 }
