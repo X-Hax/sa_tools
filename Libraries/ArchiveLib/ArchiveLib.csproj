@@ -16,6 +16,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\SplitTools\SplitTools.csproj" />
 		<ProjectReference Include="..\SAModel\SAModel.csproj" />
-		<ProjectReference Include="..\VrSharp\VrSharp.csproj" />
+		<ProjectReference Include="..\TextureLib\TextureLib.csproj" />
 	</ItemGroup>
 </Project>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using AuroraLib.Compression;
 using AuroraLib.Compression.Algorithms;
 using AuroraLib.Core.IO;
 using SplitTools;

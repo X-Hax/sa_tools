@@ -15,6 +15,7 @@ using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
 using static SAModel.SAEditorCommon.SettingsFile;
+using PSO.PRS;
 
 namespace SA2EventViewer
 {
@@ -1335,7 +1336,7 @@ namespace SA2EventViewer
 			bool bigEndian = @event.isBattle;
 			string extension = Path.GetExtension(fileName);
 
-			FraGag.Compression.Prs.Compress(filecontents, fileName);
+			File.WriteAllBytes(fileName, PRS.Compress(filecontents, 255));
 			if (!File.Exists(fileName))
 			{
 				File.Create(fileName);

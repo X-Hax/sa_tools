@@ -1,11 +1,10 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
-
 using nQuant;
+using VrSharp.Pvr;
 
 namespace VrSharp
 {
@@ -17,12 +16,14 @@ namespace VrSharp
         protected byte[] decodedData; // Decoded texture data (either 32-bit RGBA or 8-bit indexed)
 		protected byte[][] decodedMipData;
         protected Bitmap decodedBitmap; // Decoded bitmap
-		protected Bitmap[] decodedMipBitmap; 
-
-        protected VrPixelCodec pixelCodec; // Pixel codec
+		protected Bitmap[] decodedMipBitmap;
+		
+		protected VrPixelCodec pixelCodec; // Pixel codec
         protected VrDataCodec dataCodec;   // Data codec
 
-        protected byte[][] texturePalette; // The texture's palette
+		protected QuantizedPalette vqPalette;
+
+		protected byte[][] texturePalette; // The texture's palette
         #endregion
 
         #region Texture Properties
@@ -415,7 +416,8 @@ namespace VrSharp
 
 				// Quantize the image
 				WuQuantizer quantizer = new WuQuantizer();
-				img = (Bitmap)quantizer.QuantizeImage(img, maxColors);
+				vqPalette = quantizer.CreatePalette(img, maxColors);
+				img = (Bitmap)quantizer.QuantizeImage(img, vqPalette);
 			}
 
 			int bitsPerPixel = Image.GetPixelFormatSize(img.PixelFormat);
@@ -497,6 +499,47 @@ namespace VrSharp
 
 			return destination;
 		}
+
+		protected unsafe byte[] BitmapToRawIndexedResized(Bitmap source, int size, int minSize, QuantizedPalette palette)
+		{
+			if (size > minSize)
+				minSize = size;
+
+			byte[] destination = new byte[minSize * minSize * 4];
+
+			// Resize the image
+			Bitmap img = new Bitmap(minSize, minSize, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(img))
+			{
+				using (ImageAttributes attr = new ImageAttributes())
+				{
+					attr.SetWrapMode(WrapMode.TileFlipXY);
+					g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+					g.DrawImage(source, new Rectangle(0, 0, size, size), 0, 0, source.Width, source.Height, GraphicsUnit.Pixel, attr);
+				}
+			}
+
+			// Quantize the image
+			WuQuantizer quantizer = new WuQuantizer();
+			img = (Bitmap)quantizer.QuantizeImage(img, palette);
+
+			// Copy over the data to the destination. We need to use Stride in this case, as it may not
+			// always be equal to Width.
+			BitmapData bitmapData = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, img.PixelFormat);
+
+			byte* pointer = (byte*)bitmapData.Scan0;
+			for (int y = 0; y < bitmapData.Height; y++)
+			{
+				for (int x = 0; x < bitmapData.Width; x++)
+				{
+					destination[(y * img.Width) + x] = pointer[(y * bitmapData.Stride) + x];
+				}
+			}
+
+			img.UnlockBits(bitmapData);
+			return destination;
+		}
+
 		#endregion
 	}
 }

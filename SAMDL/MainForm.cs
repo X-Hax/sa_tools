@@ -17,6 +17,7 @@ using Point = System.Drawing.Point;
 using SplitTools;
 using SAModel.SAEditorCommon.ProjectManagement;
 using static SAModel.SAEditorCommon.SettingsFile;
+using PSO.PRS;
 
 namespace SAModel.SAMDL
 {
@@ -677,7 +678,7 @@ namespace SAModel.SAMDL
 					// Generic binary
 					default:
 						if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
-							file = FraGag.Compression.Prs.Decompress(file);
+							file = PRS.Decompress(file);
 						ByteConverter.BigEndian = false;
 						modelinfo.CheckFilename(filename);
 						if (file.Length != 90922000) // SADX Steam exception
@@ -753,7 +754,7 @@ namespace SAModel.SAMDL
 											{
 												byte[] anifile = File.ReadAllBytes(anidlg.FileName);
 												if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-													anifile = FraGag.Compression.Prs.Decompress(anifile);
+													anifile = PRS.Decompress(anifile);
 												address = 0;
 												SortedDictionary<int, NJS_MOTION> anis = new SortedDictionary<int, NJS_MOTION>();
 												i = ByteConverter.ToInt32(file, address);
@@ -2735,7 +2736,7 @@ namespace SAModel.SAMDL
 						Dictionary<int, int> processedanims = new Dictionary<int, int>();
 
 						if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
-							anifile = FraGag.Compression.Prs.Decompress(anifile);
+							anifile = PRS.Decompress(anifile);
 
 						if (BitConverter.ToInt16(anifile, 0) != 0)
 							ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt16(anifile, 0);

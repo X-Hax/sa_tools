@@ -15,8 +15,9 @@
 	  <Content Include="datatoolbox.ico" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
-		</ProjectReference>
+	  <PackageReference Include="PRS" Version="1.1.2" />
+	</ItemGroup>
+	<ItemGroup>
 		<ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj">
 		</ProjectReference>
 		<ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">

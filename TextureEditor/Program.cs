@@ -4,14 +4,14 @@ using System.Windows.Forms;
 
 namespace TextureEditor
 {
-	static class Program
+	static partial class Program
 	{
+		/// <summary>Command line arguments used for this instance of Texture Editor.</summary>
 		public static string[] Arguments { get; private set; }
-		public static MainForm primaryForm;
+		/// <summary>MainForm to be used as parent for dialogs.</summary>
+		public static MainForm primaryForm;		
 
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
+		/// <summary>The main entry point for the application.</summary>
 		[STAThread]
 		static void Main(string[] args)
 		{
@@ -24,6 +24,7 @@ namespace TextureEditor
 			Application.Run(primaryForm);
 		}
 
+		/// <summary>Displays an error dialog.</summary>
 		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			if (primaryForm != null)

@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using VrSharp.Gvr;
-using VrSharp.Pvr;
-using VrSharp.Xvr;
+using TextureLib;
 using static ArchiveLib.GenericArchive;
 
 // Archive format used in some Dreamcast, Gamecube and Xbox games.
@@ -95,11 +93,11 @@ namespace ArchiveLib
 						return ".xvm";
 				}
 				// Texture
-				if (PvrTexture.Is(Data))
+				if (PvrTexture.Identify(Data))
 					return ".pvr";
-				else if (GvrTexture.Is(Data))
+				else if (GvrTexture.Identify(Data))
 					return ".gvr";
-				else if (XvrTexture.Is(Data))
+				else if (XvrTexture.Identify(Data))
 					return ".xvr";
 				// Audio
 				switch (BitConverter.ToUInt32(Data, 0))

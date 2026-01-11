@@ -1,11 +1,11 @@
-﻿using FraGag.Compression;
-using SplitTools;
+﻿using SplitTools;
 using SAModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using ByteConverter = SAModel.ByteConverter;
+using PSO.PRS;
 
 namespace SA2EventViewer
 {
@@ -20,11 +20,11 @@ namespace SA2EventViewer
 		{
 			//byte[] fc;
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				filecontents = Prs.Decompress(filename);
+				filecontents = PRS.Decompress(File.ReadAllBytes(filename));
 			else
 				filecontents = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).Equals(".bin", StringComparison.OrdinalIgnoreCase) && filecontents[0] == 0x0F && filecontents[1] == 0x81)
-				filecontents = Prs.Decompress(filename);
+				filecontents = PRS.Decompress(File.ReadAllBytes(filename));
 			//fc = filecontents;
 			bool battle = false;
 			bool dcbeta = false;

@@ -1,5 +1,5 @@
-﻿using FraGag.Compression;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using PSO.PRS;
 using SAModel;
 using System;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace SplitTools.SAArc
 				byte[] fc;
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					fc = Prs.Decompress(filename);
+					fc = PRS.Decompress(File.ReadAllBytes(filename));
 				}
 				else
 				{
@@ -653,7 +653,7 @@ namespace SplitTools.SAArc
 				byte[] fc;
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					fc = Prs.Decompress(filename);
+					fc = PRS.Decompress(File.ReadAllBytes(filename));
 				}
 				else
 				{
@@ -935,11 +935,7 @@ namespace SplitTools.SAArc
 				}
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					FraGag.Compression.Prs.Compress(extradata.ToArray(), filename);
-					if (!File.Exists(filename))
-					{
-						File.Create(filename);
-					}
+					File.WriteAllBytes(filename, PRS.Compress(extradata.ToArray(), 255));
 				}
 				else
 				{
@@ -1001,11 +997,7 @@ namespace SplitTools.SAArc
 				}
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					FraGag.Compression.Prs.Compress(extradata.ToArray(), filename);
-					if (!File.Exists(filename))
-					{
-						File.Create(filename);
-					}
+					File.WriteAllBytes(filename, PRS.Compress(extradata.ToArray(), 255));
 				}
 				else
 				{

@@ -1,4 +1,4 @@
-﻿using FraGag.Compression;
+﻿using PSO.PRS;
 using SAModel;
 using System.Data;
 using System.Text;
@@ -128,7 +128,7 @@ namespace SA2CutsceneEffectEditor
 			this.filename = filename;
 			byte[] fc;
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				fc = Prs.Decompress(filename);
+				fc = PRS.Decompress(File.ReadAllBytes(filename));
 			else
 				fc = File.ReadAllBytes(filename);
 			if (fc.Length <= 0x141C)
@@ -777,7 +777,7 @@ namespace SA2CutsceneEffectEditor
 				}
 			}
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				Prs.Compress(fc.ToArray(), filename);
+				File.WriteAllBytes(filename, PRS.Compress(fc.ToArray(), 255));
 			else
 				File.WriteAllBytes(filename, fc.ToArray());
 		}

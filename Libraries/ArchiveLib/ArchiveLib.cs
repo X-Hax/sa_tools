@@ -25,6 +25,7 @@ namespace ArchiveLib
 
         public abstract class GenericArchiveEntry
         {
+			/// <summary>Filename with extension</summary>
             public string Name { get; set; }
             public byte[] Data { get; set; }
 
