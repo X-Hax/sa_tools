@@ -212,5 +212,46 @@ namespace TextureLib
 		{
 			return (number & (number - 1)) == 0 && number > 0;
 		}
-    }
+
+		/// <summary>
+		/// Manipulates pixel data in indexed Bitmaps. 
+		/// <param name="bmp">Indexed Bitmap to modify.</param>
+		/// <param name="x">X coordinate.</param>
+		/// <param name="y">Y coordinate.</param>
+		/// <param name="pixelIndex">Palette color ID to set.</param>
+		/// </summary>
+		public static void SetPixelIndex(Bitmap bmp, int x, int y, int pixelIndex)
+		{
+			switch (bmp.PixelFormat)
+			{
+				case PixelFormat.Format8bppIndexed:
+					BitmapData data8 = bmp.LockBits(new System.Drawing.Rectangle(new System.Drawing.Point(0, 0), new System.Drawing.Size(bmp.Width, bmp.Height)), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
+					int offset = y * data8.Stride + (x);
+					Marshal.WriteByte(data8.Scan0, offset, (byte)pixelIndex);
+					bmp.UnlockBits(data8);
+					return;
+				case PixelFormat.Format4bppIndexed:
+					BitmapData data4 = bmp.LockBits(new System.Drawing.Rectangle(new System.Drawing.Point(0, 0), new System.Drawing.Size(bmp.Width, bmp.Height)), ImageLockMode.ReadWrite, PixelFormat.Format4bppIndexed);
+					// Bit index
+					int biti = (data4.Stride > 0 ? y : y - bmp.Height + 1) * data4.Stride * 8 + x * 4;
+					// Pixel index
+					int i = biti / 8;
+					// Retrieve byte
+					byte b = Marshal.ReadByte(data4.Scan0, i);
+					// Write byte
+					if (biti % 8 == 0)
+					{
+						Marshal.WriteByte(data4.Scan0, i, (byte)(b & 0xf | (pixelIndex << 4)));
+					}
+					else
+					{
+						Marshal.WriteByte(data4.Scan0, i, (byte)(b & 0xf0 | pixelIndex));
+					}
+					bmp.UnlockBits(data4);
+					return;
+				default:
+					return;
+			}
+		}
+	}
 }
