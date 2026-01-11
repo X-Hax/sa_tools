@@ -9,7 +9,9 @@ namespace TextureEditor
 {
 	public partial class MainForm
 	{
-		private void ExportAllAs(TextureFileFormat expfmt)
+		/// <summary>Exports all currently loaded textures in the specified format.</summary>
+		/// <param name="expfmt">Target format (PVR, GVR, XVR, DDS or PNG).</param>
+		private static void ExportAllAs(TextureFileFormat expfmt)
 		{
 			using (SaveFileDialog dlg = new SaveFileDialog() { Title = "Save Folder", DefaultExt = "", Filter = "Folder|", FileName = "texturepack" })
 			{
@@ -57,17 +59,16 @@ namespace TextureEditor
 			}
 		}
 
-		private void ExportTexturePack()
+		/// <summary>Exports all currently loaded textures as a folder texture pack.</summary>
+		private static void ExportTexturePack()
 		{
 			using (SaveFileDialog dlg = new SaveFileDialog() { Title = "Save Folder", DefaultExt = "", Filter = "Folder|", FileName = "texturepack" })
 			{
-
 				if (archiveFilename != null)
 				{
 					dlg.InitialDirectory = Path.GetDirectoryName(archiveFilename);
 					dlg.FileName = Path.GetFileNameWithoutExtension(archiveFilename);
 				}
-
 				if (dlg.ShowDialog(primaryForm) == DialogResult.OK)
 				{
 					Directory.CreateDirectory(dlg.FileName);
@@ -88,6 +89,7 @@ namespace TextureEditor
 			}
 		}
 
+		/// <summary>Exports all mipmaps in the currently selected texture as individual PNG images.</summary>
 		private void ExportMipmaps()
 		{
 			if (listBox1.SelectedIndex == -1)

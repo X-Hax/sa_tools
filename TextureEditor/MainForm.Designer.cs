@@ -1464,6 +1464,7 @@
 			toolStripStatusLabelPalette.Name = "toolStripStatusLabelPalette";
 			toolStripStatusLabelPalette.Size = new System.Drawing.Size(124, 19);
 			toolStripStatusLabelPalette.Text = "No palette file loaded";
+			toolStripStatusLabelPalette.Visible = false;
 			// 
 			// dummyPanel
 			// 

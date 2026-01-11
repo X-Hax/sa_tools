@@ -145,19 +145,6 @@ namespace TextureEditor
 			}
 			try
 			{
-				// View menu
-				settingsfile.EnableFiltering = textureFilteringToolStripMenuItem.Checked;
-				// Edit menu - GVR settings
-				settingsfile.HighQualityGVM = highQualityGVMsToolStripMenuItem.Checked;
-				settingsfile.SACompatiblePalettes = compatibleGVPToolStripMenuItem.Checked;
-				// Edit menu - Texture conversion settings
-				settingsfile.TexEncodeAutoHighQuality = preferHighQualityToolStripMenuItem.Checked;
-				settingsfile.TexEncodeUseCompressed = allowCompressedFormatsToolStripMenuItem.Checked;
-				// Edit menu - DDS/PNG settings
-				settingsfile.UseDDSforPAK = useDDSInPAKsToolStripMenuItem.Checked;
-				settingsfile.UseDDSforPVMX = useDDSInPVMXToolStripMenuItem.Checked;
-				settingsfile.UseDDSforTexPack = useDDSInTexturePacksToolStripMenuItem.Checked;
-
 				Settings.Save();
 				settingsfile.Save();
 			}
@@ -264,15 +251,6 @@ namespace TextureEditor
 			UpdateTextureInformation();
 			unsaved = true;
 		}
-
-		private void textureImage_MouseClick(object sender, MouseEventArgs e)
-		{
-			if (listBox1.SelectedIndex != -1 && e.Button == MouseButtons.Right)
-			{
-				pasteToolStripMenuItem.Enabled = Clipboard.ContainsImage();
-				contextMenuStrip1.Show(textureImage, e.Location);
-			}
-		}
 		#endregion
 
 		#region Texture list and Add/Remove/Up/Down buttons
@@ -295,7 +273,7 @@ namespace TextureEditor
 
 		private void addTextureButton_Click(object sender, EventArgs e)
 		{
-			AddTexture();
+			AddTextures();
 		}
 
 		private void removeTextureButton_Click(object sender, EventArgs e)
@@ -342,19 +320,20 @@ namespace TextureEditor
 		#region Palette settings and preview
 		private void buttonLoadPalette_Click(object sender, EventArgs e)
 		{
-			LoadPaletteDialog();
-		}
-
-		private void numericUpDownStartBank_ValueChanged(object sender, EventArgs e)
-		{
-			if (currentPalette != null)
-				currentPalette.StartBank = (short)numericUpDownStartBank.Value;
+			LoadPaletteDialog(textures[listBox1.SelectedIndex].Name);
 		}
 
 		private void buttonSavePalette_Click(object sender, EventArgs e)
 		{
 			SavePaletteDialog(textures[listBox1.SelectedIndex].Name);
 		}
+
+		private void numericUpDownStartBank_ValueChanged(object sender, EventArgs e)
+		{
+			currentPalette.StartBank = (short)numericUpDownStartBank.Value;
+		}
+
+
 
 		private void buttonResetPalette_Click(object sender, EventArgs e)
 		{
@@ -601,6 +580,15 @@ namespace TextureEditor
 				return;
 			UpdateTextureMipmap();
 			UpdateTextureView();
+		}
+
+		private void textureImage_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (listBox1.SelectedIndex != -1 && e.Button == MouseButtons.Right)
+			{
+				pasteToolStripMenuItem.Enabled = Clipboard.ContainsImage();
+				contextMenuStrip1.Show(textureImage, e.Location);
+			}
 		}
 
 		private void copyToolStripMenuItem_Click(object sender, EventArgs e)

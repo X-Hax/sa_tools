@@ -10,6 +10,7 @@ namespace TextureEditor
 {
 	public partial class MainForm
 	{
+		/// <summary>Updates the status bar with the current number of textures in the texture list.</summary>
 		private void UpdateTextureCount()
 		{
 			if (textures.Count == 1)
@@ -19,6 +20,7 @@ namespace TextureEditor
 			alphaSortingToolStripMenuItem.Enabled = currentFormat == TextureArchiveFormat.PAK;
 		}
 
+		/// <summary>Updates all information in the texture panel, including palette information and preview image.</summary>
 		private void UpdateTextureInformation()
 		{
 			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
@@ -241,6 +243,7 @@ namespace TextureEditor
 			}
 		}
 
+		/// <summary>Updates the texture's preview image based on the filtering, zoom and mipmap settings.</summary>
 		private void UpdateTextureView()
 		{
 			if (listBox1.SelectedIndex == -1)
@@ -254,6 +257,10 @@ namespace TextureEditor
 			textureImage.Image = ScaleBitmapToWindow(image, textureFilteringToolStripMenuItem.Checked ? System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic : System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor);
 		}
 
+		/// <summary>Scales a Bitmap to fit the current window size. Updates the "Zoom" text field.</summary>
+		/// <param name="image">Source Bitmap.</param>
+		/// <param name="mode">Filtering mode (HighQualityBicubic or NearestNeighbor based on filtering settings).</param>
+		/// <returns>A scaled Bitmap.</returns>
 		private Bitmap ScaleBitmapToWindow(Bitmap image, System.Drawing.Drawing2D.InterpolationMode mode)
 		{
 			float scale = 1.0f;
@@ -328,12 +335,13 @@ namespace TextureEditor
 			return bmp;
 		}
 
-		// Texture preview context menu - copy and paste
+		///<summary>Copies the texture's preview image to the clipboard.</summary>
 		private void TexturePreviewCopy()
 		{
 			Clipboard.SetImage(textures[listBox1.SelectedIndex].Image);
 		}
 
+		///<summary>Re-encodes the currently selected texture using the Bitmap from the clipboard, retaining the current texture format.</summary>
 		private void TexturePreviewPaste()
 		{
 			Bitmap tex = new Bitmap(Clipboard.GetImage());
@@ -342,7 +350,8 @@ namespace TextureEditor
 			UpdateTextureInformation();
 			unsaved = true;
 		}
-		
+
+		///<summary>Updates mipmap-related controls for the currently selected texture.</summary>
 		private void UpdateTextureMipmap()
 		{
 			if (listBox1.SelectedIndex != -1)

@@ -12,6 +12,12 @@ namespace TextureEditor
 {
 	public partial class MainForm
 	{
+		/// <summary>
+		/// The main file loading function. Processes the specified file and loads texture(s) from it, replacing the current texture list.
+		/// If the specified file is an individual PVR/GVR/XVR file, it will also add all PVR/GVR/XVR files located in the same folder.
+		/// </summary>
+		/// <param name="filename">Path to the file containing texture(s).</param>
+		/// <returns>True on success, false on failure.</returns>
 		private bool LoadFile(string filename)
 		{
 			// Load file
@@ -140,6 +146,11 @@ namespace TextureEditor
 			return true;
 		}
 
+		/// <summary>
+		/// Processes a texture archive and retrieves a list of textures from it.
+		/// </summary>
+		/// <param name="fname">Path to the archive file.</param>
+		/// <returns>A List of GenericTexture entries.</returns>
 		private List<GenericTexture> GetTexturesFromFile(string fname)
 		{
 			usingSocPak = false;
@@ -255,7 +266,7 @@ namespace TextureEditor
 						newtextures.Add(new XvrTexture(file.Data) { Name = Path.GetFileNameWithoutExtension(file.Name) });
 				}
 				// Check if the file contains paletted Chao textures to show or hide the Chao Settings menu
-				chaoToolStripMenuItem.Visible = CheckIfArchiveHasPalettedChaoTextures(arc);
+				chaoToolStripMenuItem.Visible = SAModel.SAEditorCommon.ChaoPalettes.CheckIfArchiveHasPalettedChaoTextures(arc);
 			}
 			// Check if GenericTexture match the current format and convert if necessary.
 			// This part is here because GetTexturesFromArchive() can also be called when adding PVM/GVM etc. using the "Add Texture..." button.

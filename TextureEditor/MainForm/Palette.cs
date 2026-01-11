@@ -4,11 +4,14 @@ using System.IO;
 using System.Windows.Forms;
 using TextureLib;
 using static TextureEditor.Program;
+using static SAModel.SAEditorCommon.ChaoPalettes;
 
 namespace TextureEditor
 {
 	public partial class MainForm
 	{
+		/// <summary>Displays information on a specific color when the user clicks on the palette preview.</summary>
+		/// <param name="coordinates">Mouse pointer location relative to the palette preview image.</param>
 		private void DisplayPaletteSelectedColorInfo(Point coordinates)
 		{
 			int colorID = (coordinates.Y / 17) * 16 + coordinates.X / 17;
@@ -17,6 +20,7 @@ namespace TextureEditor
 			labelCurrentPaletteColor.Show();
 		}
 
+		/// <summary>Updates palette information for the currently selected texture.</summary>
 		private void ShowHidePaletteInfo()
 		{
 			labelCurrentPaletteColor.Hide();
@@ -39,23 +43,30 @@ namespace TextureEditor
 					if (textures[listBox1.SelectedIndex] is GvrTexture g && !g.RequiresPaletteFile)
 					{
 						currentPalette = g.Palette;
-						toolStripStatusLabelPalette.Text = "Palette from the GVR file.";
+						toolStripStatusLabelPalette.Text = "Palette loaded from the GVR file.";
 					}
-					int rowsize = dataformat == IndexedTextureFormat.Index8 ? 256 : 16;
-					int rowsize_stored = rowsize - currentPalette.StartColor;
-					int numrows = currentPalette.GetNumColors() / rowsize_stored;
-					comboBoxCurrentPaletteBank.Items.Clear();
-					int maxbanks = Math.Max(1, currentPalette.GetNumColors() / rowsize);
+					// Get the number of palette banks
+					int banksize = dataformat == IndexedTextureFormat.Index8 ? 256 : 16;
+					int numbanks = currentPalette.GetNumColors() / banksize;
+					int maxbanks = Math.Max(1, currentPalette.GetNumColors() / banksize);
+					// Apparently some PVP files in PSO have broken bank IDs, so here's a workaround for that
+					currentPalette.StartBank = Math.Max(0, Math.Min((short)(maxbanks - 1), currentPalette.StartBank));
+					// Start Bank value
 					numericUpDownStartBank.Maximum = maxbanks - 1;
 					numericUpDownStartBank.Value = Math.Max(0, Math.Min(currentPalette.StartBank, numericUpDownStartBank.Maximum));
-					numericUpDownStartColor.Maximum = rowsize - 1;
+					// Start Color value
+					numericUpDownStartColor.Maximum = banksize - 1;
 					numericUpDownStartColor.Value = Math.Max(0, Math.Min(currentPalette.StartColor, numericUpDownStartColor.Maximum));
-					currentPalette.StartBank = Math.Max((short)0, Math.Min((short)(maxbanks - 1), currentPalette.StartBank)); // Apparently some PVP files in PSO have broken bank IDs
-					for (int i = 0; i < numrows; i++)
-						if (currentPalette.StartBank + i < maxbanks)
+					// Update the combo box for currently selected bank
+					comboBoxCurrentPaletteBank.Items.Clear();
+					for (int i = 0; i < numbanks; i++)
+						if (i < maxbanks)
 							comboBoxCurrentPaletteBank.Items.Add((currentPalette.StartBank + i).ToString());
+					// Set currently selected bank
 					paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = Math.Min(comboBoxCurrentPaletteBank.Items.Count - 1, paletteSet);
+					// Generate palette preview
 					palettePreview.Image = GeneratePalettePreview();
+					// Set palette information
 					string extint = textures[listBox1.SelectedIndex].RequiresPaletteFile ? "External" : "Internal";
 					labelPaletteFormat.Text = $"Palette: {currentPalette.GetEncodedColorFormat()} ({extint}), {currentPalette.GetNumColors().ToString()} colors";
 					labelPaletteFormat.Show();
@@ -79,14 +90,16 @@ namespace TextureEditor
 			}
 		}
 
+		/// <summary>Creates a default palette and replaces the current palette with it.</summary>
 		private void ResetPalette()
 		{
 			currentPalette = TexturePalette.CreateDefaultPalette(true);
-			toolStripStatusLabelPalette.Text = "Using a default palette.";
+			toolStripStatusLabelPalette.Text = "Palette: default";
 			paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = 0;
 			UpdateTextureInformation();
 		}
 
+		/// <summary>Sets the currently selected palette bank ID and updates the texture preview.</summary>
 		private void SetPaletteBank()
 		{
 			if (currentPalette != null && paletteSet != comboBoxCurrentPaletteBank.SelectedIndex)
@@ -97,15 +110,17 @@ namespace TextureEditor
 			}
 		}
 
+		/// <summary>Sets the loaded palette's start color.</summary>
 		private void SetPaletteStartColor()
 		{
 			if (currentPalette != null)
 				currentPalette.StartColor = (short)Math.Min(numericUpDownStartColor.Value, currentPalette.GetNumColors() - numericUpDownStartColor.Value);
 		}
 
-		private void LoadPaletteDialog()
+		/// <summary>Dialog that loads PVP/GVP/PNG files into the current palette.</summary>
+		private void LoadPaletteDialog(string defaultFilename)
 		{
-			using (OpenFileDialog fd = new OpenFileDialog() { Filter = "Texture Palette|*.pvp;*.gvp;*.bmp;*.png", DefaultExt = "pvp", FilterIndex = currentFormat == TextureArchiveFormat.PVM ? 1 : 2 })
+			using (OpenFileDialog fd = new OpenFileDialog() { FileName = Path.ChangeExtension(defaultFilename, null), Filter = "Texture Palette|*.pvp;*.gvp;*.bmp;*.png", DefaultExt = "pvp", FilterIndex = currentFormat == TextureArchiveFormat.PVM ? 1 : 2 })
 			{
 				DialogResult dr = fd.ShowDialog(this);
 				if (dr == DialogResult.OK)
@@ -132,6 +147,7 @@ namespace TextureEditor
 			}
 		}
 
+		/// <summary>Dialog that saves the currently loaded palette as PVP/GVP/PNG.</summary>
 		private void SavePaletteDialog(string defaultFilename)
 		{
 			using (SaveFileDialog fd = new SaveFileDialog() { Title = "Save Palette File", FileName = defaultFilename, Filter = "PVR Palette|*.pvp|GVR Palette|*.gvp|Bitmaps|*.bmp;*.png", DefaultExt = "pvp", FilterIndex = currentFormat == TextureArchiveFormat.PVM ? 1 : 2 })
@@ -155,7 +171,9 @@ namespace TextureEditor
 			}
 		}
 
-		private Bitmap GeneratePalettePreview()
+		/// <summary>Draws a Bitmap containing a grid with the current palette's colors.</summary>
+		/// <returns>Preview Bitmap.</returns>
+		private static Bitmap GeneratePalettePreview()
 		{
 			int rows = currentPalette.GetNumColors() / 16;
 			Bitmap result = new Bitmap(256 + 16, rows * 16 + rows);
@@ -169,14 +187,41 @@ namespace TextureEditor
 					// Draw a 16x16 square
 					for (int z = 0; z < 16; z++)
 						for (int h = 0; h < 16; h++)
-						{
 							result.SetPixel(offset_x + x * 16 + z, offset_y + y * 16 + h, c);
-						}
 					offset_x += 1;
 				}
 				offset_y += 1;
 			}
 			return result;
+		}
+
+		/// <summary>Checks whether the specified texture is a known paletted Chao texture and applies the palette to it.</summary>
+		/// <returns>True if the palette was set, false if not.</returns>
+		private bool SetChaoPalette(GenericTexture tex)
+		{
+			string texName = tex.Name.ToLowerInvariant();
+			if (CheckIfTextureIsChaoPalettedTexture(texName))
+			{
+				var result = GetChaoPaletteAndBankFromTextureName(texName, settingsfile.ChaoAlignment, settingsfile.ChaoSecondEvolution);
+				string palext = ".pvp";
+				if (tex is GvrTexture)
+					palext = ".gvp";
+				string palname = result.Key;
+				int palbank = result.Value;
+				if (!string.IsNullOrEmpty(palname))
+				{
+					string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
+					string pvppath = folder + palname + palext;
+					if (File.Exists(pvppath))
+					{
+						currentPalette = new TexturePalette(File.ReadAllBytes(pvppath));
+						paletteSet = palbank;
+						toolStripStatusLabelPalette.Text = "Palette loaded from " + palname + palext;
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 	}
 }

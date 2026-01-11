@@ -10,7 +10,7 @@ namespace TextureEditor
 {
 	public partial class MainForm
 	{
-		/// <summary>Import a texture and convert it to the most appropriate format based on its image data.</summary>		
+		/// <summary>Imports a texture and converts it to the most appropriate format based on its image data.</summary>		
 		/// <returns>True on success, false on cancel.</returns>
 		public static bool ImportTexture()
 		{
@@ -98,6 +98,7 @@ namespace TextureEditor
 			listBox1.Select();
 		}
 
+		/// <summary>Loads a folder texture pack and adds textures from it to the current list, converting them to the format appropriate to the current archive format.</summary>
 		private void ImportTexturePack()
 		{
 			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "txt", Filter = "index.txt|index.txt", FileName = "index.txt" })
@@ -169,7 +170,8 @@ namespace TextureEditor
 			}
 		}
 
-		private void AddTexture()
+		/// <summary>Adds a single texture or textures from an archive to the current texture list, converting them to the format appropriate to the current archive format.</summary>
+		private void AddTextures()
 		{
 			string defext = null;
 			string filter = "Supported Files|*.prs;*.pvm;*.pb;*.gvm;*.pvmx;*.pak;*.pvr;*.gvr;*.xvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.dds";
