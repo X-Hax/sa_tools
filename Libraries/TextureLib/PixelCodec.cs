@@ -79,5 +79,36 @@ namespace TextureLib
 					throw new NotImplementedException(ddsFormat.ToString());
 			}
 		}
+
+		public PvrPixelFormat GetPvrPixelFormat()
+		{
+			switch (this)
+			{
+				case ARGB1555PixelCodec: return PvrPixelFormat.Argb1555;
+				case ARGB4444PixelCodec: return PvrPixelFormat.Argb4444;
+				case ARGB8888PixelCodec: return PvrPixelFormat.Argb8888;
+				case RGB555PixelCodec: return PvrPixelFormat.Rgb555;
+				case RGB565PixelCodec: return PvrPixelFormat.Rgb565;
+				case YUV422PixelCodec: return PvrPixelFormat.Yuv422;
+				case Bump88PixelCodec: return PvrPixelFormat.Bump88;
+				default:
+					throw new Exception("Unable to get PVR pixel format from pixel codec " + this.ToString());
+			}
+		}
+
+		public GvrPaletteFormat GetGvrPaletteFormat()
+		{
+			switch (this)
+			{
+				case IntensityA8PixelCodec:
+				case ARGB1555PixelCodec: return GvrPaletteFormat.IntensityA8orArgb1555;
+				case ARGB8888PixelCodec: return GvrPaletteFormat.Argb8888;
+				case RGB565PixelCodec: return GvrPaletteFormat.Rgb565;
+				case RGB5A3PixelCodec:
+				case ARGB4444PixelCodec: return GvrPaletteFormat.Rgb5A3orArgb4444;
+				default:
+					throw new Exception("Unable to get GVR palette format from pixel codec " + this.ToString());
+			}
+		}
 	}
 }
