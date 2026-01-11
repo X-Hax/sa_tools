@@ -15,7 +15,7 @@ namespace TextureEditor
 		/// </summary>
 		/// <param name="importImage"></param>
 		/// <param name="tex"></param>
-		/// <returns></returns>
+		/// <returns>True if compatible, false if incompatible.</returns>
 		public static bool CheckTextureCompatibility(Bitmap importImage, GenericTexture tex)
 		{
 			// Dimensions must be power of two
@@ -103,30 +103,23 @@ namespace TextureEditor
 						break;
 					case TextureArchiveFormat.PVMX:
 						GenericTexture oldpvmx = textures[currentTextureID];
-						if (tex is DdsTexture && settingsfile.UseDDSforPVMX)
-							textures[currentTextureID] = new DdsTexture(data) { Name = oldpvmx.Name, Gbix = oldpvmx.Gbix };
-						else if (tex is GdiTexture && !settingsfile.UseDDSforPVMX)
-							textures[currentTextureID] = new GdiTexture(data) { Name = oldpvmx.Name, Gbix = oldpvmx.Gbix };
+						tex.Name = oldpvmx.Name;
+						tex.Gbix = oldpvmx.Gbix;
+						tex.PvmxOriginalDimensions = oldpvmx.PvmxOriginalDimensions;
+						if (tex is DdsTexture || tex is GdiTexture)
+							textures[currentTextureID] = tex;
 						else
-						{
-							tex.Name = oldpvmx.Name;
-							tex.Gbix = oldpvmx.Gbix;
 							textures[currentTextureID] = settingsfile.UseDDSforPVMX ? tex.ToDds(settingsfile.TexEncodeAutoHighQuality, settingsfile.TexEncodeUseCompressed) : tex.ToGdi();
-						}
 						break;
 					case TextureArchiveFormat.PAK:
 						GenericTexture oldpak = textures[currentTextureID];
-						if (tex is DdsTexture && settingsfile.UseDDSforPAK)
-							textures[currentTextureID] = new DdsTexture(data) { Name = oldpak.Name, Gbix = oldpak.Gbix, PakMetadata = oldpak.PakMetadata };
-						else if (tex is GdiTexture && !settingsfile.UseDDSforPAK)
-							textures[currentTextureID] = new GdiTexture(data) { Name = oldpak.Name, Gbix = oldpak.Gbix, PakMetadata = oldpak.PakMetadata };
+						tex.Name = oldpak.Name;
+						tex.Gbix = oldpak.Gbix;
+						tex.PakMetadata = oldpak.PakMetadata;
+						if (tex is DdsTexture || tex is GdiTexture)
+							textures[currentTextureID] = tex;
 						else
-						{
-							tex.Name = oldpak.Name;
-							tex.Gbix = oldpak.Gbix;
-							tex.PakMetadata = oldpak.PakMetadata;
 							textures[currentTextureID] = settingsfile.UseDDSforPAK ? tex.ToDds(settingsfile.TexEncodeAutoHighQuality, settingsfile.TexEncodeUseCompressed) : tex.ToGdi();
-						}
 						break;
 					default:
 						break;
@@ -236,17 +229,13 @@ namespace TextureEditor
 											if (dim.Length > 1)
 												tex.PvmxOriginalDimensions = new Size(int.Parse(dim[0]), int.Parse(dim[1]));
 										}
-										if (tex is DdsTexture && settingsfile.UseDDSforPVMX)
-											textures.Add(tex);
-										else if (tex is GdiTexture && !settingsfile.UseDDSforPVMX)
+										if (tex is DdsTexture || tex is GdiTexture)
 											textures.Add(tex);
 										else
 											textures.Add(settingsfile.UseDDSforPVMX ? tex.ToDds(settingsfile.TexEncodeAutoHighQuality, settingsfile.TexEncodeUseCompressed) : tex.ToGdi());
 										break;
 									case TextureArchiveFormat.PAK:
-										if (tex is DdsTexture && settingsfile.UseDDSforPAK)
-											textures.Add(tex);
-										else if (tex is GdiTexture && !settingsfile.UseDDSforPAK)
+										if (tex is DdsTexture || tex is GdiTexture)
 											textures.Add(tex);
 										else
 											textures.Add(settingsfile.UseDDSforPAK ? tex.ToDds(settingsfile.TexEncodeAutoHighQuality, settingsfile.TexEncodeUseCompressed) : tex.ToGdi());
@@ -345,17 +334,13 @@ namespace TextureEditor
 												textures.Add(tx.ToXvr(settingsfile.TexEncodeAutoHighQuality, settingsfile.TexEncodeUseCompressed));
 											break;
 										case TextureArchiveFormat.PVMX:
-											if (tx is DdsTexture && settingsfile.UseDDSforPVMX)
-												textures.Add(tx);
-											else if (tx is GdiTexture && !settingsfile.UseDDSforPVMX)
+											if (tx is DdsTexture || tx is GdiTexture)
 												textures.Add(tx);
 											else
 												textures.Add(settingsfile.UseDDSforPVMX ? tx.ToDds(settingsfile.TexEncodeAutoHighQuality, settingsfile.TexEncodeUseCompressed) : tx.ToGdi());
 											break;
 										case TextureArchiveFormat.PAK:
-											if (tx is DdsTexture && settingsfile.UseDDSforPAK)
-												textures.Add(tx);
-											else if (tx is GdiTexture && !settingsfile.UseDDSforPAK)
+											if (tx is DdsTexture || tx is GdiTexture)
 												textures.Add(tx);
 											else
 												textures.Add(settingsfile.UseDDSforPAK ? tx.ToDds(settingsfile.TexEncodeAutoHighQuality, settingsfile.TexEncodeUseCompressed) : tx.ToGdi());
