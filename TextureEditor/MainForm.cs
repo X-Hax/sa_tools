@@ -333,8 +333,6 @@ namespace TextureEditor
 			currentPalette.StartBank = (short)numericUpDownStartBank.Value;
 		}
 
-
-
 		private void buttonResetPalette_Click(object sender, EventArgs e)
 		{
 			ResetPalette();
@@ -624,14 +622,7 @@ namespace TextureEditor
 
 		private void exportButton_Click(object sender, EventArgs e)
 		{
-			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "png", FileName = textures[listBox1.SelectedIndex].Name + ".png", Filter = "PNG Files|*.png" })
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					Bitmap bmp = new Bitmap(textures[listBox1.SelectedIndex].Image);
-					bmp.Save(dlg.FileName);
-				}
-
-			listBox1.Select();
+			ExportImage();
 		}
 
 		#endregion

@@ -9,19 +9,36 @@ namespace TextureEditor
 {
 	public partial class MainForm
 	{
+		/// <summary>Exports the texture's image as a PNG file.</summary>
+		private void ExportImage()
+		{
+			bool exportIndexed = false;
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "png", FileName = textures[listBox1.SelectedIndex].Name + ".png", Filter = "PNG Files|*.png" })
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					if (textures[listBox1.SelectedIndex].Indexed)
+					{
+						// TODO: Maybe ask the user if they want the image to be indexed or not?
+						exportIndexed = true;
+					}
+					Bitmap bmp = exportIndexed ? ExportIndexedImage() : new Bitmap(textures[listBox1.SelectedIndex].Image);
+					bmp.Save(dlg.FileName);
+				}
+
+			listBox1.Select();
+		}
+
 		/// <summary>Exports all currently loaded textures in the specified format.</summary>
 		/// <param name="expfmt">Target format (PVR, GVR, XVR, DDS or PNG).</param>
 		private static void ExportAllAs(TextureFileFormat expfmt)
 		{
 			using (SaveFileDialog dlg = new SaveFileDialog() { Title = "Save Folder", DefaultExt = "", Filter = "Folder|", FileName = "texturepack" })
 			{
-
 				if (archiveFilename != null)
 				{
 					dlg.InitialDirectory = Path.GetDirectoryName(archiveFilename);
 					dlg.FileName = Path.GetFileNameWithoutExtension(archiveFilename);
 				}
-
 				if (dlg.ShowDialog(primaryForm) == DialogResult.OK)
 				{
 					Directory.CreateDirectory(dlg.FileName);

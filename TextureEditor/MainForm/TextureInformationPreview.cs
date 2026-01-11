@@ -164,13 +164,16 @@ namespace TextureEditor
 							case GvrDataFormat.Index4:
 							case GvrDataFormat.Index8:
 								toolStripStatusLabelPalette.Visible = true;
-								string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
-								string gvppath = folder + gvr.Name + ".gvp";
-								if (File.Exists(gvppath))
+								if (!SetChaoPalette(gvr))
 								{
-									currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), compatibleGVPToolStripMenuItem.Checked);
-									toolStripStatusLabelPalette.Text = "Palette: " + Path.GetFileName(gvppath);
-									paletteSet = 0;
+									string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
+									string gvppath = folder + gvr.Name + ".gvp";
+									if (File.Exists(gvppath))
+									{
+										currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), compatibleGVPToolStripMenuItem.Checked);
+										toolStripStatusLabelPalette.Text = "Palette: " + Path.GetFileName(gvppath);
+										paletteSet = 0;
+									}
 								}
 								int actualPaletteColors = currentPalette.GetNumColors();
 								// Failsafe check if the palette has a smaller number of colors than the indexed image expects
