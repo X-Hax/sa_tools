@@ -677,7 +677,10 @@ namespace TextureEditor
 				if (ti.HasMipmaps)
 					ti.RemoveMipmaps();
 				else
+				{
 					ti.AddMipmaps();
+					ti.Decode(); // To update mipmap images
+				}
 			}
 			// Update surface flags for PAK textures
 			if (currentFormat == TextureArchiveFormat.PAK && !usingSocPak)
@@ -783,6 +786,7 @@ namespace TextureEditor
 				if (info.CanHaveMipmaps())
 				{
 					info.AddMipmaps();
+					info.Decode(); // To update mipmap images
 					unsaved = true;
 				}
 				else error = true;
