@@ -316,11 +316,12 @@ namespace TextureLib
 				case PvrDataFormat.None:
 				case PvrDataFormat.Bitmap:
 				case PvrDataFormat.BitmapMipmaps:
-				case PvrDataFormat.Rectangle:
-				case PvrDataFormat.RectangleMipmaps:
-				case PvrDataFormat.RectangleStride:
-				case PvrDataFormat.RectangleStrideMipmaps:
-				case PvrDataFormat.RectangleTwiddled:
+				// Rectangular textures can be converted to mipmapped formats if the actual texture is square
+				//case PvrDataFormat.Rectangle:
+				//case PvrDataFormat.RectangleMipmaps:
+				//case PvrDataFormat.RectangleStride:
+				//case PvrDataFormat.RectangleStrideMipmaps:
+				//case PvrDataFormat.RectangleTwiddled:
 					return false;
 			}
 			return Width == Height;

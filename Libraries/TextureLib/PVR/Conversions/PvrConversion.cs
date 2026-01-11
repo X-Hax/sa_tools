@@ -64,16 +64,20 @@ namespace TextureLib
 			// If the texture is not square, don't do anything
 			if (Width != Height)
 				return;
-			bool vq = false; // Whether the texture is VQ or not
+			bool reencode = false; // Whether the texture should be reencoded or not
 			 // Set the format to the mipmapped version
 			switch (PvrDataFormat)
 			{
 				// Some "mipmapped" formats don't actually support mipmaps, so you can't add to them
+				case PvrDataFormat.Bitmap:
+					return;
+				// Rectangular formats can be converted to SquareTwiddledMipmaps if the actual texture is square
 				case PvrDataFormat.Rectangle:
 				case PvrDataFormat.RectangleStride:
 				case PvrDataFormat.RectangleTwiddled:
-				case PvrDataFormat.Bitmap:
-					return;
+					PvrDataFormat = PvrDataFormat.SquareTwiddledMipmaps;
+					reencode = true;
+					break;
 				case PvrDataFormat.SquareTwiddled:
 					PvrDataFormat = PvrDataFormat.SquareTwiddledMipmaps;
 					break;
@@ -85,11 +89,11 @@ namespace TextureLib
 					break;
 				case PvrDataFormat.Vq:
 					PvrDataFormat = PvrDataFormat.VqMipmaps;
-					vq = true;
+					reencode = true; // Adding mipmaps to a VQ texture triggers a reencoding, sorry :(
 					break;
 				case PvrDataFormat.SmallVq:
 					PvrDataFormat = PvrDataFormat.SmallVqMipmaps;
-					vq = true;
+					reencode = true;
 					break;
 			}
 			HasMipmaps = true;
@@ -99,15 +103,6 @@ namespace TextureLib
 			PvrDataCodec dataCodec = PvrDataCodec.Create(PvrDataFormat, pixelCodec);
 			// Calculate texture data size
 			int dataSize = dataCodec.CalculateTextureSize(Width, Height);
-			/*
-			// Calculate VQ codebook size, if present - this is unused because VQ textures are reencoded anyway at the moment
-			int paletteEntries = dataCodec.GetPaletteEntries(Width);
-			if (paletteEntries > 0 && !dataCodec.NeedsExternalPalette)
-				dataSize += paletteEntries / pixelCodec.Pixels * pixelCodec.BytesPerPixel;
-			int codebookSize = paletteEntries / pixelCodec.Pixels * pixelCodec.BytesPerPixel;
-			byte[] originalCodebook = new byte[codebookSize];
-			Array.Copy(HeaderlessData, 0, originalCodebook, 0, codebookSize);
-			*/
 			// If the texture already has mipmaps, add their offsets to get the correct location of the original texture (this is probably also unnecessary)
 			if (dataCodec.HasMipmaps)
 			{
@@ -121,10 +116,11 @@ namespace TextureLib
 			// Retrieve the original texture data
 			byte[] originalTexture = new byte[dataCodec.CalculateTextureSize(Width, Height)];
 			Array.Copy(HeaderlessData, textureAddress, originalTexture, 0, originalTexture.Length);
-			// Adding mipmaps to a VQ texture triggers a reencoding, sorry :(
-			if (vq)
+			// If the texture needs to be re-encoded, that's it
+			if (reencode)
 			{
 				Encode();
+				Decode(); // To regenerate MipmapImages
 				return;
 			}
 			// Add mipmaps to an Indexed texture
