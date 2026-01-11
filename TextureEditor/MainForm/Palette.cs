@@ -43,7 +43,7 @@ namespace TextureEditor
 					if (textures[listBox1.SelectedIndex] is GvrTexture g && !g.RequiresPaletteFile)
 					{
 						currentPalette = g.Palette;
-						toolStripStatusLabelPalette.Text = "Palette loaded from the GVR file.";
+						toolStripStatusLabelPalette.Text = "Palette: from the GVR file";
 					}
 					// Get the number of palette banks
 					int banksize = dataformat == IndexedTextureFormat.Index8 ? 256 : 16;
@@ -131,14 +131,14 @@ namespace TextureEditor
 						case ".bmp":
 							Bitmap bp = new Bitmap(fd.FileName);
 							currentPalette = new TexturePalette(new Bitmap(bp));
-							toolStripStatusLabelPalette.Text = "Using a palette from a Bitmap.";
+							toolStripStatusLabelPalette.Text = "Palette: from Bitmap.";
 							bp.Dispose();
 							break;
 						case ".pvp":
 						case ".gvp":
 						default:
 							currentPalette = new TexturePalette(File.ReadAllBytes(fd.FileName), compatibleGVPToolStripMenuItem.Checked);
-							toolStripStatusLabelPalette.Text = "Palette loaded from " + Path.GetFileName(fd.FileName);
+							toolStripStatusLabelPalette.Text = "Palette: " + Path.GetFileName(fd.FileName);
 							break;
 					}
 					paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = 0;
@@ -216,7 +216,7 @@ namespace TextureEditor
 					{
 						currentPalette = new TexturePalette(File.ReadAllBytes(pvppath));
 						paletteSet = palbank;
-						toolStripStatusLabelPalette.Text = "Palette loaded from " + palname + palext;
+						toolStripStatusLabelPalette.Text = "Palette: " + palname + palext;
 						return true;
 					}
 				}

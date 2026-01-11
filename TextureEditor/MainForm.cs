@@ -745,7 +745,7 @@ namespace TextureEditor
 			if (textures.Count < 1)
 				return;
 
-			DialogResult res = MessageBox.Show(this, "This will generate new GBIX for every texture, are you sure you wish to continue?", "Warning Gbix Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+			DialogResult res = MessageBox.Show(this, "This will generate a random new GBIX for every texture, are you sure you wish to continue?", "Texture Editor Warning: Global Index replacement", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 
 			if (res != DialogResult.Yes)
 			{
@@ -778,12 +778,18 @@ namespace TextureEditor
 
 		private void addMipmapsToAllToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			bool error = false;
 			foreach (GenericTexture info in textures)
 				if (info.CanHaveMipmaps())
+				{
 					info.AddMipmaps();
+					unsaved = true;
+				}
+				else error = true;
 			if (listBox1.SelectedIndex != -1 && textures[listBox1.SelectedIndex].HasMipmaps)
 				mipmapCheckBox.Checked = true;
-			unsaved = true;
+			if (error)
+				MessageBox.Show(this, "Rectangular PVR and GVR textures do not allow mipmaps. These have been skipped.", "Texture Editor Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
 		private void removeMipmapsFromAllToolStripMenuItem_Click(object sender, EventArgs e)

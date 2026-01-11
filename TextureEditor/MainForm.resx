@@ -139,16 +139,16 @@
     <value>17, 17</value>
   </metadata>
   <data name="compatibleGVPToolStripMenuItem.ToolTipText" xml:space="preserve">
-    <value>Use ARGB4444 and ARGB1555 pixel formats for Gamecube paletted textures.
+    <value>Enable to use ARGB4444 and ARGB1555 pixel formats for Gamecube paletted textures.
 Required for SA2 PC, SADX GC and SA2B GC. Other Gamecube games such as Billy Hatcher and Phantasy Star Online require this option to be unchecked.</value>
   </data>
   <data name="preferHighQualityToolStripMenuItem.ToolTipText" xml:space="preserve">
-    <value>Try to avoid reducing available colors whenever possible during automatic texture format conversion.
+    <value>Enable this to try to avoid reducing available colors whenever possible during automatic texture format conversion.
 For example, when converting ARGB4444 PVR to GVR, having this option checked will convert to ARGB8888 instead of RGB5A3.
-Note that "High Quality GVMs" and "Allow DXT and VQ Formats" also influence the final format selection for automatic conversion.</value>
+Note that "High Quality GVMs" and "Allow Compresed Formats" also influence the final format selection for automatic conversion.</value>
   </data>
   <data name="allowCompressedFormatsToolStripMenuItem.ToolTipText" xml:space="preserve">
-    <value>Allow DXT1 (GVR), DXT1/3/5 (DDS) and VQ/SmalLVQ (PVR) formats in automatic texture format conversion.
+    <value>Enable to allow DXT1 (GVR), DXT1/3/5 (DDS) and VQ/SmalLVQ (PVR) formats in automatic texture format conversion.
 For example, when converting an ARGB1555 PVR texture to GVR, having this option checked will convert to DXT1 instead of RGB5A3.
 Note that "Prefer High Quality" also influences the final format selection for automatic conversion.
 </value>

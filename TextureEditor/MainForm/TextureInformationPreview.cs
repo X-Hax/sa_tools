@@ -49,10 +49,10 @@ namespace TextureEditor
 				if (currentTexture.CanHaveMipmaps())
 				{
 					mipmapCheckBox.Enabled = true;
-					mipmapCheckBox.Checked = currentTexture.HasMipmaps;
+					exportMipmapsAsPNGToolStripMenuItem.Enabled = mipmapCheckBox.Checked = currentTexture.HasMipmaps;
 				}
 				else
-					mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
+					exportMipmapsAsPNGToolStripMenuItem.Enabled = mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
 				if (currentFormat == TextureArchiveFormat.PAK && !usingSocPak)
 				{
 					// Display PAK metadata
@@ -119,7 +119,7 @@ namespace TextureEditor
 									if (File.Exists(pvppath))
 									{
 										currentPalette = new TexturePalette(File.ReadAllBytes(pvppath));
-										toolStripStatusLabelPalette.Text = "Using palette from " + Path.GetFileName(pvppath);
+										toolStripStatusLabelPalette.Text = "Palette: " + Path.GetFileName(pvppath);
 										paletteSet = 0;
 									}
 								}
@@ -137,7 +137,7 @@ namespace TextureEditor
 								{
 									MessageBox.Show(this, "Palette data couldn't be applied: " + ex.Message.ToString(), "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 									currentPalette = TexturePalette.CreateDefaultPalette(pvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
-									toolStripStatusLabelPalette.Text = "Using default palette";
+									toolStripStatusLabelPalette.Text = "Palette: default";
 									pvr.SetPalette(currentPalette, 0);
 								}
 								break;
@@ -169,7 +169,7 @@ namespace TextureEditor
 								if (File.Exists(gvppath))
 								{
 									currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), compatibleGVPToolStripMenuItem.Checked);
-									toolStripStatusLabelPalette.Text = "Using palette from " + Path.GetFileName(gvppath);
+									toolStripStatusLabelPalette.Text = "Palette: " + Path.GetFileName(gvppath);
 									paletteSet = 0;
 								}
 								int actualPaletteColors = currentPalette.GetNumColors();
@@ -189,7 +189,7 @@ namespace TextureEditor
 								{
 									MessageBox.Show(this, "Palette data couldn't be applied. This can be caused by using 16-color palettes on 256-color indexed images. Select a correct palette file and try again.", "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 									currentPalette = TexturePalette.CreateDefaultPalette(gvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
-									toolStripStatusLabelPalette.Text = "Using default palette";
+									toolStripStatusLabelPalette.Text = "Palette: default";
 									gvr.SetPalette(currentPalette, 0);
 								}
 								break;
