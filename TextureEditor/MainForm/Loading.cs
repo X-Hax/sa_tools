@@ -24,7 +24,6 @@ namespace TextureEditor
 			byte[] datafile = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				datafile = PRS.Decompress(datafile);
-
 			// Check if the file is a PVR/GVR/XVR
 			PuyoArchiveType puyotype = PuyoArchiveType.Unknown;
 			if (PvrTexture.Identify(datafile))
@@ -103,6 +102,15 @@ namespace TextureEditor
 				UpdateTextureCount();
 				UpdateMRUList(Path.GetFullPath(filename));
 				listBox1.SelectedIndex = listBox1.Items.Count == 0 ? -1 : selIndex;
+				// Check for Chao textures
+				foreach (var item in textures)
+				{
+					if (SAModel.SAEditorCommon.ChaoPalettes.CheckIfTextureIsChaoPalettedTexture(item.Name))
+					{
+						chaoToolStripMenuItem.Visible = true;
+						break;
+					}
+				}
 				return true;
 			}
 			// Otherwise load the file as an archive

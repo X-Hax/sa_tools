@@ -662,12 +662,13 @@
 			chaoToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
 			chaoToolStripMenuItem.Text = "Chao Settings";
 			chaoToolStripMenuItem.ToolTipText = "Settings that affect palette selection for Chao textures.";
+			chaoToolStripMenuItem.Visible = false;
 			// 
 			// alignmentToolStripMenuItem
 			// 
 			alignmentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { neutralChaoToolStripMenuItem, heroChaoToolStripMenuItem, darkChaoToolStripMenuItem });
 			alignmentToolStripMenuItem.Name = "alignmentToolStripMenuItem";
-			alignmentToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+			alignmentToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			alignmentToolStripMenuItem.Text = "Alignment";
 			// 
 			// neutralChaoToolStripMenuItem
@@ -697,7 +698,7 @@
 			// 
 			firstEvolutionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { childFirstToolStripMenuItem, normalFirstToolStripMenuItem, swimFirstToolStripMenuItem, flyFirstToolStripMenuItem, runFirstToolStripMenuItem, powerFirstToolStripMenuItem });
 			firstEvolutionToolStripMenuItem.Name = "firstEvolutionToolStripMenuItem";
-			firstEvolutionToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+			firstEvolutionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			firstEvolutionToolStripMenuItem.Text = "First Evolution";
 			// 
 			// childFirstToolStripMenuItem
@@ -748,7 +749,7 @@
 			// 
 			secondEvolutionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { zeroSecondToolStripMenuItem, normalSecondToolStripMenuItem, swimSecondToolStripMenuItem, flySecondToolStripMenuItem, runSecondToolStripMenuItem, powerSecondToolStripMenuItem });
 			secondEvolutionToolStripMenuItem.Name = "secondEvolutionToolStripMenuItem";
-			secondEvolutionToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+			secondEvolutionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			secondEvolutionToolStripMenuItem.Text = "Second Evolution";
 			// 
 			// zeroSecondToolStripMenuItem
