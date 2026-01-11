@@ -134,8 +134,9 @@ namespace TextureLib
 			if (BitConverter.ToUInt32(RawData, currentOffset) == Magic_GVRT)
 			{
 				int chunksize = ByteConverter.ToInt32BE(RawData, currentOffset + 0x4);
-				PaletteBank = RawData[currentOffset + 0x8]; // Not confirmed
-				PaletteStartIndex = RawData[currentOffset + 0x9]; // Not confirmed
+				// Palette bank and start index should be scene-specific, no point reading them from the file
+				//PaletteBank = RawData[currentOffset + 0x8]; // Not confirmed
+				//PaletteStartIndex = RawData[currentOffset + 0x9]; // Not confirmed
 				GvrPaletteFormat = (GvrPaletteFormat)(RawData[currentOffset + 0x0A] >> 4); // Only the first 4 bits matter
 				GvrDataFlags = (GvrDataFlags)(RawData[currentOffset + 0x0A] & 0x0F); // Only the last 4 bits matter
 				GvrDataFormat = (GvrDataFormat)RawData[currentOffset + 0x0B];

@@ -140,8 +140,9 @@ namespace TextureLib
 			int chunksize = BitConverter.ToInt32(RawData, currentOffset + 0x4);
 			PvrPixelFormat = (PvrPixelFormat)RawData[currentOffset + 0x8];
 			PvrDataFormat = (PvrDataFormat)RawData[currentOffset + 0x9];
-			PaletteBank = RawData[currentOffset + 0xA];
-			PaletteStartIndex = RawData[currentOffset + 0xB];
+			// Palette bank and start index should be scene-specific, no point reading them from the file
+			//PaletteBank = RawData[currentOffset + 0xA];
+			//PaletteStartIndex = RawData[currentOffset + 0xB];
 			Width = ByteConverter.ToUInt16(RawData, currentOffset + 0xC);
 			Height = ByteConverter.ToUInt16(RawData, currentOffset + 0xE);
 			// Override pixel format for Bitmap (because Bitmap can only be in ARGB8888)

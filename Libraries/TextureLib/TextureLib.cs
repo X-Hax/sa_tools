@@ -90,9 +90,9 @@ namespace TextureLib
 		{
 			// Assign the new palette.
 			Palette = newPalette;
-			// Decode() overwrites the texture's StartBank and StartColor, so the ones in the palette should be used.
-			Palette.StartBank = bankID;
-			Palette.StartColor = startColor;
+			// Set palette bank and start color in the texture.
+			PaletteBank = bankID;
+			PaletteStartIndex = startColor;
 			// Decode the texture with the new palette.
 			Decode();
 		}
@@ -229,6 +229,7 @@ namespace TextureLib
 		/// <summary>
 		/// Returns the extension string by identifying texture file format in a byte array.
 		/// </summary>
+		/// <returns>A file extension such as ".pvr", or an empty string if the format is unknown.</returns>
 		public static string IdentifyTextureFileExtension(byte[] file)
 		{
 			return GetTextureFileType(file) switch
@@ -241,8 +242,7 @@ namespace TextureLib
 				TextureFileFormat.Pvr => ".pvr",
 				TextureFileFormat.Gvr => ".gvr",
 				TextureFileFormat.Xvr => ".xvr",
-				TextureFileFormat.Invalid => throw new Exception("Invalid texture data"),
-				_ => throw new Exception("Unknown texture file format"),
+				_ => string.Empty,
 			};
 		}
 
@@ -302,7 +302,7 @@ namespace TextureLib
 		/// Loads texture data from the specified file and returns a PVR, GVR, XVR, DDS or Invalid texture.
 		/// </summary>
 		/// <param name="file">Path to the input file.</param>
-		/// <returns></returns>
+		/// <returns>A GenericTexture instance.</returns>
 		public static GenericTexture LoadTexture(string file)
 		{
 			return LoadTexture(System.IO.File.ReadAllBytes(file));
