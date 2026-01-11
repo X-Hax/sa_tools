@@ -168,6 +168,7 @@ namespace TextureLib
 					PvrDataFormat = PvrDataFormat.Bitmap;
 					return;
 				case PvrDataFormat.SquareTwiddledMipmaps:
+				case PvrDataFormat.SquareTwiddledMipmapsDma:
 					PvrDataFormat = PvrDataFormat.SquareTwiddled;
 					break;
 				case PvrDataFormat.Index4Mipmaps:
