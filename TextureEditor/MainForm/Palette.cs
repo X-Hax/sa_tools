@@ -37,7 +37,10 @@ namespace TextureEditor
 				case IndexedTextureFormat.Index8:
 					// If this is a GVR with an internal palette, load its palette
 					if (textures[listBox1.SelectedIndex] is GvrTexture g && !g.RequiresPaletteFile)
+					{
 						currentPalette = g.Palette;
+						toolStripStatusLabelPalette.Text = "Palette from the GVR file.";
+					}
 					int rowsize = dataformat == IndexedTextureFormat.Index8 ? 256 : 16;
 					int rowsize_stored = rowsize - currentPalette.StartColor;
 					int numrows = currentPalette.GetNumColors() / rowsize_stored;
@@ -79,6 +82,7 @@ namespace TextureEditor
 		private void ResetPalette()
 		{
 			currentPalette = TexturePalette.CreateDefaultPalette(true);
+			toolStripStatusLabelPalette.Text = "Using a default palette.";
 			paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = 0;
 			UpdateTextureInformation();
 		}
@@ -112,12 +116,14 @@ namespace TextureEditor
 						case ".bmp":
 							Bitmap bp = new Bitmap(fd.FileName);
 							currentPalette = new TexturePalette(new Bitmap(bp));
+							toolStripStatusLabelPalette.Text = "Using a palette from a Bitmap.";
 							bp.Dispose();
 							break;
 						case ".pvp":
 						case ".gvp":
 						default:
 							currentPalette = new TexturePalette(File.ReadAllBytes(fd.FileName), compatibleGVPToolStripMenuItem.Checked);
+							toolStripStatusLabelPalette.Text = "Palette loaded from " + Path.GetFileName(fd.FileName);
 							break;
 					}
 					paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = 0;

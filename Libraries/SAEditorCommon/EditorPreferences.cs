@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-
+using static SAModel.SAEditorCommon.ChaoPalettes;
 
 namespace SAModel.SAEditorCommon
 {
@@ -267,6 +267,15 @@ namespace SAModel.SAEditorCommon
 			[DefaultValue(false)]
 			public bool TexEncodeUseCompressed { get; set; }
 
+			[DefaultValue(ChaoAlignment.Hero)]
+			public ChaoAlignment ChaoAlignment { get; set; }
+
+			[DefaultValue(ChaoEvolution.Normal)]
+			public ChaoEvolution ChaoFirstEvolution { get; set; }
+			
+			[DefaultValue(ChaoEvolution.Zero)]
+			public ChaoEvolution ChaoSecondEvolution { get; set; }
+
 			public Settings_TextureEditor()
 			{
 				HighQualityGVM = false;
@@ -277,6 +286,9 @@ namespace SAModel.SAEditorCommon
 				UseDDSforPVMX = true;
 				TexEncodeAutoHighQuality = true;
 				TexEncodeUseCompressed = false;
+				ChaoAlignment = ChaoAlignment.Hero;
+				ChaoFirstEvolution = ChaoEvolution.Normal;
+				ChaoSecondEvolution = ChaoEvolution.Zero;
 			}
 
 			public static Settings_TextureEditor Load()

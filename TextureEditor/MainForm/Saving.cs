@@ -58,7 +58,7 @@ namespace TextureEditor
 
 		private void SaveSingleTexture()
 		{
-			string ext = "png";
+			string ext = ".png";
 			switch (textures[listBox1.SelectedIndex])
 			{
 				case PvrTexture:

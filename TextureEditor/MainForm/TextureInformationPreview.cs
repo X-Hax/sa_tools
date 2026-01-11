@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 using TextureLib;
-using ArchiveLib;
 using static TextureEditor.Program;
-using PSO.PRS;
 using System.Drawing;
-using System.Text;
 
 namespace TextureEditor
 {
@@ -17,9 +13,9 @@ namespace TextureEditor
 		private void UpdateTextureCount()
 		{
 			if (textures.Count == 1)
-				toolStripStatusLabel1.Text = "1 texture";
+				toolStripStatusLabelTextures.Text = "1 texture";
 			else
-				toolStripStatusLabel1.Text = textures.Count + " textures";
+				toolStripStatusLabelTextures.Text = textures.Count + " textures";
 			alphaSortingToolStripMenuItem.Enabled = currentFormat == TextureArchiveFormat.PAK;
 		}
 
@@ -47,6 +43,7 @@ namespace TextureEditor
 				checkBoxPAKUseAlpha.Hide();
 				extraFormatLabel.Hide();
 				textureSizeLabel.Hide();
+				toolStripStatusLabelPalette.Visible = false;
 				if (currentTexture.CanHaveMipmaps())
 				{
 					mipmapCheckBox.Enabled = true;
@@ -112,12 +109,17 @@ namespace TextureEditor
 							case PvrDataFormat.Index4Mipmaps:
 							case PvrDataFormat.Index8:
 							case PvrDataFormat.Index8Mipmaps:
-								string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
-								string pvppath = folder + pvr.Name + ".pvp";
-								if (File.Exists(pvppath))
+								toolStripStatusLabelPalette.Visible = true;
+								if (!SetChaoPalette(pvr))
 								{
-									currentPalette = new TexturePalette(File.ReadAllBytes(pvppath));
-									paletteSet = 0;
+									string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
+									string pvppath = folder + pvr.Name + ".pvp";
+									if (File.Exists(pvppath))
+									{
+										currentPalette = new TexturePalette(File.ReadAllBytes(pvppath));
+										toolStripStatusLabelPalette.Text = "Using palette from " + Path.GetFileName(pvppath);
+										paletteSet = 0;
+									}
 								}
 								int actualPaletteColors = currentPalette.GetNumColors();
 								// Failsafe check if the palette has a smaller number of colors than the indexed image expects
@@ -133,6 +135,7 @@ namespace TextureEditor
 								{
 									MessageBox.Show(this, "Palette data couldn't be applied: " + ex.Message.ToString(), "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 									currentPalette = TexturePalette.CreateDefaultPalette(pvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
+									toolStripStatusLabelPalette.Text = "Using default palette";
 									pvr.SetPalette(currentPalette, 0);
 								}
 								break;
@@ -158,11 +161,13 @@ namespace TextureEditor
 						{
 							case GvrDataFormat.Index4:
 							case GvrDataFormat.Index8:
+								toolStripStatusLabelPalette.Visible = true;
 								string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
 								string gvppath = folder + gvr.Name + ".gvp";
 								if (File.Exists(gvppath))
 								{
 									currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), compatibleGVPToolStripMenuItem.Checked);
+									toolStripStatusLabelPalette.Text = "Using palette from " + Path.GetFileName(gvppath);
 									paletteSet = 0;
 								}
 								int actualPaletteColors = currentPalette.GetNumColors();
@@ -182,6 +187,7 @@ namespace TextureEditor
 								{
 									MessageBox.Show(this, "Palette data couldn't be applied. This can be caused by using 16-color palettes on 256-color indexed images. Select a correct palette file and try again.", "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 									currentPalette = TexturePalette.CreateDefaultPalette(gvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
+									toolStripStatusLabelPalette.Text = "Using default palette";
 									gvr.SetPalette(currentPalette, 0);
 								}
 								break;

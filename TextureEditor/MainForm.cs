@@ -1,15 +1,15 @@
-﻿using SAModel.SAEditorCommon;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
 using System.IO;
-using System.Security.Policy;
 using System.Windows.Forms;
 using TextureLib;
+using SAModel.SAEditorCommon;
 using static TextureEditor.Program;
 
 namespace TextureEditor
 {
+	// This .cs file only has UI event handler functions, for actual texture related code see the .cs files in the MainForm folder.
+	// Global variables, such as list of textures, settings file etc. are in Variables.cs
 	public partial class MainForm : Form
 	{
 		/// <summary>List of recently accessed files.</summary>
@@ -53,7 +53,24 @@ namespace TextureEditor
 			useDDSInPAKsToolStripMenuItem.Checked = settingsfile.UseDDSforPAK;
 			useDDSInPVMXToolStripMenuItem.Checked = settingsfile.UseDDSforPVMX;
 			useDDSInTexturePacksToolStripMenuItem.Checked = settingsfile.UseDDSforTexPack;
-
+			// Chao Settings menu - Alignment
+			neutralChaoToolStripMenuItem.Checked = settingsfile.ChaoAlignment == ChaoPalettes.ChaoAlignment.Neutral;
+			heroChaoToolStripMenuItem.Checked = settingsfile.ChaoAlignment == ChaoPalettes.ChaoAlignment.Hero;
+			darkChaoToolStripMenuItem.Checked = settingsfile.ChaoAlignment == ChaoPalettes.ChaoAlignment.Dark;
+			// Chao Settings menu - First evolution
+			childFirstToolStripMenuItem.Checked = settingsfile.ChaoFirstEvolution == ChaoPalettes.ChaoEvolution.Zero;
+			normalFirstToolStripMenuItem.Checked = settingsfile.ChaoFirstEvolution == ChaoPalettes.ChaoEvolution.Normal;
+			swimFirstToolStripMenuItem.Checked = settingsfile.ChaoFirstEvolution == ChaoPalettes.ChaoEvolution.Swim;
+			flyFirstToolStripMenuItem.Checked = settingsfile.ChaoFirstEvolution == ChaoPalettes.ChaoEvolution.Fly;
+			runFirstToolStripMenuItem.Checked = settingsfile.ChaoFirstEvolution == ChaoPalettes.ChaoEvolution.Run;
+			powerFirstToolStripMenuItem.Checked = settingsfile.ChaoFirstEvolution == ChaoPalettes.ChaoEvolution.Power;
+			// Chao Settings menu - Second evolution
+			zeroSecondToolStripMenuItem.Checked = settingsfile.ChaoSecondEvolution == ChaoPalettes.ChaoEvolution.Zero;
+			normalSecondToolStripMenuItem.Checked = settingsfile.ChaoSecondEvolution == ChaoPalettes.ChaoEvolution.Normal;
+			swimSecondToolStripMenuItem.Checked = settingsfile.ChaoSecondEvolution == ChaoPalettes.ChaoEvolution.Swim;
+			flySecondToolStripMenuItem.Checked = settingsfile.ChaoSecondEvolution == ChaoPalettes.ChaoEvolution.Fly;
+			runSecondToolStripMenuItem.Checked = settingsfile.ChaoSecondEvolution == ChaoPalettes.ChaoEvolution.Run;
+			powerSecondToolStripMenuItem.Checked = settingsfile.ChaoSecondEvolution == ChaoPalettes.ChaoEvolution.Power;
 			if (Program.Arguments.Length > 0 && !LoadFile(Program.Arguments[0]))
 				Close();
 		}
@@ -840,6 +857,164 @@ namespace TextureEditor
 		private void listOfTexturesSA2SA2BToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			GoToSite("https://sadocs.unreliable.network/wiki/Sonic_Adventure_2/Texture_Files");
+		}
+		#endregion
+
+		#region Chao Settings menu
+		private void neutralChaoToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoAlignment = ChaoPalettes.ChaoAlignment.Neutral;
+			neutralChaoToolStripMenuItem.Checked = true;
+			heroChaoToolStripMenuItem.Checked = false;
+			darkChaoToolStripMenuItem.Checked = false;
+		}
+
+		private void heroChaoToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoAlignment = ChaoPalettes.ChaoAlignment.Hero;
+			neutralChaoToolStripMenuItem.Checked = false;
+			heroChaoToolStripMenuItem.Checked = true;
+			darkChaoToolStripMenuItem.Checked = false;
+		}
+
+		private void darkChaoToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoAlignment = ChaoPalettes.ChaoAlignment.Dark;
+			neutralChaoToolStripMenuItem.Checked = false;
+			heroChaoToolStripMenuItem.Checked = false;
+			darkChaoToolStripMenuItem.Checked = true;
+		}
+
+		private void childFirstToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoFirstEvolution = ChaoPalettes.ChaoEvolution.Zero;
+			childFirstToolStripMenuItem.Checked = true;
+			normalFirstToolStripMenuItem.Checked = false;
+			swimFirstToolStripMenuItem.Checked = false;
+			flyFirstToolStripMenuItem.Checked = false;
+			runFirstToolStripMenuItem.Checked = false;
+			powerFirstToolStripMenuItem.Checked = false;
+		}
+
+		private void normalFirstToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoFirstEvolution = ChaoPalettes.ChaoEvolution.Normal;
+			childFirstToolStripMenuItem.Checked = false;
+			normalFirstToolStripMenuItem.Checked = true;
+			swimFirstToolStripMenuItem.Checked = false;
+			flyFirstToolStripMenuItem.Checked = false;
+			runFirstToolStripMenuItem.Checked = false;
+			powerFirstToolStripMenuItem.Checked = false;
+		}
+
+		private void swimFirstToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoFirstEvolution = ChaoPalettes.ChaoEvolution.Swim;
+			childFirstToolStripMenuItem.Checked = false;
+			normalFirstToolStripMenuItem.Checked = false;
+			swimFirstToolStripMenuItem.Checked = true;
+			flyFirstToolStripMenuItem.Checked = false;
+			runFirstToolStripMenuItem.Checked = false;
+			powerFirstToolStripMenuItem.Checked = false;
+		}
+
+		private void flyFirstToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoFirstEvolution = ChaoPalettes.ChaoEvolution.Fly;
+			childFirstToolStripMenuItem.Checked = false;
+			normalFirstToolStripMenuItem.Checked = false;
+			swimFirstToolStripMenuItem.Checked = false;
+			flyFirstToolStripMenuItem.Checked = true;
+			runFirstToolStripMenuItem.Checked = false;
+			powerFirstToolStripMenuItem.Checked = false;
+		}
+
+		private void runFirstToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoFirstEvolution = ChaoPalettes.ChaoEvolution.Run;
+			childFirstToolStripMenuItem.Checked = false;
+			normalFirstToolStripMenuItem.Checked = false;
+			swimFirstToolStripMenuItem.Checked = false;
+			flyFirstToolStripMenuItem.Checked = false;
+			runFirstToolStripMenuItem.Checked = true;
+			powerFirstToolStripMenuItem.Checked = false;
+		}
+
+		private void powerFirstToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoFirstEvolution = ChaoPalettes.ChaoEvolution.Power;
+			childFirstToolStripMenuItem.Checked = false;
+			normalFirstToolStripMenuItem.Checked = false;
+			swimFirstToolStripMenuItem.Checked = false;
+			flyFirstToolStripMenuItem.Checked = false;
+			runFirstToolStripMenuItem.Checked = false;
+			powerFirstToolStripMenuItem.Checked = true;
+		}
+
+		private void zeroSecondToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoSecondEvolution = ChaoPalettes.ChaoEvolution.Zero;
+			zeroSecondToolStripMenuItem.Checked = true;
+			normalSecondToolStripMenuItem.Checked = false;
+			swimSecondToolStripMenuItem.Checked = false;
+			flySecondToolStripMenuItem.Checked = false;
+			runSecondToolStripMenuItem.Checked = false;
+			powerSecondToolStripMenuItem.Checked = false;
+		}
+
+		private void normalSecondToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoSecondEvolution = ChaoPalettes.ChaoEvolution.Normal;
+			zeroSecondToolStripMenuItem.Checked = false;
+			normalSecondToolStripMenuItem.Checked = true;
+			swimSecondToolStripMenuItem.Checked = false;
+			flySecondToolStripMenuItem.Checked = false;
+			runSecondToolStripMenuItem.Checked = false;
+			powerSecondToolStripMenuItem.Checked = false;
+		}
+
+		private void swimSecondToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoSecondEvolution = ChaoPalettes.ChaoEvolution.Swim;
+			zeroSecondToolStripMenuItem.Checked = false;
+			normalSecondToolStripMenuItem.Checked = false;
+			swimSecondToolStripMenuItem.Checked = true;
+			flySecondToolStripMenuItem.Checked = false;
+			runSecondToolStripMenuItem.Checked = false;
+			powerSecondToolStripMenuItem.Checked = false;
+		}
+
+		private void flySecondToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoSecondEvolution = ChaoPalettes.ChaoEvolution.Fly;
+			zeroSecondToolStripMenuItem.Checked = false;
+			normalSecondToolStripMenuItem.Checked = false;
+			swimSecondToolStripMenuItem.Checked = false;
+			flySecondToolStripMenuItem.Checked = true;
+			runSecondToolStripMenuItem.Checked = false;
+			powerSecondToolStripMenuItem.Checked = false;
+		}
+
+		private void runSecondToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoSecondEvolution = ChaoPalettes.ChaoEvolution.Run;
+			zeroSecondToolStripMenuItem.Checked = false;
+			normalSecondToolStripMenuItem.Checked = false;
+			swimSecondToolStripMenuItem.Checked = false;
+			flySecondToolStripMenuItem.Checked = false;
+			runSecondToolStripMenuItem.Checked = true;
+			powerSecondToolStripMenuItem.Checked = false;
+		}
+
+		private void powerSecondToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ChaoSecondEvolution = ChaoPalettes.ChaoEvolution.Power;
+			zeroSecondToolStripMenuItem.Checked = false;
+			normalSecondToolStripMenuItem.Checked = false;
+			swimSecondToolStripMenuItem.Checked = false;
+			flySecondToolStripMenuItem.Checked = false;
+			runSecondToolStripMenuItem.Checked = false;
+			powerSecondToolStripMenuItem.Checked = true;
 		}
 		#endregion
 	}

@@ -147,6 +147,7 @@ namespace TextureEditor
 			if (Path.GetExtension(fname).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				datafile = PRS.Decompress(datafile);
 			List<GenericTexture> newtextures;
+			// PVMX
 			if (PVMXFile.Identify(datafile))
 			{
 				PVMXFile pvmx = new PVMXFile(datafile);
@@ -161,6 +162,7 @@ namespace TextureEditor
 					newtextures.Add(texinfo);
 				}
 			}
+			// PAK
 			else if (PAKFile.Identify(fname))
 			{
 				PAKFile pak = new PAKFile(fname);
@@ -228,6 +230,7 @@ namespace TextureEditor
 					}
 				}
 			}
+			// PVM/GVM/XVM/PB
 			else
 			{
 				// If it's a PB file, convert it to PVM and load as PVM
@@ -251,6 +254,8 @@ namespace TextureEditor
 					else if (file is XVMEntry xvme)
 						newtextures.Add(new XvrTexture(file.Data) { Name = Path.GetFileNameWithoutExtension(file.Name) });
 				}
+				// Check if the file contains paletted Chao textures to show or hide the Chao Settings menu
+				chaoToolStripMenuItem.Visible = CheckIfArchiveHasPalettedChaoTextures(arc);
 			}
 			// Check if GenericTexture match the current format and convert if necessary.
 			// This part is here because GetTexturesFromArchive() can also be called when adding PVM/GVM etc. using the "Add Texture..." button.

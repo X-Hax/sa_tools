@@ -86,6 +86,25 @@
 			alphaSortingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			enablePAKAlphaForAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			disablePAKAlphaForAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			chaoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			alignmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			neutralChaoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			heroChaoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			darkChaoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			firstEvolutionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			childFirstToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			normalFirstToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			swimFirstToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			flyFirstToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			runFirstToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			powerFirstToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			secondEvolutionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			zeroSecondToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			normalSecondToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			swimSecondToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			flySecondToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			runSecondToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			powerSecondToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			textureEditorHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			textureEditingGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -138,7 +157,8 @@
 			globalIndex = new System.Windows.Forms.NumericUpDown();
 			textureName = new System.Windows.Forms.TextBox();
 			statusStrip1 = new System.Windows.Forms.StatusStrip();
-			toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+			toolStripStatusLabelTextures = new System.Windows.Forms.ToolStripStatusLabel();
+			toolStripStatusLabelPalette = new System.Windows.Forms.ToolStripStatusLabel();
 			dummyPanel = new System.Windows.Forms.Panel();
 			contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(components);
 			copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -228,7 +248,7 @@
 			// menuStrip1
 			// 
 			menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-			menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, viewToolStripMenuItem, editToolStripMenuItem, toolsToolStripMenuItem, helpToolStripMenuItem });
+			menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, viewToolStripMenuItem, editToolStripMenuItem, toolsToolStripMenuItem, chaoToolStripMenuItem, helpToolStripMenuItem });
 			menuStrip1.Location = new System.Drawing.Point(0, 0);
 			menuStrip1.Name = "menuStrip1";
 			menuStrip1.Padding = new System.Windows.Forms.Padding(5, 1, 0, 1);
@@ -576,7 +596,7 @@
 			// generateNewGbixToolStripMenuItem
 			// 
 			generateNewGbixToolStripMenuItem.Name = "generateNewGbixToolStripMenuItem";
-			generateNewGbixToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			generateNewGbixToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
 			generateNewGbixToolStripMenuItem.Text = "Generate New Gbix";
 			generateNewGbixToolStripMenuItem.Click += generateNewGbixToolStripMenuItem_Click;
 			// 
@@ -584,7 +604,7 @@
 			// 
 			mipmapsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { addMipmapsToAllToolStripMenuItem, removeMipmapsFromAllToolStripMenuItem, exportMipmapsAsPNGToolStripMenuItem });
 			mipmapsToolStripMenuItem.Name = "mipmapsToolStripMenuItem";
-			mipmapsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			mipmapsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
 			mipmapsToolStripMenuItem.Text = "Mipmaps";
 			// 
 			// addMipmapsToAllToolStripMenuItem
@@ -615,7 +635,7 @@
 			alphaSortingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { enablePAKAlphaForAllToolStripMenuItem, disablePAKAlphaForAllToolStripMenuItem });
 			alphaSortingToolStripMenuItem.Enabled = false;
 			alphaSortingToolStripMenuItem.Name = "alphaSortingToolStripMenuItem";
-			alphaSortingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			alphaSortingToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
 			alphaSortingToolStripMenuItem.Text = "PAK Alpha Flags";
 			alphaSortingToolStripMenuItem.ToolTipText = "Transparency flags for SA2 PC PAKs.";
 			// 
@@ -634,6 +654,145 @@
 			disablePAKAlphaForAllToolStripMenuItem.Text = "Disable for All";
 			disablePAKAlphaForAllToolStripMenuItem.ToolTipText = "Remove the RGB5A3 format and unset the flag that disables Z Write/Alpha Test for all textures in this PAK.";
 			disablePAKAlphaForAllToolStripMenuItem.Click += disablePAKAlphaForAllToolStripMenuItem_Click;
+			// 
+			// chaoToolStripMenuItem
+			// 
+			chaoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { alignmentToolStripMenuItem, firstEvolutionToolStripMenuItem, secondEvolutionToolStripMenuItem });
+			chaoToolStripMenuItem.Name = "chaoToolStripMenuItem";
+			chaoToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+			chaoToolStripMenuItem.Text = "Chao Settings";
+			// 
+			// alignmentToolStripMenuItem
+			// 
+			alignmentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { neutralChaoToolStripMenuItem, heroChaoToolStripMenuItem, darkChaoToolStripMenuItem });
+			alignmentToolStripMenuItem.Name = "alignmentToolStripMenuItem";
+			alignmentToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+			alignmentToolStripMenuItem.Text = "Alignment";
+			// 
+			// neutralChaoToolStripMenuItem
+			// 
+			neutralChaoToolStripMenuItem.Name = "neutralChaoToolStripMenuItem";
+			neutralChaoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+			neutralChaoToolStripMenuItem.Text = "Neutral Chao";
+			neutralChaoToolStripMenuItem.Click += neutralChaoToolStripMenuItem_Click;
+			// 
+			// heroChaoToolStripMenuItem
+			// 
+			heroChaoToolStripMenuItem.Checked = true;
+			heroChaoToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			heroChaoToolStripMenuItem.Name = "heroChaoToolStripMenuItem";
+			heroChaoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+			heroChaoToolStripMenuItem.Text = "Hero Chao";
+			heroChaoToolStripMenuItem.Click += heroChaoToolStripMenuItem_Click;
+			// 
+			// darkChaoToolStripMenuItem
+			// 
+			darkChaoToolStripMenuItem.Name = "darkChaoToolStripMenuItem";
+			darkChaoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+			darkChaoToolStripMenuItem.Text = "Dark Chao";
+			darkChaoToolStripMenuItem.Click += darkChaoToolStripMenuItem_Click;
+			// 
+			// firstEvolutionToolStripMenuItem
+			// 
+			firstEvolutionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { childFirstToolStripMenuItem, normalFirstToolStripMenuItem, swimFirstToolStripMenuItem, flyFirstToolStripMenuItem, runFirstToolStripMenuItem, powerFirstToolStripMenuItem });
+			firstEvolutionToolStripMenuItem.Name = "firstEvolutionToolStripMenuItem";
+			firstEvolutionToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+			firstEvolutionToolStripMenuItem.Text = "First Evolution";
+			// 
+			// childFirstToolStripMenuItem
+			// 
+			childFirstToolStripMenuItem.Name = "childFirstToolStripMenuItem";
+			childFirstToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			childFirstToolStripMenuItem.Text = "Child";
+			childFirstToolStripMenuItem.Click += childFirstToolStripMenuItem_Click;
+			// 
+			// normalFirstToolStripMenuItem
+			// 
+			normalFirstToolStripMenuItem.Checked = true;
+			normalFirstToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			normalFirstToolStripMenuItem.Name = "normalFirstToolStripMenuItem";
+			normalFirstToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			normalFirstToolStripMenuItem.Text = "Normal";
+			normalFirstToolStripMenuItem.Click += normalFirstToolStripMenuItem_Click;
+			// 
+			// swimFirstToolStripMenuItem
+			// 
+			swimFirstToolStripMenuItem.Name = "swimFirstToolStripMenuItem";
+			swimFirstToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			swimFirstToolStripMenuItem.Text = "Swim";
+			swimFirstToolStripMenuItem.Click += swimFirstToolStripMenuItem_Click;
+			// 
+			// flyFirstToolStripMenuItem
+			// 
+			flyFirstToolStripMenuItem.Name = "flyFirstToolStripMenuItem";
+			flyFirstToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			flyFirstToolStripMenuItem.Text = "Fly";
+			flyFirstToolStripMenuItem.Click += flyFirstToolStripMenuItem_Click;
+			// 
+			// runFirstToolStripMenuItem
+			// 
+			runFirstToolStripMenuItem.Name = "runFirstToolStripMenuItem";
+			runFirstToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			runFirstToolStripMenuItem.Text = "Run";
+			runFirstToolStripMenuItem.Click += runFirstToolStripMenuItem_Click;
+			// 
+			// powerFirstToolStripMenuItem
+			// 
+			powerFirstToolStripMenuItem.Name = "powerFirstToolStripMenuItem";
+			powerFirstToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			powerFirstToolStripMenuItem.Text = "Power";
+			powerFirstToolStripMenuItem.Click += powerFirstToolStripMenuItem_Click;
+			// 
+			// secondEvolutionToolStripMenuItem
+			// 
+			secondEvolutionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { zeroSecondToolStripMenuItem, normalSecondToolStripMenuItem, swimSecondToolStripMenuItem, flySecondToolStripMenuItem, runSecondToolStripMenuItem, powerSecondToolStripMenuItem });
+			secondEvolutionToolStripMenuItem.Name = "secondEvolutionToolStripMenuItem";
+			secondEvolutionToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+			secondEvolutionToolStripMenuItem.Text = "Second Evolution";
+			// 
+			// zeroSecondToolStripMenuItem
+			// 
+			zeroSecondToolStripMenuItem.Checked = true;
+			zeroSecondToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			zeroSecondToolStripMenuItem.Name = "zeroSecondToolStripMenuItem";
+			zeroSecondToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			zeroSecondToolStripMenuItem.Text = "Zero";
+			zeroSecondToolStripMenuItem.Click += zeroSecondToolStripMenuItem_Click;
+			// 
+			// normalSecondToolStripMenuItem
+			// 
+			normalSecondToolStripMenuItem.Name = "normalSecondToolStripMenuItem";
+			normalSecondToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			normalSecondToolStripMenuItem.Text = "Normal";
+			normalSecondToolStripMenuItem.Click += normalSecondToolStripMenuItem_Click;
+			// 
+			// swimSecondToolStripMenuItem
+			// 
+			swimSecondToolStripMenuItem.Name = "swimSecondToolStripMenuItem";
+			swimSecondToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			swimSecondToolStripMenuItem.Text = "Swim";
+			swimSecondToolStripMenuItem.Click += swimSecondToolStripMenuItem_Click;
+			// 
+			// flySecondToolStripMenuItem
+			// 
+			flySecondToolStripMenuItem.Name = "flySecondToolStripMenuItem";
+			flySecondToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			flySecondToolStripMenuItem.Text = "Fly";
+			flySecondToolStripMenuItem.Click += flySecondToolStripMenuItem_Click;
+			// 
+			// runSecondToolStripMenuItem
+			// 
+			runSecondToolStripMenuItem.Name = "runSecondToolStripMenuItem";
+			runSecondToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			runSecondToolStripMenuItem.Text = "Run";
+			runSecondToolStripMenuItem.Click += runSecondToolStripMenuItem_Click;
+			// 
+			// powerSecondToolStripMenuItem
+			// 
+			powerSecondToolStripMenuItem.Name = "powerSecondToolStripMenuItem";
+			powerSecondToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+			powerSecondToolStripMenuItem.Text = "Power";
+			powerSecondToolStripMenuItem.Click += powerSecondToolStripMenuItem_Click;
 			// 
 			// helpToolStripMenuItem
 			// 
@@ -712,7 +871,7 @@
 			splitContainer1.Panel2.Controls.Add(textureName);
 			splitContainer1.Panel2.Controls.Add(label1);
 			splitContainer1.Panel2.SizeChanged += SplitContainer1_Panel2_SizeChanged;
-			splitContainer1.Size = new System.Drawing.Size(831, 631);
+			splitContainer1.Size = new System.Drawing.Size(831, 629);
 			splitContainer1.SplitterDistance = 289;
 			splitContainer1.SplitterWidth = 5;
 			splitContainer1.TabIndex = 1;
@@ -725,7 +884,7 @@
 			listBox1.Location = new System.Drawing.Point(0, 0);
 			listBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			listBox1.Name = "listBox1";
-			listBox1.Size = new System.Drawing.Size(285, 596);
+			listBox1.Size = new System.Drawing.Size(285, 594);
 			listBox1.TabIndex = 0;
 			listBox1.SelectedIndexChanged += listBox1_SelectedIndexChanged;
 			// 
@@ -738,7 +897,7 @@
 			panel1.Controls.Add(removeTextureButton);
 			panel1.Controls.Add(addTextureButton);
 			panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			panel1.Location = new System.Drawing.Point(0, 596);
+			panel1.Location = new System.Drawing.Point(0, 594);
 			panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			panel1.Name = "panel1";
 			panel1.Size = new System.Drawing.Size(285, 31);
@@ -1285,19 +1444,26 @@
 			// statusStrip1
 			// 
 			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-			statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel1 });
-			statusStrip1.Location = new System.Drawing.Point(0, 655);
+			statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabelTextures, toolStripStatusLabelPalette });
+			statusStrip1.Location = new System.Drawing.Point(0, 653);
 			statusStrip1.Name = "statusStrip1";
 			statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-			statusStrip1.Size = new System.Drawing.Size(831, 22);
+			statusStrip1.Size = new System.Drawing.Size(831, 24);
 			statusStrip1.TabIndex = 2;
 			statusStrip1.Text = "statusStrip1";
 			// 
-			// toolStripStatusLabel1
+			// toolStripStatusLabelTextures
 			// 
-			toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-			toolStripStatusLabel1.Size = new System.Drawing.Size(57, 17);
-			toolStripStatusLabel1.Text = "0 textures";
+			toolStripStatusLabelTextures.Name = "toolStripStatusLabelTextures";
+			toolStripStatusLabelTextures.Size = new System.Drawing.Size(57, 19);
+			toolStripStatusLabelTextures.Text = "0 textures";
+			// 
+			// toolStripStatusLabelPalette
+			// 
+			toolStripStatusLabelPalette.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+			toolStripStatusLabelPalette.Name = "toolStripStatusLabelPalette";
+			toolStripStatusLabelPalette.Size = new System.Drawing.Size(124, 19);
+			toolStripStatusLabelPalette.Text = "No palette file loaded";
 			// 
 			// dummyPanel
 			// 
@@ -1415,7 +1581,7 @@
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem addMipmapsToAllToolStripMenuItem;
 		private System.Windows.Forms.StatusStrip statusStrip1;
-		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelTextures;
 		private System.Windows.Forms.ToolStripMenuItem newPVMToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem newGVMToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem newPVMXToolStripMenuItem;
@@ -1497,5 +1663,25 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 		private System.Windows.Forms.ToolStripMenuItem listOfTexturesSA1SADXToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem listOfTexturesSA2SA2BToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem chaoToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem alignmentToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem neutralChaoToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem heroChaoToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem darkChaoToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem firstEvolutionToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem childFirstToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem normalFirstToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem swimFirstToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem flyFirstToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem runFirstToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem powerFirstToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem secondEvolutionToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem zeroSecondToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem normalSecondToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem swimSecondToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem flySecondToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem runSecondToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem powerSecondToolStripMenuItem;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelPalette;
 	}
 }
