@@ -668,7 +668,7 @@
 			// 
 			alignmentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { neutralChaoToolStripMenuItem, heroChaoToolStripMenuItem, darkChaoToolStripMenuItem });
 			alignmentToolStripMenuItem.Name = "alignmentToolStripMenuItem";
-			alignmentToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			alignmentToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
 			alignmentToolStripMenuItem.Text = "Alignment";
 			// 
 			// neutralChaoToolStripMenuItem
@@ -698,7 +698,7 @@
 			// 
 			firstEvolutionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { childFirstToolStripMenuItem, normalFirstToolStripMenuItem, swimFirstToolStripMenuItem, flyFirstToolStripMenuItem, runFirstToolStripMenuItem, powerFirstToolStripMenuItem });
 			firstEvolutionToolStripMenuItem.Name = "firstEvolutionToolStripMenuItem";
-			firstEvolutionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			firstEvolutionToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
 			firstEvolutionToolStripMenuItem.Text = "First Evolution";
 			// 
 			// childFirstToolStripMenuItem
@@ -749,7 +749,7 @@
 			// 
 			secondEvolutionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { zeroSecondToolStripMenuItem, normalSecondToolStripMenuItem, swimSecondToolStripMenuItem, flySecondToolStripMenuItem, runSecondToolStripMenuItem, powerSecondToolStripMenuItem });
 			secondEvolutionToolStripMenuItem.Name = "secondEvolutionToolStripMenuItem";
-			secondEvolutionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			secondEvolutionToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
 			secondEvolutionToolStripMenuItem.Text = "Second Evolution";
 			// 
 			// zeroSecondToolStripMenuItem
@@ -1100,7 +1100,7 @@
 			// buttonReplaceImage
 			// 
 			buttonReplaceImage.AutoSize = true;
-			buttonReplaceImage.Location = new System.Drawing.Point(110, 0);
+			buttonReplaceImage.Location = new System.Drawing.Point(0, 31);
 			buttonReplaceImage.Name = "buttonReplaceImage";
 			buttonReplaceImage.Size = new System.Drawing.Size(103, 25);
 			buttonReplaceImage.TabIndex = 24;
@@ -1113,7 +1113,7 @@
 			// 
 			saveTextureButton.AutoSize = true;
 			saveTextureButton.Enabled = false;
-			saveTextureButton.Location = new System.Drawing.Point(0, 31);
+			saveTextureButton.Location = new System.Drawing.Point(110, 0);
 			saveTextureButton.Name = "saveTextureButton";
 			saveTextureButton.Size = new System.Drawing.Size(103, 25);
 			saveTextureButton.TabIndex = 23;
