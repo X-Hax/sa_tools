@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using TextureLib;
-using static TextureEditor.Program;
 using static SAModel.SAEditorCommon.ChaoPalettes;
+using static TextureEditor.Program;
 
 namespace TextureEditor
 {
@@ -222,6 +223,127 @@ namespace TextureEditor
 				}
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// Imports an indexed Bitmap into the currently selected texture, and encodes it in the specified indexed format.
+		/// Also replaces the current palette with one extracted from the Bitmap and encoded using the specified pixel codec.
+		/// </summary>
+		/// <param name="indexedBitmap">Indexed Bitmap to import.</param>
+		/// <param name="targetFormat">Target indexed format: Index4 or Index8.</param>
+		/// <param name="paletteCodec">Pixel codec for encoding the palette.</param>
+		/// <param name="clut">True if importing as a GVR texture's internal CLUT.</param>
+		public void ImportIndexedImage(Bitmap indexedBitmap, IndexedTextureFormat targetFormat, PixelCodec paletteCodec, bool clut)
+		{
+			// Check if the texture format is compatible
+			if (textures[currentTextureID] is not PvrTexture && textures[currentTextureID] is not GvrTexture)
+			{
+				MessageBox.Show(this, "Current texture format does not support indexed textures.", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			// Retrieve the palette from the indexed bitmap
+			TexturePalette sourcePalette = TexturePalette.FromIndexedBitmap(indexedBitmap);
+			// Set target format: PVR
+			if (textures[currentTextureID] is PvrTexture pvr)
+			{
+				PvrDataFormat targetPvrFormat;
+				switch (targetFormat)
+				{
+					case IndexedTextureFormat.Index4:
+						targetPvrFormat = pvr.HasMipmaps ? PvrDataFormat.Index4Mipmaps : PvrDataFormat.Index4;
+						break;
+					case IndexedTextureFormat.Index8:
+					default:
+						targetPvrFormat = pvr.HasMipmaps ? PvrDataFormat.Index8Mipmaps : PvrDataFormat.Index8;
+						break;
+				}
+				// Encode the source palette using the specified palette codec
+				sourcePalette.Encode(paletteCodec);
+				// Set the final palette
+				currentPalette = new TexturePalette(sourcePalette.RawData, paletteCodec, sourcePalette.GetNumColors());
+				// Create the texture
+				textures[currentTextureID] = new PvrTexture(new Bitmap(indexedBitmap), targetPvrFormat, paletteCodec.GetPvrPixelFormat(), pvr.HasMipmaps, currentPalette, pvr.Gbix, pvr.Name, false, true);
+			}
+			// Set target format: GVR
+			else if (textures[currentTextureID] is GvrTexture gvr)
+			{
+				GvrDataFormat targetGvrFormat = targetFormat == IndexedTextureFormat.Index4 ? GvrDataFormat.Index4 : GvrDataFormat.Index8;
+				// Encode the source palette using the specified palette codec
+				if (clut)
+					paletteCodec.BigEndian = true;
+				sourcePalette.Encode(paletteCodec, clut);
+				// Set the final palette
+				currentPalette = new TexturePalette(sourcePalette.RawData, paletteCodec, sourcePalette.GetNumColors(), 0, clut);
+				// Create the texture
+				textures[currentTextureID] = new GvrTexture(new Bitmap(indexedBitmap), targetGvrFormat, gvr.HasMipmaps, currentPalette, gvr.Gbix, gvr.Name, paletteCodec.GetGvrPaletteFormat(), false, !clut, settingsfile.SACompatiblePalettes);
+			}
+			textures[currentTextureID].Decode();
+			toolStripStatusLabelPalette.Text = "Palette: from Bitmap";
+		}
+
+		/// <summary>
+		/// Exports the currently selected PVR or GVR texture's image as an indexed Bitmap.
+		/// The texture must be an Indexed PVR or GVR with a Palette applied.
+		/// </summary>
+		/// <returns>System.Drawing.Bitmap in Index4 or Index8 format.</returns>
+		public Bitmap ExportIndexedImage()
+		{
+			byte[] origData; // Original texture's encoded data
+			DataCodec codec; // Codec used to decode the original texture's encoded data
+			GenericTexture texture = textures[currentTextureID];
+			switch (texture)
+			{
+				case PvrTexture pvr:
+					codec = PvrDataCodec.Create(pvr.PvrDataFormat, PixelCodec.GetPixelCodec(pvr.PvrPixelFormat));
+					origData = pvr.HeaderlessData;
+					break;
+				case GvrTexture gvr:
+					codec = GvrDataCodec.GetDataCodec(gvr.GvrDataFormat);
+					origData = gvr.HeaderlessData;
+					break;
+				default:
+					MessageBox.Show(this, "Currently selected texture is not a PVR or GVR texture.", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return null;
+			}
+			if (texture.Palette == null)
+			{
+				MessageBox.Show(this, "Current texture is missing a palette.", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return null;
+			}
+			int bankSize = 16;
+			IndexedTextureFormat sourceFormat = texture.GetIndexedFormat();
+			switch (sourceFormat)
+			{
+				case IndexedTextureFormat.Index8:
+					bankSize = 256;
+					break;
+				case IndexedTextureFormat.Index4:
+					bankSize = 16;
+					break;
+				case IndexedTextureFormat.NotIndexed:
+				default:
+					MessageBox.Show(this, "Current texture is not indexed.", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return null;
+			}
+			// Export palette
+			Color[] colors = texture.Palette.GetColors();
+			Bitmap targetBitmap = new Bitmap(texture.Width, texture.Height, sourceFormat == IndexedTextureFormat.Index4 ? System.Drawing.Imaging.PixelFormat.Format4bppIndexed : System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
+			// Hack for .NET 8.0 and older. Replace with a direct ColorPalette constructor in the future.
+			Bitmap dummyBitmap = new Bitmap(1, 1, sourceFormat == IndexedTextureFormat.Index4 ? System.Drawing.Imaging.PixelFormat.Format4bppIndexed : System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
+			ColorPalette replacePalette = dummyBitmap.Palette;
+			for (int i = 0; i < bankSize; i++)
+				replacePalette.Entries[i] = colors[bankSize * texture.PaletteBank + i];
+			targetBitmap.Palette = replacePalette;
+			// Decode to Index8
+			byte[] indexData = codec.Decode(origData, texture.Width, texture.Height, null);
+			// Set pixels in the target Bitmap
+			for (int y = 0; y < texture.Height; y++)
+				for (int x = 0; x < texture.Width; x++)
+				{
+					int pixIndex = indexData[y* texture.Width + x];
+					TextureFunctions.SetPixelIndex(targetBitmap, x, y, pixIndex);
+				}
+			return targetBitmap;
 		}
 	}
 }

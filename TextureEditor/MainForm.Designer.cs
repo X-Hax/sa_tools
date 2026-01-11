@@ -1103,7 +1103,7 @@
 			buttonReplaceImage.Name = "buttonReplaceImage";
 			buttonReplaceImage.Size = new System.Drawing.Size(103, 25);
 			buttonReplaceImage.TabIndex = 24;
-			buttonReplaceImage.Text = "Replace Image...";
+			buttonReplaceImage.Text = "Import Image...";
 			toolTip1.SetToolTip(buttonReplaceImage, "Loads a texture and converts it to the same format as the currently selected texture.");
 			buttonReplaceImage.UseVisualStyleBackColor = true;
 			buttonReplaceImage.Click += buttonReplaceImage_Click;

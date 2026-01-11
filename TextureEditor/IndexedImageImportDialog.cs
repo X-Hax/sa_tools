@@ -8,12 +8,20 @@ namespace TextureEditor
 {
 	public partial class IndexedImageImportDialog : Form
 	{
-        Bitmap bitmap;
-        GenericTexture texinfo;
-        bool SACompatible;
-        bool gamecube;
-        public IndexedTextureFormat outFormat;
-        public PixelCodec outCodec;
+		/// <summary>Bitmap to analyze.</summary>
+		Bitmap bitmap;
+		/// <summary>Texture to test.</summary>
+		GenericTexture texinfo;
+		/// <summary>Whether to use SADX/SA2B GC compatible palette formats.</summary>
+		bool SACompatible;
+		/// <summary>Whether the texture is GVR or not.</summary>
+		bool gamecube;
+		/// <summary>Output indexed texture format.</summary>
+		public IndexedTextureFormat outFormat;
+		/// <summary>Output palette codec.</summary>
+		public PixelCodec outCodec;
+		/// <summary>Whether the palette is internal or not.</summary>
+		public bool outInternal;
 
 		public IndexedImageImportDialog(Bitmap setbitmap, GenericTexture settexinfo, bool setSACompatible = true)
 		{
@@ -22,9 +30,55 @@ namespace TextureEditor
 			texinfo = settexinfo;
 			SACompatible = setSACompatible;
 			InitializeComponent();
+			checkBoxInternalClut.Enabled = gamecube;
 			labelPaletteInfo.Text = "Counting colors, please wait...";
 		}
 
+		private void checkBoxInternalClut_CheckedChanged(object sender, EventArgs e)
+		{
+			outInternal = checkBoxInternalClut.Checked;
+		}
+
+		private void IndexedImageImportDialog_Shown(object sender, EventArgs e)
+		{
+			groupBoxMask.Enabled = groupBoxPalette.Enabled = buttonAuto.Enabled = buttonOK.Enabled = false;
+			Application.DoEvents();
+			ProcessBitmap();
+		}
+
+		private void buttonAuto_Click(object sender, EventArgs e)
+		{
+			groupBoxMask.Enabled = groupBoxPalette.Enabled = buttonAuto.Enabled = buttonOK.Enabled = false;
+			labelPaletteInfo.Text = "Counting colors, please wait...";
+			Application.DoEvents();
+			ProcessBitmap();
+		}
+
+		private void IndexedImageImportDialog_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			// Pixel codec
+			if (radioButtonRGB565.Checked)
+				outCodec = new RGB565PixelCodec();
+			else if (radioButtonARGB1555.Checked)
+				outCodec = new ARGB1555PixelCodec();
+			else if (radioButtonARGB4444.Checked)
+				outCodec = new ARGB4444PixelCodec();
+			else if (radioButtonARGB8888.Checked)
+				outCodec = new ARGB8888PixelCodec();
+			else if (radioButtonIntensity8A.Checked)
+				outCodec = new IntensityA8PixelCodec();
+			else if (radioButtonRGB5A3.Checked)
+				outCodec = new RGB5A3PixelCodec();
+			// Indexed format
+			if (radioButtonIndex8.Checked)
+				outFormat = IndexedTextureFormat.Index8;
+			else if (radioButtonIndex4.Checked)
+				outFormat = IndexedTextureFormat.Index4;
+			else
+				outFormat = IndexedTextureFormat.NotIndexed;
+		}
+
+		/// <summary>Analyzes the Bitmap to determine the possible paletted formats.</summary>
 		private void ProcessBitmap()
 		{
 			int usedColors = 0;
@@ -93,44 +147,5 @@ namespace TextureEditor
 			else
 				radioButtonIntensity8A.Enabled = radioButtonRGB5A3.Enabled = true;
 		}
-
-		private void IndexedImageImportDialog_Shown(object sender, EventArgs e)
-		{
-            groupBoxMask.Enabled = groupBoxPalette.Enabled = buttonAuto.Enabled = buttonOK.Enabled = false;
-            Application.DoEvents();
-            ProcessBitmap();
-        }
-
-		private void button1_Click(object sender, EventArgs e)
-		{
-            groupBoxMask.Enabled = groupBoxPalette.Enabled = buttonAuto.Enabled = buttonOK.Enabled = false;
-            labelPaletteInfo.Text = "Counting colors, please wait...";
-            Application.DoEvents();
-            ProcessBitmap();
-        }
-
-        private void IndexedImageImportDialog_FormClosing(object sender, FormClosingEventArgs e)
-        {
-			// Pixel codec
-			if (radioButtonRGB565.Checked)
-				outCodec = new RGB565PixelCodec();
-			else if (radioButtonARGB1555.Checked)
-				outCodec = new ARGB1555PixelCodec();
-			else if (radioButtonARGB4444.Checked)
-				outCodec = new ARGB4444PixelCodec();
-			else if (radioButtonARGB8888.Checked)
-				outCodec = new ARGB8888PixelCodec();
-			else if (radioButtonIntensity8A.Checked)
-				outCodec = new IntensityA8PixelCodec();
-			else if (radioButtonRGB5A3.Checked)
-				outCodec = new RGB5A3PixelCodec();
-            // Indexed format
-            if (radioButtonIndex8.Checked)
-                outFormat = IndexedTextureFormat.Index8;
-            else if (radioButtonIndex4.Checked)
-                outFormat = IndexedTextureFormat.Index4;
-            else
-                outFormat = IndexedTextureFormat.NotIndexed;
-        }
 	}
 }

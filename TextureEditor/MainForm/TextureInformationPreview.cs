@@ -101,7 +101,10 @@ namespace TextureEditor
 				{
 					case PvrTexture pvr:
 						dataFormatLabel.Text = $"PVR Data Format: {pvr.PvrDataFormat}";
-						pixelFormatLabel.Text = $"PVR Pixel Format: {pvr.PvrPixelFormat}";
+						if (!pvr.Indexed)
+							pixelFormatLabel.Text = $"PVR Pixel Format: {pvr.PvrPixelFormat}";
+						else
+							pixelFormatLabel.Hide();
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = pvr.Image.Width;
 						numericUpDownOrigSizeY.Value = pvr.Image.Height;

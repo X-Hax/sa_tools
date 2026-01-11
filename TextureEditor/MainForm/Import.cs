@@ -10,6 +10,46 @@ namespace TextureEditor
 {
 	public partial class MainForm
 	{
+		/// <summary>
+		/// Checks whether the dimensions of the specified Bitmap are compatible with the specified texture.
+		/// </summary>
+		/// <param name="importImage"></param>
+		/// <param name="tex"></param>
+		/// <returns></returns>
+		public static bool CheckTextureCompatibility(Bitmap importImage, GenericTexture tex)
+		{
+			// Dimensions must be power of two
+			if (!TextureFunctions.IsPow2(importImage.Width) || !TextureFunctions.IsPow2(importImage.Height))
+				return false;
+			// Specific format limitations
+			switch (tex)
+			{
+				case PvrTexture pvr:
+					switch (pvr.PvrDataFormat)
+					{
+						// Square textures
+						case PvrDataFormat.SquareTwiddled:
+						case PvrDataFormat.SquareTwiddledMipmaps:
+						case PvrDataFormat.SquareTwiddledMipmapsDma:
+						case PvrDataFormat.Vq:
+						case PvrDataFormat.VqMipmaps:
+						case PvrDataFormat.Index4:
+						case PvrDataFormat.Index4Mipmaps:
+						case PvrDataFormat.Index8:
+						case PvrDataFormat.Index8Mipmaps:
+							return importImage.Width == importImage.Height;
+						default:
+							return true;
+					}
+				case GvrTexture gvr:
+					// Mipmapped textures must be square
+					if (gvr.HasMipmaps)
+						return importImage.Width == importImage.Height;
+					break;
+			}
+			return true;
+		}
+
 		/// <summary>Imports a texture and converts it to the most appropriate format based on its image data.</summary>		
 		/// <returns>True on success, false on cancel.</returns>
 		public static bool ImportTexture()
@@ -21,6 +61,11 @@ namespace TextureEditor
 				string name = Path.GetFileNameWithoutExtension(dlg.FileName);
 				byte[] data = File.ReadAllBytes(dlg.FileName);
 				GenericTexture tex = GenericTexture.LoadTexture(data);
+				if (!TextureFunctions.IsPow2(tex.Width) || !TextureFunctions.IsPow2(tex.Height))
+				{
+					MessageBox.Show(primaryForm, "The image is not compatible with this texture format.\nMake sure the image's dimensions are power of two.", "Texture Editor Warning", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+					return false;
+				}
 				switch (currentFormat)
 				{
 					case TextureArchiveFormat.PVM:
@@ -28,21 +73,33 @@ namespace TextureEditor
 						if (tex is PvrTexture)
 							textures[currentTextureID] = new PvrTexture(data) { Name = oldpvr.Name, Gbix = oldpvr.Gbix };
 						else
+						{
+							tex.Name = oldpvr.Name;
+							tex.Gbix = oldpvr.Gbix;
 							textures[currentTextureID] = tex.ToPvr(settingsfile.TexEncodeAutoHighQuality, settingsfile.TexEncodeUseCompressed);
+						}
 						break;
 					case TextureArchiveFormat.GVM:
 						GvrTexture oldgvr = (GvrTexture)textures[currentTextureID];
 						if (tex is GvrTexture)
 							textures[currentTextureID] = new GvrTexture(data) { Name = oldgvr.Name, Gbix = oldgvr.Gbix };
 						else
+						{
+							tex.Name = oldgvr.Name;
+							tex.Gbix = oldgvr.Gbix;
 							textures[currentTextureID] = tex.ToGvr(settingsfile.TexEncodeAutoHighQuality && settingsfile.HighQualityGVM, settingsfile.TexEncodeUseCompressed);
+						}
 						break;
 					case TextureArchiveFormat.XVM:
 						XvrTexture oldxvr = (XvrTexture)textures[currentTextureID];
 						if (tex is XvrTexture)
 							textures[currentTextureID] = new XvrTexture(data) { Name = oldxvr.Name, Gbix = oldxvr.Gbix };
 						else
+						{
+							tex.Name = oldxvr.Name;
+							tex.Gbix = oldxvr.Gbix;
 							textures[currentTextureID] = tex.ToXvr(settingsfile.TexEncodeAutoHighQuality, settingsfile.TexEncodeUseCompressed);
+						}
 						break;
 					case TextureArchiveFormat.PVMX:
 						GenericTexture oldpvmx = textures[currentTextureID];
@@ -80,7 +137,7 @@ namespace TextureEditor
 			return false;
 		}
 
-		/// <summary>Loads an image and encodes it in the same format as the currently selected texture.</summary>	
+		/// <summary>Loads an image and encodes it in the same format as the currently selected texture, or ask if it's indexed.</summary>	
 		private void ReplaceImage()
 		{
 			OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvr", Filter = "Texture Files|*.pvr;*.gvr;*.xvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.dds" };
@@ -90,9 +147,49 @@ namespace TextureEditor
 			if (res == DialogResult.OK)
 			{
 				GenericTexture src = GenericTexture.LoadTexture(dlg.FileName);
-				textures[currentTextureID].Image = src.Image;
-				textures[currentTextureID].Encode();
-				UpdateTextureInformation();
+				if (!CheckTextureCompatibility(src.Image, textures[currentTextureID]))
+				{
+					MessageBox.Show(primaryForm, "The image is not compatible with this texture format.\nMake sure the image is square and its dimensions are power of two.", "Texture Editor Warning", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+					return;
+				}
+				IndexedTextureFormat outFormat = IndexedTextureFormat.NotIndexed;
+				PixelCodec outPaletteCodec = null;
+				bool clut = false;
+				// If the input image is indexed, show a dialog
+				if (src.Indexed)
+				{
+					using (IndexedImageImportDialog importDialog = new IndexedImageImportDialog(src.Image, textures[currentTextureID], settingsfile.SACompatiblePalettes))
+					{
+						if (importDialog.ShowDialog(this) == DialogResult.OK)
+						{
+							outFormat = importDialog.outFormat;
+							outPaletteCodec = importDialog.outCodec;
+							clut = importDialog.outInternal;
+						}
+						else
+							return;
+					}
+				}
+				// Import a non-indexed texture
+				if (outFormat == IndexedTextureFormat.NotIndexed)
+				{
+					textures[currentTextureID].Image = src.Image;
+					textures[currentTextureID].Encode();
+					UpdateTextureInformation();
+				}
+				// Import an indexed texture
+				else
+				{
+					bool alreadyIndexed = textures[currentTextureID].Indexed;
+					ImportIndexedImage(src.Image, outFormat, outPaletteCodec, clut);
+					if (alreadyIndexed)
+					{
+						UpdateTextureView();
+						ShowHidePaletteInfo();
+					}
+					else
+						UpdateTextureInformation();
+				}	
 				unsaved = true;
 			}
 			listBox1.Select();
