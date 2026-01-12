@@ -94,7 +94,7 @@ namespace TextureLib
 
 		public override string Info()
 		{
-			return "YUV422, 8 bit (2 pixels per 4 bytes)" + (BigEndian ? ", Big Endian" : "");
+			return "YUV422, 16 bit (2 pixels per 4 bytes)" + (BigEndian ? ", Big Endian" : "");
 		}
 	}
 }
