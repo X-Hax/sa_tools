@@ -131,10 +131,10 @@ namespace TextureEditor
 			radioButtonIntensity8A.Location = new System.Drawing.Point(117, 47);
 			radioButtonIntensity8A.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			radioButtonIntensity8A.Name = "radioButtonIntensity8A";
-			radioButtonIntensity8A.Size = new System.Drawing.Size(113, 19);
+			radioButtonIntensity8A.Size = new System.Drawing.Size(90, 19);
 			radioButtonIntensity8A.TabIndex = 9;
 			radioButtonIntensity8A.TabStop = true;
-			radioButtonIntensity8A.Text = "Intensity8Alpha8";
+			radioButtonIntensity8A.Text = "Intensity8A8";
 			toolTip1.SetToolTip(radioButtonIntensity8A, "A lossless grayscale palette that can store partial transparency. 2 bytes per pixel.\r\nGamecube only. The Sonic Adventure games on the Gamecube do not support this format.");
 			radioButtonIntensity8A.UseVisualStyleBackColor = true;
 			// 

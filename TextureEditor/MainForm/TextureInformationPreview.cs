@@ -55,9 +55,6 @@ namespace TextureEditor
 					exportMipmapsAsPNGToolStripMenuItem.Enabled = mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
 				if (currentFormat == TextureArchiveFormat.PAK && !usingSocPak)
 				{
-					// Display PAK metadata
-					extraFormatLabel.Show();
-					extraFormatLabel.Text = $"PAK GVR Format: {currentTexture.PakMetadata.PakGvrFormat}";
 					// Enable the PAK alpha flag
 					checkBoxPAKUseAlpha.Enabled = true;
 					checkBoxPAKUseAlpha.Show();
@@ -78,7 +75,9 @@ namespace TextureEditor
 					if ((njflags & NinjaSurfaceFlags.VQ) != 0)
 						flags.Add("VQ");
 					string ninjaFlagsString = string.Join(", ", flags);
-					pixelFormatLabel.Text = $"PAK Ninja Surface Flags: {ninjaFlagsString}";
+					// Display PAK metadata
+					extraFormatLabel.Text = $"PAK GVR Format: {currentTexture.PakMetadata.PakGvrFormat}" + System.Environment.NewLine + $"PAK Ninja Surface Flags: {ninjaFlagsString}";
+					extraFormatLabel.Show();
 
 				}
 				else if (currentFormat == TextureArchiveFormat.PVMX)
