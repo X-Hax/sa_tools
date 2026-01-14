@@ -98,140 +98,144 @@ namespace TextureEditor
 				}
 				switch (currentTexture)
 				{
+					case InvalidTexture:
+						dataFormatLabel.Text = "Data format: Unknown";
+						pixelFormatLabel.Hide();
+						break;
 					case PvrTexture pvr:
-						dataFormatLabel.Text = $"PVR Data Format: {pvr.PvrDataFormat}";
-						if (!pvr.Indexed)
-							pixelFormatLabel.Text = $"PVR Pixel Format: {pvr.PvrPixelFormat}";
-						else
-							pixelFormatLabel.Hide();
-						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
-						numericUpDownOrigSizeX.Value = pvr.Image.Width;
-						numericUpDownOrigSizeY.Value = pvr.Image.Height;
-						switch (pvr.PvrDataFormat)
-						{
-							case PvrDataFormat.Index4:
-							case PvrDataFormat.Index4Mipmaps:
-							case PvrDataFormat.Index8:
-							case PvrDataFormat.Index8Mipmaps:
-								toolStripStatusLabelPalette.Visible = true;
-								if (!SetChaoPalette(pvr))
-								{
-									string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
-									string pvppath = folder + pvr.Name + ".pvp";
-									if (File.Exists(pvppath))
+							dataFormatLabel.Text = $"PVR Data Format: {pvr.PvrDataFormat}";
+							if (!pvr.Indexed)
+								pixelFormatLabel.Text = $"PVR Pixel Format: {pvr.PvrPixelFormat}";
+							else
+								pixelFormatLabel.Hide();
+							numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+							numericUpDownOrigSizeX.Value = pvr.Image.Width;
+							numericUpDownOrigSizeY.Value = pvr.Image.Height;
+							switch (pvr.PvrDataFormat)
+							{
+								case PvrDataFormat.Index4:
+								case PvrDataFormat.Index4Mipmaps:
+								case PvrDataFormat.Index8:
+								case PvrDataFormat.Index8Mipmaps:
+									toolStripStatusLabelPalette.Visible = true;
+									if (!SetChaoPalette(pvr))
 									{
-										currentPalette = new TexturePalette(File.ReadAllBytes(pvppath));
-										toolStripStatusLabelPalette.Text = "Palette: " + Path.GetFileName(pvppath);
-										paletteSet = 0;
+										string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
+										string pvppath = folder + pvr.Name + ".pvp";
+										if (File.Exists(pvppath))
+										{
+											currentPalette = new TexturePalette(File.ReadAllBytes(pvppath));
+											toolStripStatusLabelPalette.Text = "Palette: " + Path.GetFileName(pvppath);
+											paletteSet = 0;
+										}
+										else
+											currentPalette = TexturePalette.CreateDefaultPalette(pvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
 									}
-									else
-										currentPalette = TexturePalette.CreateDefaultPalette(pvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
-								}
-								int actualPaletteColors = currentPalette.GetNumColors();
-								// Failsafe check if the palette has a smaller number of colors than the indexed image expects
-								int neededcolors = (pvr.PvrDataFormat == PvrDataFormat.Index4 | pvr.PvrDataFormat == PvrDataFormat.Index4Mipmaps) ? 16 : 256;
-								if (neededcolors - actualPaletteColors > 0)
-									currentPalette.AddColors(new Color[neededcolors - actualPaletteColors]);
-								// Set palette
-								try
-								{
-									pvr.SetPalette(currentPalette, paletteSet);
-								}
-								catch (Exception ex)
-								{
-									MessageBox.Show(this, "Palette data couldn't be applied: " + ex.Message.ToString(), "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-									currentPalette = TexturePalette.CreateDefaultPalette(pvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
-									toolStripStatusLabelPalette.Text = "Palette: default";
-									pvr.SetPalette(currentPalette, 0);
-								}
-								break;
-							default:
-								break;
-						}
-						break;
-					case GvrTexture gvr:
-						dataFormatLabel.Text = $"GVR Data Format: {gvr.GvrDataFormat}";
-						// The GVR palette format field is only relevant for textures with an internal CLUT
-						if (gvr.Indexed && !gvr.RequiresPaletteFile)
-							pixelFormatLabel.Text = $"GVR Palette Format: {gvr.GvrPaletteFormat}";
-						else
-							pixelFormatLabel.Hide();
-						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
-						numericUpDownOrigSizeX.Value = gvr.Image.Width;
-						numericUpDownOrigSizeY.Value = gvr.Image.Height;
-						checkBoxPAKUseAlpha.Enabled = false;
-						checkBoxPAKUseAlpha.Hide();
-						extraFormatLabel.Visible = false;
-						textureSizeLabel.Hide();
-						switch (gvr.GvrDataFormat)
-						{
-							case GvrDataFormat.Index4:
-							case GvrDataFormat.Index8:
-								toolStripStatusLabelPalette.Visible = true;
-								if (!SetChaoPalette(gvr))
-								{
-									string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
-									string gvppath = folder + gvr.Name + ".gvp";
-									if (File.Exists(gvppath))
-									{
-										currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), compatibleGVPToolStripMenuItem.Checked);
-										toolStripStatusLabelPalette.Text = "Palette: " + Path.GetFileName(gvppath);
-										paletteSet = 0;
-									}
-									else
-										TexturePalette.CreateDefaultPalette(gvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
-								}
-								int actualPaletteColors = currentPalette.GetNumColors();
-								// Failsafe check if the palette has a smaller number of colors than the indexed image expects
-								int neededcolors = (gvr.GvrDataFormat == GvrDataFormat.Index4) ? 16 : 256;
-								if (neededcolors - actualPaletteColors > 0)
-								{
-									for (int i = 0; i < neededcolors - actualPaletteColors; i++)
+									int actualPaletteColors = currentPalette.GetNumColors();
+									// Failsafe check if the palette has a smaller number of colors than the indexed image expects
+									int neededcolors = (pvr.PvrDataFormat == PvrDataFormat.Index4 | pvr.PvrDataFormat == PvrDataFormat.Index4Mipmaps) ? 16 : 256;
+									if (neededcolors - actualPaletteColors > 0)
 										currentPalette.AddColors(new Color[neededcolors - actualPaletteColors]);
-								}
-								// Set palette
-								try
-								{
-									gvr.SetPalette(currentPalette, paletteSet);
-								}
-								catch (Exception)
-								{
-									MessageBox.Show(this, "Palette data couldn't be applied. This can be caused by using 16-color palettes on 256-color indexed images. Select a correct palette file and try again.", "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-									currentPalette = TexturePalette.CreateDefaultPalette(gvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
-									toolStripStatusLabelPalette.Text = "Palette: default";
-									gvr.SetPalette(currentPalette, 0);
-								}
-								break;
-							default:
-								break;
+									// Set palette
+									try
+									{
+										pvr.SetPalette(currentPalette, paletteSet);
+									}
+									catch (Exception ex)
+									{
+										MessageBox.Show(this, "Palette data couldn't be applied: " + ex.Message.ToString(), "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+										currentPalette = TexturePalette.CreateDefaultPalette(pvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
+										toolStripStatusLabelPalette.Text = "Palette: default";
+										pvr.SetPalette(currentPalette, 0);
+									}
+									break;
+								default:
+									break;
+							}
+							break;
+						case GvrTexture gvr:
+							dataFormatLabel.Text = $"GVR Data Format: {gvr.GvrDataFormat}";
+							// The GVR palette format field is only relevant for textures with an internal CLUT
+							if (gvr.Indexed && !gvr.RequiresPaletteFile)
+								pixelFormatLabel.Text = $"GVR Palette Format: {gvr.GvrPaletteFormat}";
+							else
+								pixelFormatLabel.Hide();
+							numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+							numericUpDownOrigSizeX.Value = gvr.Image.Width;
+							numericUpDownOrigSizeY.Value = gvr.Image.Height;
+							checkBoxPAKUseAlpha.Enabled = false;
+							checkBoxPAKUseAlpha.Hide();
+							extraFormatLabel.Visible = false;
+							textureSizeLabel.Hide();
+							switch (gvr.GvrDataFormat)
+							{
+								case GvrDataFormat.Index4:
+								case GvrDataFormat.Index8:
+									toolStripStatusLabelPalette.Visible = true;
+									if (!SetChaoPalette(gvr))
+									{
+										string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
+										string gvppath = folder + gvr.Name + ".gvp";
+										if (File.Exists(gvppath))
+										{
+											currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), compatibleGVPToolStripMenuItem.Checked);
+											toolStripStatusLabelPalette.Text = "Palette: " + Path.GetFileName(gvppath);
+											paletteSet = 0;
+										}
+										else
+											TexturePalette.CreateDefaultPalette(gvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
+									}
+									int actualPaletteColors = currentPalette.GetNumColors();
+									// Failsafe check if the palette has a smaller number of colors than the indexed image expects
+									int neededcolors = (gvr.GvrDataFormat == GvrDataFormat.Index4) ? 16 : 256;
+									if (neededcolors - actualPaletteColors > 0)
+									{
+										for (int i = 0; i < neededcolors - actualPaletteColors; i++)
+											currentPalette.AddColors(new Color[neededcolors - actualPaletteColors]);
+									}
+									// Set palette
+									try
+									{
+										gvr.SetPalette(currentPalette, paletteSet);
+									}
+									catch (Exception)
+									{
+										MessageBox.Show(this, "Palette data couldn't be applied. This can be caused by using 16-color palettes on 256-color indexed images. Select a correct palette file and try again.", "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+										currentPalette = TexturePalette.CreateDefaultPalette(gvr.GetIndexedFormat() == IndexedTextureFormat.Index8);
+										toolStripStatusLabelPalette.Text = "Palette: default";
+										gvr.SetPalette(currentPalette, 0);
+									}
+									break;
+								default:
+									break;
+							}
+							break;
+						case XvrTexture xvr:
+							dataFormatLabel.Text = $"Data Format: DDS (XVR)";
+							dataFormatLabel.Hide();
+							dataFormatLabel.Show();
+							pixelFormatLabel.Text = $"XVR Format: {xvr.XvrType}";
+							numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+							numericUpDownOrigSizeX.Value = xvr.Image.Width;
+							numericUpDownOrigSizeY.Value = xvr.Image.Height;
+							checkBoxPAKUseAlpha.Enabled = false;
+							checkBoxPAKUseAlpha.Hide();
+							extraFormatLabel.Hide();
+							textureSizeLabel.Hide();
+							break;
+						case DdsTexture dds:
+							dataFormatLabel.Text = $"Data Format: DDS";
+							pixelFormatLabel.Text = $"DDS Pixel Format: {dds.DdsFormat}";
+							numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+							break;
+						case GdiTexture gdi:
+							dataFormatLabel.Text = "Data Format: " + GenericTexture.GetTextureFileType(gdi.RawData).ToString().ToUpperInvariant();
+							pixelFormatLabel.Text = $"GDI Pixel Format: {gdi.GdiPixelFormat}";
+							numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+							break;
+						default:
+							break;
 						}
-						break;
-					case XvrTexture xvr:
-						dataFormatLabel.Text = $"Data Format: DDS (XVR)";
-						dataFormatLabel.Hide();
-						dataFormatLabel.Show();
-						pixelFormatLabel.Text = $"XVR Format: {xvr.XvrType}";
-						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
-						numericUpDownOrigSizeX.Value = xvr.Image.Width;
-						numericUpDownOrigSizeY.Value = xvr.Image.Height;
-						checkBoxPAKUseAlpha.Enabled = false;
-						checkBoxPAKUseAlpha.Hide();
-						extraFormatLabel.Hide();
-						textureSizeLabel.Hide();
-						break;
-					case DdsTexture dds:
-						dataFormatLabel.Text = $"Data Format: DDS";
-						pixelFormatLabel.Text = $"DDS Pixel Format: {dds.DdsFormat}"; 
-						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
-						break;
-					case GdiTexture gdi:
-						dataFormatLabel.Text = "Data Format: " + GenericTexture.GetTextureFileType(gdi.RawData).ToString().ToUpperInvariant();
-						pixelFormatLabel.Text = $"GDI Pixel Format: {gdi.GdiPixelFormat}";
-						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
-						break;
-					default:
-						break;
-				}
 				suppress = false;
 				UpdateTextureMipmap();
 				UpdateTextureView();
