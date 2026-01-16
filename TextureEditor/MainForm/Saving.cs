@@ -163,18 +163,24 @@ namespace TextureEditor
 					foreach (GenericTexture item in textures)
 					{
 						string extension = "";
-						if (!(item is InvalidTexture))
+						// SOC PAK: extension matches the file format (e.g. PNG is .png, DDS is .dds), or is empty (for model.pak/cube2)
+						if (item is not InvalidTexture && usingSocPak)
 							extension = GenericTexture.IdentifyTextureFileExtension(item.RawData);
+						// Regular PAK: extension is always .dds, even if the texture is a PNG
+						else
+							extension = ".dds";
 						string name = item.Name.ToLowerInvariant();
+						// Trim the name to the maximum size of a PAK entry name, remove redundant spaces
 						if (name.Length > 0x1C)
 							name = name.Substring(0, 0x1C);
 						name = name.Trim();
+						// Add the archive entry
 						pak.Entries.Add(new PAKFile.PAKEntry(name + extension, longdir + '\\' + name + extension, item.GetBytes().ToArray()));
-						// Create a new PAK INF entry
+						// Add the PAK INF entry
 						if (!usingSocPak)
 						{
 							PAKInfEntry entry = new PAKInfEntry();
-							byte[] namearr = Encoding.ASCII.GetBytes(name);
+							byte[] namearr = Encoding.ASCII.GetBytes(name); // The INF file does not store the extension
 							Array.Copy(namearr, entry.Filename, namearr.Length);
 							entry.GlobalIndex = item.Gbix;
 							entry.nWidth = (uint)item.Image.Width;
