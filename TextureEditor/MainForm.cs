@@ -537,6 +537,11 @@ namespace TextureEditor
 		private void compatibleGVPToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			settingsfile.SACompatiblePalettes = compatibleGVPToolStripMenuItem.Checked;
+			if (listBox1.SelectedIndex != -1)
+				if (textures[listBox1.SelectedIndex] is GvrTexture && textures[listBox1.SelectedIndex].Indexed)
+				{
+					UpdateTextureInformation();
+				}
 		}
 
 		private void preferHighQualityToolStripMenuItem_Click(object sender, EventArgs e)
