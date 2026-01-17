@@ -95,7 +95,7 @@ namespace SAModel.Direct3D.TextureSystem
             {
                 textures.Add(new BMPInfo(Path.GetFileNameWithoutExtension(entry.Name), entry.GetBitmap()));
 			}
-			hasNames = arc.hasNameData;
+			hasNames = arc.HasNameData;
 
 			return textures.ToArray();
         }

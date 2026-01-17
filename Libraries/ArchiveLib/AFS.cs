@@ -5,18 +5,26 @@ using System.IO;
 using TextureLib;
 using static ArchiveLib.GenericArchive;
 
-// Archive format used in some Dreamcast, Gamecube and Xbox games.
 namespace ArchiveLib
 {
+	/// <summary>
+	/// Archive format used in some Dreamcast, Gamecube and Xbox games.
+	/// </summary>
 	public class AFSFile : GenericArchive
 	{
 		const uint Magic_AFS1 = 0x00534641;
-		const uint Magic_AFS2 = 0x20534641; // No idea how it's different from AFS1
+		const uint Magic_AFS2 = 0x20534641;
 
-		AFSType Type;
-		AFSMetaMode MetaMode;
-		int BlockSize;
+		/// <summary>AFS archive variation. At the moment two common variations (AFS1 and AFS2) are supported.</summary>
+		readonly AFSType Type;
 
+		/// <summary>Specifies the location of AFS metadata storage.</summary>
+		readonly AFSMetaMode MetaMode;
+
+		/// <summary>Block data size. Different games can expect different block size.</summary>
+		private readonly int BlockSize;
+
+		/// <summary>AFS format version.</summary>
 		public enum AFSType
 		{
 			AFS1,
@@ -24,18 +32,29 @@ namespace ArchiveLib
 			Unknown
 		}
 
+		/// <summary>The location of AFS metadata storage.</summary>
 		public enum AFSMetaMode
 		{
+			/// <summary>The archive contains no metadata.</summary>
 			NoMeta,
+			/// <summary>The metadata is stored after the entry table.</summary>
 			OffsetEndTable,
+			/// <summary>The metadata is stored 8 bytes before the first entry.</summary>
 			OffsetBeforeFirstEntry,
 		}
 
+		/// <summary>Metadata for each AFS entry. Can store names, timestamps and custom bytes.</summary>
 		public class AFSMetadata
 		{
+			/// <summary>Filename of the AFS entry.</summary>
 			public string Name;
+			/// <summary>Date and time of the AFS entry.</summary>
 			public DateTime Timestamp;
-			public uint CustomData; // In old AFS files usually the same as data size, otherwise custom developer data
+			/// <summary>
+			/// Additional data that can be stored in the metadata chunk.
+			/// In AFS1 files usually the same as data size. In AFS2 files can contain any custom data.
+			/// </summary>
+			public uint CustomData; 
 
 			public AFSMetadata(byte[] data, int offset)
 			{
@@ -80,8 +99,12 @@ namespace ArchiveLib
 				return resultb;
 			}
 
+			/// <summary>Retrieves the file extension based on the AFS entry's data.</summary>
+			/// <param name="Data">Byte array to analyze</param>
+			/// <returns>Extension string with the leading dot, such as ".pvm".</returns>
 			public static string GetExtensionForData(byte[] Data)
 			{
+				// TODO: Maybe use some kind of generic method?
 				// Texture archive
 				switch (PuyoFile.Identify(Data))
 				{
@@ -117,10 +140,13 @@ namespace ArchiveLib
 					case 0x42534F53:
 						return ".osb";
 					default:
+						// Too small to be ADX
 						if (Data.Length < 20)
 							return ".bin";
-						if (BitConverter.ToUInt16(Data, 0) == 0x0080 && Data[4] == 0x03 && (Data[18] == 0x03 || Data[18] == 0x04))
+						// ADX
+						else if (BitConverter.ToUInt16(Data, 0) == 0x0080 && Data[4] == 0x03 && (Data[18] == 0x03 || Data[18] == 0x04))
 							return ".adx";
+						// Whatever
 						else
 							return ".bin";
 				}
@@ -128,6 +154,9 @@ namespace ArchiveLib
 
 		}
 
+		/// <summary>Identifies the AFS format version used in the archive.</summary>
+		/// <param name="data">Byte array to analyze.</param>
+		/// <returns>AFS archive type (AFS1, AFS2 or unknown/invalid).</returns>
 		private static AFSType GetAFSType(byte[] data)
 		{
 			if (data == null || data.Length < 4)
@@ -154,11 +183,6 @@ namespace ArchiveLib
 				texList.Flush();
 				texList.Close();
 			}
-		}
-
-		public static bool Identify(byte[] data)
-		{
-			return GetAFSType(data) != AFSType.Unknown;
 		}
 
 		public AFSFile(byte[] afsdata)

@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-// Very early support for KAT files (multimedia archives in Katana SDK)
-
 namespace ArchiveLib
 {
+	/// <summary>Archive format used in Katana SDK for storing various multimedia (incomplete implementation).</summary>
 	public class KATFile : GenericArchive
 	{
 		public override void CreateIndexFile(string path)

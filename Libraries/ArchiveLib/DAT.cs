@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-// Archives used for soundbanks in SADX PC2004/X360/PS3/Steam and SADX 2004 installer.
 namespace ArchiveLib
 {
-    public class DATFile : GenericArchive
+	/// <summary>
+	/// Archives used for soundbanks in SADX PC2004/X360/PS3/Steam and SADX 2004 installer.
+	/// </summary>
+	public class DATFile : GenericArchive
     {
+		/// <summary>True when the archive is meant for SADX Steam, false if the archive is meant for SADX PC 2004.</summary>
         public bool Steam;
 
         public DATFile()
@@ -29,6 +32,7 @@ namespace ArchiveLib
             }
         }
 
+		/// <summary>Variations of the DAT file header: 2004 or Steam.</summary>
         public enum DATArchiveType
         {
             SADX2004 = 0,
@@ -36,7 +40,8 @@ namespace ArchiveLib
             Unknown = -1
         }
 
-        public static DATArchiveType Identify(byte[] file)
+		/// <summary>Checks the byte array and returns the type of the DAT file header: 2004 or Steam.</summary>
+		public static DATArchiveType Identify(byte[] file)
         {
             switch (System.Text.Encoding.ASCII.GetString(file, 0, 0x10))
             {
@@ -60,7 +65,7 @@ namespace ArchiveLib
                     Steam = true;
                     break;
                 default:
-                    throw new Exception("Error: Unknown archive type");
+                    throw new FormatException("Unknown DAT archive type");
             }
             int count = BitConverter.ToInt32(file, 0x10);
             Entries = new List<GenericArchiveEntry>(count);
@@ -70,17 +75,22 @@ namespace ArchiveLib
             }
         }
 
-        public byte[] GetFile(int index)
+		/// <summary>Retrieves a DAT entry's decompressed data.</summary>
+		public byte[] GetFile(int index)
         {
             return CompressDAT.ProcessBuffer(Entries[index].Data);
         }
-
+		
+		/// <summary>Checks whether a DAT entry is compressed.</summary>
         public bool IsFileCompressed(int index)
         {
             return CompressDAT.isFileCompressed(Entries[index].Data);
         }
 
-        public void ReplaceFile(string path, int index)
+		/// <summary>Replaces the binary data in the DAT entry of the specified index.</summary>
+		/// <param name="path">Path to the file to load binary data.</param>
+		/// <param name="index">Index of the DAT entry to replace.</param>
+		public void ReplaceFile(string path, int index)
         {
             Entries[index] = new DATEntry(path);
         }
@@ -120,7 +130,6 @@ namespace ArchiveLib
         }
         public class DATEntry : GenericArchiveEntry
         {
-
             public DATEntry()
             {
                 Name = string.Empty;
@@ -139,8 +148,10 @@ namespace ArchiveLib
                 Array.Copy(file, BitConverter.ToInt32(file, address + 4), Data, 0, Data.Length);
             }
 
-            private string GetCString(byte[] file, int address)
+			/// <summary>Returns an ASCII string from binary data.</summary>
+			private string GetCString(byte[] file, int address)
             {
+				// TODO: Maybe use a generic method?
                 int textsize = 0;
                 while (file[address + textsize] > 0)
                     textsize += 1;
@@ -155,6 +166,10 @@ namespace ArchiveLib
 
         }
 
+		/// <summary>
+		/// This class is used for decompression of DAT entries.
+		/// Missing: Documentation, compression methods.
+		/// </summary>
         public static class CompressDAT
         {
             const uint SLIDING_LEN = 0x1000;
@@ -163,12 +178,12 @@ namespace ArchiveLib
             const byte NIBBLE_HIGH = 0xF0;
             const byte NIBBLE_LOW = 0x0F;
 
-            //TODO: Documentation
+            // TODO: Documentation
             struct OffsetLengthPair
             {
                 public byte highByte, lowByte;
 
-                //TODO: Set
+                // TODO: Set
                 public int Offset
                 {
                     get
@@ -177,7 +192,7 @@ namespace ArchiveLib
                     }
                 }
 
-                //TODO: Set
+                // TODO: Set
                 public int Length
                 {
                     get
@@ -187,7 +202,7 @@ namespace ArchiveLib
                 }
             }
 
-            //TODO: Documentation
+            // TODO: Documentation
             struct ChunkHeader
             {
                 private byte flags;
@@ -226,10 +241,10 @@ namespace ArchiveLib
                 int compBufPtr = 0;
                 int decompBufPtr = 0;
 
-                //Create sliding dictionary buffer and clear first 4078 bytes of dictionary buffer to 0
+                // Create sliding dictionary buffer and clear first 4078 bytes of dictionary buffer to 0
                 byte[] slidingDict = new byte[SLIDING_LEN];
 
-                //Set an offset to the dictionary insertion point
+                // Set an offset to the dictionary insertion point
                 uint dictInsertionOffset = SLIDING_LEN - 18;
 
                 // Current chunk header
@@ -298,7 +313,7 @@ namespace ArchiveLib
                 {
                     uint DecompressedSize = BitConverter.ToUInt32(CompressedBuffer, 16);
                     byte[] DecompressedBuffer = new byte[DecompressedSize];
-                    //Xor Decrypt the whole buffer
+                    // Xor Decrypt the whole buffer
                     byte XorEncryptionValue = CompressedBuffer[15];
 
                     byte[] CompBuf = new byte[CompressedBuffer.Length - 20];
@@ -307,10 +322,10 @@ namespace ArchiveLib
                         CompBuf[i - 20] = (byte)(CompressedBuffer[i] ^ XorEncryptionValue);
                     }
 
-                    //Decompress the whole buffer
+                    // Decompress the whole buffer
                     DecompressBuffer(DecompressedBuffer, CompBuf);
 
-                    //Switch the buffers around so the decompressed one gets saved instead
+                    // Switch the buffers around so the decompressed one gets saved instead
                     return DecompressedBuffer;
                 }
                 else

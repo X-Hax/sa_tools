@@ -6,10 +6,10 @@ using System.Text;
 using TextureLib;
 using static ArchiveLib.GenericArchive;
 
-// PVM/GVM archives used in Dreamcast/Gamecube games and their ports.
 namespace ArchiveLib
 {
-    public enum PuyoArchiveType
+	/// <summary>Type of the PVM-like archive (PVM, GVM, XVM).</summary>
+	public enum PuyoArchiveType
     {
         Unknown,
         PVMFile,
@@ -17,7 +17,8 @@ namespace ArchiveLib
 		XVMFile,
     }
 
-    public class PuyoFile : GenericArchive
+	/// <summary>PVM archives used in Dreamcast games and their Gamecube (GVM) and Xbox (XVM) ports.</summary>
+	public class PuyoFile : GenericArchive
     {
         // Archive chunks
         const uint Magic_PVM = 0x484D5650; // PVMH archive
@@ -41,31 +42,61 @@ namespace ArchiveLib
 		// Palette chunks
 		const uint Magic_PVPL = 0x4C505650; // Palette data chunk
 		const uint Magic_PVPN = 0x4E505650; // Palette name chunk
-		
-        public PuyoArchiveType Type;
+
+		/// <summary>Type of the archive (PVM, GVM or XVM).</summary>
+		public PuyoArchiveType Type;
+
+		/// <summary>Flags indicating the presence of various metadata (filenames, global indices etc.)</summary>
 		public PuyoArchiveFlags Flags;
 
+		/// <summary>True if the archive contains textures that require a palette file.</summary>
 		public bool PaletteRequired;
 
+		/// <summary>Flags indicating the presence of various metadata (filenames, global indices etc.)</summary>
 		[FlagsAttribute]
         public enum PuyoArchiveFlags : ushort
         {
-			Filenames = 0x1, // PVMH_PS_PVRNAME
-			PixelDataFormat = 0x2, // VMH_PS_CATEGORYCODE
-			TextureDimensions = 0x4, // VMH_PS_ENTRYINFO (EntryStatus)
-			GlobalIndex = 0x8, // VMH_PS_GLOBALINDEX
-			ModelName = 0x10, // PVMH_PS_CHUNK_MDLN 
-			ConverterName = 0x20, // PVMH_PS_CHUNK_CONV
-			PvmInfo = 0x40, // PVMH_PS_CHUNK_PVMI
-			OriginalImage = 0x80, // PVMH_PS_CHUNK_IMGC
-			PVRT = 0x100, // PVMH_PS_CHUNK_PVRT
-			Comment = 0x200, // PVMH_PS_CHUNK_COMM
-			PaletteBankID = 0x400, // PVMH_PS_BANKID 
-			PaletteData = 0x800, // PVMH_PS_CHUNK_PVPL
-			PaletteName = 0x1000 // PVMH_PS_CHUNK_PVPN
-        }
+			/// <summary>PVMH_PS_PVRNAME. Indicates that the archive stores entry names.</summary>
+			Filenames = 0x1,
 
-        public override void CreateIndexFile(string path)
+			/// <summary>VMH_PS_CATEGORYCODE. Indicates that the archive stores texture pixel and data formats.</summary>
+			PixelDataFormat = 0x2,
+
+			/// <summary>VMH_PS_ENTRYINFO. Indicates that the archive stores texture dimensions.</summary>
+			TextureDimensions = 0x4, //  (EntryStatus)
+
+			/// <summary>VMH_PS_GLOBALINDEX. Indicates that the archive stores global indices.</summary>
+			GlobalIndex = 0x8,
+
+			/// <summary>PVMH_PS_CHUNK_MDLN. Indicates that the archive contains the "Model Name" metadata chunk.</summary>
+			ModelName = 0x10,
+
+			/// <summary>PVMH_PS_CHUNK_CONV.Indicates that the archive contains the "Converter Name" metadata chunk.</summary>
+			ConverterName = 0x20,
+
+			/// <summary>PVMH_PS_CHUNK_PVMI. Indicates that the archive stores the "PVM Information" metadata chunk.</summary>
+			PvmInfo = 0x40,
+
+			/// <summary>PVMH_PS_CHUNK_IMGC. Indicates that the archive stores the original images in addition to PVR textures.</summary>
+			OriginalImage = 0x80,
+
+			/// <summary>PVMH_PS_CHUNK_PVRT. Indicates that the archive stores PVRT headers.</summary>
+			PVRT = 0x100,
+
+			/// <summary>PVMH_PS_CHUNK_COMM. Indicates that the archive contains a "Comment" metadata chunk.</summary>
+			Comment = 0x200, // 
+
+			/// <summary>PVMH_PS_BANKID. Indicates that the archive stores a "Palette Bank ID" metadata chunk.</summary>
+			PaletteBankID = 0x400,
+
+			/// <summary>PVMH_PS_CHUNK_PVPL. Indicates that the archive stores a palette file.</summary>
+			PaletteData = 0x800, // PVMH_PS_CHUNK_PVPL
+
+			/// <summary>PVMH_PS_CHUNK_PVPN. Indicates that the archive stores the "Palette Name" metadata chunk.</summary>
+			PaletteName = 0x1000
+		}
+
+		public override void CreateIndexFile(string path)
         {
             using (TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
             {
@@ -78,6 +109,9 @@ namespace ArchiveLib
             }
         }
 
+		/// <summary>Checks the format of the archive type in the specified byte array.</summary>
+		/// <param name="data">Byte array to analyze.</param>
+		/// <returns>Archive type (PVM, GVM or XVM) or Unknown.</returns>
         public static PuyoArchiveType Identify(byte[] data)
         {
 			if (data.Length < 4)
@@ -99,6 +133,7 @@ namespace ArchiveLib
 		/// <summary>
 		/// This function sets all textures in the archive to use the specified PVP/GVP palette file.
 		/// If the specified palette file exists, the PaletteRequired flag is removed.
+		/// TODO: Remove this function and use per-texture palettes instead.
 		/// </summary>
 		public void SetPalette(string palettePath) 
 		{
@@ -128,6 +163,7 @@ namespace ArchiveLib
 
 		/// <summary>
 		/// This function displays a dialog to select a PVP/GVP palette file and sets all textures in the archive to use the specified palette. 
+		/// TODO: Remove this function and use per-texture palettes instead.
 		/// </summary>
 		public void AddPaletteFromDialog(string startPath)
 		{
@@ -164,7 +200,10 @@ namespace ArchiveLib
 		/// Sometimes there is padding or metadata that needs to be skipped in order to read the texture.
 		/// The function loops through the array until it finds a PVRT/GVRT/XVRT header and returns its offset.
         /// </summary>
-        public int GetPVRTOffset(byte[] pvmdata, int offset)
+		/// <param name="pvmdata">Byte array to analyze.</param>
+		/// <param name="offset">Offset to analyze.</param>
+		/// <returns>Offset of the PVRT/GVRT/XVRT header.</returns>
+        public static int GetPVRTOffset(byte[] pvmdata, int offset)
         {
             uint header = BitConverter.ToUInt32(pvmdata, offset);
             int currentoffset = offset;
@@ -278,10 +317,9 @@ namespace ArchiveLib
                         namestring[n] = ndt;
                     }
                     entryfn = Encoding.ASCII.GetString(namestring).TrimEnd((char)0);
-                } else
-				{
-					hasNameData = false;
-				}
+                } 
+				else				
+					HasNameData = false;
 
                 if (t < numtextures - 1)  // Get the address of the next PVRT chunk, unless it's the last one
                     textureaddr = GetPVRTOffset(pvmdata, textureaddr + size + 8);
@@ -430,6 +468,8 @@ namespace ArchiveLib
 			return result.ToArray();
 		}
 
+		/// <summary>Converts a PVM archive to a PB archive.</summary>
+		/// <returns>PB archive.</returns>
 		public PBFile GetPB()
 		{
 			PBFile pb = new PBFile(Entries.Count);			
@@ -441,12 +481,19 @@ namespace ArchiveLib
 		}
 }
 
-    public class PVMEntry : GenericArchiveEntry
+	/// <summary>
+	/// PVM archive entry.
+	/// TODO: Make a parent class and make PVMEntry, GVMEntry and XVMEntry subclasses?
+	/// </summary>
+	public class PVMEntry : GenericArchiveEntry
     {
+		/// <summary>The texture's Global Index.</summary>
         public uint GBIX;
-        public TexturePalette Palette;
 
-		/// <summary>Create a new PVM entry from raw texture data with a GBIX/PVR header.</summary>
+		/// <summary>The texture's palette (if relevant).</summary>
+		public TexturePalette Palette;
+
+		/// <summary>Creates a new PVM entry from raw texture data with a GBIX/PVRT header.</summary>
 		/// <param name="pvrdata">Byte array with PVR texture data.</param>
 		/// <param name="name">Texture filename with extension.</param>
         public PVMEntry(byte[] pvrdata, string name)
@@ -465,11 +512,6 @@ namespace ArchiveLib
             GBIX = pvrt.Gbix;
         }
 
-        public uint GetGBIX()
-        {
-            return GBIX;
-        }
-
         public override Bitmap GetBitmap()
         {
             PvrTexture pvrt = new PvrTexture(Data);
@@ -479,10 +521,17 @@ namespace ArchiveLib
         }
     }
 
-    public class GVMEntry : GenericArchiveEntry
+	/// <summary>
+	/// GVM archive entry.
+	/// TODO: Merge with PVMEntry?
+	/// </summary>
+	public class GVMEntry : GenericArchiveEntry
     {
-        public uint GBIX;
-        public TexturePalette Palette;
+		/// <summary>The texture's Global Index.</summary>
+		public uint GBIX;
+
+		/// <summary>The texture's palette (if relevant).</summary>
+		public TexturePalette Palette;
 
         public GVMEntry(byte[] gvrdata, string name)
         {
@@ -500,10 +549,6 @@ namespace ArchiveLib
             GBIX = gvrt.Gbix;
         }
 
-        public uint GetGBIX()
-        {
-            return GBIX;
-        }
 
         public override Bitmap GetBitmap()
         {
@@ -514,8 +559,13 @@ namespace ArchiveLib
         }
     }
 
+	/// <summary>
+	/// XVM archive entry.
+	/// TODO: Merge with PVMEntry?
+	/// </summary>
 	public class XVMEntry : GenericArchiveEntry
 	{
+		/// <summary>The texture's Global Index.</summary>
 		public uint GBIX;
 
 		public XVMEntry(byte[] xvrdata, string name)

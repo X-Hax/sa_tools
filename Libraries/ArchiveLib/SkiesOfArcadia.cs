@@ -7,11 +7,185 @@ using AuroraLib.Compression.Algorithms;
 using AuroraLib.Core.IO;
 using SplitTools;
 using SAModel;
-//using SAModel.SAEditorCommon.ModelConversion;
 
-// Skies of Arcadia MLD archives.
 namespace ArchiveLib
 {
+	/// <summary>
+	/// Skies of Arcadia MLD archives. WIP experimental implementation.
+	/// </summary>
+	public class MLDArchive : GenericArchive
+	{
+		public override void CreateIndexFile(string path)
+		{
+			return;
+		}
+
+		public class MLDArchiveEntry : GenericArchiveEntry
+		{
+
+			public override Bitmap GetBitmap()
+			{
+				throw new NotImplementedException();
+			}
+
+			public MLDArchiveEntry(byte[] data, string name)
+			{
+				Name = name;
+				Data = data;
+			}
+		}
+
+		private void ExtractEntries(nmldArchiveFile archive, string directory)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			// Add Entries
+			foreach (nmldEntry entry in archive.Entries)
+			{
+				// Add Objects
+				foreach (nmldObject model in entry.Objects)
+				{
+					Entries.Add(new MLDArchiveEntry(model.File, model.Name + ".nj"));
+				}
+
+				// Add Ground/Ground Object Files
+				foreach (nmldGround ground in entry.Grounds)
+				{
+					ModelFile mfile = new ModelFile(ModelFormat.Basic, ground.ConvertedObject, null, null);
+					switch (ground.Type)
+					{
+						case nmldGround.GroundType.Ground:
+							Entries.Add(new MLDArchiveEntry(mfile.GetBytes(Path.Combine(directory, ground.Name + ".grnd.sa2mdl")), ground.Name + ".grnd.sa2mdl"));
+							// mfile.SaveToFile(Path.Combine(directory, ground.Name + ".grnd.sa2mdl"));
+							break;
+						case nmldGround.GroundType.GroundObject:
+							//Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gobj"));
+							//mfile.SaveToFile(Path.Combine(directory, ground.Name + ".gobj.sa2mdl"));
+							break;
+						case nmldGround.GroundType.Unknown:
+							Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gunk"));
+							break;
+					}
+				}
+
+				// Add Motions
+				foreach (nmldMotion motion in entry.Motions)
+				{
+					switch (motion.Type)
+					{
+						case nmldMotion.MotionType.Node:
+							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njm"));
+							break;
+						case nmldMotion.MotionType.Shape:
+							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njs"));
+							break;
+						case nmldMotion.MotionType.Camera:
+							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njc"));
+							break;
+						case nmldMotion.MotionType.Unknown:
+							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".num"));
+							break;
+					}
+				}
+
+				// Save Texlist
+				if (entry.Texlist.TexList.NumTextures > 0)
+				{
+					if (!Directory.Exists(directory))
+						Directory.CreateDirectory(directory);
+
+					entry.Texlist.TexList.Save(Path.Combine(directory, entry.Texlist.Name));
+				}
+
+				sb.Append(entry.WriteEntryInfo());
+			}
+
+			// Add Info File
+			Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(sb.ToString()), "FileInfo.amld"));
+
+			// Add Texture Archive
+			if (archive.TextureFile != new PuyoFile())
+			{
+				string ext = "";
+				switch (archive.TextureFile.Type)
+				{
+					case PuyoArchiveType.PVMFile:
+						ext = ".pvm";
+						break;
+					case PuyoArchiveType.GVMFile:
+						ext = ".gvm";
+						break;
+				}
+				Entries.Add(new MLDArchiveEntry(archive.TextureFile.GetBytes(), archive.Name + ext));
+			}
+		}
+
+		public MLDArchive(string filepath, byte[] file)
+		{
+			string directory = Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath));
+			string filename = Path.GetFileNameWithoutExtension(filepath);
+			string aklzcheck = Encoding.ASCII.GetString(file, 0, 4);
+			if (aklzcheck == "AKLZ")
+				ByteConverter.BigEndian = true;
+			else
+				ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0xC);
+
+			nmldArchiveFile archive;
+
+			if (ByteConverter.BigEndian)
+			{
+				Console.WriteLine("Skies of Arcadia: Legends MLD File");
+
+				if (aklzcheck == "AKLZ")
+				{
+					Console.WriteLine("MLD Archive is Compressed. Decompressing...");
+					byte[] dfile = new byte[0];
+
+					// Decompress File Here
+					using (Stream stream = new MemoryStream(file))
+					{
+						using (MemoryPoolStream pool = new AKLZ().Decompress(stream))
+						{
+							dfile = new byte[pool.ToArray().Length];
+							Array.Copy(pool.ToArray(), dfile, pool.ToArray().Length);
+						}
+					}
+
+					if (dfile.Length > 0)
+					{
+						Console.WriteLine("File Decompressed, saving and reading decompressed archive.");
+						Entries.Add(new MLDArchiveEntry(dfile, ("..\\" + filename + "_dec.mld")));
+						archive = new nmldArchiveFile(dfile, filename);
+					}
+					else
+					{
+						Console.WriteLine("Decompression Failed.");
+						archive = new();
+					}
+				}
+				else
+					archive = new nmldArchiveFile(file, filename);
+			}
+			else
+			{
+				Console.WriteLine("Skies of Arcadia MLD File");
+				archive = new nmldArchiveFile(file, filename);
+			}
+
+			if (archive != new nmldArchiveFile())
+			{
+				ExtractEntries(archive, directory);
+			}
+			else
+				Console.WriteLine("Unable to read archive.");
+		}
+
+		public override byte[] GetBytes()
+		{
+			throw new NotImplementedException();
+		}
+	}
+
 	public class nmldObject
 	{
 		public string Name;
@@ -653,179 +827,6 @@ namespace ArchiveLib
 
 			// Collect Entries and their contents
 			GetEntries(file, ptr_nmldTable, nmldCount);
-		}
-	}
-
-	public class MLDArchive : GenericArchive
-	{
-		public override void CreateIndexFile(string path)
-		{
-			return;
-		}
-
-		public class MLDArchiveEntry : GenericArchiveEntry
-		{
-
-			public override Bitmap GetBitmap()
-			{
-				throw new NotImplementedException();
-			}
-
-			public MLDArchiveEntry(byte[] data, string name)
-			{
-				Name = name;
-				Data = data;
-			}
-		}
-
-		private void ExtractEntries(nmldArchiveFile archive, string directory)
-		{
-			StringBuilder sb = new StringBuilder();
-
-			// Add Entries
-			foreach (nmldEntry entry in archive.Entries)
-			{
-				// Add Objects
-				foreach (nmldObject model in entry.Objects)
-				{
-					Entries.Add(new MLDArchiveEntry(model.File, model.Name + ".nj"));
-				}
-
-				// Add Ground/Ground Object Files
-				foreach (nmldGround ground in entry.Grounds)
-				{
-					ModelFile mfile = new ModelFile(ModelFormat.Basic, ground.ConvertedObject, null, null);
-					switch (ground.Type)
-					{
-						case nmldGround.GroundType.Ground:
-							Entries.Add(new MLDArchiveEntry(mfile.GetBytes(Path.Combine(directory, ground.Name + ".grnd.sa2mdl")), ground.Name + ".grnd.sa2mdl"));
-							// mfile.SaveToFile(Path.Combine(directory, ground.Name + ".grnd.sa2mdl"));
-							break;
-						case nmldGround.GroundType.GroundObject:
-							//Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gobj"));
-							//mfile.SaveToFile(Path.Combine(directory, ground.Name + ".gobj.sa2mdl"));
-							break;
-						case nmldGround.GroundType.Unknown:
-							Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gunk"));
-							break;
-					}
-				}
-
-				// Add Motions
-				foreach (nmldMotion motion in entry.Motions)
-				{
-					switch (motion.Type)
-					{
-						case nmldMotion.MotionType.Node:
-							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njm"));
-							break;
-						case nmldMotion.MotionType.Shape:
-							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njs"));
-							break;
-						case nmldMotion.MotionType.Camera:
-							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njc"));
-							break;
-						case nmldMotion.MotionType.Unknown:
-							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".num"));
-							break;
-					}
-				}
-
-				// Save Texlist
-				if (entry.Texlist.TexList.NumTextures > 0)
-				{
-					if (!Directory.Exists(directory))
-						Directory.CreateDirectory(directory);
-
-					entry.Texlist.TexList.Save(Path.Combine(directory, entry.Texlist.Name));
-				}
-
-				sb.Append(entry.WriteEntryInfo());
-			}
-
-			// Add Info File
-			Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(sb.ToString()), "FileInfo.amld"));
-
-			// Add Texture Archive
-			if (archive.TextureFile != new PuyoFile())
-			{
-				string ext = "";
-				switch (archive.TextureFile.Type)
-				{
-					case PuyoArchiveType.PVMFile:
-						ext = ".pvm";
-						break;
-					case PuyoArchiveType.GVMFile:
-						ext = ".gvm";
-						break;
-				}
-				Entries.Add(new MLDArchiveEntry(archive.TextureFile.GetBytes(), archive.Name + ext));
-			}
-		}
-
-		public MLDArchive(string filepath, byte[] file)
-		{
-			string directory = Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath));
-			string filename = Path.GetFileNameWithoutExtension(filepath);
-			string aklzcheck = Encoding.ASCII.GetString(file, 0, 4);
-			if (aklzcheck == "AKLZ")
-				ByteConverter.BigEndian = true;
-			else
-				ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0xC);
-
-			nmldArchiveFile archive;
-
-			if (ByteConverter.BigEndian)
-			{
-				Console.WriteLine("Skies of Arcadia: Legends MLD File");
-
-				if (aklzcheck == "AKLZ")
-				{
-					Console.WriteLine("MLD Archive is Compressed. Decompressing...");
-					byte[] dfile = new byte[0];
-
-					// Decompress File Here
-					using (Stream stream = new MemoryStream(file))
-					{
-						using (MemoryPoolStream pool = new AKLZ().Decompress(stream))
-						{
-							dfile = new byte[pool.ToArray().Length];
-							Array.Copy(pool.ToArray(), dfile, pool.ToArray().Length);
-						}
-					}
-
-					if (dfile.Length > 0)
-					{
-						Console.WriteLine("File Decompressed, saving and reading decompressed archive.");
-						Entries.Add(new MLDArchiveEntry(dfile, ("..\\" + filename + "_dec.mld")));
-						archive = new nmldArchiveFile(dfile, filename);
-					}
-					else
-					{
-						Console.WriteLine("Decompression Failed.");
-						archive = new();
-					}
-				}
-				else
-					archive = new nmldArchiveFile(file, filename);
-			}
-			else
-			{
-				Console.WriteLine("Skies of Arcadia MLD File");
-				archive = new nmldArchiveFile(file, filename);
-			}
-
-			if (archive != new nmldArchiveFile())
-			{
-				ExtractEntries(archive, directory);
-			}
-			else
-				Console.WriteLine("Unable to read archive.");
-		}
-
-		public override byte[] GetBytes()
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

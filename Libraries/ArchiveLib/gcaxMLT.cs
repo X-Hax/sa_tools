@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-// Gamecube Multi-Unit (gcaxMLT) container format used for soundbanks in SADX, SA2B, Heroes, Shadow etc.
-// This class is for the base archive only, not the invidivual banks (gcaxMPB, gcaxMSB) contained within.
 namespace ArchiveLib
 {
-    #region gcaxMLT
-    public class gcaxMLTFile : GenericArchive
+	/// <summary>
+	/// Gamecube Multi-Unit (gcaxMLT) container format used for soundbanks in SADX, SA2B, Heroes, Shadow the Hedgehog etc.
+	/// This class is for the base archive only, not the invidivual banks (gcaxMPB, gcaxMSB) contained within.
+	/// </summary>
+	public class gcaxMLTFile : GenericArchive
     {
         public gcaxMLTFile(byte[] file, string filename = "")
         {
@@ -157,15 +158,22 @@ namespace ArchiveLib
         {
         }
 
-        public enum gcaxMLTEntryType : byte
+		/// <summary>Type of entry in the gcaxMLT archive.</summary>
+		public enum gcaxMLTEntryType : byte
         {
-            gcaxMSB = 4, // MIDI Sequence Bank
-            gcaxMPB = 1, // MIDI Program Bank
+			/// <summary>MIDI Sequence Bank</summary>
+			gcaxMSB = 4,
+			/// <summary>MIDI Program Bank</summary>
+			gcaxMPB = 1,
         }
 
-        // Related methods
+        /// <summary>Retrieves the file extension of a gcaxMLT entry.</summary>
+		/// <param name="file">Byte array to analyze.</param>
+		/// <param name="offset">Offset to analyze.</param>
+		/// <returns>File extension with the leading period, such as ".gcaxMSB".</returns>
         public static string GetgcaxMLTItemExtension(byte[] file, int offset = 0)
         {
+			// TODO: Maybe use a generic method?
             switch ((gcaxMLTEntryType)file[offset])
             {
                 case gcaxMLTEntryType.gcaxMSB:
@@ -177,7 +185,10 @@ namespace ArchiveLib
             }
         }
 
-        public static gcaxMLTEntryType GetgcaxMLTEntryTypeFromFilename(string filename)
+		/// <summary>Retrieves the type of a gcaxMLT entry from a file.</summary>
+		/// <param name="filename">Path to the file to analyze.</param>
+		/// <returns>gcaxMLT entry type.</returns>
+		public static gcaxMLTEntryType GetgcaxMLTEntryTypeFromFilename(string filename)
         {
             switch (Path.GetExtension(filename).ToLowerInvariant())
             {
@@ -188,9 +199,8 @@ namespace ArchiveLib
                 case ".gcaxmsb":
                     return gcaxMLTEntryType.gcaxMSB;
                 default:
-                    throw new Exception("Unknown GCAX entry extension: " + Path.GetExtension(filename).ToLowerInvariant());
+                    throw new Exception("Unknown gcaxMLT entry extension: " + Path.GetExtension(filename).ToLowerInvariant());
             }
         }
     }
-    #endregion
 }

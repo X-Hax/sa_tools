@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-// Archives created by the njUtil tool from KATANA SDK.
 namespace ArchiveLib
 {
-    public class NjArchive : GenericArchive
+	/// <summary>Archives created by the njUtil tool from KATANA SDK (incomplete implementation).</summary>
+	public class NjArchive : GenericArchive
     {
         public override void CreateIndexFile(string path)
         {

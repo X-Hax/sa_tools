@@ -164,9 +164,9 @@ namespace ArchiveTool
                         {
                             uint gbix = 0;
                             if (entry is PVMEntry pvme)
-                                gbix = pvme.GetGBIX();
+                                gbix = pvme.GBIX;
                             else if (entry is GVMEntry gvme)
-                                gbix = gvme.GetGBIX();
+                                gbix = gvme.GBIX;
                             Bitmap bmp = entry.GetBitmap();
                             Console.WriteLine("Converting entry: {0}", entry.Name);
                             texList.WriteLine(string.Join(",", gbix, Path.GetFileNameWithoutExtension(entry.Name) + ".png", bmp.Width + "x" + bmp.Height));

@@ -7,10 +7,10 @@ using System.Text;
 using SplitTools;
 using TextureLib;
 
-// Generic archive format used in Sonic Adventure 2 PC.
 namespace ArchiveLib
 {
-    public class PAKFile : GenericArchive
+	/// <summary>Generic archive format used in Sonic Adventure 2 PC.</summary>	
+	public class PAKFile : GenericArchive
     {
         const uint Magic = 0x6B617001;
         public string FolderName;
@@ -47,23 +47,40 @@ namespace ArchiveLib
 
         public PAKFile() { }
 
+		/// <summary>Metadata class used to build PAK archives.</summary>
 		public class PAKIniData
 		{
+			/// <summary>Folder name to be used in texture replacement. Should match the PAK filename.</summary>
 			public string FolderName { get; set; }
+
+			/// <summary>Dictionary of PAK INI entries.</summary>
 			[IniCollection(IniCollectionMode.IndexOnly)]
 			public Dictionary<string, PAKIniItem> Items { get; set; }
 		}
 
-        public class PAKIniItem
+		/// <summary>PAK item used for building PAK files in SA Tools.</summary>
+		public class PAKIniItem
         {
-            public string LongPath { get; set; }
+			/// <summary>
+			/// Relative path used in texture replacement. For GVM-like PAKs, it's '..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\PAK filename w/o extension'.
+			/// For SOC PAKs, it's '..\\..\\..\\sonic2\\resource\\gd_pc\\soc\\PAK filename w/out extension'.
+			/// </summary>
+			public string LongPath { get; set; }
+
             public PAKIniItem(string longPath)
             {
                 LongPath = longPath;
             }
+
             public PAKIniItem() { }
         }
 
+		/// <summary>
+		/// Retrieves a list of PAK archive entries in the order specified in the PAK archive's INF file.
+		/// This method should be used to retrieve the correct texture order for GVM-like PAKs.
+		/// </summary>
+		/// <param name="filenoext">INF filename (should match the PAK filename) without extension.</param>
+		/// <returns>List of PAK entries.</returns>
         public List<PAKEntry> GetSortedEntries(string filenoext)
         {
             bool inf_exists = false;
@@ -148,6 +165,9 @@ namespace ArchiveLib
             }
         }
 
+		/// <summary>Checks whether the file is a PAK archive.</summary>
+		/// <param name="filename">Path to the file.</param>
+		/// <returns>True if the file is a PAK archive.</returns>
         public static bool Identify(string filename)
         {
             using (FileStream fs = System.IO.File.OpenRead(filename))
