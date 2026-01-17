@@ -7,43 +7,43 @@ namespace ArchiveLib
 	/// <summary>
 	/// Class for archives supported by SA Tools. This is a generic class that doesn't access format-specific properties.
 	/// </summary>
-    public abstract class GenericArchive
-    {
+	public abstract class GenericArchive
+	{
 		/// <summary>This field is true when the archive stores filenames.</summary>
 		public bool HasNameData = true;
 
 		/// <summary>List of individual archive entries.</summary>
-        public List<GenericArchiveEntry> Entries { get; set; }
+		public List<GenericArchiveEntry> Entries { get; set; }
 
-        public GenericArchive()
-        {
-            Entries = new List<GenericArchiveEntry>();
-        }
+		public GenericArchive()
+		{
+			Entries = new List<GenericArchiveEntry>();
+		}
 
 		/// <summary>Writes the archive to the specified path.</summary>
-		/// <param name="outputFile">Path to the output file</param>
-        public void Save(string outputFile)
-        {
-            File.WriteAllBytes(outputFile, GetBytes());
-        }
+		/// <param name="outputFile">Path to the output file.</param>
+		public void Save(string outputFile)
+		{
+			File.WriteAllBytes(outputFile, GetBytes());
+		}
 
 		/// <summary>Gets the archive's binary data as a byte array.</summary>
 		/// <returns>Array of bytes.</returns>
-        public abstract byte[] GetBytes();
+		public abstract byte[] GetBytes();
 
 		/// <summary>Creates a format-specific index file used by ArchiveTool for building archives.</summary>
-		/// <param name="path"></param>
-        public abstract void CreateIndexFile(string path);
+		/// <param name="path">Path to the output index file.</param>
+		public abstract void CreateIndexFile(string path);
 
 		/// <summary>Individual entry in the archive.
 		/// The common properties are Name (numeric ID if the actual name is not defined) and Data as a byte array.
 		/// </summary>
 		public abstract class GenericArchiveEntry
-        {
+		{
 			/// <summary>Entry filename with extension.
 			/// If the archive doesn't store entry names, a numeric ID will be used.
 			/// </summary>
-            public string Name { get; set; }
+			public string Name { get; set; }
 
 			/// <summary>Entry binary data.</summary>
 			public byte[] Data { get; set; }
@@ -52,7 +52,12 @@ namespace ArchiveLib
 			/// Can be used to retrieve texture preview images.
 			/// </summary>
 			/// <returns>Bitmap containing the texture image.</returns>
-            public abstract Bitmap GetBitmap();
+			public abstract Bitmap GetBitmap();
+
+			public GenericArchiveEntry()
+			{
+				Name = string.Empty;
+			}
 		}
-    }
+	}
 }
