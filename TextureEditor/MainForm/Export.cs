@@ -7,6 +7,9 @@ using static TextureEditor.Program;
 
 namespace TextureEditor
 {
+	// The line below prevents Windows Forms Designer from opening on this .cs file
+	[System.ComponentModel.DesignerCategory("")] partial class FormViewBlocker { }
+
 	public partial class MainForm
 	{
 		/// <summary>Exports the texture's image as a PNG file.</summary>

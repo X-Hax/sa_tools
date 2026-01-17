@@ -6,14 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 
 namespace SAModel.SALVL
 {
+	// The line below prevents Windows Forms Designer from opening on this .cs file
+	partial class FormViewBlocker { }
+
 	public partial class MainForm
 	{
 		/// <summary>

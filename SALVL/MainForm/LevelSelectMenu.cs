@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace SAModel.SALVL
 {
+	// The line below prevents Windows Forms Designer from opening on this .cs file
+	partial class FormViewBlocker { }
+
 	public partial class MainForm
 	{
         private void ShowLevelSelect()

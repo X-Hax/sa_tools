@@ -8,6 +8,9 @@ using System.Drawing;
 
 namespace TextureEditor
 {
+	// The line below prevents Windows Forms Designer from opening on this .cs file
+	partial class FormViewBlocker { }
+
 	public partial class MainForm
 	{
 		/// <summary>Updates the status bar with the current number of textures in the texture list.</summary>

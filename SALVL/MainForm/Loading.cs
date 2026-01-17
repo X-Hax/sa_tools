@@ -21,6 +21,9 @@ using System.Globalization;
 
 namespace SAModel.SALVL
 {
+	// The line below prevents Windows Forms Designer from opening on this .cs file
+	partial class FormViewBlocker { }
+
 	public partial class MainForm
 	{
 		#region General Loading

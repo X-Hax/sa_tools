@@ -8,6 +8,9 @@ using static TextureEditor.Program;
 
 namespace TextureEditor
 {
+	// The line below prevents Windows Forms Designer from opening on this .cs file
+	partial class FormViewBlocker { }
+
 	public partial class MainForm
 	{
 		/// <summary>

@@ -12,6 +12,9 @@ using Point = System.Drawing.Point;
 
 namespace SAModel.SALVL
 {
+	// The line below prevents Windows Forms Designer from opening on this .cs file
+	partial class FormViewBlocker { }
+
 	public partial class MainForm
 	{
         private void panel1_KeyUp(object sender, KeyEventArgs e)

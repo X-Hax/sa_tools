@@ -9,6 +9,9 @@ using static TextureEditor.Program;
 
 namespace TextureEditor
 {
+	// The line below prevents Windows Forms Designer from opening on this .cs file
+	partial class FormViewBlocker	{ }
+
 	public partial class MainForm
 	{
 		/// <summary>Displays information on a specific color when the user clicks on the palette preview.</summary>
@@ -354,7 +357,7 @@ namespace TextureEditor
 			for (int y = 0; y < texture.Height; y++)
 				for (int x = 0; x < texture.Width; x++)
 				{
-					int pixIndex = indexData[y* texture.Width + x];
+					int pixIndex = indexData[y * texture.Width + x];
 					// Index4 hack
 					if (sourceFormat == IndexedTextureFormat.Index4)
 						pixIndex = pixIndex & 0x0F;

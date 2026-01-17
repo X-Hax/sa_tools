@@ -17,7 +17,10 @@ using System.Linq;
 
 namespace SAModel.SALVL
 {
-    public partial class MainForm
+	// The line below prevents Windows Forms Designer from opening on this .cs file
+	[System.ComponentModel.DesignerCategory("")] partial class FormViewBlocker { }
+
+	public partial class MainForm
     {
         private static List<MetadataReference> objectDefinitionReferences;
 

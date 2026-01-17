@@ -6,6 +6,9 @@ using SAModel.SAEditorCommon.DataTypes;
 
 namespace SAModel.SALVL
 {
+	// The line below prevents Windows Forms Designer from opening on this .cs file
+	partial class FormViewBlocker { }
+
 	public partial class MainForm
 	{
 		SAModel.SAEditorCommon.HiResTimer AnimationTimer;
