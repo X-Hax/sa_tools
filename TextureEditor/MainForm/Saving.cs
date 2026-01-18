@@ -19,7 +19,6 @@ namespace TextureEditor
 	{
 		/// <summary>
 		/// Loops through the texture list and converts all textures to formats usable in the specified archive format (unless they can already be used in that format).
-		/// Conversions to GVR/PNG/DDS are done according to user preferences specified in the settings file.
 		/// </summary>
 		/// <param name="newfmt">Target texture archive format.</param>
 		private void ConvertTextures(TextureArchiveFormat newfmt)
@@ -46,16 +45,12 @@ namespace TextureEditor
 						textures[i] = textures[i].ToXvr(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
 						break;
 					case TextureArchiveFormat.PVMX:
-						if (textures[i] is DdsTexture && useDDSInPVMXToolStripMenuItem.Checked)
-							continue;
-						else if (textures[i] is GdiTexture && !useDDSInPVMXToolStripMenuItem.Checked)
+						if (textures[i] is DdsTexture || textures[i] is GdiTexture)
 							continue;
 						textures[i] = useDDSInPVMXToolStripMenuItem.Checked ? textures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : textures[i].ToGdi();
 						break;
 					case TextureArchiveFormat.PAK:
-						if (textures[i] is DdsTexture && useDDSInPAKsToolStripMenuItem.Checked)
-							continue;
-						else if (textures[i] is GdiTexture && !useDDSInPAKsToolStripMenuItem.Checked)
+						if (textures[i] is DdsTexture || textures[i] is GdiTexture)
 							continue;
 						textures[i] = useDDSInPAKsToolStripMenuItem.Checked ? textures[i].ToDds(preferHighQualityToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked) : textures[i].ToGdi();
 						break;
