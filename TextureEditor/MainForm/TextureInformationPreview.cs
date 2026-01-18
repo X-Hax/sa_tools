@@ -49,6 +49,7 @@ namespace TextureEditor
 				extraFormatLabel.Hide();
 				textureSizeLabel.Hide();
 				toolStripStatusLabelPalette.Visible = false;
+				// Mipmaps
 				if (currentTexture.CanHaveMipmaps())
 				{
 					mipmapCheckBox.Enabled = true;
@@ -56,49 +57,7 @@ namespace TextureEditor
 				}
 				else
 					exportMipmapsAsPNGToolStripMenuItem.Enabled = mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
-				if (currentFormat == TextureArchiveFormat.PAK && !usingSocPak)
-				{
-					// Enable the PAK alpha flag
-					checkBoxPAKUseAlpha.Enabled = true;
-					checkBoxPAKUseAlpha.Show();
-					checkBoxPAKUseAlpha.Checked = currentTexture.PakMetadata.PakGvrFormat == GvrDataFormat.Rgb5a3;
-					// Display Ninja surface flags (maybe have checkboxes for them instead?)
-					NinjaSurfaceFlags njflags = currentTexture.PakMetadata.PakNinjaFlags;
-					List<string> flags = new List<string>();
-					if ((njflags & NinjaSurfaceFlags.NotTwiddled) != 0)
-						flags.Add("Not Twiddled");
-					else
-						flags.Add("Twiddled");
-					if ((njflags & NinjaSurfaceFlags.Mipmapped) != 0)
-						flags.Add("Mipmapped");
-					if ((njflags & NinjaSurfaceFlags.Palettized) != 0)
-						flags.Add("Palettized");
-					if ((njflags & NinjaSurfaceFlags.Stride) != 0)
-						flags.Add("Stride");
-					if ((njflags & NinjaSurfaceFlags.VQ) != 0)
-						flags.Add("VQ");
-					string ninjaFlagsString = string.Join(", ", flags);
-					// Display PAK metadata
-					extraFormatLabel.Text = $"PAK GVR Format: {currentTexture.PakMetadata.PakGvrFormat}" + System.Environment.NewLine + $"PAK Ninja Surface Flags: {ninjaFlagsString}";
-					extraFormatLabel.Show();
-
-				}
-				else if (currentFormat == TextureArchiveFormat.PVMX)
-				{
-					textureSizeLabel.Text = $"Actual Size: {textures[listBox1.SelectedIndex].Image.Width}x{textures[listBox1.SelectedIndex].Image.Height}";
-					textureSizeLabel.Show();
-					numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = true;
-					if (currentTexture.PvmxOriginalDimensions.Width != 0)
-					{
-						numericUpDownOrigSizeX.Value = currentTexture.PvmxOriginalDimensions.Width;
-						numericUpDownOrigSizeY.Value = currentTexture.PvmxOriginalDimensions.Height;
-					}
-					else
-					{
-						numericUpDownOrigSizeX.Value = currentTexture.Image.Width;
-						numericUpDownOrigSizeY.Value = currentTexture.Image.Height;
-					}
-				}
+				// Texture format
 				switch (currentTexture)
 				{
 					case InvalidTexture:
@@ -239,6 +198,50 @@ namespace TextureEditor
 						default:
 							break;
 						}
+				// Texture archive format
+				if (currentFormat == TextureArchiveFormat.PAK && !usingSocPak)
+				{
+					// Enable the PAK alpha flag
+					checkBoxPAKUseAlpha.Enabled = true;
+					checkBoxPAKUseAlpha.Show();
+					checkBoxPAKUseAlpha.Checked = currentTexture.PakMetadata.PakGvrFormat == GvrDataFormat.Rgb5a3;
+					// Display Ninja surface flags (maybe have checkboxes for them instead?)
+					NinjaSurfaceFlags njflags = currentTexture.PakMetadata.PakNinjaFlags;
+					List<string> flags = new List<string>();
+					if ((njflags & NinjaSurfaceFlags.NotTwiddled) != 0)
+						flags.Add("Not Twiddled");
+					else
+						flags.Add("Twiddled");
+					if ((njflags & NinjaSurfaceFlags.Mipmapped) != 0)
+						flags.Add("Mipmapped");
+					if ((njflags & NinjaSurfaceFlags.Palettized) != 0)
+						flags.Add("Palettized");
+					if ((njflags & NinjaSurfaceFlags.Stride) != 0)
+						flags.Add("Stride");
+					if ((njflags & NinjaSurfaceFlags.VQ) != 0)
+						flags.Add("VQ");
+					string ninjaFlagsString = string.Join(", ", flags);
+					// Display PAK metadata
+					extraFormatLabel.Text = $"PAK GVR Format: {currentTexture.PakMetadata.PakGvrFormat}" + System.Environment.NewLine + $"PAK Ninja Surface Flags: {ninjaFlagsString}";
+					extraFormatLabel.Show();
+
+				}
+				else if (currentFormat == TextureArchiveFormat.PVMX)
+				{
+					textureSizeLabel.Text = $"Actual Size: {textures[listBox1.SelectedIndex].Image.Width}x{textures[listBox1.SelectedIndex].Image.Height}";
+					textureSizeLabel.Show();
+					numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = true;
+					if (currentTexture.PvmxOriginalDimensions.Width != 0)
+					{
+						numericUpDownOrigSizeX.Value = currentTexture.PvmxOriginalDimensions.Width;
+						numericUpDownOrigSizeY.Value = currentTexture.PvmxOriginalDimensions.Height;
+					}
+					else
+					{
+						numericUpDownOrigSizeX.Value = currentTexture.Image.Width;
+						numericUpDownOrigSizeY.Value = currentTexture.Image.Height;
+					}
+				}
 				suppress = false;
 				UpdateTextureMipmap();
 				UpdateTextureView();
