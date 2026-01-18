@@ -177,7 +177,7 @@ namespace TextureEditor
 				newtextures = new List<GenericTexture>();
 				foreach (PVMXFile.PVMXEntry pvmxe in pvmx.Entries)
 				{
-					GdiTexture texinfo = (GdiTexture)GenericTexture.LoadTexture(pvmxe.Data);
+					GenericTexture texinfo = GenericTexture.LoadTexture(pvmxe.Data);
 					texinfo.Name = Path.GetFileNameWithoutExtension(pvmxe.Name);
 					texinfo.Gbix = pvmxe.GBIX;
 					texinfo.PvmxOriginalDimensions.Width = pvmxe.Width;
