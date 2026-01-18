@@ -152,7 +152,7 @@ namespace TextureLib
 
 		public override bool CanHaveMipmaps()
 		{
-			return Width == Height;
+			return false;
 		}
 
 		public static bool Identify(byte[] data, int offset = 0)
