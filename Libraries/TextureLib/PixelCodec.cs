@@ -61,7 +61,7 @@ namespace TextureLib
 			switch (ddsFormat)
 			{
 				case DdsFormat.Argb8888:
-					return new ARGB8888PixelCodec() { BigEndian = false };
+					return new ARGB8888PixelCodec() { BigEndian = false, ColorOrder = ARGB8888PixelCodec.ColorOrderType.ABGRBitmap };
 				case DdsFormat.Argb1555:
 					return new ARGB1555PixelCodec() { BigEndian = false };
 				case DdsFormat.Argb4444:
