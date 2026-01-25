@@ -59,7 +59,7 @@ namespace TextureLib
 					{
 						for(int x = 0; x < size; x++)
 						{
-							int sourceIndex = (y * width) + x;
+							int sourceIndex = ((y + yStart) * width) + xStart + x;
 							int destinationIndex = destinationBlockIndex + (twiddleMap[x, y] / 2);
 							
 							destination[destinationIndex] |= (byte)((source[sourceIndex] << 4) >> ((~y & 0x1) * 4));
