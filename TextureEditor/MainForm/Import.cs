@@ -36,9 +36,7 @@ namespace TextureEditor
 						case PvrDataFormat.SquareTwiddledMipmapsDma:
 						case PvrDataFormat.Vq:
 						case PvrDataFormat.VqMipmaps:
-						case PvrDataFormat.Index4:
 						case PvrDataFormat.Index4Mipmaps:
-						case PvrDataFormat.Index8:
 						case PvrDataFormat.Index8Mipmaps:
 							return importImage.Width == importImage.Height;
 						default:
