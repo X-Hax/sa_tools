@@ -553,8 +553,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 				else if (currentItems[i] is LevelItem)
 				{
 					LevelItem originalItem = (LevelItem)currentItems[i];
-					LevelItem newItem = new LevelItem(originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, levelItems.Count, selection, originalItem.LevelFileName);
-
+					LevelItem newItem = CreateLevelItemFromModel(originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, levelItems.Count, selection, isSA2, originalItem.LevelFileName);
 					newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
 					newItems.Add(newItem);
 				}
@@ -584,10 +583,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 			if (objm.Attach != null)
 			{
 				objm.Attach.ProcessVertexData();
-				LevelItem lvlitem = new LevelItem(objm.Attach, new Vertex(objm.Position.X, objm.Position.Y, objm.Position.Z), objm.Rotation, levelItems.Count, selectionManager)
-				{
-					Visible = true
-				};
+				LevelItem lvlitem = CreateLevelItemFromModel(objm.Attach, new Vertex(objm.Position.X, objm.Position.Y, objm.Position.Z), objm.Rotation, levelItems.Count, selectionManager, isSA2);
+				lvlitem.Visible = true;				
 				createdItems.Add(lvlitem);
 			}
 			if (multiple)
@@ -640,16 +637,13 @@ namespace SAModel.SAEditorCommon.DataTypes
 					break;
 				case ".obj":
 				case ".objf":
-					LevelItem item = new LevelItem(filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), levelItems.Count, selectionManager)
-					{
-						Visible = true
-					};
-
+					LevelItem item = CreateLevelItemFromFile(filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), levelItems.Count, selectionManager, isSA2);
+					item.Visible = true;
 					createdItems.Add(item);
 					break;
 
 				case ".txt":
-					NodeTable.ImportFromFile(filePath, out importError, out importErrorMsg, selectionManager);
+					NodeTable.ImportFromFile(filePath, out importError, out importErrorMsg, selectionManager, isSA2);
 					break;
 
 				case ".dae":
@@ -716,10 +710,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 							}
 						}
 						obj.Attach.ProcessVertexData();
-						LevelItem newLevelItem = new LevelItem(obj.Attach, new Vertex(obj.Position.X + pos.X, obj.Position.Y + pos.Y, obj.Position.Z + pos.Z), obj.Rotation, levelItems.Count, selectionManager)
-						{
-							Visible = isVisible
-						};
+						LevelItem newLevelItem = CreateLevelItemFromModel(obj.Attach, new Vertex(obj.Position.X + pos.X, obj.Position.Y + pos.Y, obj.Position.Z + pos.Z), obj.Rotation, levelItems.Count, selectionManager, isSA2);
+						newLevelItem.Visible = isVisible;						
 						createdItems.Add(newLevelItem);
 					}
 					osd.ClearMessageList();
@@ -738,6 +730,22 @@ namespace SAModel.SAEditorCommon.DataTypes
 			errorMsg = importErrorMsg;
 
 			return createdItems;
+		}
+
+		private static LevelItem CreateLevelItemFromModel(Attach attach, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, bool sa2, string filename = null, bool secondary = false)
+		{
+			if (sa2)
+				return new SA2LevelItem(attach, position, rotation, index, selectionManager, filename, secondary);
+			else
+				return new SA1LevelItem(attach, position, rotation, index, selectionManager, filename, secondary);
+		}
+
+		private static LevelItem CreateLevelItemFromFile(string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, bool sa2, bool legacyImport = false, string leveltexlist = null)
+		{
+			if (sa2)
+				return new SA2LevelItem(filePath, position, rotation, index, selectionManager, legacyImport, leveltexlist);
+			else
+				return new SA1LevelItem(filePath, position, rotation, index, selectionManager, legacyImport, leveltexlist);
 		}
 	}
 }

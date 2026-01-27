@@ -723,15 +723,24 @@ namespace SAModel.SALVL
 				LevelData.ClearLevelItems();
 				LevelData.ClearEXLevelItems();
 				LevelData.ClearLevelAnims();
+				// Check if the level is loaded from a .sa2(b)lvl file
+				LevelData.isSA2 = Path.GetExtension(LevelPath).ToLowerInvariant().Contains("sa2");
 				for (int i = 0; i < LevelData.geo.COL.Count; i++)
 				{
+					// SA2 project mode
 					if (!IsLevelOnly && salvlini.IsSA2)
 					{
-						LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems, currentLandtableFilename, level.LevelTexlist));
+						LevelData.AddLevelItem(new SA2LevelItem(LevelData.geo.COL[i], i, selectedItems, currentLandtableFilename, level.LevelTexlist));
 					}
+					// SA2 single file
+					else if (LevelData.isSA2)
+					{
+						LevelData.AddLevelItem(new SA2LevelItem(LevelData.geo.COL[i], i, selectedItems, currentLandtableFilename));
+					}
+					// SA1
 					else
 					{
-						LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems, currentLandtableFilename));
+						LevelData.AddLevelItem(new SA1LevelItem(LevelData.geo.COL[i], i, selectedItems, currentLandtableFilename));
 					}
 				}
 
@@ -748,6 +757,7 @@ namespace SAModel.SALVL
 				}
 				else
 				{
+					// This is only for SA2 right?
 					log.Add("----Secondary Geometry Detected----\n");
 					for (int i = 0; i < level.SecondaryGeometry.Count; i++)
 					{
@@ -761,9 +771,9 @@ namespace SAModel.SALVL
 						for (int j = 0; j < LevelData.secondgeos[i].COL.Count; j++)
 						{
 							if (level.SecondaryTexlists != null)
-								LevelData.AddEXLevelItem(new LevelItem(LevelData.secondgeos[i].COL[j], j, selectedItems, landfilename, level.SecondaryTexlists[i], level.SecondaryTextures, true));
+								LevelData.AddEXLevelItem(new SA2LevelItem(LevelData.secondgeos[i].COL[j], j, selectedItems, landfilename, level.SecondaryTexlists[i], level.SecondaryTextures, true));
 							else
-								LevelData.AddEXLevelItem(new LevelItem(LevelData.secondgeos[i].COL[j], j, selectedItems, landfilename, null, level.SecondaryTextures, true));
+								LevelData.AddEXLevelItem(new SA2LevelItem(LevelData.secondgeos[i].COL[j], j, selectedItems, landfilename, null, level.SecondaryTextures, true));
 						}
 
 						for (int j = 0; j < LevelData.secondgeos[i].Anim.Count; j++)

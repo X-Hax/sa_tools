@@ -1418,7 +1418,11 @@ namespace SAModel.SALVL
 
 				case DragType.Model:
 					COL newCollision = new COL() { Model = dragPlaceLevelModel };
-					LevelItem newItem = new LevelItem(dragPlaceLevelModel.Attach, dragPlaceLevelModel.Position, dragPlaceLevelModel.Rotation, LevelData.LevelItemCount, selectedItems);
+					LevelItem newItem;
+					if (LevelData.isSA2)
+						newItem = new SA2LevelItem(dragPlaceLevelModel.Attach, dragPlaceLevelModel.Position, dragPlaceLevelModel.Rotation, LevelData.LevelItemCount, selectedItems);
+					else
+						newItem = new SA1LevelItem(dragPlaceLevelModel.Attach, dragPlaceLevelModel.Position, dragPlaceLevelModel.Rotation, LevelData.LevelItemCount, selectedItems);
 					LevelData.InvalidateRenderState();
 					selectedItems.Clear();
 					selectedItems.Add(newItem);

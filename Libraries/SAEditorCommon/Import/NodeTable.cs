@@ -15,7 +15,7 @@ namespace SAModel.SAEditorCommon.Import
 		/// <param name="filePath">full path to file (with extension) to import data from.</param>
 		/// <param name="errorFlag">Set to TRUE if an error occured.</param>
 		/// <param name="errorMsg">Suggested error message to show to the user.</param>
-		public static void ImportFromFile(string filePath, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager)
+		public static void ImportFromFile(string filePath, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager, bool isSA2)
 		{
 			if (!File.Exists(filePath))
 			{
@@ -159,13 +159,21 @@ namespace SAModel.SAEditorCommon.Import
 
 					if (nodeDescriptorSplit[0] == "node")
 					{
-						LevelItem levelItem = new LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager, true);
+						LevelItem levelItem;
+						if (isSA2)
+							levelItem = new SA2LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager, true);
+						else
+							levelItem = new SA1LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager, true);
 						instanceMgr.Add(new KeyValuePair<int, Attach>(nodeIndex, levelItem.CollisionData.Model.Attach));
 					}
 					else if (nodeDescriptorSplit[0] == "instance")
 					{
 						Attach instanceBaseAttach = instanceMgr.Find(item => item.Key == nodeIndex).Value;
-						LevelItem levelItem = new LevelItem(instanceBaseAttach, position, rotation, LevelData.LevelItemCount, selectionManager);
+						LevelItem levelItem;
+						if (isSA2)
+							levelItem = new SA2LevelItem(instanceBaseAttach, position, rotation, LevelData.LevelItemCount, selectionManager);
+						else
+							levelItem = new SA1LevelItem(instanceBaseAttach, position, rotation, LevelData.LevelItemCount, selectionManager);
 					}
 					#endregion
 
@@ -271,19 +279,22 @@ namespace SAModel.SAEditorCommon.Import
 
 					if (nodeDescriptorSplit[0] == "node")
 					{
-						LevelItem levelItem = new LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager, true)
-						{
-							Flags = surfaceFlags
-						};
+						LevelItem levelItem;
+						if (isSA2)
+							levelItem = new SA2LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager, true) { Flags = surfaceFlags };
+						else
+							levelItem = new SA1LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager, true) { Flags = surfaceFlags };
 						instanceMgr.Add(new KeyValuePair<int, Attach>(nodeIndex, levelItem.CollisionData.Model.Attach));
 					}
 					else if (nodeDescriptorSplit[0] == "instance")
 					{
 						Attach instanceBaseAttach = instanceMgr.Find(item => item.Key == nodeIndex).Value;
-						LevelItem levelItem = new LevelItem(instanceBaseAttach, position, rotation, LevelData.LevelItemCount, selectionManager)
-						{
-							Flags = surfaceFlags
-						};
+						LevelItem levelItem;
+						if (isSA2)
+							levelItem = new SA2LevelItem(instanceBaseAttach, position, rotation, LevelData.LevelItemCount, selectionManager) { Flags = surfaceFlags };
+						else
+							levelItem = new SA1LevelItem(instanceBaseAttach, position, rotation, LevelData.LevelItemCount, selectionManager) { Flags = surfaceFlags };
+						// Doesn't do anything with it?
 					}
 					#endregion
 

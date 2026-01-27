@@ -16,9 +16,9 @@ using SAModel.SAEditorCommon.SETEditing;
 namespace SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
-	public class LevelItem : Item, IScaleable
+	public abstract class LevelItem : Item, IScaleable
 	{
-		private COL COL { get; set; }
+		internal COL COL { get; set; }
 		[Browsable(false)]
 		public COL CollisionData { get { return COL; } }
 		[NonSerialized]
@@ -467,13 +467,76 @@ namespace SAModel.SAEditorCommon.DataTypes
 			base.GetHandleMatrix();
 		}
 
-		#region Surface Flag Accessors
+		// Surface flags (Common for SA1/2)
 		[Category("Flags")]
 		public bool Solid
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Solid) == SA1SurfaceFlags.Solid; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Solid) | (value ? SA1SurfaceFlags.Solid : 0); }
 		}
+
+		[Category("Flags")]
+		public bool Visible
+		{
+			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Visible) == SA1SurfaceFlags.Visible; }
+			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Visible) | (value ? SA1SurfaceFlags.Visible : 0); }
+		}
+
+		public void Save() { COL.CalculateBounds(); }
+
+		// Form property update event method
+		void pw_FormUpdated(object sender, EventArgs e)
+		{
+			COL.Model.ProcessVertexData();
+			mesh = COL.Model.Attach.CreateD3DMesh();
+			LevelData.InvalidateRenderState();
+		}
+
+		public Vertex GetScale()
+		{
+			return COL.Model.Scale;
+		}
+
+		public void SetScale(Vertex scale)
+		{
+			COL.Model.Scale = scale;
+		}
+	}
+
+	/// <summary>
+	/// Subclass for SA1/SADX landtable items with SA1 surface flags.
+	/// </summary>
+	public class SA1LevelItem : LevelItem
+	{
+		/// <summary>
+		/// Creates a Levelitem from an external file.
+		/// </summary>
+		/// <param name="dev">Current Direct3D device.</param>
+		/// <param name="filePath">location of the file to use.</param>
+		/// <param name="position">Position to place the resulting model (worldspace).</param>
+		/// <param name="rotation">Rotation to apply to the model.</param>
+		public SA1LevelItem(string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, bool legacyImport = false, string leveltexlist = null)
+			: base(filePath, position, rotation, index, selectionManager, legacyImport, leveltexlist) { }
+
+		/// <summary>
+		/// Creates a LevelItem from an existing COL data.
+		/// </summary>
+		/// <param name="col"></param>
+		/// <param name="dev">Current Direct3d Device.</param>
+		public SA1LevelItem(COL col, int index, EditorItemSelection selectionManager, string filePath = null, string leveltexlist = null, List<string> secondtexs = null, bool secondary = false)
+			: base(col, index, selectionManager, filePath, leveltexlist, secondtexs, secondary) { }
+
+		/// <summary>
+		/// Creates a new instance of an existing item with the specified position and rotation.
+		/// </summary>
+		/// <param name="attach">Attach to use for this levelItem</param>
+		/// <param name="position">Position in worldspace to place this LevelItem.</param>
+		/// <param name="rotation">Rotation.</param>
+		public SA1LevelItem(Attach attach, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, string filename = null, bool secondary = false)
+			: base(attach, position, rotation, index, selectionManager, filename, secondary) { }
+
+		// SA1 Surface Flag Accessors
+		
 		[Category("Flags"), Description("Water collision and transparency sorting.")]
 		public bool Water
 		{
@@ -527,13 +590,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		{
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Footprints) == SA1SurfaceFlags.Footprints; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Footprints) | (value ? SA1SurfaceFlags.Footprints : 0); }
-		}
-		[Category("Flags")]
-		public bool Visible
-		{
-			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Visible) == SA1SurfaceFlags.Visible; }
-			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Visible) | (value ? SA1SurfaceFlags.Visible : 0); }
-		}
+		}		
 		[Category("Flags")]
 		public bool LowAcceleration
 		{
@@ -612,180 +669,178 @@ namespace SAModel.SAEditorCommon.DataTypes
 			get { return (COL.SurfaceFlags & SA1SurfaceFlags.Accelerate) == SA1SurfaceFlags.Accelerate; }
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Accelerate) | (value ? SA1SurfaceFlags.Accelerate : 0); }
 		}
+	}
 
-		#endregion
+	/// <summary>
+	/// Subclass for SA2/SA2B landtable items with SA2 surface flags.
+	/// </summary>
+	public class SA2LevelItem: LevelItem, IScaleable
+	{
+		/// <summary>
+		/// Creates a Levelitem from an external file.
+		/// </summary>
+		/// <param name="dev">Current Direct3D device.</param>
+		/// <param name="filePath">location of the file to use.</param>
+		/// <param name="position">Position to place the resulting model (worldspace).</param>
+		/// <param name="rotation">Rotation to apply to the model.</param>
+		public SA2LevelItem(string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, bool legacyImport = false, string leveltexlist = null)
+			: base(filePath, position, rotation, index, selectionManager, legacyImport, leveltexlist) { }
 
-		#region SA2 Surface Flag Accessors
-		[Category("SA2 Flags"), DisplayName("Solid")]
-		public bool SA2Solid
-		{
-			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Solid) == SA2SurfaceFlags.Solid; }
-			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Solid) | (value ? SA2SurfaceFlags.Solid : 0); }
-		}
-		[Category("SA2 Flags"), DisplayName("Water")]
+		/// <summary>
+		/// Creates a LevelItem from an existing COL data.
+		/// </summary>
+		/// <param name="col"></param>
+		/// <param name="dev">Current Direct3d Device.</param>
+		public SA2LevelItem(COL col, int index, EditorItemSelection selectionManager, string filePath = null, string leveltexlist = null, List<string> secondtexs = null, bool secondary = false)
+			: base(col, index, selectionManager, filePath, leveltexlist, secondtexs, secondary) { }
+
+		/// <summary>
+		/// Creates a new instance of an existing item with the specified position and rotation.
+		/// </summary>
+		/// <param name="attach">Attach to use for this levelItem</param>
+		/// <param name="position">Position in worldspace to place this LevelItem.</param>
+		/// <param name="rotation">Rotation.</param>
+		public SA2LevelItem(Attach attach, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, string filename = null, bool secondary = false)
+			: base(attach, position, rotation, index, selectionManager, filename, secondary) { }
+
+		// SA2 Surface Flag Accessors
+		[Category("Flags"), DisplayName("Water")]
 		public bool SA2Water
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Water) == SA2SurfaceFlags.Water; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Water) | (value ? SA2SurfaceFlags.Water : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Low Friction")]
+		[Category("Flags"), DisplayName("Low Friction")]
 		public bool SA2LowFric
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.LowFriction) == SA2SurfaceFlags.LowFriction; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.LowFriction) | (value ? SA2SurfaceFlags.LowFriction : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("High Friction")]
+		[Category("Flags"), DisplayName("High Friction")]
 		public bool SA2HiFric
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.HighFriction) == SA2SurfaceFlags.HighFriction; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.HighFriction) | (value ? SA2SurfaceFlags.HighFriction : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Medium Friction")]
+		[Category("Flags"), DisplayName("Medium Friction")]
 		public bool SA2MediumFric
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.MediumFriction) == SA2SurfaceFlags.MediumFriction; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.MediumFriction) | (value ? SA2SurfaceFlags.MediumFriction : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Diggable")]
+		[Category("Flags"), DisplayName("Diggable")]
 		public bool SA2Diggable
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Diggable) == SA2SurfaceFlags.Diggable; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Diggable) | (value ? SA2SurfaceFlags.Diggable : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Unclimbable")]
+		[Category("Flags"), DisplayName("Unclimbable")]
 		public bool SA2Unclimbable
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Unclimbable) == SA2SurfaceFlags.Unclimbable; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Unclimbable) | (value ? SA2SurfaceFlags.Unclimbable : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Stairs")]
+		[Category("Flags"), DisplayName("Stairs")]
 		public bool SA2Stairs
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Stairs) == SA2SurfaceFlags.Stairs; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Stairs) | (value ? SA2SurfaceFlags.Stairs : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Hurt")]
+		[Category("Flags"), DisplayName("Hurt")]
 		public bool SA2Hurt
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Hurt) == SA2SurfaceFlags.Hurt; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Hurt) | (value ? SA2SurfaceFlags.Hurt : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Footsteps"), Description("This flag draws footstep textures on surfaces in levels that utilize the feature.")]
+		[Category("Flags"), DisplayName("Footsteps"), Description("This flag draws footstep textures on surfaces in levels that utilize the feature.")]
 		public bool SA2Footsteps
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Footsteps) == SA2SurfaceFlags.Footsteps; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Footsteps) | (value ? SA2SurfaceFlags.Footsteps : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Cannot Land")]
+		[Category("Flags"), DisplayName("Cannot Land")]
 		public bool SA2CannotLand
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.CannotLand) == SA2SurfaceFlags.CannotLand; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.CannotLand) | (value ? SA2SurfaceFlags.CannotLand : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Slow Water"), Description("Any surface with this flag greatly reduces player speed if it's underwater.")]
+		[Category("Flags"), DisplayName("Slow Water"), Description("Any surface with this flag greatly reduces player speed if it's underwater.")]
 		public bool SA2WaterSlow
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.WaterSlowMove) == SA2SurfaceFlags.WaterSlowMove; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.WaterSlowMove) | (value ? SA2SurfaceFlags.WaterSlowMove : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("No Shadows"), Description("Drop shadows will not render over surfaces with this flag.")]
+		[Category("Flags"), DisplayName("No Shadows"), Description("Drop shadows will not render over surfaces with this flag.")]
 		public bool SA2NoShadows
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.NoShadows) == SA2SurfaceFlags.NoShadows; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.NoShadows) | (value ? SA2SurfaceFlags.NoShadows : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("High Speed")]
+		[Category("Flags"), DisplayName("High Speed")]
 		public bool SA2HighSpeed
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.IncreaseSpeed) == SA2SurfaceFlags.IncreaseSpeed; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.IncreaseSpeed) | (value ? SA2SurfaceFlags.IncreaseSpeed : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("High Acceleration")]
+		[Category("Flags"), DisplayName("High Acceleration")]
 		public bool SA2HighAccel
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.IncreaseAccel) == SA2SurfaceFlags.IncreaseAccel; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.IncreaseAccel) | (value ? SA2SurfaceFlags.IncreaseAccel : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("No Fog/High Gravity"), Description("Visible surfaces with this flag will not have fog data applied to them. Collision surfaces will increase player gravity.")]
+		[Category("Flags"), DisplayName("No Fog/High Gravity"), Description("Visible surfaces with this flag will not have fog data applied to them. Collision surfaces will increase player gravity.")]
 		public bool SA2NoFogHighGrav
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.NoFogHighGravity) == SA2SurfaceFlags.NoFogHighGravity; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.NoFogHighGravity) | (value ? SA2SurfaceFlags.NoFogHighGravity : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Use Max Clip Distance"), Description("Surfaces with this flag will ignore the LandTable's Far Clipping setting and use the value stored in nj_clip instead.")]
+		[Category("Flags"), DisplayName("Use Max Clip Distance"), Description("Surfaces with this flag will ignore the LandTable's Far Clipping setting and use the value stored in nj_clip instead.")]
 		public bool SA2MaxClip
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.MaxClip) == SA2SurfaceFlags.MaxClip; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.MaxClip) | (value ? SA2SurfaceFlags.MaxClip : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Simple Draw"), Description("Surfaces with this flag will use the Simple draw method. Setting this to False will set the surface to use the Easy draw method instead.")]
+		[Category("Flags"), DisplayName("Simple Draw"), Description("Surfaces with this flag will use the Simple draw method. Setting this to False will set the surface to use the Easy draw method instead.")]
 		public bool SA2SimpleDraw
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.SimpleDraw) == SA2SurfaceFlags.SimpleDraw; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.SimpleDraw) | (value ? SA2SurfaceFlags.SimpleDraw : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Direct Draw"), Description("Surfaces with this flag will use the Direct draw method.")]
+		[Category("Flags"), DisplayName("Direct Draw"), Description("Surfaces with this flag will use the Direct draw method.")]
 		public bool SA2DirectDraw
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.DirectDraw) == SA2SurfaceFlags.DirectDraw; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.DirectDraw) | (value ? SA2SurfaceFlags.DirectDraw : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Do Not Compile"), Description("Surfaces with this flag will not compile model data, allowing for edits like UV manipulations to be applied.")]
+		[Category("Flags"), DisplayName("Do Not Compile"), Description("Surfaces with this flag will not compile model data, allowing for edits like UV manipulations to be applied.")]
 		public bool SA2NoCompile
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.NoCompile) == SA2SurfaceFlags.NoCompile; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.NoCompile) | (value ? SA2SurfaceFlags.NoCompile : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Dynamic Collision"), Description("Collision surfaces with this flag are capable of moving around.")]
+		[Category("Flags"), DisplayName("Dynamic Collision"), Description("Collision surfaces with this flag are capable of moving around.")]
 		public bool SA2DynamicCollision
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.DynamicCollision) == SA2SurfaceFlags.DynamicCollision; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.DynamicCollision) | (value ? SA2SurfaceFlags.DynamicCollision : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("No Rotation Collision"), Description("Collision surfaces with this flag will ignore rotations.")]
+		[Category("Flags"), DisplayName("No Rotation Collision"), Description("Collision surfaces with this flag will ignore rotations.")]
 		public bool SA2NoRotateCollision
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.NoRotateCollision) == SA2SurfaceFlags.NoRotateCollision; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.NoRotateCollision) | (value ? SA2SurfaceFlags.NoRotateCollision : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Small Collision Radius"), Description("Collision surfaces with this flag will have a reduced radius. Enabling this flag and Tiny Collision Radius will shrink the radius even more.")]
+		[Category("Flags"), DisplayName("Small Collision Radius"), Description("Collision surfaces with this flag will have a reduced radius. Enabling this flag and Tiny Collision Radius will shrink the radius even more.")]
 		public bool SA2SmallCollision
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.SmallCollisionRad) == SA2SurfaceFlags.SmallCollisionRad; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.SmallCollisionRad) | (value ? SA2SurfaceFlags.SmallCollisionRad : 0); }
 		}
-		[Category("SA2 Flags"), DisplayName("Tiny Collision Radius"), Description("Collision surfaces with this flag will have a reduced radius. Enabling this flag and Small Collision Radius will shrink the radius even more.")]
+		[Category("Flags"), DisplayName("Tiny Collision Radius"), Description("Collision surfaces with this flag will have a reduced radius. Enabling this flag and Small Collision Radius will shrink the radius even more.")]
 		public bool SA2TinyCollision
 		{
 			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.TinyCollisionRad) == SA2SurfaceFlags.TinyCollisionRad; }
 			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.TinyCollisionRad) | (value ? SA2SurfaceFlags.TinyCollisionRad : 0); }
-		}
-		[Category("SA2 Flags"), DisplayName("Visible")]
-		public bool SA2Visible
-		{
-			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Visible) == SA2SurfaceFlags.Visible; }
-			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Visible) | (value ? SA2SurfaceFlags.Visible : 0); }
-		}
-		#endregion
-
-		public void Save() { COL.CalculateBounds(); }
-
-		// Form property update event method
-		void pw_FormUpdated(object sender, EventArgs e)
-		{
-			COL.Model.ProcessVertexData();
-			mesh = COL.Model.Attach.CreateD3DMesh();
-			LevelData.InvalidateRenderState();
-		}
-
-		public Vertex GetScale()
-		{
-			return COL.Model.Scale;
-		}
-
-		public void SetScale(Vertex scale)
-		{
-			COL.Model.Scale = scale;
 		}
 	}
 }
