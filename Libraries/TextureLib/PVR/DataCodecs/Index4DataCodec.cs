@@ -15,7 +15,7 @@ namespace TextureLib
 
 		public override int CalculateTextureSize(int width, int height)
 		{
-			return width * width / 2;
+			return width * height / 2;
 		}
 
 		protected override void InternalDecode(ReadOnlySpan<byte> source, int width, int height, ReadOnlySpan<byte> palette, Span<byte> destination)
