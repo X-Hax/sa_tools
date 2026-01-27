@@ -178,7 +178,6 @@ namespace TextureLib
 						}
 					}
 					break;
-				case GvrDataFormat.Index14:
 				default:
 					throw new NotImplementedException(string.Format("Conversion from GVR Format {0} ({1}) to PVR is not implemented.", gvr.GvrDataFormat.ToString(), gvr.GvrDataFormat));
 			}

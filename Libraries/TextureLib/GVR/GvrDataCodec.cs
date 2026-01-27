@@ -16,7 +16,6 @@ namespace TextureLib
 			{ GvrDataFormat.Argb8888, new GvrARGB8DataCodec() },
 			{ GvrDataFormat.Index4, new GvrIndex4DataCodec() },
 			{ GvrDataFormat.Index8, new GvrIndex8DataCodec() },
-			{ GvrDataFormat.Index14, new GvrIndex14DataCodec() },
 			{ GvrDataFormat.Dxt1, new GvrDXT1DataCodec() },
 		};
 

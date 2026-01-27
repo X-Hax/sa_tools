@@ -262,7 +262,6 @@ namespace TextureLib
 				{
 					GvrDataFormat.Index4 => IndexedTextureFormat.Index4,
 					GvrDataFormat.Index8 => IndexedTextureFormat.Index8,
-					GvrDataFormat.Index14 => IndexedTextureFormat.Index14,
 					_ => IndexedTextureFormat.NotIndexed,
 				},
 				GdiTexture gdi => gdi.GdiPixelFormat switch

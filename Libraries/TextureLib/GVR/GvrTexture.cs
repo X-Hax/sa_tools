@@ -90,7 +90,7 @@ namespace TextureLib
 			Palette = inputPalette;
 			GvrPaletteFormat = paletteFormat;
 			// Set flags for Indexed formats
-			if (dataFormat == GvrDataFormat.Index8 || dataFormat == GvrDataFormat.Index4 || dataFormat == GvrDataFormat.Index14)
+			if (dataFormat == GvrDataFormat.Index8 || dataFormat == GvrDataFormat.Index4)
 			{
 				Indexed = true;
 				GvrDataFlags |= paletteExternal ? GvrDataFlags.ExternalPalette : GvrDataFlags.InternalPalette;
@@ -160,7 +160,7 @@ namespace TextureLib
 			// Parse GVR data flags and set general texture properties
 			if (GvrDataFlags.HasFlag(GvrDataFlags.Mipmaps))
 				HasMipmaps = true;
-			if (GvrDataFlags.HasFlag(GvrDataFlags.InternalPalette) && (GvrDataFormat == GvrDataFormat.Index4 || GvrDataFormat == GvrDataFormat.Index8 || GvrDataFormat == GvrDataFormat.Index14))
+			if (GvrDataFlags.HasFlag(GvrDataFlags.InternalPalette) && (GvrDataFormat == GvrDataFormat.Index4 || GvrDataFormat == GvrDataFormat.Index8))
 			{
 				// Sometimes the "internal palette" flag is there even when the texture isn't indexed...
 				Indexed = true;

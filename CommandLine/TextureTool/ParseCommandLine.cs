@@ -158,7 +158,7 @@ namespace TextureTool
 						else
 							autoGvrDataFormat = true;
 						// Get target palette format if necessary
-						if (targetGvrFormat == GvrDataFormat.Index4 || targetGvrFormat == GvrDataFormat.Index8 || targetGvrFormat == GvrDataFormat.Index14)
+						if (targetGvrFormat == GvrDataFormat.Index4 || targetGvrFormat == GvrDataFormat.Index8)
 						{
 							if (args.Contains("-p_565"))
 								targetGvrPaletteFormat = GvrPaletteFormat.Rgb565;

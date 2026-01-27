@@ -77,7 +77,6 @@ namespace TextureTool
 					{
 						case GvrDataFormat.Index4:
 						case GvrDataFormat.Index8:
-						case GvrDataFormat.Index14:
 							Console.WriteLine("GVR palette mode: {0}", encodeExternalPalette ? "External" : "Internal");
 							if (autoGvrPaletteFormat)
 								targetGvrPaletteFormat = GvrTexture.AutoGvrPaletteFormatFromImage(inputTexture.Image, false, saCompatibleGvrPalettes);
@@ -105,7 +104,7 @@ namespace TextureTool
 			// Show mipmaps flag
 			Console.WriteLine("Force mipmaps: {0}", useMipmaps.ToString());
 			// Show dithering flag if applicable
-			if (targetGvrFormat == GvrDataFormat.Index4 || targetGvrFormat == GvrDataFormat.Index8 || targetGvrFormat == GvrDataFormat.Index14 ||
+			if (targetGvrFormat == GvrDataFormat.Index4 || targetGvrFormat == GvrDataFormat.Index8 ||
 				targetPvrFormat == PvrDataFormat.Index4 || targetPvrFormat == PvrDataFormat.Index8 ||
 				targetPvrFormat == PvrDataFormat.Index4Mipmaps || targetPvrFormat == PvrDataFormat.Index8Mipmaps)
 				Console.WriteLine("Use dithering: {0}", useDitheringForIndexed.ToString());

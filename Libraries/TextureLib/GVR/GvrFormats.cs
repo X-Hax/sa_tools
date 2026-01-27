@@ -18,28 +18,37 @@ namespace TextureLib
 
     public enum GvrDataFormat : byte
     {
+		/// <summary>Grayscale format without alpha, 2 pixels per byte.</summary>
         Intensity4 = 0x00,
-        Intensity8 = 0x01,
-        IntensityA44 = 0x02,
-        IntensityA88 = 0x03,
-        Rgb565 = 0x04,
-        Rgb5a3 = 0x05,
-        Argb8888 = 0x06,
-        Index4 = 0x08,
-        Index8 = 0x09,
-		/// <summary>Palette index is 14 bit (from 0 to 16383), top 2 bits are ignored. Currently not implemented.</summary>
-		Index14 = 0xA,
-        Dxt1 = 0x0E,
-		/// <summary>This format is only used internally by Texture Editor.</summary>
-		Invalid = 0xFF
+		/// <summary>Grayscale format without alpha, 1 byte per pixel.</summary>
+		Intensity8 = 0x01,
+		/// <summary>Grayscale format with alpha, 1 byte per pixel.</summary>
+		IntensityA44 = 0x02,
+		/// <summary>Grayscale format with alpha, 2 bytes per pixel.</summary>
+		IntensityA88 = 0x03,
+		/// <summary>5 bits for Red and Blue, 6 bytes for Green, no alpha.</summary>
+		Rgb565 = 0x04,
+		/// <summary>1 bit reserved, the rest is ARGB3444 or RGB555.</summary>
+		Rgb5a3 = 0x05,
+		/// <summary>Lossless format with alpha.</summary>
+		Argb8888 = 0x06,
+		/// <summary>Paletted format, 2 pixels per byte.</summary>
+		Index4 = 0x08,
+		/// <summary>Paletted format, 1 byte per pixel.</summary>
+		Index8 = 0x09,
+		/// <summary>Compressed blocks, 8 bytes per 16 pixels.</summary>
+		Dxt1 = 0x0E,
     }
 
     [Flags]
     public enum GvrDataFlags : byte
     {
         None = 0x0,
-        Mipmaps = 0x1,
-        ExternalPalette = 0x2,
-        InternalPalette = 0x8,
+		/// <summary>Indicates that the texture has mipmaps.</summary>
+		Mipmaps = 0x1,
+		/// <summary>Indicates that the texture uses an external palette file.</summary>
+		ExternalPalette = 0x2,
+		/// <summary>Indicates that the texture's palette (CLUT) is embedded.</summary>
+		InternalPalette = 0x8,
     }
 }
