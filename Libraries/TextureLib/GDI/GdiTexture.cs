@@ -64,6 +64,8 @@ namespace TextureLib
 
 		public override void Encode()
 		{
+			Width = Image.Width;
+			Height = Image.Height;
 			if (HasMipmaps)
 				AddMipmaps();
 			RawData = GetBytes();

@@ -25,6 +25,10 @@ namespace TextureLib
 				throw new InvalidOperationException($"The dimensions ({Width}x{Height}) of the specified image are not valid for data format {PvrDataFormat}.");
 			}
 
+			// Set texture dimensions
+			Width = Image.Width;
+			Height = Image.Height;
+
 			MemoryStream outputStream = new();
 
 			// Check whether to use a generated or specified palette

@@ -251,6 +251,10 @@ namespace TextureLib
 			// Check if the palette needs to be generated
 			bool autoPalette = Palette == null;
 
+			// Set texture dimensions
+			Width = Image.Width;
+			Height = Image.Height;
+
 			// Determine the data codec
 			GvrDataCodec dataCodec = GvrDataCodec.GetDataCodec(GvrDataFormat);
 
