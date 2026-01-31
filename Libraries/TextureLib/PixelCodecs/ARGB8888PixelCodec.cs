@@ -48,9 +48,9 @@ namespace TextureLib
 					break;
 				case ColorOrderType.ARGBNormal:
 				default:
-					dst[BigEndian ? 3 : 2] = src[2];
+					dst[BigEndian ? 3 : 2] = src[0];
 					dst[BigEndian ? 0 : 1] = src[1];
-					dst[BigEndian ? 1 : 0] = src[0];
+					dst[BigEndian ? 1 : 0] = src[2];
 					dst[BigEndian ? 2 : 3] = src[3];
 					break;
 			}

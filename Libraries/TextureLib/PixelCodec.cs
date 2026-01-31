@@ -28,7 +28,7 @@ namespace TextureLib
                     return new ARGB4444PixelCodec();
                 case PvrPixelFormat.Argb8888: // YUV420 not implemented
 				case PvrPixelFormat.Argb8888Alt:
-					return new ARGB8888PixelCodec();
+					return new ARGB8888PixelCodec(); // Bitmap has a forced color order in the data codec
                 case PvrPixelFormat.Rgb565:
                     return new RGB565PixelCodec();
                 case PvrPixelFormat.Yuv422:
@@ -61,7 +61,7 @@ namespace TextureLib
 			switch (ddsFormat)
 			{
 				case DdsFormat.Argb8888:
-					return new ARGB8888PixelCodec() { BigEndian = false, ColorOrder = ARGB8888PixelCodec.ColorOrderType.ABGRBitmap };
+					return new ARGB8888PixelCodec() { BigEndian = false };
 				case DdsFormat.Argb1555:
 					return new ARGB1555PixelCodec() { BigEndian = false };
 				case DdsFormat.Argb4444:
