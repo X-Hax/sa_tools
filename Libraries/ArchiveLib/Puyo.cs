@@ -109,6 +109,21 @@ namespace ArchiveLib
             }
         }
 
+		/// <summary>Checks if the specified byte array contains a GBIX header.</summary>
+		/// <param name="data">Byte array to analyze.</param>
+		/// <returns>True if a GBIX header is present.</returns>
+		private bool HasGbix(byte[] data)
+		{
+			if (data.Length < 16)
+				return false;
+			for (int i = 0; i < data.Length - 4; i++)
+			{
+				if (BitConverter.ToUInt32(data,i) == Magic_GBIX)
+					return true;
+			}
+			return false;
+		}
+
 		/// <summary>Checks the format of the archive type in the specified byte array.</summary>
 		/// <param name="data">Byte array to analyze.</param>
 		/// <returns>Archive type (PVM, GVM or XVM) or Unknown.</returns>
@@ -447,16 +462,19 @@ namespace ArchiveLib
 			{
 				if (hasEntryTable)
 				{
-					// Align by 32
-					int length = Entries[i].Data.Length - 16;
+					bool hasGbix = HasGbix(Entries[i].Data);
+					// Calculate texture length without the GBIX header, align by 32
+					int length = Entries[i].Data.Length - (hasGbix ? 16 : 0);
 					if (length % 32 != 0)
 						do
 							length++;
 						while (length % 32 != 0);
-					byte[] nogbix = new byte[length];
-					Array.Copy(Entries[i].Data, 16, nogbix, 0, Entries[i].Data.Length - 16);
-					Array.Copy(BitConverter.GetBytes(length - 8), 0, nogbix, 4, 4); // Write updated length to PVRT
-					result.AddRange(nogbix);
+					// This is a bit awkward and should be done in a better way...
+					// It copies the texture's data without the GBIX header (but with the PVRT header and updated texture length).
+					byte[] outData = new byte[length];
+					Array.Copy(Entries[i].Data, hasGbix ? 16 : 0, outData, 0, Entries[i].Data.Length - (hasGbix ? 16 : 0));
+					Array.Copy(BitConverter.GetBytes(length - 8), 0, outData, 4, 4); // Write updated length to PVRT
+					result.AddRange(outData);
 				}
 				else
 				{
@@ -548,7 +566,6 @@ namespace ArchiveLib
             GvrTexture gvrt = new GvrTexture(Data);
             GBIX = gvrt.Gbix;
         }
-
 
         public override Bitmap GetBitmap()
         {
