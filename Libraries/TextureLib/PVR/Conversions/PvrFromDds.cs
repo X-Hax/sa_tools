@@ -146,6 +146,15 @@ namespace TextureLib
 			// If a lossless conversion cannot be done, encode the texture from the preview Image.
 			if (!losslessConversion)
 			{
+				// Transfer mipmap images if they exist (to re-encode them directly rather than using the full size image)
+				if (dds.MipmapImages != null && (HasMipmaps || forceMipmaps))
+				{
+					MipmapImages = new System.Drawing.Bitmap[dds.MipmapImages.Length];
+					for (int i = 0; i < dds.MipmapImages.Length; i++)
+					{
+						MipmapImages[i] = new System.Drawing.Bitmap(dds.MipmapImages[i]);
+					}
+				}
 				Encode();
 				if (forceMipmaps)
 					AddMipmaps();

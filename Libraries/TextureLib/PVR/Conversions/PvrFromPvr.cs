@@ -160,6 +160,15 @@ namespace TextureLib
 			// Lossy encoding
 			if (!lossless)
 			{
+				// Transfer mipmap images if they exist (to re-encode them directly rather than using the full size image)
+				if (src.MipmapImages != null && (HasMipmaps || forceMipmaps))
+				{
+					MipmapImages = new System.Drawing.Bitmap[src.MipmapImages.Length];
+					for (int i = 0; i < src.MipmapImages.Length; i++)
+					{
+						MipmapImages[i] = new System.Drawing.Bitmap(src.MipmapImages[i]);
+					}
+				}
 				Encode();
 				if (forceMipmaps)
 					AddMipmaps();

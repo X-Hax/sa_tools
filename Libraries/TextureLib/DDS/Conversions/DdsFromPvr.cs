@@ -36,14 +36,12 @@ namespace TextureLib
 				case PvrPixelFormat.Argb8888Alt:
 				case PvrPixelFormat.Argb8888:
 				default:
-					targetFormat = DdsFormat.Argb8888;
+					if (maxQuality)
+						targetFormat = DdsFormat.Argb8888;
+					else
+						targetFormat = AutoDdsFormatFromImage(pvr.Image, false, true);
 					break;
 			}
-			// VQ textures -> DXT textures?
-			if (pvr.PvrDataFormat == PvrDataFormat.Vq || pvr.PvrDataFormat == PvrDataFormat.VqMipmaps ||
-				pvr.PvrDataFormat == PvrDataFormat.SmallVq || pvr.PvrDataFormat == PvrDataFormat.SmallVqMipmaps)
-				if (!maxQuality)
-					targetFormat = AutoDdsFormatFromImage(pvr.Image, false, true);
 			ConvertFromPvr(pvr, targetFormat, forceMipmaps);
 		}
 
@@ -62,6 +60,15 @@ namespace TextureLib
 			Width = pvr.Width;
 			Height = pvr.Height;
 			HasMipmaps = forceMipmaps ? true : pvr.HasMipmaps;
+			// Transfer mipmap images if they exist (to re-encode them directly rather than using the full size image)
+			if (HasMipmaps && pvr.MipmapImages != null)
+			{
+				MipmapImages = new System.Drawing.Bitmap[pvr.MipmapImages.Length];
+				for (int i = 0; i < pvr.MipmapImages.Length; i++)
+				{
+					MipmapImages[i] = new System.Drawing.Bitmap(pvr.MipmapImages[i]);
+				}
+			}			
 			PaletteBank = pvr.PaletteBank;
 			PaletteStartIndex = pvr.PaletteStartIndex;
 			PakMetadata = pvr.PakMetadata;
@@ -113,19 +120,26 @@ namespace TextureLib
 				{
 					// Calculate the number of mip levels
 					int mipLevels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
+					int mipmapOffset = 0;
+					int[] mipmapOffsets = new int[mipLevels];
+					List<byte[]> mipmapData = new List<byte[]>();
 					// Convert mipmaps if they're already there
 					for (int i = mipLevels - 1, sizex = 1; i >= 0; i--, sizex <<= 1)
 					{
-						int[] mipmapOffsets = new int[mipLevels];
-						// Start offset for the first mipmap
-						int mipmapOffset = 0;
-						mipmapOffsets[i] = mipmapOffset;
-						byte[] srcdata = pvr.HeaderlessData[mipmapOffsets[i]..];
-						int mipDataSize = Math.Max(1, pvr.HeaderlessData.Length - srcdata.Length);
-						byte[] mipRawData = inputDataCodec.Decode(srcdata, sizex, sizex, null);
+						mipmapOffsets[i] = sizex == 1 ? 2 : mipmapOffset;
+						byte[] src = pvr.HeaderlessData[mipmapOffsets[i]..];
+						byte[] mipRawData = inputDataCodec.Decode(src, sizex, sizex, null);
 						if (HasMipmaps && sizex != Width)
-							outputStream.Write(outputDataCodec.Encode(mipRawData, sizex, sizex));
+						{
+							mipmapData.Add(outputDataCodec.Encode(mipRawData, sizex, sizex));
+							//Console.WriteLine("Mipmap {0} ({1}x{1}) : 0x{2})", i, sizex, mipmapOffsets[i].ToString("X"));
+						}
 						mipmapOffset += inputDataCodec.CalculateTextureSize(sizex, sizex);
+					}
+					// Write mipmaps in the reverse order
+					for (int i = mipmapData.Count - 1; i >= 0 ; i--)
+					{
+						outputStream.Write(mipmapData[i]);
 					}
 				}
 				// Update raw data arrays

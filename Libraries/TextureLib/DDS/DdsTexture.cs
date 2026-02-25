@@ -149,14 +149,21 @@ namespace TextureLib
 			{
 				// Calculate the number of mip levels
 				int mipLevels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
-				MipmapImages = new Bitmap[mipLevels];
-				MipmapImages[0] = new Bitmap(Image);
+				// Check if the existing mipmap images can be reused for encoding
+				bool reuseMipmaps = MipmapImages != null && MipmapImages.Length == mipLevels;
+				// If not, create a mipmap images array
+				if (!reuseMipmaps)
+				{
+					MipmapImages = new Bitmap[mipLevels];
+					MipmapImages[0] = new Bitmap(Image);
+				}
 				int mipWidth = Math.Max(1, Width >> 1);
 				int mipHeight = Math.Max(1, Height >> 1);
 				// DDS mipmap order: from largest to smallest
 				for (int mipLevel = 1; mipLevel < mipLevels; mipLevel++)
 				{
-					MipmapImages[mipLevel] = new Bitmap(Image, mipWidth, mipHeight);
+					if (!reuseMipmaps)
+						MipmapImages[mipLevel] = new Bitmap(Image, mipWidth, mipHeight);
 					outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(MipmapImages[mipLevel]), mipWidth, mipHeight));
 					mipWidth = Math.Max(1, mipWidth >>= 1);
 					mipHeight = Math.Max(1, mipHeight >>= 1);

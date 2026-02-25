@@ -69,6 +69,15 @@ namespace TextureLib
 			PaletteStartIndex = gvr.PaletteStartIndex;
 			PakMetadata = gvr.PakMetadata;
 			DdsFormat = targetDddsFormat;
+			// Transfer mipmap images if they exist (to re-encode them directly rather than using the full size image)
+			if (gvr.MipmapImages != null && HasMipmaps)
+			{
+				MipmapImages = new System.Drawing.Bitmap[gvr.MipmapImages.Length];
+				for (int i = 0; i < gvr.MipmapImages.Length; i++)
+				{
+					MipmapImages[i] = new System.Drawing.Bitmap(gvr.MipmapImages[i]);
+				}
+			}
 			// Check lossless
 			bool lossless = false;
 			foreach (var item in CompatibleFormatsGvrDds)
