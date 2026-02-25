@@ -251,6 +251,21 @@ namespace TextureEditor
 							MessageBox.Show(this, $"Could not add texture {entry.GetFilename().Trim() + ".dds: " + ex.Message.ToString()}", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 						}
 					}
+					// There are cases when a texture is present in the PAK but not listed in the INF file. These need to be handled separately.
+					foreach (PAKFile.PAKEntry entry in pak.Entries)
+					{
+						bool found = false;
+						foreach (var texture in newtextures)
+							if (texture.Name == Path.GetFileNameWithoutExtension(entry.Name))
+								found = true;
+						if (!found && Path.GetExtension(entry.Name).ToLowerInvariant() != ".inf")
+						{
+							GenericTexture paktx = GenericTexture.LoadTexture(entry.Data);
+							paktx.Name = Path.GetFileNameWithoutExtension(entry.Name);
+							paktx.PakMetadata.BlacklistInf = true;
+							newtextures.Add(paktx);
+						}
+					}
 				}
 			}
 			// PVM/GVM/XVM/PB

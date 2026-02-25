@@ -32,6 +32,9 @@ namespace TextureLib
 	/// </summary>
 	public class PakMetadata
 	{
+		/// <summary>If this value is true, the texture is excluded from the INF file.</summary>
+		public bool BlacklistInf;
+
 		/// <summary>Data format of the GVR texture.</summary>
 		public GvrDataFormat PakGvrFormat;
 

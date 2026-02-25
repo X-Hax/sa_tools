@@ -175,7 +175,7 @@ namespace TextureEditor
 						// Add the archive entry
 						pak.Entries.Add(new PAKFile.PAKEntry(name + extension, longdir + '\\' + name + extension, item.GetBytes().ToArray()));
 						// Add the PAK INF entry
-						if (!usingSocPak)
+						if (!usingSocPak && !item.PakMetadata.BlacklistInf)
 						{
 							PAKInfEntry entry = new PAKInfEntry();
 							byte[] namearr = Encoding.ASCII.GetBytes(name); // The INF file does not store the extension

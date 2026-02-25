@@ -199,32 +199,39 @@ namespace TextureEditor
 							break;
 						}
 				// Texture archive format
-				if (currentFormat == TextureArchiveFormat.PAK && !usingSocPak)
+				if (currentFormat == TextureArchiveFormat.PAK)
 				{
-					// Enable the PAK alpha flag
-					checkBoxPAKUseAlpha.Enabled = true;
-					checkBoxPAKUseAlpha.Show();
-					checkBoxPAKUseAlpha.Checked = currentTexture.PakMetadata.PakGvrFormat == GvrDataFormat.Rgb5a3;
-					// Display Ninja surface flags (maybe have checkboxes for them instead?)
-					NinjaSurfaceFlags njflags = currentTexture.PakMetadata.PakNinjaFlags;
-					List<string> flags = new List<string>();
-					if ((njflags & NinjaSurfaceFlags.NotTwiddled) != 0)
-						flags.Add("Not Twiddled");
-					else
-						flags.Add("Twiddled");
-					if ((njflags & NinjaSurfaceFlags.Mipmapped) != 0)
-						flags.Add("Mipmapped");
-					if ((njflags & NinjaSurfaceFlags.Palettized) != 0)
-						flags.Add("Palettized");
-					if ((njflags & NinjaSurfaceFlags.Stride) != 0)
-						flags.Add("Stride");
-					if ((njflags & NinjaSurfaceFlags.VQ) != 0)
-						flags.Add("VQ");
-					string ninjaFlagsString = string.Join(", ", flags);
-					// Display PAK metadata
-					extraFormatLabel.Text = $"PAK GVR Format: {currentTexture.PakMetadata.PakGvrFormat}" + System.Environment.NewLine + $"PAK Ninja Surface Flags: {ninjaFlagsString}";
-					extraFormatLabel.Show();
-
+					if (!usingSocPak && !currentTexture.PakMetadata.BlacklistInf)
+					{
+						// Enable the PAK alpha flag
+						checkBoxPAKUseAlpha.Enabled = true;
+						checkBoxPAKUseAlpha.Show();
+						checkBoxPAKUseAlpha.Checked = currentTexture.PakMetadata.PakGvrFormat == GvrDataFormat.Rgb5a3;
+						// Display Ninja surface flags (maybe have checkboxes for them instead?)
+						NinjaSurfaceFlags njflags = currentTexture.PakMetadata.PakNinjaFlags;
+						List<string> flags = new List<string>();
+						if ((njflags & NinjaSurfaceFlags.NotTwiddled) != 0)
+							flags.Add("Not Twiddled");
+						else
+							flags.Add("Twiddled");
+						if ((njflags & NinjaSurfaceFlags.Mipmapped) != 0)
+							flags.Add("Mipmapped");
+						if ((njflags & NinjaSurfaceFlags.Palettized) != 0)
+							flags.Add("Palettized");
+						if ((njflags & NinjaSurfaceFlags.Stride) != 0)
+							flags.Add("Stride");
+						if ((njflags & NinjaSurfaceFlags.VQ) != 0)
+							flags.Add("VQ");
+						string ninjaFlagsString = string.Join(", ", flags);
+						// Display PAK metadata
+						extraFormatLabel.Text = $"PAK GVR Format: {currentTexture.PakMetadata.PakGvrFormat}" + System.Environment.NewLine + $"PAK Ninja Surface Flags: {ninjaFlagsString}";
+						extraFormatLabel.Show();
+					}
+					else if (currentTexture.PakMetadata.BlacklistInf)
+					{
+						extraFormatLabel.Text = "PAK Metadata Disabled";
+						extraFormatLabel.Show();
+					}
 				}
 				else if (currentFormat == TextureArchiveFormat.PVMX)
 				{

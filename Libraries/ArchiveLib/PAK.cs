@@ -103,7 +103,13 @@ namespace ArchiveLib
                     GenericArchiveEntry gen = Entries.First((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase));
                     result.Add((PAKEntry)gen);
                 }
-                return result;
+				// There are cases when a texture is present in the PAK but not listed in the INF file. These need to be handled separately.
+				foreach (PAKEntry entry in Entries)
+				{
+					if (!result.Contains(entry))
+						result.Add(entry);
+				}
+				return result;
             }
             else
             {
