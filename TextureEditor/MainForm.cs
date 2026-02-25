@@ -524,6 +524,7 @@ namespace TextureEditor
 		#region View menu
 		private void textureFilteringToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			settingsfile.EnableFiltering = textureFilteringToolStripMenuItem.Checked;
 			UpdateTextureView();
 		}
 		#endregion
