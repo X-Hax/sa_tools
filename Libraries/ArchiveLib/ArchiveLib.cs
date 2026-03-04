@@ -37,7 +37,25 @@ namespace ArchiveLib
 		/// <returns>Array of bytes.</returns>
 		public abstract byte[] GetBytes();
 
-		/// <summary>Creates a format-specific index file used by ArchiveTool for building archives.</summary>
+		/// <summary>Creates a default format index file used by ArchiveTool for building archives.</summary>
+		/// <param name="path">Path to the output index file.</param>
+		internal void CreateDefaultIndexFile(string path)
+		{
+			using (TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
+			{
+				foreach (GenericArchiveEntry pvmentry in Entries)
+				{
+					texList.WriteLine(pvmentry.Name);
+				}
+				texList.Flush();
+				texList.Close();
+			}
+		}
+
+		/// <summary>
+		/// Creates a format-specific index file used by ArchiveTool for building archives.
+		/// If the format does not require a specific index file but the file order is still important, this function should call CreateDefaultIndexFile().
+		/// </summary>
 		/// <param name="path">Path to the output index file.</param>
 		public abstract void CreateIndexFile(string path);
 

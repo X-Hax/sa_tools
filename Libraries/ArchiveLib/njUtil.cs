@@ -10,7 +10,7 @@ namespace ArchiveLib
     {
         public override void CreateIndexFile(string path)
         {
-            throw new NotImplementedException();
+			CreateDefaultIndexFile(path);
         }
 
         public class NjArchiveEntry : GenericArchiveEntry

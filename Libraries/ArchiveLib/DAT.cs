@@ -22,7 +22,7 @@ namespace ArchiveLib
         {
             using (TextWriter tw = File.CreateText(Path.Combine(path, "index.txt")))
             {
-                Entries.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.Name, f2.Name));
+                Entries.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.Name, f2.Name)); // Does it need this?
                 for (int i = 0; i < Entries.Count; i++)
                 {
                     tw.WriteLine(Entries[i].Name);

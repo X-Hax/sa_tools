@@ -17,7 +17,7 @@ namespace ArchiveLib
 	{
 		public override void CreateIndexFile(string path)
 		{
-			return;
+			CreateDefaultIndexFile(path);
 		}
 
 		public class MLDArchiveEntry : GenericArchiveEntry

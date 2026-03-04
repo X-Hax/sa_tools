@@ -98,15 +98,7 @@ namespace ArchiveLib
 
 		public override void CreateIndexFile(string path)
         {
-            using (TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
-            {
-                foreach (GenericArchiveEntry pvmentry in Entries)
-                {
-                    texList.WriteLine(pvmentry.Name);
-                }
-                texList.Flush();
-                texList.Close();
-            }
+            CreateDefaultIndexFile(path);
         }
 
 		/// <summary>Checks if the specified byte array contains a GBIX header.</summary>
