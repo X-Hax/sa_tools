@@ -102,11 +102,12 @@ namespace ArchiveLib
                 Name = (filename == "" ? "BANK" : filename + "_BANK") + BankID.ToString("D2") + GetMLTItemExtension(file, offset);
                 int pointer = BitConverter.ToInt32(file, offset + 0x10);
                 int size = BitConverter.ToInt32(file, offset + 0x14);
-                if (pointer != -1)
-                {
-                    Data = new byte[size];
-                    Array.Copy(file, pointer, Data, 0, size);
-                }
+				Data = [];
+				if (pointer != -1)
+				{
+					Data = new byte[size];
+					Array.Copy(file, pointer, Data, 0, size);
+				}				
                 /*
                 Console.Write("Entry {0} Bank {1}, Address {2}, Allocated Memory {3}", Type.ToString(), BankID.ToString(), LoadAddress.ToString("X"), AllocatedMemory.ToString(""));
                 if (Data != null)
