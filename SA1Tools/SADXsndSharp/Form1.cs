@@ -35,7 +35,7 @@ namespace SADXsndSharp
 		private ListViewColumnSorter lvwColumnSorter;
 		/// <summary>Index of the column used for sorting. Can be 0 (filename), 1 (size), or 2 (entry index in the archive).</summary>
 		private int selectedColumn = 2;
-		
+
 		/// <summary>
 		/// This function loads and returns the appropriate archive format.
 		/// Update it when adding new formats to ArchiveLib.
@@ -236,7 +236,7 @@ namespace SADXsndSharp
 		private void listView1_MouseClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Right && selectedItem != null)
-					contextMenuStrip1.Show(listView1, e.Location);
+				contextMenuStrip1.Show(listView1, e.Location);
 		}
 
 		/// <summary>Adds new files to the archive.</summary>
@@ -274,7 +274,7 @@ namespace SADXsndSharp
 
 		private void ExtractEntry()
 		{
-			
+
 		}
 
 		private void extractToolStripMenuItem_Click(object sender, EventArgs e)
@@ -446,7 +446,7 @@ namespace SADXsndSharp
 			SaveFile();
 		}
 
-		private void saveAsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			fileToolStripMenuItem.DropDown.Close();
 			using (SaveFileDialog a = new SaveFileDialog()
@@ -482,7 +482,7 @@ namespace SADXsndSharp
 			return (BitConverter.ToUInt16(data, 0) == 0x0080 && data[4] == 0x03 && (data[18] == 0x03 || data[18] == 0x04));
 		}
 
-		
+
 
 		private Icon GetIcon(string file, bool smol)
 		{

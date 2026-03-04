@@ -83,7 +83,7 @@
 			menuStrip1.Location = new System.Drawing.Point(0, 0);
 			menuStrip1.Name = "menuStrip1";
 			menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-			menuStrip1.Size = new System.Drawing.Size(151, 24);
+			menuStrip1.Size = new System.Drawing.Size(271, 24);
 			menuStrip1.TabIndex = 0;
 			menuStrip1.Text = "menuStrip1";
 			// 
@@ -137,7 +137,7 @@
 			saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			saveAsToolStripMenuItem.Text = "Save &As...";
-			saveAsToolStripMenuItem.DropDownItemClicked += saveAsToolStripMenuItem_DropDownItemClicked;
+			saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
 			// 
 			// extractAllToolStripMenuItem
 			// 
