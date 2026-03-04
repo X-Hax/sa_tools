@@ -222,7 +222,7 @@ namespace SADXsndSharp
 					{
 						Text = $"SADXsndSharp - Saving item " + i.ToString() + " of " + archiveFile.Entries.Count.ToString() + ", please wait...";
 						byte[] save = GetFile(i);
-						if (archiveFile is DATFile dat && dat.Steam && IsAdx(save))
+						if (IsAdx(save) && exportADXAsWAVToolStripMenuItem.Checked)
 							save = AdxToWav(save);
 						File.WriteAllBytes(Path.Combine(dir, archiveFile.Entries[i].Name), save);
 					}
@@ -289,7 +289,7 @@ namespace SADXsndSharp
 				if (a.ShowDialog() == DialogResult.OK)
 				{
 					byte[] save = GetFile(GetSelectedItemID());
-					if (archiveFile is DATFile dat && dat.Steam && IsAdx(save))
+					if (IsAdx(save) && exportADXAsWAVToolStripMenuItem.Checked)
 						save = AdxToWav(save);
 					File.WriteAllBytes(a.FileName, save);
 				}
@@ -379,7 +379,7 @@ namespace SADXsndSharp
 			int id = GetSelectedItemID();
 			string fp = Path.Combine(Path.GetTempPath(), archiveFile.Entries[id].Name);
 			byte[] save = GetFile(id);
-			if (IsAdx(save))
+			if (IsAdx(save) && exportADXAsWAVToolStripMenuItem.Checked)
 				save = AdxToWav(save);
 			File.WriteAllBytes(fp, save);
 			System.Diagnostics.Process.Start("explorer.exe", fp);
@@ -463,7 +463,7 @@ namespace SADXsndSharp
 					Text = "SADXsndSharp - " + Path.GetFileName(a.FileName);
 					if (archiveFile is DATFile dat)
 					{
-						dat.Steam = saveAsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem) > 0;
+						dat.Steam = useThe2010FormatForDATToolStripMenuItem.Checked;
 					}
 					saveToolStripMenuItem.Enabled = true;
 					SaveFile();
