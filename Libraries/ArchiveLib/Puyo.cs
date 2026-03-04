@@ -497,7 +497,18 @@ namespace ArchiveLib
 			}
 			return pb;
 		}
-}
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return Type switch
+			{
+				PuyoArchiveType.PVMFile => new PVMEntry(),
+				PuyoArchiveType.GVMFile => new GVMEntry(),
+				PuyoArchiveType.XVMFile => new XVMEntry(),
+				_ => throw new NotImplementedException(),
+			};
+		}
+	}
 
 	/// <summary>
 	/// PVM archive entry.
@@ -530,7 +541,9 @@ namespace ArchiveLib
             GBIX = pvrt.Gbix;
         }
 
-        public override Bitmap GetBitmap()
+		public PVMEntry() {	}
+
+		public override Bitmap GetBitmap()
         {
             PvrTexture pvrt = new PvrTexture(Data);
             if (pvrt.RequiresPaletteFile)
@@ -567,7 +580,9 @@ namespace ArchiveLib
             GBIX = gvrt.Gbix;
         }
 
-        public override Bitmap GetBitmap()
+		public GVMEntry() {	}
+
+		public override Bitmap GetBitmap()
         {
             GvrTexture gvrt = new GvrTexture(Data);
             if (gvrt.RequiresPaletteFile)
@@ -600,6 +615,8 @@ namespace ArchiveLib
 			XvrTexture xvrt = new XvrTexture(Data);
 			GBIX = xvrt.Gbix;
 		}
+
+		public XVMEntry() {	}
 
 		public uint GetGBIX()
 		{

@@ -298,6 +298,10 @@ namespace ArchiveLib
 			return resultarr;
 		}
 
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new AFSEntry();
+		}
 	}
 
 	public class AFSEntry : GenericArchiveEntry
@@ -322,6 +326,8 @@ namespace ArchiveLib
 			Timestamp = timestamp;
 			CustomData = custom != 0 ? custom : (uint)Data.Length;
 		}
+
+		public AFSEntry() {	}
 
 		public override Bitmap GetBitmap()
 		{

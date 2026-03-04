@@ -25,7 +25,9 @@ namespace ArchiveLib
             {
                 Data = data;
             }
-        }
+
+			public NjArchiveEntry() { }
+		}
 
         public NjArchive(byte[] file)
         {
@@ -59,5 +61,10 @@ namespace ArchiveLib
         {
             throw new NotImplementedException();
         }
-    }
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new NjArchiveEntry();
+		}
+	}
 }

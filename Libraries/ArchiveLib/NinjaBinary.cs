@@ -105,6 +105,11 @@ namespace ArchiveLib
 			result.AddRange(new byte[result.Count % 16]);
 			return result.ToArray();
 		}
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new NinjaBinaryEntry();
+		}
 	}
 
 	public class NinjaBinaryEntry : GenericArchiveEntry
@@ -157,6 +162,8 @@ namespace ArchiveLib
 			Name = Path.GetFileName(filename);
 			Data = File.ReadAllBytes(filename);
 		}
+
+		public NinjaBinaryEntry() {	}
 
 		public override Bitmap GetBitmap()
 		{

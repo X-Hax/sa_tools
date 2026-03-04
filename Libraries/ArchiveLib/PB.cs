@@ -112,7 +112,12 @@ namespace ArchiveLib
 			}
 			return pvm;
 		}
-    }
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new PBEntry();
+		}
+	}
 
     public class PBEntry : GenericArchiveEntry
     {
@@ -201,7 +206,9 @@ namespace ArchiveLib
             Height = height;
         }
 
-        public override Bitmap GetBitmap()
+		public PBEntry() { }
+
+		public override Bitmap GetBitmap()
         {
             return new PvrTexture(Data).Image;
         }

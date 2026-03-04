@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
 
+// Archive library for SA Tools
+
 namespace ArchiveLib
-{
+{	
 	/// <summary>
 	/// Class for archives supported by SA Tools. This is a generic class that doesn't access format-specific properties.
 	/// </summary>
@@ -19,6 +21,10 @@ namespace ArchiveLib
 		{
 			Entries = new List<GenericArchiveEntry>();
 		}
+
+		/// <summary>Returns a new archive entry that is relevant to the archive type.</summary>
+		/// <returns>New PVMEntry if the archive is a PVM, new PVMXEntry if the archive is a PVMX etc.</returns>
+		public abstract GenericArchiveEntry NewEntry();
 
 		/// <summary>Writes the archive to the specified path.</summary>
 		/// <param name="outputFile">Path to the output file.</param>
@@ -40,7 +46,8 @@ namespace ArchiveLib
 		/// </summary>
 		public abstract class GenericArchiveEntry
 		{
-			/// <summary>Entry filename with extension.
+			/// <summary>
+			/// Entry filename with extension.
 			/// If the archive doesn't store entry names, a numeric ID will be used.
 			/// </summary>
 			public string Name { get; set; }
@@ -48,7 +55,8 @@ namespace ArchiveLib
 			/// <summary>Entry binary data.</summary>
 			public byte[] Data { get; set; }
 
-			/// <summary>Returns the entry's data converted to System.Drawing.Bitmap.
+			/// <summary>
+			/// Returns the entry's data converted to System.Drawing.Bitmap.
 			/// Can be used to retrieve texture preview images.
 			/// </summary>
 			/// <returns>Bitmap containing the texture image.</returns>

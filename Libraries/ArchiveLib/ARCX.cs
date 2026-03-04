@@ -28,7 +28,7 @@ namespace ArchiveLib
 
         public ARCXFile(byte[] ARCXdata)
         {
-            Entries = new List<GenericArchiveEntry>();
+			Entries = new List<GenericArchiveEntry>();
             if (!(ARCXdata.Length > 4 && BitConverter.ToInt32(ARCXdata, 0) == FourCC))
                 throw new FormatException("File is not a ARCX archive.");
             if (ARCXdata[4] != Version) throw new FormatException("Incorrect ARCX archive version.");
@@ -115,11 +115,18 @@ namespace ArchiveLib
             return str.ToArray();
         }
 
-        public class ARCXEntry : GenericArchiveEntry
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new ARCXEntry();
+		}
+
+		public class ARCXEntry : GenericArchiveEntry
         {
 			public string Folder;
 
-            public ARCXEntry(string name, string folder, byte[] data)
+			public ARCXEntry() { }
+
+			public ARCXEntry(string name, string folder, byte[] data)
             {
                 Name = name;
 				Folder = folder;

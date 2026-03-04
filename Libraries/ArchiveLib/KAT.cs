@@ -53,6 +53,8 @@ namespace ArchiveLib
 				wave.AddRange(data);
 				Data = wave.ToArray();
 			}
+
+			public KATArchiveEntry() { }
 		}
 
 		public KATFile(byte[] file)
@@ -71,7 +73,7 @@ namespace ArchiveLib
 				int index = ByteConverter.ToInt32(file, 4 + i * 44 + 24);
 				int bankIndex = index / 1000;
 				int sampleIndex = index % 1000;
-				Console.WriteLine("Entry size data {0} at offset {1}: size {2}", i, entryoff, size);
+				Console.WriteLine("Entry size data {0} at offset {1}: size {2}", i, entryoff.ToString("X"), size);
 				byte[] data = new byte[size];
 				Array.Copy(file, entryoff, data, 0, size);
 				Entries.Add(new KATArchiveEntry(data, i, numchannel, frequency, loop, bits, bankIndex, sampleIndex));
@@ -81,6 +83,11 @@ namespace ArchiveLib
 		public override byte[] GetBytes()
 		{
 			throw new NotImplementedException();
+		}
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new KATArchiveEntry();
 		}
 	}
 }

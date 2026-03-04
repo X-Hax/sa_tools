@@ -137,10 +137,9 @@ namespace ArchiveLib
                     Data = File.ReadAllBytes(filename);
             }
 
-            public gcaxMLTEntry(string filename)
-            { }
+			public gcaxMLTEntry() { }
 
-            public byte[] GetBytes()
+			public byte[] GetBytes()
             {
                 List<byte> result = new List<byte>();
                 if (Data != null)
@@ -154,9 +153,7 @@ namespace ArchiveLib
             }
         }
 
-        public gcaxMLTFile()
-        {
-        }
+        public gcaxMLTFile() { }
 
 		/// <summary>Type of entry in the gcaxMLT archive.</summary>
 		public enum gcaxMLTEntryType : byte
@@ -202,5 +199,10 @@ namespace ArchiveLib
                     throw new Exception("Unknown gcaxMLT entry extension: " + Path.GetExtension(filename).ToLowerInvariant());
             }
         }
-    }
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new gcaxMLTEntry();
+		}
+	}
 }

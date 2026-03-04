@@ -29,6 +29,8 @@ namespace ArchiveLib
 				Name = name;
 				Data = data;
 			}
+
+			public MDLArchiveEntry() { }
 		}
 
 		/// <summary>
@@ -90,6 +92,11 @@ namespace ArchiveLib
 		{
 			throw new NotImplementedException();
 		}
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new MDLArchiveEntry();
+		}
 	}
 	#endregion
 
@@ -123,6 +130,8 @@ namespace ArchiveLib
 				Name = name;
 				Data = data;
 			}
+
+			public MDTArchiveEntry() { }
 		}
 
 		/// <summary>Retrieves the file extension for the MDT entry.</summary>
@@ -225,6 +234,11 @@ namespace ArchiveLib
 		public override byte[] GetBytes()
 		{
 			throw new NotImplementedException();
+		}
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new MDTArchiveEntry();
 		}
 	}
 	#endregion

@@ -33,6 +33,8 @@ namespace ArchiveLib
 				Name = name;
 				Data = data;
 			}
+
+			public MLDArchiveEntry() { }
 		}
 
 		private void ExtractEntries(nmldArchiveFile archive, string directory)
@@ -183,6 +185,11 @@ namespace ArchiveLib
 		public override byte[] GetBytes()
 		{
 			throw new NotImplementedException();
+		}
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new MLDArchiveEntry();
 		}
 	}
 

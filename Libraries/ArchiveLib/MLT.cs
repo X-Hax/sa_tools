@@ -127,10 +127,9 @@ namespace ArchiveLib
                     Data = File.ReadAllBytes(filename);
             }
 
-            public MLTEntry(string filename)
-            { }
+			public MLTEntry() { }
 
-            public byte[] GetBytes()
+			public byte[] GetBytes()
             {
                 List<byte> result = new List<byte>();
                 if (Data != null)
@@ -231,5 +230,10 @@ namespace ArchiveLib
                     return MLTEntryType.MLT;
             }
         }
-    }
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new MLTEntry();
+		}
+	}
 }

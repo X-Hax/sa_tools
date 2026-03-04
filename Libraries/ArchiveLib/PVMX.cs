@@ -140,6 +140,11 @@ namespace ArchiveLib
             return str.ToArray();
         }
 
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new PVMXEntry();
+		}
+
 		public class PVMXEntry : GenericArchiveEntry
 		{
 			public int Width { get; set; }
@@ -156,6 +161,8 @@ namespace ArchiveLib
 				Data = data;
 				GBIX = gbix;
 			}
+
+			public PVMXEntry() { }
 
 			/// <summary>Checks whether the PVMX entry has texture dimension overrides.</summary>
 			/// <returns>True if dimensions are present.</returns>

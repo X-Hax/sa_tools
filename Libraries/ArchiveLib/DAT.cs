@@ -128,7 +128,13 @@ namespace ArchiveLib
             }
             return file;
         }
-        public class DATEntry : GenericArchiveEntry
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new DATEntry();
+		}
+
+		public class DATEntry : GenericArchiveEntry
         {
             public DATEntry()
             {
