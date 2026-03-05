@@ -1,4 +1,10 @@
 ﻿// Original SADXsnd by Tux/SANiK, SADXsndSharp by MainMemory
+
+// TODO: Cleanup, Extract/Replace buttons
+// TODO: Editable paths for ARCX, extension filters, save settings
+// TODO: Load from an offset
+// TODO: Archive and entry properties for each archive type
+
 using ArchiveLib;
 using System;
 using System.Drawing;
@@ -46,11 +52,14 @@ namespace SADXsndSharp
 		/// <returns>AFSFile, DATFile etc.</returns>
 		private GenericArchive IdentifyAndLoadArchive(string filename)
 		{
+			// TODO: PRS, offset
 			byte[] file = File.ReadAllBytes(filename);
 			switch (Path.GetExtension(filename).ToLowerInvariant())
 			{
 				case ".afs":
 					return new AFSFile(file);
+				case ".bin":
+					return new NjArchive(file);
 				case ".arcx":
 					return new ARCXFile(file);
 				case ".dat":
