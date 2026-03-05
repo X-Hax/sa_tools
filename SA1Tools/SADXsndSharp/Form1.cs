@@ -425,7 +425,7 @@ namespace SADXsndSharp
 			{
 				e.Effect = DragDropEffects.None;
 				draggingFromInside = false;
-		}
+			}
 			else if (e.Data.GetDataPresent(DataFormats.FileDrop))
 				e.Effect = DragDropEffects.All;
 		}
@@ -531,6 +531,11 @@ namespace SADXsndSharp
 				ListViewItem it = listView1.Items.Add(archiveFile.Entries[j].Name, j);
 				it.SubItems.Add((view == View.Tile ? "Size: " : "") + archiveFile.Entries[j].Data.Length.ToString());
 				it.SubItems.Add((view == View.Tile ? "Index: " : "") + j.ToString());
+				if (archiveFile is ARCXFile arcx && view == View.Details)
+				{
+					ARCXFile.ARCXEntry entry = (ARCXFile.ARCXEntry)arcx.Entries[j];
+					it.SubItems.Add(entry.Folder);
+				}
 				it.ForeColor = (archiveFile is DATFile dat && dat.IsFileCompressed(j)) ? Color.Blue : Color.Black;
 			}
 			listView1.View = view;
