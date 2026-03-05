@@ -518,15 +518,13 @@ namespace SADXsndSharp
 		private void RefreshListView(View view)
 		{
 			listView1.Items.Clear();
-			bool addimg1 = imageList1.Images.Empty;
-			bool addimg2 = imageList2.Images.Empty;
 			listView1.BeginUpdate();
 			for (int j = 0; j < archiveFile.Entries.Count; j++)
 			{
 				Text = $"SADXsndSharp - Loading item " + j.ToString() + " of " + archiveFile.Entries.Count.ToString() + ", please wait...";
-				if (addimg1 && (view == View.LargeIcon || view == View.Tile)) 
+				if ((view == View.LargeIcon || view == View.Tile) && !imageList1.Images.ContainsKey(archiveFile.Entries[j].Name)) 
 					imageList1.Images.Add(GetIcon(archiveFile.Entries[j].Name, false));
-				else if (addimg2 && (view == View.SmallIcon || view == View.Details || view == View.List))
+				else if ((view == View.SmallIcon || view == View.Details || view == View.List) && !imageList2.Images.ContainsKey(archiveFile.Entries[j].Name))
 					imageList2.Images.Add(GetIcon(archiveFile.Entries[j].Name, true));
 				ListViewItem it = listView1.Items.Add(archiveFile.Entries[j].Name, j);
 				it.SubItems.Add((view == View.Tile ? "Size: " : "") + archiveFile.Entries[j].Data.Length.ToString());
