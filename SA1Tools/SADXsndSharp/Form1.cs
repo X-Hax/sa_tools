@@ -35,6 +35,8 @@ namespace SADXsndSharp
 		private ListViewColumnSorter lvwColumnSorter;
 		/// <summary>Index of the column used for sorting. Can be 0 (filename), 1 (size), or 2 (entry index in the archive).</summary>
 		private int selectedColumn = 2;
+		/// <summary>Indicates whether the drag-and-drop was initiated from the inside of the window (to prevent accidental drag onto itself)..</summary>
+		private bool draggingFromInside;
 
 		/// <summary>
 		/// This function loads and returns the appropriate archive format.
@@ -419,12 +421,18 @@ namespace SADXsndSharp
 
 		private void listView1_DragEnter(object sender, DragEventArgs e)
 		{
-			if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.All;
+			if (draggingFromInside)
+			{
+				e.Effect = DragDropEffects.None;
+				draggingFromInside = false;
+		}
+			else if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				e.Effect = DragDropEffects.All;
 		}
 
 		private void listView1_DragDrop(object sender, DragEventArgs e)
 		{
-			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+			if (!draggingFromInside && e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
 				string[] dropfiles = (string[])e.Data.GetData(DataFormats.FileDrop, true);
 				int i = archiveFile.Entries.Count;
@@ -443,11 +451,11 @@ namespace SADXsndSharp
 
 		private void listView1_ItemDrag(object sender, ItemDragEventArgs e)
 		{
+			draggingFromInside = true;
 			int id = GetSelectedItemID();
 			string fn = Path.Combine(Path.GetTempPath(), archiveFile.Entries[id].Name);
 			File.WriteAllBytes(fn, GetFile(id));
-			DoDragDrop(new DataObject(DataFormats.FileDrop, new string[] { fn }), DragDropEffects.All);
-			unsavedChanges = true;
+			DoDragDrop(new DataObject(DataFormats.FileDrop, new string[] { fn }), DragDropEffects.Copy);
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
