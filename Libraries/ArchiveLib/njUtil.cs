@@ -21,10 +21,65 @@ namespace ArchiveLib
                 throw new NotImplementedException();
             }
 
-            public NjArchiveEntry(byte[] data)
+            public NjArchiveEntry(int index, byte[] data)
             {
                 Data = data;
-            }
+				string ext = ".bin";
+				if (data.Length >= 4)
+				{
+					string magic = System.Text.Encoding.ASCII.GetString(data, 0, 4);
+					switch (magic)
+					{
+						case "NJIN":
+							ext = ".nji";
+							break;
+						case "NJLI":
+							ext = ".njl";
+							break;
+						case "NLIM":
+							ext = ".njlm";
+							break;
+						case "NSSM":
+							ext = ".njsm";
+							break;
+						case "NCAM":
+							ext = ".ncm";
+							break;
+						case "NJBM":
+						case "NJCM":
+						case "NJTL":
+							ext = ".nj";
+							break;
+						case "GJBM":
+						case "GJCM":
+						case "GJTL":
+							ext = ".gj";
+							break;
+						case "NMDM":
+							ext = ".njm";
+							break;
+						case "PVMH":
+							ext = ".pvm";
+							break;
+						case "GVMH":
+							ext = ".gvm";
+							break;
+						case "XVMH":
+							ext = ".xvm";
+							break;
+						case "PVRT":
+							ext = ".pvr";
+							break;
+						case "GVRT":
+							ext = ".gvr";
+							break;
+						case "XVRT":
+							ext = ".xvr";
+							break;
+					}
+				}
+				Name = index.ToString("D3") + ext;
+			}
 
 			public NjArchiveEntry() { }
 		}
@@ -52,7 +107,7 @@ namespace ArchiveLib
                     offset += sizes[i - 1];
                 byte[] data = new byte[sizes[i]];
                 Array.Copy(file, offset, data, 0, sizes[i]);
-                Entries.Add(new NjArchiveEntry(data));
+                Entries.Add(new NjArchiveEntry(i, data));
             }
             ByteConverter.BigEndian = bigendbk;
         }
