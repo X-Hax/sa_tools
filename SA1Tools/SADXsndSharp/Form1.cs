@@ -359,7 +359,7 @@ namespace SADXsndSharp
 
 		private void listView1_BeforeLabelEdit(object sender, LabelEditEventArgs e)
 		{
-			oldName = e.Label;
+			oldName = listView1.Items[e.Item].Text;
 		}
 
 		private void listView1_AfterLabelEdit(object sender, LabelEditEventArgs e)
