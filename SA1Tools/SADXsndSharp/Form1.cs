@@ -220,11 +220,20 @@ namespace SADXsndSharp
 					archiveFile.CreateIndexFile(dir);
 					for (int i = 0; i < archiveFile.Entries.Count; i++)
 					{
+						string outPath = dir;
 						Text = $"SADXsndSharp - Saving item " + i.ToString() + " of " + archiveFile.Entries.Count.ToString() + ", please wait...";
 						byte[] save = GetFile(i);
 						if (IsAdx(save) && exportADXAsWAVToolStripMenuItem.Checked)
 							save = AdxToWav(save);
-						File.WriteAllBytes(Path.Combine(dir, archiveFile.Entries[i].Name), save);
+						// Add ARCX pathname
+						if (archiveFile is ARCXFile arcx)
+						{
+							ARCXFile.ARCXEntry entry = (ARCXFile.ARCXEntry)arcx.Entries[i];
+							outPath = Path.Combine(dir, entry.Folder);
+							if (!Directory.Exists(outPath))
+								Directory.CreateDirectory(outPath);
+						}
+						File.WriteAllBytes(Path.Combine(outPath, archiveFile.Entries[i].Name), save);
 					}
 					Text = "SADXsndSharp - " + Path.GetFileName(fileName);
 				}
