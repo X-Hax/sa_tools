@@ -581,6 +581,12 @@ namespace SADXsndSharp
 
 		private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
 		{
+			if (selectedColumn == e.Column)
+			{
+				descendingOrder = !descendingOrder;
+				ascendingToolStripMenuItem.Checked = !descendingOrder;
+				descendingToolStripMenuItem.Checked = descendingOrder;
+			}
 			selectedColumn = e.Column;
 			SortListViewItems();
 		}
