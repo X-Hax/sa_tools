@@ -150,6 +150,7 @@ namespace SADXsndSharp
 			RefreshListView(mainView);
 			// Enable the form and set text
 			Text = "SADXsndSharp - " + Path.GetFileName(filename);
+			toolStripStatusLabel1.Text = archiveFile.Entries.Count.ToString() + " items.";
 			Enabled = true;
 			saveToolStripMenuItem.Enabled = true;
 			unsavedChanges = false;

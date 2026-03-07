@@ -73,8 +73,10 @@
 			buttonMoveDown = new System.Windows.Forms.Button();
 			buttonExtract = new System.Windows.Forms.Button();
 			buttonReplace = new System.Windows.Forms.Button();
+			toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
 			menuStrip1.SuspendLayout();
 			contextMenuStrip1.SuspendLayout();
+			statusStrip1.SuspendLayout();
 			SuspendLayout();
 			// 
 			// menuStrip1
@@ -351,6 +353,7 @@
 			// 
 			// statusStrip1
 			// 
+			statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel1 });
 			statusStrip1.Location = new System.Drawing.Point(0, 400);
 			statusStrip1.Name = "statusStrip1";
 			statusStrip1.Size = new System.Drawing.Size(534, 22);
@@ -427,6 +430,12 @@
 			buttonReplace.UseVisualStyleBackColor = true;
 			buttonReplace.Visible = false;
 			// 
+			// toolStripStatusLabel1
+			// 
+			toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+			toolStripStatusLabel1.Size = new System.Drawing.Size(84, 17);
+			toolStripStatusLabel1.Text = "No file loaded.";
+			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -452,6 +461,8 @@
 			menuStrip1.ResumeLayout(false);
 			menuStrip1.PerformLayout();
 			contextMenuStrip1.ResumeLayout(false);
+			statusStrip1.ResumeLayout(false);
+			statusStrip1.PerformLayout();
 			ResumeLayout(false);
 			PerformLayout();
 
@@ -502,6 +513,7 @@
 		private System.Windows.Forms.Button buttonExtract;
 		private System.Windows.Forms.Button buttonReplace;
 		private System.Windows.Forms.ColumnHeader Column_Path;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
 	}
 }
 
