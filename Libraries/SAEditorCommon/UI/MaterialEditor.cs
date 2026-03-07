@@ -18,7 +18,6 @@ namespace SAModel.SAEditorCommon.UI
 		private List<NJS_MATERIAL> materials; // Material list that is being edited
 		private readonly List<NJS_MATERIAL> materialsOriginal; // Original material list at the time of opening the dialog
 		private readonly BMPInfo[] textures;
-		private bool chunk = false;
 
 		public MaterialEditor(List<NJS_MATERIAL> mats, BMPInfo[] textures, string matsName = null)
 		{

@@ -87,7 +87,10 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
-
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Animation", typeof(BigAnimType), "Extended", null, null, (o) => (BigAnimType)o.Scale.X, (o, v) => o.Scale.X = (int)v)
+		};
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 		public override string Name { get { return "Big the Cat"; } }
 
 		public override float DefaultXScale { get { return 0; } }
@@ -95,5 +98,31 @@ namespace SA2ObjectDefinitions.Common
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
+
+		public enum BigAnimType
+		{
+			Normal,
+			TreeShake,
+			Victory,
+			Fishing,
+			LookAtRod,
+			BellyScratch,
+			Laying,
+			Cheering,
+			HoldObject,
+			HipSway,
+			Wave,
+			ChestScratch,
+			ButtScratch,
+			Fanning,
+			PanicRun,
+			WalkWhileHolding,
+			LookUp,
+			LookDown,
+			LayingBack,
+			FishAndLookToSide,
+			HoldingFroggy,
+			HoldingFish
+		}
 	}
 }

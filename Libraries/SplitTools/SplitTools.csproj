@@ -10,7 +10,6 @@
 		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
 		<ProjectReference Include="..\SAModel\SAModel.csproj" />
 	</ItemGroup>
 	<ItemGroup>
@@ -18,6 +17,6 @@
 		<Compile Remove="EndianWriter.cs" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Text.Encoding.CodePages" />
+	  <PackageReference Include="PRS" Version="1.1.2" />
 	</ItemGroup>
 </Project>

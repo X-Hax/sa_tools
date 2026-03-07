@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-
+using static SAModel.SAEditorCommon.ChaoPalettes;
 
 namespace SAModel.SAEditorCommon
 {
@@ -245,16 +245,36 @@ namespace SAModel.SAEditorCommon
 		{
 			[DefaultValue(false)]
 			public bool HighQualityGVM { get; set; }
+
 			[DefaultValue(true)]
 			public bool SACompatiblePalettes { get; set; }
+
 			[DefaultValue(true)]
 			public bool EnableFiltering { get; set; }
+
 			[DefaultValue(true)]
 			public bool UseDDSforPAK { get; set; }
-			[DefaultValue(false)]
-			public bool UseDDSforTexPack { get; set; }
-			[DefaultValue(false)]
+
+			[DefaultValue(true)]
 			public bool UseDDSforPVMX { get; set; }
+
+			[DefaultValue(true)]
+			public bool UseDDSforTexPack { get; set; }
+
+			[DefaultValue(true)]
+			public bool TexEncodeAutoHighQuality { get; set; }
+
+			[DefaultValue(false)]
+			public bool TexEncodeUseCompressed { get; set; }
+
+			[DefaultValue(ChaoAlignment.Hero)]
+			public ChaoAlignment ChaoAlignment { get; set; }
+
+			[DefaultValue(ChaoEvolution.Normal)]
+			public ChaoEvolution ChaoFirstEvolution { get; set; }
+			
+			[DefaultValue(ChaoEvolution.Zero)]
+			public ChaoEvolution ChaoSecondEvolution { get; set; }
 
 			public Settings_TextureEditor()
 			{
@@ -262,8 +282,13 @@ namespace SAModel.SAEditorCommon
 				SACompatiblePalettes = true;
 				EnableFiltering = true;
 				UseDDSforPAK = true;
-				UseDDSforTexPack = false;
-				UseDDSforPVMX = false;
+				UseDDSforTexPack = true;
+				UseDDSforPVMX = true;
+				TexEncodeAutoHighQuality = true;
+				TexEncodeUseCompressed = false;
+				ChaoAlignment = ChaoAlignment.Hero;
+				ChaoFirstEvolution = ChaoEvolution.Normal;
+				ChaoSecondEvolution = ChaoEvolution.Zero;
 			}
 
 			public static Settings_TextureEditor Load()
@@ -325,6 +350,56 @@ namespace SAModel.SAEditorCommon
 					return IniSerializer.Deserialize<Settings_SA2MessageFileEditor>(path);
 				else
 					return new Settings_SA2MessageFileEditor();
+			}
+		}
+		public class Settings_SA2CutsceneEffectEditor : SettingsFile
+		{
+			[DefaultValue(false)]
+			public bool BigEndian { get; set; }
+			[DefaultValue(0)]
+			public int Format { get; set; }
+			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+			public List<string> RecentFiles { get; set; } = new List<string>();
+
+			public Settings_SA2CutsceneEffectEditor()
+			{
+				BigEndian = false;
+				Format = 0;
+				RecentFiles = new List<string>();
+			}
+
+			public static Settings_SA2CutsceneEffectEditor Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_SA2CutsceneEffectEditor>(path);
+				else
+					return new Settings_SA2CutsceneEffectEditor();
+			}
+		}
+		public class Settings_SA2LightFogEditor : SettingsFile
+		{
+			[DefaultValue(false)]
+			public bool BigEndian { get; set; }
+			[DefaultValue(0)]
+			public int Format { get; set; }
+			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+			public List<string> RecentFiles { get; set; } = new List<string>();
+
+			public Settings_SA2LightFogEditor()
+			{
+				BigEndian = false;
+				Format = 0;
+				RecentFiles = new List<string>();
+			}
+
+			public static Settings_SA2LightFogEditor Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_SA2LightFogEditor>(path);
+				else
+					return new Settings_SA2LightFogEditor();
 			}
 		}
 	}

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using SAModel.Direct3D.TextureSystem;
-using static VrSharp.Xvr.DirectXTexUtility;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -125,6 +123,7 @@ namespace SAModel.SAEditorCommon.UI
 					if (texPicker.ShowDialog(this) == DialogResult.OK)
 					{
 						pct.TextureID = (ushort)texPicker.SelectedValue;
+						textureIDNumeric.Value = (ushort)texPicker.SelectedValue;
 						textureBox.Image = DrawPreviewImage(textures[(ushort)textureIDNumeric.Value].Image);
 
 						RaiseFormUpdated();

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 
 namespace SAModel
 {
@@ -17,6 +15,15 @@ namespace SAModel
 		{
 			get { return (ChunkType)(Header & 0xFF); }
 			protected set { Header = (ushort)((Header & 0xFF00) | (byte)value); }
+		}
+		public ChunkType CMDEType
+		{
+			get { return Type; }
+			set 
+			{
+				ChunkType oldtype = Type;
+				Header = (ushort)((Header & 0xFF00) | (byte)value); 
+			}
 		}
 
 		public byte Flags
@@ -1455,6 +1462,15 @@ namespace SAModel
 			}
 			public ushort[] Indexes { get; private set; }
 			public UV[] UVs { get; private set; }
+			public UV[] CMDEUVs
+			{
+				get { return UVs; }
+				set
+				{
+					UV[] olduvs = UVs;
+					UVs = value;
+				}
+			}
 			public UV[] UVs2 { get; private set; }
 			public Color[] VColors { get; private set; }
 			public ushort[] UserFlags1 { get; private set; }
@@ -1796,6 +1812,15 @@ namespace SAModel
 		}
 
 		public List<Strip> Strips { get; private set; }
+		public List<Strip> CMDEStrips
+		{
+			get { return Strips; }
+			set
+			{
+				List<Strip> oldstrips = Strips;
+				Strips = value;
+			}
+		}
 
 		public PolyChunkStrip(ChunkType type)
 		{

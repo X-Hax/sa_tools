@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using PSO.PRS;
 using SAModel;
 using SAModel.GC;
 
@@ -64,7 +65,7 @@ namespace SplitTools.Split
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
 				// Decompress PRS
 				if (Path.GetExtension(datafilename).ToLowerInvariant() == ".prs" || (inifile.Compressed && Path.GetExtension(datafilename).ToLowerInvariant() != ".bin"))
-					datafile = FraGag.Compression.Prs.Decompress(datafile);
+					datafile = PRS.Decompress(datafile);
 				// Get binary key
 				uint imageBase = inifile.ImageBase ?? HelperFunctions.SetupEXE(ref datafile) ?? 0x400000;
 				// Decompress REL

@@ -208,36 +208,8 @@
 		}
 
 		#endregion
-		private System.Windows.Forms.Button buttonMoveMeshUp;
-		private System.Windows.Forms.Button buttonMoveMeshDown;
-		private System.Windows.Forms.ListView listViewMeshes;
-		private System.Windows.Forms.Button buttonCloneMesh;
-		private System.Windows.Forms.Button buttonDeleteMesh;
-		private System.Windows.Forms.ColumnHeader columnHeaderMatID;
 		private System.Windows.Forms.StatusStrip statusStrip1;
-		private System.Windows.Forms.Label labelModelName;
-		private System.Windows.Forms.Label labelMeshsetName;
-		private System.Windows.Forms.TextBox textBoxMeshsetName;
-		private System.Windows.Forms.TextBox textBoxModelName;
-		private System.Windows.Forms.TextBox textBoxModelY;
-		private System.Windows.Forms.TextBox textBoxModelZ;
-		private System.Windows.Forms.TextBox textBoxModelX;
-		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.Label label5;
-		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.GroupBox groupBoxLabels;
-		private System.Windows.Forms.GroupBox groupBoxBounds;
-		private System.Windows.Forms.GroupBox groupBoxMeshList;
-		private System.Windows.Forms.Button buttonResetMeshes;
 		private System.Windows.Forms.Button buttonClose;
-		private System.Windows.Forms.TextBox textBoxModelRadius;
-		private System.Windows.Forms.Label labelR;
-		private System.Windows.Forms.TextBox textBoxVertexName;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.TextBox textBoxObjectName;
-		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.ColumnHeader columnHeaderCnkType;
-		private System.Windows.Forms.ColumnHeader columnHeaderCnkData;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStripMatEdit;
 		private System.Windows.Forms.ToolStripMenuItem editPCMatToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem editTextureIDToolStripMenuItem;

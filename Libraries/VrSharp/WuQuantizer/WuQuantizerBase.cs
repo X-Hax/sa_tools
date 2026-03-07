@@ -22,6 +22,11 @@ namespace nQuant
             return QuantizeImage(image, 10, 70);
         }
 
+        public Image QuantizeImage(Bitmap image, int maxColorCount)
+        {
+            return QuantizeImage(image, maxColorCount, 10, 70);
+        }
+
         public Image QuantizeImage(Bitmap image, int alphaThreshold, int alphaFader)
         {
             var colorCount = MaxColor;
@@ -32,19 +37,29 @@ namespace nQuant
             return ProcessImagePixels(image, palette);
         }
 
-        public Image QuantizeImage(Bitmap image, int maxColorCount)
+        public Image QuantizeImage(Bitmap image, int maxColorCount, int alphaThreshold, int alphaFader)
         {
-            return QuantizeImage(image, maxColorCount, 10, 70);
+            var palette = CreatePalette(image, maxColorCount, alphaThreshold, alphaFader);
+            return ProcessImagePixels(image, palette);
         }
 
-        public Image QuantizeImage(Bitmap image, int maxColorCount, int alphaThreshold, int alphaFader)
+        public Image QuantizeImage(Bitmap image, QuantizedPalette palette)
+        {
+            return ProcessImagePixels(image, palette);
+        }
+
+        public QuantizedPalette CreatePalette(Bitmap image, int maxColorCount)
+        {
+            return CreatePalette(image, maxColorCount, 10, 70);
+        }
+
+        public QuantizedPalette CreatePalette(Bitmap image, int maxColorCount, int alphaThreshold, int alphaFader)
         {
             var colorCount = maxColorCount;
             var data = BuildHistogram(image, alphaThreshold, alphaFader);
             data = CalculateMoments(data);
             var cubes = SplitData(ref colorCount, data);
-            var palette = GetQuantizedPalette(colorCount, data, cubes, alphaThreshold);
-            return ProcessImagePixels(image, palette);
+            return GetQuantizedPalette(colorCount, data, cubes, alphaThreshold);
         }
 
         private static Bitmap ProcessImagePixels(Image sourceImage, QuantizedPalette palette)

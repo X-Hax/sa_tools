@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using SplitTools;
 
 namespace SAModel.SAEditorCommon.SETEditing
@@ -11,6 +12,8 @@ namespace SAModel.SAEditorCommon.SETEditing
 		public string CodeType;
 		public string Name;
 		public string Model;
+		[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+		public List<string> TexturePacks = [];
 		public string Texture;
 		public string Texlist;
 		public float? XPos, YPos, ZPos, XScl, YScl, ZScl, DefXScl, DefYScl, DefZScl, GndDst, AddXScl, AddYScl, AddZScl;

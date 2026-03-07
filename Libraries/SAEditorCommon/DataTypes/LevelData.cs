@@ -19,6 +19,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public static event Action StateChanged; // this one should allow us to tell the editor to re-render without needing an actual reference to MainForm
 		public static event Action PointOperation = delegate { };
 		public static event Action CharacterChanged = delegate { };
+		public static event Action SA2CharacterChanged = delegate { };
+		public static event Action SetTypeChanged = delegate { };
 		#endregion
 
 		private static Stack<string> changes = new Stack<string>();
@@ -31,12 +33,38 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public static bool SuppressEvents { get { return suppressEvents; } set { suppressEvents = value; } }
 
 		public static LandTable geo;
+		public static List<LandTable> secondgeos = [];
+		public static List<string> leveltexssecond = [];
 		public static string leveltexs;
 		public static Dictionary<string, BMPInfo[]> TextureBitmaps;
 		public static Dictionary<string, Texture[]> Textures;
 		public static readonly string[] Characters = { "Sonic", "Tails", "Knuckles", "Amy", "Gamma", "Big" };
 		public static readonly string[] SETChars = { "S", "M", "K", "A", "E", "B" };
-		public static readonly string[] SA2Characters = { "Sonic", "Shadow", "Knuckles", "Rouge", "MechTails", "MechEggman", };
+		public static readonly string[] SA2Characters = { "Sonic", "Shadow", "Knuckles", "Rouge", "MechTails", "MechEggman" };
+		public static readonly string[] SA2SetTypes = { "", "_2P", "_HD" };
+		public static bool isSA2;
+		private static int SA2SetType;
+		public static int SA2Set
+		{
+			get { return SA2SetType; }
+			set
+			{
+				int oldsettype = SA2SetType;
+				SA2SetType = value;
+				if (oldsettype != SA2SetType) SetTypeChanged.Invoke();
+			}
+		}
+		private static int sa2character;
+		public static int SA2Character
+		{
+			get { return sa2character; }
+			set
+			{
+				int oldsa2Character = sa2character;
+				sa2character = value;
+				if (oldsa2Character != sa2character) SA2CharacterChanged.Invoke();
+			}
+		}
 		private static int character;
 		public static int Character
 		{
@@ -54,6 +82,16 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public static List<ObjectDefinition> MisnObjDefs;
 		public static LevelDefinition leveleff;
 		public static StartPosItem[] StartPositions;
+		public static StartPosItem[] SA2StartPositions2P1;
+		public static StartPosItem[] SA2StartPositions2P2;
+		public static StartPosItem[] EndPositions;
+		public static StartPosItem[] EndPositions2P1;
+		public static StartPosItem[] EndPositions2P2;
+		public static AltStartPosItem[] AltEndPositionsA;
+		public static AltStartPosItem[] AltEndPositionsB;
+		public static AltStartPosItem[] MultiplayerIntroPositionsA;
+		public static AltStartPosItem[] MultiplayerIntroPositionsB;
+
 
 		#region Editable Objects
 		// level geometry items
@@ -70,6 +108,23 @@ namespace SAModel.SAEditorCommon.DataTypes
 			if (levelItems.Contains(item))
 			{
 				return levelItems.IndexOf(item);
+			}
+			else return -1;
+		}
+		// level geometry items
+		private static List<LevelItem> exLevelItems = new List<LevelItem>();
+
+		public static int EXLevelItemCount { get { return exLevelItems.Count; } }
+		public static LevelItem GetEXLevelitemAtIndex(int index)
+		{
+			return exLevelItems[index];
+		}
+		public static IEnumerable<LevelItem> EXLevelItems { get { return exLevelItems; } }
+		public static int GetIndexOfEXItem(LevelItem item)
+		{
+			if (exLevelItems.Contains(item))
+			{
+				return exLevelItems.IndexOf(item);
 			}
 			else return -1;
 		}
@@ -194,6 +249,20 @@ namespace SAModel.SAEditorCommon.DataTypes
 			InvalidateRenderState();
 		}
 
+		public static void ClearEXLevelGeometry()
+		{
+			if (EXLevelItems != null)
+			{
+				exLevelItems.Clear();
+			}
+			foreach (var item in secondgeos)
+				if (item.COL != null)
+					item.COL.Clear();
+
+			changes.Push("Clear Secondary Level Geometry");
+			InvalidateRenderState();
+		}
+
 		public static void ClearLevelItems()
 		{
 			if (levelItems != null)
@@ -203,6 +272,17 @@ namespace SAModel.SAEditorCommon.DataTypes
 			else levelItems = new List<LevelItem>();
 
 			changes.Push("Clear Level Items");
+		}
+
+		public static void ClearEXLevelItems()
+		{
+			if (exLevelItems != null)
+			{
+				exLevelItems.Clear();
+			}
+			else exLevelItems = new List<LevelItem>();
+
+			changes.Push("Clear Secondary Level Items");
 		}
 
 		public static void RemoveLevelItem(LevelItem item)
@@ -218,6 +298,21 @@ namespace SAModel.SAEditorCommon.DataTypes
 			LevelData.levelItems.Add(item);
 
 			changes.Push("Add level item");
+			InvalidateRenderState();
+		}
+		public static void RemoveEXLevelItem(LevelItem item)
+		{
+			LevelData.exLevelItems.Remove(item);
+
+			changes.Push("Remove secondary level item");
+			InvalidateRenderState();
+		}
+
+		public static void AddEXLevelItem(LevelItem item)
+		{
+			LevelData.exLevelItems.Add(item);
+
+			changes.Push("Add secondary level item");
 			InvalidateRenderState();
 		}
 		#endregion
@@ -380,6 +475,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			ClearSETItems();
 			ClearLevelGeoAnims();
 			ClearLevelGeometry();
+			ClearEXLevelGeometry();
 			StartPositions = null;
 			DeathZones = null;
 			leveleff = null;
@@ -407,6 +503,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public static string GetStats()
 		{
 			int landtableItems = 0;
+			int landtableEXItems = 0;
 			int textureArcCount = 0;
 			int setItems = 0;
 			int animatedItems = geo.Anim.Count;
@@ -414,9 +511,16 @@ namespace SAModel.SAEditorCommon.DataTypes
 
 			if (Textures != null) textureArcCount = Textures.Count;
 			if (geo != null) landtableItems = geo.COL.Count;
+			if (secondgeos != null)
+			{
+				for (int i = 0; i < secondgeos.Count; i++)
+					landtableEXItems += secondgeos[i].COL.Count;
+			}
 			if (LevelData.setItems != null) setItems = LevelData.GetSetItemCount(LevelData.character);
 			if (CAMItems != null) cameraItems = CAMItems[Character].Count;
-
+			if (isSA2)
+			{ return String.Format("Landtable items: {0}\nExtra Landtable items: {1}\nTexture Archives: {2}\nAnimated Level Models: {3}\nSET Items: {4}\nCamera Zones/Items: {5}", landtableItems, landtableEXItems, textureArcCount, animatedItems, setItems, cameraItems); }
+			else
 			return String.Format("Landtable items: {0}\nTexture Archives: {1}\nAnimated Level Models: {2}\nSET Items: {3}\nCamera Zones/Items: {4}", landtableItems, textureArcCount, animatedItems, setItems, cameraItems);
 		}
 
@@ -441,7 +545,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 				else if (currentItems[i] is SETItem)
 				{
 					SETItem originalItem = (SETItem)currentItems[i];
-					SETItem newItem = new SETItem(originalItem.GetBytes(), 0, selection);
+					SETItem newItem = new SETItem(originalItem.SETFileName, originalItem.GetBytes(), 0, selection);
 
 					//SETItems[Character].Add(newItem);
 					AddSETItem(Character, newItem);
@@ -450,8 +554,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 				else if (currentItems[i] is LevelItem)
 				{
 					LevelItem originalItem = (LevelItem)currentItems[i];
-					LevelItem newItem = new LevelItem(originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, levelItems.Count, selection);
-
+					LevelItem newItem = CreateLevelItemFromModel(originalItem.CollisionData.Model.Attach, originalItem.Position, originalItem.Rotation, levelItems.Count, selection, isSA2, originalItem.LevelFileName);
 					newItem.CollisionData.SurfaceFlags = originalItem.CollisionData.SurfaceFlags;
 					newItems.Add(newItem);
 				}
@@ -483,8 +586,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 				objm.Attach.ProcessVertexData();
 				LevelItem lvlitem = new LevelItem(objm.Attach, new Vertex(objm.Position.X, objm.Position.Y, objm.Position.Z), objm.Rotation, levelItems.Count, selectionManager)
 				{
-					Visible = isVisible,
-					Solid = isCol
+					Visible = true
 				};
 				createdItems.Add(lvlitem);
 			}
@@ -584,8 +686,18 @@ namespace SAModel.SAEditorCommon.DataTypes
 					createdItems.AddRange(ImportFromHierarchy(objm, selectionManager, osd, multiple, isVisible, isCol));
 					osd.AddMessage("Stage import complete!", 100);
 					break;
+				case ".obj":
+				case ".objf":
+					LevelItem item = new LevelItem(filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), levelItems.Count, selectionManager)
+					{
+						Visible = true
+					};
+
+					createdItems.Add(item);
+					break;
+
 				case ".txt":
-					NodeTable.ImportFromFile(filePath, out importError, out importErrorMsg, selectionManager);
+					NodeTable.ImportFromFile(filePath, out importError, out importErrorMsg, selectionManager, isSA2);
 					break;
 				case ".obj":
 				case ".objf":
@@ -646,8 +758,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 						obj.Attach.ProcessVertexData();
 						LevelItem newLevelItem = new LevelItem(obj.Attach, new Vertex(obj.Position.X + pos.X, obj.Position.Y + pos.Y, obj.Position.Z + pos.Z), obj.Rotation, levelItems.Count, selectionManager)
 						{
-							Visible = isVisible,
-							Solid = isCol
+							Visible = isVisible
 						};
 						createdItems.Add(newLevelItem);
 					}
@@ -667,6 +778,22 @@ namespace SAModel.SAEditorCommon.DataTypes
 			errorMsg = importErrorMsg;
 
 			return createdItems;
+		}
+
+		private static LevelItem CreateLevelItemFromModel(Attach attach, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, bool sa2, string filename = null, bool secondary = false)
+		{
+			if (sa2)
+				return new SA2LevelItem(attach, position, rotation, index, selectionManager, filename, secondary);
+			else
+				return new SA1LevelItem(attach, position, rotation, index, selectionManager, filename, secondary);
+		}
+
+		private static LevelItem CreateLevelItemFromFile(string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, bool sa2, bool legacyImport = false, string leveltexlist = null)
+		{
+			if (sa2)
+				return new SA2LevelItem(filePath, position, rotation, index, selectionManager, legacyImport, leveltexlist);
+			else
+				return new SA1LevelItem(filePath, position, rotation, index, selectionManager, legacyImport, leveltexlist);
 		}
 	}
 }

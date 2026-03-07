@@ -6,14 +6,16 @@ using System.IO;
 using System.Text.RegularExpressions;
 using static ArchiveLib.GenericArchive;
 
-// Ninja Binary (.nj) and its Gamecube (.gj) and Xbox variants (.xj).
-// Technically this is not an archive but its chunk structure can be parsed to retrieve individual entries.
-// Treating NJ files as archives makes it easier to modify individual items contained within.
-
 namespace ArchiveLib
 {
+	/// <summary>
+	/// Ninja Binary (.nj) and its Gamecube (.gj) and Xbox variants (.xj).
+	/// Technically this is not an archive but its chunk structure can be parsed to retrieve individual entries.
+	/// Treating NJ files as archives makes it easier to modify individual items without recreating the whole file.
+	/// </summary>
 	public class NinjaBinaryFile : GenericArchive
 	{
+		/// <summary>True when the archive follows the Big Endian byte order.</summary>
 		public bool IsGinja;
 
 		public override void CreateIndexFile(string path)
@@ -59,7 +61,7 @@ namespace ArchiveLib
 			{
 				if (Identify(file, i))
 				{
-					Console.WriteLine("Trying chunk at " + i.ToString("X"));
+					//Console.WriteLine("Trying chunk at " + i.ToString("X"));
 					NinjaBinaryEntry entry = new NinjaBinaryEntry(file, i);
 					string magic = System.Text.Encoding.ASCII.GetString(entry.Data, 0, 4);
 					switch (magic)
@@ -84,7 +86,7 @@ namespace ArchiveLib
 							magic = "NJM";
 							break;
 					}
-					Console.WriteLine("\tAdded " + magic + " chunk at " + i.ToString("X"));
+					//Console.WriteLine("\tAdded " + magic + " chunk at " + i.ToString("X"));
 					entry.Name = count.ToString("D3") + "." + magic;
 					Entries.Add(entry);
 					i += entry.Data.Length;
@@ -102,6 +104,11 @@ namespace ArchiveLib
 			}
 			result.AddRange(new byte[result.Count % 16]);
 			return result.ToArray();
+		}
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new NinjaBinaryEntry();
 		}
 	}
 
@@ -155,6 +162,8 @@ namespace ArchiveLib
 			Name = Path.GetFileName(filename);
 			Data = File.ReadAllBytes(filename);
 		}
+
+		public NinjaBinaryEntry() {	}
 
 		public override Bitmap GetBitmap()
 		{

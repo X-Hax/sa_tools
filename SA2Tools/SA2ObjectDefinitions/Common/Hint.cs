@@ -28,7 +28,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
 			HitResult result = monitor.CheckHit(Near, Far, Viewport, Projection, View, transform, meshesMonitor);
 			transform.Pop();
 			return result;
@@ -43,7 +43,7 @@ namespace SA2ObjectDefinitions.Common
 				texsScreen = ObjectHelper.GetTextures("objtex_common", texarrScreen, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
 			result.AddRange(monitor.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texsMonitor, meshesMonitor, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			result.AddRange(screen.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texsScreen, meshesScreen, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
@@ -60,7 +60,7 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
 			result.Add(new ModelTransform(monitor, transform.Top));
 			transform.Pop();
 			return result;
@@ -70,7 +70,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
 			return ObjectHelper.GetModelBounds(monitor, transform);
 		}
 		
@@ -79,7 +79,7 @@ namespace SA2ObjectDefinitions.Common
 			Matrix matrix = Matrix.Identity;
 
 			MatrixFunctions.Translate(ref matrix, item.Position);
-			MatrixFunctions.RotateObject(ref matrix, item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
 
 			return matrix;
 		}

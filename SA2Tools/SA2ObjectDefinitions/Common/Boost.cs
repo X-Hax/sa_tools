@@ -138,7 +138,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation);
+			transform.NJRotateZYX(item.Rotation);
 			HitResult result = conveyer.CheckHit(Near, Far, Viewport, Projection, View, transform, meshesConv);
 			transform.Pop();
 			return result;
@@ -153,7 +153,7 @@ namespace SA2ObjectDefinitions.Common
 				texsBase = ObjectHelper.GetTextures("objtex_common", texarrBase, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation);
+			transform.NJRotateZYX(item.Rotation);
 			result.AddRange(conveyer.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texsConv, meshesConv, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			result.AddRange(panelbase.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texsBase, meshesBase, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
@@ -170,7 +170,7 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation);
+			transform.NJRotateZYX(item.Rotation);
 			result.Add(new ModelTransform(conveyer, transform.Top));
 			transform.Pop();
 			return result;
@@ -180,7 +180,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(item.Rotation);
+			transform.NJRotateZYX(item.Rotation);
 			return ObjectHelper.GetModelBounds(conveyer, transform);
 		}
 
@@ -200,7 +200,14 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
-		
+
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Horizontal Speed", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
+			new PropertySpec("Disable Timer (Unused)", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
+			new PropertySpec("Added Vertical Speed", typeof(float), "Extended", null, 3.2f, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v)
+		};
+
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 		public override string Name { get { return "Launch Panel"; } }
 	}
 }

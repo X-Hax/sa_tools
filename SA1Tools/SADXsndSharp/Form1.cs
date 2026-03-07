@@ -1,10 +1,17 @@
-﻿//Original SADXsnd by Tux/SANiK, SADXsndSharp by MainMemory
+﻿// Original SADXsnd by Tux/SANiK, SADXsndSharp by MainMemory
+
+// TODO: Cleanup, Extract/Replace buttons
+// TODO: Editable paths for ARCX, extension filters, save settings
+// TODO: Load from an offset
+// TODO: Archive and entry properties for each archive type
+
+using ArchiveLib;
 using System;
-using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
-using ArchiveLib;
-using static ArchiveLib.DATFile;
+using System.Windows.Forms;
+
+using static ArchiveLib.GenericArchive;
 
 namespace SADXsndSharp
 {
@@ -15,63 +22,193 @@ namespace SADXsndSharp
 			InitializeComponent();
 		}
 
-		private ListViewColumnSorter lvwColumnSorter;
-		string filename;
-		bool unsaved;
-		bool descending;
-		private DATFile archive;
-		View mainView = View.Details;
+		/// <summary>Currently opened archive file.</summary>
+		private GenericArchive archiveFile;
+		/// <summary>Filename of the currently opened archive file.</summary>
+		string fileName;
+		/// <summary>Buffer used in renaming archive entries.</summary>
+		private string oldName;
+		/// <summary>This value is true if there are unsaved changes.</summary>
+		bool unsavedChanges;
 
-		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+		/// <summary>Current view mode of the ListView.</summary>
+		View mainView = View.Details;
+		/// <summary>Current selected item in the ListView.</summary>
+		ListViewItem selectedItem;
+		/// <summary>This value is true if the ListView's items should be sorted in descending order.</summary>
+		bool descendingOrder;
+		/// <summary>Used to sort ListView columns.</summary>
+		private ListViewColumnSorter lvwColumnSorter;
+		/// <summary>Index of the column used for sorting. Can be 0 (filename), 1 (size), or 2 (entry index in the archive).</summary>
+		private int selectedColumn = 2;
+		/// <summary>Indicates whether the drag-and-drop was initiated from the inside of the window (to prevent accidental drag onto itself)..</summary>
+		private bool draggingFromInside;
+
+		/// <summary>
+		/// This function loads and returns the appropriate archive format.
+		/// Update it when adding new formats to ArchiveLib.
+		/// </summary>
+		/// <param name="filename">Path to the file to load.</param>
+		/// <returns>AFSFile, DATFile etc.</returns>
+		private GenericArchive IdentifyAndLoadArchive(string filename)
 		{
-			if (unsaved)
+			// TODO: PRS, offset
+			byte[] file = File.ReadAllBytes(filename);
+			switch (Path.GetExtension(filename).ToLowerInvariant())
 			{
-				DialogResult result = ShowSaveChangesDialog();
-				if (result == DialogResult.Yes) SaveFile();
-				else if (result == DialogResult.Cancel)
-				{
-					e.Cancel = true;
-					return;
-				}
+				case ".afs":
+					return new AFSFile(file);
+				case ".bin":
+					return new NjArchive(file);
+				case ".arcx":
+					return new ARCXFile(file);
+				case ".dat":
+					return new DATFile(file);
+				case ".gcaxmlt":
+					return new gcaxMLTFile(file);
+				case ".kat":
+					return new KATFile(file);
+				case ".mlt":
+					return new MLTFile(file);
+				case ".nj":
+					return new NinjaBinaryFile(file);
+				case ".pak":
+					return new PAKFile(filename);
+				case ".pb":
+					return new PBFile(file);
+				case ".pvm":
+				case ".gvm":
+				case ".xvm":
+					return new PuyoFile(file);
+				case ".pvmx":
+					return new PVMXFile(file);
+				case ".mld":
+					return new MLDArchive(filename, file);
+				case ".mdl":
+					return new MDLArchive(file);
+				case ".mdt":
+					return new MDTArchive(file);
+				default:
+					return null;
 			}
 		}
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			this.FormClosing += Form1_FormClosing;
-			string[] args = Environment.GetCommandLineArgs();
-			if (args.Length == 1)
-				archive = new DATFile();
-			else
-				LoadFile(args[1]);
+			FormClosing += Form1_FormClosing;
+			if (Program.Arguments.Length > 0)
+				LoadFile(Program.Arguments[0]);
 		}
 
+		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (unsavedChanges)
+			{
+				switch (ShowSaveChangesDialog())
+				{
+					case DialogResult.Yes:
+						SaveFile();
+						break;
+					case DialogResult.Cancel:
+						e.Cancel = true;
+						return;
+					default:
+						break;
+				}
+			}
+		}
+
+		/// <summary>
+		/// This function retrieves the index of the currently selected archive entry.
+		/// </summary>
+		/// <returns>Index value, or -1 if there is no selection.</returns>
+		private int GetSelectedItemID()
+		{
+			return selectedItem == null ? -1 : int.Parse(selectedItem.SubItems[2].Text);
+		}
+
+		/// <summary>
+		/// This function handles archive loading.
+		/// </summary>
+		/// <param name="filename">Path to the file to load.</param>
 		private void LoadFile(string filename)
 		{
-			this.filename = Path.GetFullPath(filename);
-			byte[] file = File.ReadAllBytes(filename);
+			GenericArchive result = IdentifyAndLoadArchive(filename);
+			// Check if the archive loaded successfully
+			if (result == null)
+			{
+				MessageBox.Show(this, "Error loading file " + Path.GetFileName(filename) + ": Unsupported archive format.", "SADXSndSharp", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				buttonAdd.Enabled = buttonRemove.Enabled = buttonMoveUp.Enabled = buttonMoveDown.Enabled = false;
+				return;
+			}
+			// Global stuff
+			archiveFile = result;
+			fileName = Path.GetFullPath(filename);
+			// Load the items, disabling the form during loading
 			Text = "SADXsndSharp - Loading file, please wait...";
-			this.Enabled = false;
-            archive = new DATFile(file);
+			Enabled = false;
 			RefreshListView(mainView);
+			// Enable the form and set text
 			Text = "SADXsndSharp - " + Path.GetFileName(filename);
-			this.Enabled = true;
+			Enabled = true;
 			saveToolStripMenuItem.Enabled = true;
-			unsaved = false;
+			unsavedChanges = false;
+			buttonAdd.Enabled = true;
+		}
+
+		/// <summary>
+		/// This function retrieves the specified entry as a byte array.
+		/// </summary>
+		/// <param name="index">Entry ID</param>
+		/// <returns>Byte array of the entry</returns>
+		private byte[] GetFile(int index)
+		{
+			// DAT entries can be compressed, so they are dealt with separately
+			if (archiveFile is DATFile dat)
+				return dat.GetFile(index);
+			// Regular archives can just fetch the entry data directly
+			else
+				return archiveFile.Entries[index].Data;
+		}
+
+		/// <summary>Moves the specified entry upwards in the archive (reduces index by 1).</summary>
+		/// <param name="i">Index of the entry to move</param>
+		private void MoveUp(int i)
+		{
+			GenericArchiveEntry ti = archiveFile.Entries[i];
+			archiveFile.Entries.RemoveAt(i);
+			archiveFile.Entries.Insert(i - 1, ti);
+		}
+
+		/// <summary>Moves the specified entry downwards in the archive (increases index by 1).</summary>
+		/// <param name="i">Index of the entry to move</param>
+		private void MoveDown(int i)
+		{
+			GenericArchiveEntry ti = archiveFile.Entries[i];
+			archiveFile.Entries.RemoveAt(i);
+			archiveFile.Entries.Insert(i + 1, ti);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (unsaved)
+			if (unsavedChanges)
 			{
-				DialogResult result = ShowSaveChangesDialog();
-				if (result == DialogResult.Yes) SaveFile();
-				else if (result == DialogResult.Cancel) return;
+				switch (ShowSaveChangesDialog())
+				{
+					case DialogResult.Yes:
+						SaveFile();
+						break;
+					case DialogResult.Cancel:
+						return;
+					default:
+						break;
+				}
 			}
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
+				// TODO: Add filters for all supported extensions
 				DefaultExt = "dat",
-				Filter = "DAT Files|*.dat|All Files|*.*"
+				Filter = "DAT Files|*.dat|All Supported Files|*.afs;*.arcx;*.dat;*.gcaxMLT;*.kat;*.mlt;*.nj;*.pak;*.pb;*.pvm;*.gvm;*.xvm;*.mld;*.mdl;*.mdt|All Files|*.*"
 			})
 				if (a.ShowDialog() == DialogResult.OK)
 					LoadFile(a.FileName);
@@ -79,49 +216,51 @@ namespace SADXsndSharp
 
 		private void extractAllToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (SaveFileDialog a = new SaveFileDialog() { DefaultExt = "", Filter = "", FileName = "soundpack" })
+			using (SaveFileDialog a = new SaveFileDialog() { DefaultExt = "", Filter = "", FileName = Path.GetFileNameWithoutExtension(fileName) })
 			{
-				if (filename != null)
+				if (fileName != null)
 				{
-					a.InitialDirectory = Path.GetDirectoryName(filename);
-					a.FileName = Path.GetFileNameWithoutExtension(filename);
+					a.InitialDirectory = Path.GetDirectoryName(fileName);
+					a.FileName = Path.GetFileNameWithoutExtension(fileName);
 				}
 
 				if (a.ShowDialog(this) == DialogResult.OK)
 				{
 					Directory.CreateDirectory(a.FileName);
 					string dir = Path.Combine(Path.GetDirectoryName(a.FileName), Path.GetFileName(a.FileName));
-					using (StreamWriter sw = File.CreateText(Path.Combine(dir, "index.txt")))
+					archiveFile.CreateIndexFile(dir);
+					for (int i = 0; i < archiveFile.Entries.Count; i++)
 					{
-                        for (int i = 0; i < archive.Entries.Count; i++)
-                        {
-							Text = $"SADXsndSharp - Saving item " + i.ToString() + " of " + archive.Entries.Count.ToString() + ", please wait...";
-							sw.WriteLine(archive.Entries[i].Name);
-                            File.WriteAllBytes(Path.Combine(dir, archive.Entries[i].Name), archive.GetFile(i));
+						string outPath = dir;
+						Text = $"SADXsndSharp - Saving item " + i.ToString() + " of " + archiveFile.Entries.Count.ToString() + ", please wait...";
+						byte[] save = GetFile(i);
+						if (IsAdx(save) && exportADXAsWAVToolStripMenuItem.Checked)
+							save = AdxToWav(save);
+						// Add ARCX pathname
+						if (archiveFile is ARCXFile arcx)
+						{
+							ARCXFile.ARCXEntry entry = (ARCXFile.ARCXEntry)arcx.Entries[i];
+							outPath = Path.Combine(dir, entry.Folder);
+							if (!Directory.Exists(outPath))
+								Directory.CreateDirectory(outPath);
 						}
-						sw.Flush();
-						sw.Close();
+						File.WriteAllBytes(Path.Combine(outPath, archiveFile.Entries[i].Name), save);
 					}
-					Text = "SADXsndSharp - " + Path.GetFileName(filename);
+					Text = "SADXsndSharp - " + Path.GetFileName(fileName);
 				}
 				else return;
 			}
 		}
 
-		ListViewItem selectedItem;
+		// Item context menu
 		private void listView1_MouseClick(object sender, MouseEventArgs e)
 		{
-			if (e.Button == MouseButtons.Right)
-			{
-				selectedItem = listView1.GetItemAt(e.X, e.Y);
-				if (selectedItem != null)
-				{
-					contextMenuStrip1.Show(listView1, e.Location);
-				}
-			}
+			if (e.Button == MouseButtons.Right && selectedItem != null)
+				contextMenuStrip1.Show(listView1, e.Location);
 		}
 
-		private void addFilesToolStripMenuItem_Click(object sender, EventArgs e)
+		/// <summary>Adds new files to the archive.</summary>
+		private void AddFiles()
 		{
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
@@ -133,11 +272,29 @@ namespace SADXsndSharp
 				{
 					foreach (string item in a.FileNames)
 					{
-                        archive.Entries.Add(new DATEntry(item));
+						GenericArchiveEntry entry = archiveFile.NewEntry();
+						entry.Name = Path.GetFileName(item);
+						entry.Data = File.ReadAllBytes(item);
 					}
 					RefreshListView(mainView);
-					unsaved = true;
+					unsavedChanges = true;
 				}
+		}
+
+		/// <summary>Deletes the currently selected archive entry.</summary>
+		private void DeleteItem()
+		{
+			int i = GetSelectedItemID();
+			if (i == -1)
+				return;
+			archiveFile.Entries.RemoveAt(i);
+			RefreshListView(mainView);
+			unsavedChanges = true;
+		}
+
+		private void ExtractEntry()
+		{
+
 		}
 
 		private void extractToolStripMenuItem_Click(object sender, EventArgs e)
@@ -150,14 +307,19 @@ namespace SADXsndSharp
 				FileName = selectedItem.Text
 			})
 				if (a.ShowDialog() == DialogResult.OK)
-					File.WriteAllBytes(a.FileName, archive.GetFile(int.Parse(selectedItem.SubItems[2].Text)));
+				{
+					byte[] save = GetFile(GetSelectedItemID());
+					if (IsAdx(save) && exportADXAsWAVToolStripMenuItem.Checked)
+						save = AdxToWav(save);
+					File.WriteAllBytes(a.FileName, save);
+				}
 		}
 
 		private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (selectedItem == null) return;
-			int i = int.Parse(selectedItem.SubItems[2].Text);
-			string fn = archive.Entries[i].Name;
+			int i = GetSelectedItemID();
+			string fn = archiveFile.Entries[i].Name;
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "wav",
@@ -166,17 +328,15 @@ namespace SADXsndSharp
 			})
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					if (archive.Entries[i].Name != a.FileName)
+					if (archiveFile.Entries[i].Name != a.FileName)
 					{
 						DialogResult mb = MessageBox.Show("Keep original filename " + fn + "?", "Keep filename?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        if (mb == DialogResult.Yes)
-                            archive.Entries[i].Data=File.ReadAllBytes(a.FileName);
-                        else archive.Entries[i] = new DATEntry(a.FileName);
-                    }
-                    else
-                        archive.ReplaceFile(a.FileName, i);
-                    selectedItem.ForeColor = archive.IsFileCompressed(i) ? Color.Blue : Color.Black;
-					unsaved = true;
+						if (mb == DialogResult.No)
+							archiveFile.Entries[i].Name = Path.GetFileName(a.FileName);
+					}
+					archiveFile.Entries[i].Data = File.ReadAllBytes(a.FileName);
+					selectedItem.ForeColor = (archiveFile is DATFile dat && dat.IsFileCompressed(i)) ? Color.Blue : Color.Black;
+					unsavedChanges = true;
 					RefreshListView(mainView);
 				}
 		}
@@ -192,38 +352,31 @@ namespace SADXsndSharp
 			})
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					int i = int.Parse(selectedItem.SubItems[2].Text);
+					int i = GetSelectedItemID();
 					foreach (string item in a.FileNames)
 					{
-						archive.Entries.Add(new DATEntry(item));
+						GenericArchiveEntry entry = archiveFile.NewEntry();
+						entry.Name = Path.GetFileName(item);
+						entry.Data = File.ReadAllBytes(item);
+						archiveFile.Entries.Add(entry);
 						i++;
 					}
 					RefreshListView(mainView);
-					unsaved = true;
+					unsavedChanges = true;
 				}
 		}
 
-		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (selectedItem == null) return;
-			int i = int.Parse(selectedItem.SubItems[2].Text);
-			archive.Entries.RemoveAt(i);
-			RefreshListView(mainView);
-			unsaved = true;
-		}
-
-		private string oldName;
 		private void listView1_BeforeLabelEdit(object sender, LabelEditEventArgs e)
 		{
-			oldName = e.Label;
+			oldName = listView1.Items[e.Item].Text;
 		}
 
 		private void listView1_AfterLabelEdit(object sender, LabelEditEventArgs e)
 		{
 			if (oldName == e.Label) return;
-            for (int i = 0; i < archive.Entries.Count; i++)
+			for (int i = 0; i < archiveFile.Entries.Count; i++)
 			{
-				if (archive.Entries[i].Name.Equals(e.Label, StringComparison.OrdinalIgnoreCase))
+				if (archiveFile.Entries[i].Name.Equals(e.Label, StringComparison.OrdinalIgnoreCase))
 				{
 					e.CancelEdit = true;
 					MessageBox.Show("This name is being used by another file.");
@@ -236,61 +389,82 @@ namespace SADXsndSharp
 				MessageBox.Show("This name contains invalid characters.");
 				return;
 			}
-            archive.Entries[int.Parse(listView1.Items[e.Item].SubItems[2].Text)].Name = e.Label;
+			archiveFile.Entries[GetSelectedItemID()].Name = e.Label;
 			RefreshListView(mainView);
-			unsaved = true;
+			unsavedChanges = true;
 		}
 
 		private void listView1_ItemActivate(object sender, EventArgs e)
 		{
-			string fp = Path.Combine(Path.GetTempPath(), archive.Entries[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].Name);
-			File.WriteAllBytes(fp, archive.GetFile(int.Parse(listView1.SelectedItems[0].SubItems[2].Text)));
+			int id = GetSelectedItemID();
+			string fp = Path.Combine(Path.GetTempPath(), archiveFile.Entries[id].Name);
+			byte[] save = GetFile(id);
+			if (IsAdx(save) && exportADXAsWAVToolStripMenuItem.Checked)
+				save = AdxToWav(save);
+			File.WriteAllBytes(fp, save);
 			System.Diagnostics.Process.Start("explorer.exe", fp);
 		}
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (unsaved)
+			if (unsavedChanges)
 			{
-				DialogResult result = ShowSaveChangesDialog();
-				if (result == DialogResult.Yes) SaveFile();
-				else if (result == DialogResult.Cancel) return;
+				switch (ShowSaveChangesDialog())
+				{
+					case DialogResult.Yes:
+						SaveFile();
+						break;
+					case DialogResult.Cancel:
+						return;
+					default:
+						break;
+				}
 			}
-			filename = null;
+			fileName = null;
 			Text = "SADXsndSharp";
-            archive = new DATFile();
+			archiveFile = new DATFile();
 			RefreshListView(mainView);
 			saveToolStripMenuItem.Enabled = false;
-			unsaved = false;
+			unsavedChanges = false;
 		}
 
 		private void listView1_DragEnter(object sender, DragEventArgs e)
 		{
-			if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.All;
+			if (draggingFromInside)
+			{
+				e.Effect = DragDropEffects.None;
+				draggingFromInside = false;
+			}
+			else if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				e.Effect = DragDropEffects.All;
 		}
 
 		private void listView1_DragDrop(object sender, DragEventArgs e)
 		{
-			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+			if (!draggingFromInside && e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
 				string[] dropfiles = (string[])e.Data.GetData(DataFormats.FileDrop, true);
-				int i = archive.Entries.Count;
+				int i = archiveFile.Entries.Count;
 				foreach (string item in dropfiles)
 				{
-					archive.Entries.Add(new DATEntry(item));
+					GenericArchiveEntry entry = archiveFile.NewEntry();
+					entry.Name = Path.GetFileName(item);
+					entry.Data = File.ReadAllBytes(item);
+					archiveFile.Entries.Add(entry);
 					i++;
 				}
 				RefreshListView(mainView);
-				unsaved = true;
+				unsavedChanges = true;
 			}
 		}
 
 		private void listView1_ItemDrag(object sender, ItemDragEventArgs e)
 		{
-			string fn = Path.Combine(Path.GetTempPath(), archive.Entries[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].Name);
-			File.WriteAllBytes(fn, archive.GetFile(int.Parse(listView1.SelectedItems[0].SubItems[2].Text)));
-			DoDragDrop(new DataObject(DataFormats.FileDrop, new string[] { fn }), DragDropEffects.All);
-			unsaved = true;
+			draggingFromInside = true;
+			int id = GetSelectedItemID();
+			string fn = Path.Combine(Path.GetTempPath(), archiveFile.Entries[id].Name);
+			File.WriteAllBytes(fn, GetFile(id));
+			DoDragDrop(new DataObject(DataFormats.FileDrop, new string[] { fn }), DragDropEffects.Copy);
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -298,7 +472,7 @@ namespace SADXsndSharp
 			SaveFile();
 		}
 
-		private void saveAsToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			fileToolStripMenuItem.DropDown.Close();
 			using (SaveFileDialog a = new SaveFileDialog()
@@ -307,13 +481,16 @@ namespace SADXsndSharp
 				Filter = "DAT Files|*.dat|All Files|*.*"
 			})
 			{
-				if (filename != null)
-					a.FileName = Path.GetFileName(filename);
+				if (fileName != null)
+					a.FileName = Path.GetFileName(fileName);
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					filename = a.FileName;
+					fileName = a.FileName;
 					Text = "SADXsndSharp - " + Path.GetFileName(a.FileName);
-					archive.Steam = saveAsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem) > 0;
+					if (archiveFile is DATFile dat)
+					{
+						dat.Steam = useThe2010FormatForDATToolStripMenuItem.Checked;
+					}
 					saveToolStripMenuItem.Enabled = true;
 					SaveFile();
 				}
@@ -322,8 +499,13 @@ namespace SADXsndSharp
 
 		private void SaveFile()
 		{
-			File.WriteAllBytes(filename, archive.GetBytes());
-			unsaved = false;
+			File.WriteAllBytes(fileName, archiveFile.GetBytes());
+			unsavedChanges = false;
+		}
+
+		public bool IsAdx(byte[] data)
+		{
+			return (BitConverter.ToUInt16(data, 0) == 0x0080 && data[4] == 0x03 && (data[18] == 0x03 || data[18] == 0x04));
 		}
 
 		private Icon GetIcon(string file, bool smol)
@@ -334,12 +516,6 @@ namespace SADXsndSharp
 
 		private void quitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (unsaved)
-			{
-				DialogResult result = ShowSaveChangesDialog();
-				if (result == DialogResult.Yes) SaveFile();
-				else if (result == DialogResult.Cancel) return;
-			}
 			Close();
 		}
 
@@ -351,22 +527,27 @@ namespace SADXsndSharp
 		private void RefreshListView(View view)
 		{
 			listView1.Items.Clear();
-			imageList1.Images.Clear();
-			imageList2.Images.Clear();
 			listView1.BeginUpdate();
-			for (int j = 0; j < archive.Entries.Count; j++)
+			for (int j = 0; j < archiveFile.Entries.Count; j++)
 			{
-				Text = $"SADXsndSharp - Loading item " + j.ToString() + " of " + archive.Entries.Count.ToString() + ", please wait...";
-				if (view == View.LargeIcon || view == View.Tile) imageList1.Images.Add(GetIcon(archive.Entries[j].Name, false));
-				else imageList2.Images.Add(GetIcon(archive.Entries[j].Name, true));
-				ListViewItem it = listView1.Items.Add(archive.Entries[j].Name, j);
-				it.SubItems.Add(archive.Entries[j].Data.Length.ToString());
-				it.SubItems.Add(j.ToString());
-				it.ForeColor = archive.IsFileCompressed(j) ? Color.Blue : Color.Black;
+				Text = $"SADXsndSharp - Loading item " + j.ToString() + " of " + archiveFile.Entries.Count.ToString() + ", please wait...";
+				if ((view == View.LargeIcon || view == View.Tile) && !imageList1.Images.ContainsKey(archiveFile.Entries[j].Name)) 
+					imageList1.Images.Add(GetIcon(archiveFile.Entries[j].Name, false));
+				else if ((view == View.SmallIcon || view == View.Details || view == View.List) && !imageList2.Images.ContainsKey(archiveFile.Entries[j].Name))
+					imageList2.Images.Add(GetIcon(archiveFile.Entries[j].Name, true));
+				ListViewItem it = listView1.Items.Add(archiveFile.Entries[j].Name, j);
+				it.SubItems.Add((view == View.Tile ? "Size: " : "") + archiveFile.Entries[j].Data.Length.ToString());
+				it.SubItems.Add((view == View.Tile ? "Index: " : "") + j.ToString());
+				if (archiveFile is ARCXFile arcx && view == View.Details)
+				{
+					ARCXFile.ARCXEntry entry = (ARCXFile.ARCXEntry)arcx.Entries[j];
+					it.SubItems.Add(entry.Folder);
+				}
+				it.ForeColor = (archiveFile is DATFile dat && dat.IsFileCompressed(j)) ? Color.Blue : Color.Black;
 			}
 			listView1.View = view;
 			listView1.EndUpdate();
-			Text = "SADXsndSharp - " + Path.GetFileName(filename);
+			Text = "SADXsndSharp - " + Path.GetFileName(fileName);
 		}
 
 		private void largeIconsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -412,29 +593,105 @@ namespace SADXsndSharp
 
 		private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
 		{
+			if (selectedColumn == e.Column)
+			{
+				descendingOrder = !descendingOrder;
+				ascendingToolStripMenuItem.Checked = !descendingOrder;
+				descendingToolStripMenuItem.Checked = descendingOrder;
+			}
+			selectedColumn = e.Column;
+			SortListViewItems();
+		}
+
+		private void SortListViewItems()
+		{
 			lvwColumnSorter = new ListViewColumnSorter();
-			this.listView1.ListViewItemSorter = lvwColumnSorter;
+			listView1.ListViewItemSorter = lvwColumnSorter;
+			lvwColumnSorter.SortColumn = selectedColumn;
 			// Set the column number that is to be sorted; default to ascending.
-			lvwColumnSorter.SortColumn = e.Column;
-			if (descending) lvwColumnSorter.Order = SortOrder.Descending; else lvwColumnSorter.Order = SortOrder.Ascending;
+			if (descendingOrder)
+				lvwColumnSorter.Order = SortOrder.Descending;
+			else
+				lvwColumnSorter.Order = SortOrder.Ascending;
 			// Perform the sort with these new sort options.
-			this.listView1.Sort();
-			this.listView1.ListViewItemSorter = null;
+			listView1.Sort();
+			listView1.ListViewItemSorter = null;
 		}
 
 		private void ascendingToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ascendingToolStripMenuItem.Checked = true;
 			descendingToolStripMenuItem.Checked = false;
-			descending = false;
+			descendingOrder = false;
+			SortListViewItems();
 		}
 
 		private void descendingToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ascendingToolStripMenuItem.Checked = false;
 			descendingToolStripMenuItem.Checked = true;
-			descending = true;
+			descendingOrder = true;
+			SortListViewItems();
 		}
 
+		private void addFilesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			AddFiles();
+		}
+
+		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			DeleteItem();
+		}
+
+		private void buttonAdd_Click(object sender, EventArgs e)
+		{
+			AddFiles();
+		}
+
+		private void buttonRemove_Click(object sender, EventArgs e)
+		{
+			DeleteItem();
+		}
+
+		private void buttonMoveUp_Click(object sender, EventArgs e)
+		{
+			int i = GetSelectedItemID();
+			if (i == -1)
+				return;
+			MoveUp(i);
+			RefreshListView(mainView);
+			listView1.Items[i - 1].Focused = listView1.Items[i - 1].Selected = true;
+			listView1.Focus();
+			unsavedChanges = true;
+		}
+
+		private void buttonMoveDown_Click(object sender, EventArgs e)
+		{
+			int i = GetSelectedItemID();
+			if (i == -1)
+				return;
+			MoveDown(i);
+			RefreshListView(mainView);
+			listView1.Items[i + 1].Focused = listView1.Items[i + 1].Selected = true;
+			listView1.Focus();
+			unsavedChanges = true;
+		}
+
+		private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+		{
+			if (listView1.SelectedItems.Count > 0)
+			{
+				selectedItem = listView1.SelectedItems[0];
+				buttonRemove.Enabled = true;
+				buttonMoveUp.Enabled = GetSelectedItemID() > 0;
+				buttonMoveDown.Enabled = GetSelectedItemID() < archiveFile.Entries.Count - 1;
+			}
+			else
+			{
+				selectedItem = null;
+				buttonRemove.Enabled = buttonMoveUp.Enabled = buttonMoveDown.Enabled = false;
+			}
+		}
 	}
 }

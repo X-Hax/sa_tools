@@ -22,8 +22,8 @@ namespace SAModel.SAEditorCommon.SETEditing
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 		private string texture;
-		private float? xpos, ypos, zpos, xscl, yscl, zscl, defxscl, defyscl, defzscl, gnddst, addxscl, addyscl, addzscl;
-		private int? xrot, yrot, zrot;
+		private List<string> texturesmulti;
+		private float? xpos, ypos, zpos,defxscl, defyscl, defzscl, gnddst, addxscl, addyscl, addzscl;
 		private ushort? defxrot, defyrot, defzrot, addxrot, addyrot, addzrot;
 		private string rottype;
 		private string scltype;
@@ -42,6 +42,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			}
 
 			texture = data.Texture;
+			texturesmulti = data.TexturePacks;
 			xpos = data.XPos;
 			ypos = data.YPos;
 			zpos = data.ZPos;
@@ -103,7 +104,16 @@ namespace SAModel.SAEditorCommon.SETEditing
 			else
 			{
 				if (texs == null)
-					texs = ObjectHelper.GetTextures(texture, texnames, dev);
+				{
+					if (texturesmulti.Count > 0) //Necessary for SA2 SET objects
+					{
+						texs = ObjectHelper.GetTexturesMultiSource(texturesmulti, texnames, dev);
+					}
+					else
+					{
+						texs = ObjectHelper.GetTextures(texture, texnames, dev);
+					}
+				}
 				//transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
 				Vector3 addscl = new Vector3();
 				Vector3 scl = ObjectHelper.GetScale(item, addscl, scltype);

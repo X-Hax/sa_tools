@@ -1,5 +1,8 @@
-﻿using System;
+﻿using nQuant;
+using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 
 namespace VrSharp.Pvr
@@ -8,13 +11,16 @@ namespace VrSharp.Pvr
     {
         #region Fields
         private PvrCompressionCodec compressionCodec;   // Compression codec
-        #endregion
 
-        #region Texture Properties
-        /// <summary>
-        /// The texture's compression format. The default value is PvrCompressionFormat.None.
-        /// </summary>
-        public PvrCompressionFormat CompressionFormat
+		protected VQCodeBook codeBook;
+
+		#endregion
+
+		#region Texture Properties
+		/// <summary>
+		/// The texture's compression format. The default value is PvrCompressionFormat.None.
+		/// </summary>
+		public PvrCompressionFormat CompressionFormat
         {
             get
             {
@@ -186,14 +192,22 @@ namespace VrSharp.Pvr
 
             if (dataCodec.PaletteEntries != 0)
             {
-                // Convert the bitmap to an array containing indicies.
-                decodedData = BitmapToRawIndexed(decodedBitmap, dataCodec.PaletteEntries, out texturePalette);
+				// VQ encoder
+				if (dataCodec.VQ)
+				{
+					decodedData = BitmapToRawVQ(decodedBitmap, dataCodec.PaletteEntries, out texturePalette);
+				}
+				else
+				{
+					// Convert the bitmap to an array containing indices.
+					decodedData = BitmapToRawIndexed(decodedBitmap, dataCodec.PaletteEntries, out texturePalette);
 
-                // If this texture has an external palette file, set up the palette encoder
-                if (dataCodec.NeedsExternalPalette)
-                {
-                    paletteEncoder = new PvpPaletteEncoder(texturePalette, (ushort)dataCodec.PaletteEntries, pixelFormat, pixelCodec);
-                }
+					// If this texture has an external palette file, set up the palette encoder
+					if (dataCodec.NeedsExternalPalette)
+					{
+						paletteEncoder = new PvpPaletteEncoder(texturePalette, (ushort)dataCodec.PaletteEntries, pixelFormat, pixelCodec);
+					}
+				}
             }
             else
             {
@@ -300,8 +314,23 @@ namespace VrSharp.Pvr
 
                 for (int size = 1; size < textureWidth; size <<= 1)
                 {
-                    byte[] mipmapDecodedData = BitmapToRawResized(decodedBitmap, size, 1);
-                    byte[] mipmapTextureData = dataCodec.Encode(mipmapDecodedData, 0, size, size);
+					byte[] mipmapDecodedData = null;
+					if (dataCodec.PaletteEntries != 0)
+					{
+						if (dataCodec.VQ)
+						{
+							mipmapDecodedData = BitmapToRawVQResized(decodedBitmap, size, 1, codeBook);
+						}
+						else
+						{
+							mipmapDecodedData = BitmapToRawIndexedResized(decodedBitmap, size, 1, vqPalette);
+						}
+					}
+					else
+					{
+						mipmapDecodedData = BitmapToRawResized(decodedBitmap, size, 1);
+					}
+					byte[] mipmapTextureData = dataCodec.Encode(mipmapDecodedData, 0, size, size);
                     destination.Write(mipmapTextureData, 0, mipmapTextureData.Length);
                 }
             }
@@ -334,6 +363,65 @@ namespace VrSharp.Pvr
 
             return destination;
         }
-        #endregion
-    }
+		#endregion
+		#region VQ
+		protected byte[] BitmapToRawVQ(Bitmap source, int codeBookSize, out byte[][] palette)
+		{
+			Bitmap img = source;
+			byte[] destination = new byte[img.Width * img.Height];
+
+			// If this is not a 32-bit ARGB bitmap, convert it to one
+			if (img.PixelFormat != System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+			{
+				Bitmap newImage = new Bitmap(img.Width, img.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+				using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(newImage))
+				{
+					g.DrawImage(img, 0, 0, img.Width, img.Height);
+				}
+				img = newImage;
+			}
+
+			// Create code book
+			codeBook = VectorQuantizer.CreateCodebook(img, codeBookSize / 4);
+
+			// Write palette
+			palette = new byte[codeBookSize][];
+			for (int i = 0; i < codeBook.Entries.Length; i++)
+			{
+				byte[] pixels = codeBook.Entries[i].ToArray();
+				for (int j = 0; j < 4; j++)
+				{
+					int paletteIndex = i * 4 + j;
+					palette[paletteIndex] = new byte[4];
+					palette[paletteIndex][0] = pixels[j * 4]; // The order was reversed in the Shenmue modding SDK
+					palette[paletteIndex][1] = pixels[j * 4 + 1];
+					palette[paletteIndex][2] = pixels[j * 4 + 2];
+					palette[paletteIndex][3] = pixels[j * 4 + 3];
+				}
+			}
+
+			// Quantize image
+			return VectorQuantizer.QuantizeImage(img, codeBook);
+		}
+
+		protected byte[] BitmapToRawVQResized(Bitmap source, int size, int minSize, VQCodeBook codeBook)
+		{
+			if (size > minSize)
+				minSize = size;
+
+			// Resize the image
+			Bitmap img = new Bitmap(minSize, minSize, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(img))
+			{
+				using (ImageAttributes attr = new ImageAttributes())
+				{
+					attr.SetWrapMode(WrapMode.TileFlipXY);
+					g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+					g.DrawImage(source, new Rectangle(0, 0, size, size), 0, 0, source.Width, source.Height, GraphicsUnit.Pixel, attr);
+				}
+			}
+			return VectorQuantizer.QuantizeImage(img, codeBook);
+		}
+		#endregion
+	}
 }

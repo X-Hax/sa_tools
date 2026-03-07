@@ -29,10 +29,6 @@
 		<ProjectReference Include="..\Libraries\SAModel\SAModel.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Data.DataSetExtensions" />
-		<PackageReference Include="System.Text.Encoding.CodePages" />
-	</ItemGroup>
-	<ItemGroup>
 		<Compile Remove="Updater\SizeSuffix.cs" />
 	</ItemGroup>
 	<ItemGroup>

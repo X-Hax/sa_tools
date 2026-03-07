@@ -42,7 +42,7 @@ deploy:
 - provider: GitHub
   description: $(APPVEYOR_REPO_COMMIT_MESSAGE_EXTENDED)
   auth_token:
-    secure: 3U0hYOvkeEJsoN2b4U/c9RTDxjcj9txunvCbWfkg5qvOSB1qOnh4fnIE9EK5yAXi2m8RJMO4Zr/UqiVMB9CDPulfPRcJSJ83rsmh1EXBipUs4K/RQmQHaDG6UiiNQ1Xg
+    secure: WwdJ8DbEJO7DM1m+oJVoa4ZXIMQKQ2d18oUQF9RDDNZNbNzXrd+pq5NpemZIhTAWMnWFPo7TxXDNj0Ra6j9hCIG5/1by5SSerA/EwT7ZayChH3V7HZ68i/7SKgwgxLPI
   artifact: satools
   on:
     branch: master

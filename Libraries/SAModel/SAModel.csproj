@@ -9,10 +9,10 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" />
-	</ItemGroup>
 	<PropertyGroup>
 		<DebugType>embedded</DebugType>
 	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+	</ItemGroup>
 </Project>

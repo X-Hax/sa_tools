@@ -1,5 +1,4 @@
-﻿using FraGag.Compression;
-using SplitTools;
+﻿using SplitTools;
 using SAModel;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using static SAModel.SAEditorCommon.SettingsFile;
+using PSO.PRS;
 
 namespace SA2MessageFileEditor
 {
@@ -140,7 +140,7 @@ namespace SA2MessageFileEditor
 			this.filename = filename;
 			byte[] fc;
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				fc = Prs.Decompress(filename);
+				fc = PRS.Decompress(File.ReadAllBytes(filename));
 			else
 				fc = File.ReadAllBytes(filename);
 			ByteConverter.BigEndian = false;
@@ -242,7 +242,7 @@ namespace SA2MessageFileEditor
 				fc.Add(0);
 			}
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				Prs.Compress(fc.ToArray(), filename);
+				File.WriteAllBytes(filename, PRS.Compress(fc.ToArray(), 255));
 			else
 				File.WriteAllBytes(filename, fc.ToArray());
 		}

@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-// Very early support for KAT files (multimedia archives in Katana SDK)
-
 namespace ArchiveLib
 {
+	/// <summary>Archive format used in Katana SDK for storing various multimedia (incomplete implementation).</summary>
 	public class KATFile : GenericArchive
 	{
 		public override void CreateIndexFile(string path)
@@ -54,6 +53,8 @@ namespace ArchiveLib
 				wave.AddRange(data);
 				Data = wave.ToArray();
 			}
+
+			public KATArchiveEntry() { }
 		}
 
 		public KATFile(byte[] file)
@@ -72,7 +73,7 @@ namespace ArchiveLib
 				int index = ByteConverter.ToInt32(file, 4 + i * 44 + 24);
 				int bankIndex = index / 1000;
 				int sampleIndex = index % 1000;
-				Console.WriteLine("Entry size data {0} at offset {1}: size {2}", i, entryoff, size);
+				Console.WriteLine("Entry size data {0} at offset {1}: size {2}", i, entryoff.ToString("X"), size);
 				byte[] data = new byte[size];
 				Array.Copy(file, entryoff, data, 0, size);
 				Entries.Add(new KATArchiveEntry(data, i, numchannel, frequency, loop, bits, bankIndex, sampleIndex));
@@ -82,6 +83,11 @@ namespace ArchiveLib
 		public override byte[] GetBytes()
 		{
 			throw new NotImplementedException();
+		}
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new KATArchiveEntry();
 		}
 	}
 }

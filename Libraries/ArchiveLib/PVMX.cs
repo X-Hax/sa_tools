@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
+using TextureLib;
 
-// Custom texture pack format developed by SonicFreak94 for SADX Mod Loader.
 namespace ArchiveLib
 {
-    public class PVMXFile : GenericArchive
+	/// <summary>Custom texture pack format developed by SonicFreak94 for SADX Mod Loader.</summary>
+	public class PVMXFile : GenericArchive
     {
         const int FourCC = 0x584D5650; // 'PVMX'
         const byte Version = 1;
@@ -33,6 +32,9 @@ namespace ArchiveLib
             }
         }
 
+		/// <summary>Returns true if the specified byte array is a PVMX archive.</summary>
+		/// <param name="data">Byte array to analyze.</param>
+		/// <returns>True if the data is a PVMX archive.</returns>
         public static bool Identify(byte[] data)
         {
             return data.Length > 4 && BitConverter.ToInt32(data, 0) == FourCC;
@@ -46,22 +48,22 @@ namespace ArchiveLib
             if (pvmxdata[4] != 1) throw new FormatException("Incorrect PVMX archive version.");
             int off = 5;
             PVMXDictionaryField type;
-            for (type = (PVMXDictionaryField)pvmxdata[off++]; type != PVMXDictionaryField.none; type = (PVMXDictionaryField)pvmxdata[off++])
+            for (type = (PVMXDictionaryField)pvmxdata[off++]; type != PVMXDictionaryField.None; type = (PVMXDictionaryField)pvmxdata[off++])
             {
                 string name = "";
                 uint gbix = 0;
                 int width = 0;
                 int height = 0;
-                while (type != PVMXDictionaryField.none)
+                while (type != PVMXDictionaryField.None)
                 {
                     switch (type)
                     {
-                        case PVMXDictionaryField.global_index:
+                        case PVMXDictionaryField.GlobalIndex:
                             gbix = BitConverter.ToUInt32(pvmxdata, off);
                             off += sizeof(uint);
                             break;
 
-                        case PVMXDictionaryField.name:
+                        case PVMXDictionaryField.Name:
                             int count = 0;
                             while (pvmxdata[off + count] != 0)
                                 count++;
@@ -69,7 +71,7 @@ namespace ArchiveLib
                             off += count + 1;
                             break;
 
-                        case PVMXDictionaryField.dimensions:
+                        case PVMXDictionaryField.Dimensions:
                             width = BitConverter.ToInt32(pvmxdata, off);
                             off += sizeof(int);
                             height = BitConverter.ToInt32(pvmxdata, off);
@@ -96,52 +98,52 @@ namespace ArchiveLib
             Entries = new List<GenericArchiveEntry>();
         }
 
-        public void AddFile(string name, uint gbix, byte[] data, int width = 0, int height = 0)
-        {
-            Entries.Add(new PVMXEntry(name, gbix, data, width, height));
-        }
-
         public override byte[] GetBytes()
         {
             MemoryStream str = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(str);
             bw.Write(FourCC);
             bw.Write(Version);
-            List<OffData> texdata = new List<OffData>();
+            List<OffsetData> texdata = new List<OffsetData>();
             foreach (PVMXEntry tex in Entries)
             {
-                bw.Write((byte)PVMXDictionaryField.global_index);
+                bw.Write((byte)PVMXDictionaryField.GlobalIndex);
                 bw.Write(tex.GBIX);
-                bw.Write((byte)PVMXDictionaryField.name);
+                bw.Write((byte)PVMXDictionaryField.Name);
                 bw.Write(tex.Name.ToCharArray());
                 bw.Write((byte)0);
                 if (tex.HasDimensions())
                 {
-                    bw.Write((byte)PVMXDictionaryField.dimensions);
+                    bw.Write((byte)PVMXDictionaryField.Dimensions);
                     bw.Write(tex.Width);
                     bw.Write(tex.Height);
                 }
-                bw.Write((byte)PVMXDictionaryField.none);
+                bw.Write((byte)PVMXDictionaryField.None);
                 long size;
                 using (MemoryStream ms = new MemoryStream(tex.Data))
                 {
-                    texdata.Add(new OffData(str.Position, ms.ToArray()));
+                    texdata.Add(new OffsetData(str.Position, ms.ToArray()));
                     size = ms.Length;
                 }
                 bw.Write(0ul);
                 bw.Write(size);
             }
-            bw.Write((byte)PVMXDictionaryField.none);
-            foreach (OffData od in texdata)
+            bw.Write((byte)PVMXDictionaryField.None);
+            foreach (OffsetData od in texdata)
             {
                 long pos = str.Position;
-                str.Position = od.off;
+                str.Position = od.Offset;
                 bw.Write(pos);
                 str.Position = pos;
-                bw.Write(od.data);
+                bw.Write(od.Data);
             }
             return str.ToArray();
         }
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new PVMXEntry();
+		}
 
 		public class PVMXEntry : GenericArchiveEntry
 		{
@@ -160,6 +162,10 @@ namespace ArchiveLib
 				GBIX = gbix;
 			}
 
+			public PVMXEntry() { }
+
+			/// <summary>Checks whether the PVMX entry has texture dimension overrides.</summary>
+			/// <returns>True if dimensions are present.</returns>
 			public bool HasDimensions()
 			{
 				if (Width != 0 || Height != 0)
@@ -171,69 +177,37 @@ namespace ArchiveLib
 			public override Bitmap GetBitmap()
 			{
 				Bitmap bitmap;
-				uint check = BitConverter.ToUInt32(Data, 0);
-				if (check == 0x20534444) // DDS
-				{
-					PixelFormat pxformat;
-					var image = Pfim.Pfimage.FromStream(new MemoryStream(Data), new Pfim.PfimConfig());
-					switch (image.Format)
-					{
-						case Pfim.ImageFormat.Rgba32:
-							pxformat = PixelFormat.Format32bppArgb;
-							break;
-						case Pfim.ImageFormat.Rgb24:
-							pxformat = PixelFormat.Format24bppRgb;
-							break;
-						case Pfim.ImageFormat.R5g5b5:
-							pxformat = PixelFormat.Format16bppRgb555;
-							break;
-						case Pfim.ImageFormat.R5g5b5a1:
-							pxformat = PixelFormat.Format16bppArgb1555;
-							break;
-						case Pfim.ImageFormat.R5g6b5:
-							pxformat = PixelFormat.Format16bppRgb565;
-							break;
-						default:
-							throw new NotImplementedException("Unsupported DDS image format");
-					}
-					bitmap = new Bitmap(image.Width, image.Height, pxformat);
-					BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
-					Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
-					bitmap.UnlockBits(bmpData);
-				}
-				else
-					bitmap = new Bitmap(new MemoryStream(Data));
+				bitmap = new Bitmap(GenericTexture.LoadTexture(Data).Image);
 				return bitmap;
 			}
 		}
 
-        struct OffData
+		/// <summary>PVMX entry data.</summary>
+		private class OffsetData
         {
-            public long off;
-            public byte[] data;
+			/// <summary>Entry data.</summary>
+			public byte[] Data;
+			/// <summary>Location of the data.</summary>
+			public long Offset;
 
-            public OffData(long o, byte[] d)
-            {
-                off = o;
-                data = d;
-            }
-        }
+			public OffsetData(long o, byte[] d)
+			{
+				Offset = o;
+				Data = d;
+			}
+		}
 
-        enum PVMXDictionaryField : byte
+		/// <summary>Type of PVMX dictionary data in PVMX entry table.</summary>
+		enum PVMXDictionaryField : byte
         {
-            none,
-            /// <summary>
-            /// 32-bit integer global index
-            /// </summary>
-            global_index,
-            /// <summary>
-            /// Null-terminated file name
-            /// </summary>
-            name,
-            /// <summary>
-            /// Two 32-bit integers defining width and height
-            /// </summary>
-            dimensions,
+			/// <summary>Entry has no metadata.</summary>
+			None,
+            /// <summary>Field is a Global Index.</summary>
+            GlobalIndex,
+			/// <summary>Field is a null-terminated filename.</summary>
+			Name,
+			/// <summary>Field is two 32-bit unsigned integers defining texture dimensions.</summary>
+			Dimensions,
         }
     }
 }

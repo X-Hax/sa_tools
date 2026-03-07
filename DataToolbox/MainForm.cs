@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools;
 using Newtonsoft.Json;
+using PSO.PRS;
 
 namespace SAModel.DataToolbox
 {
@@ -367,7 +368,7 @@ namespace SAModel.DataToolbox
 			if (File.Exists(textBoxBinaryFilename.Text))
 			{
 				file = File.ReadAllBytes(textBoxBinaryFilename.Text);
-				if (Path.GetExtension(textBoxBinaryFilename.Text).Equals(".prs", StringComparison.OrdinalIgnoreCase)) file = FraGag.Compression.Prs.Decompress(file);
+				if (Path.GetExtension(textBoxBinaryFilename.Text).Equals(".prs", StringComparison.OrdinalIgnoreCase)) file = PRS.Decompress(file);
 				buttonBinaryExtract.Enabled = true;
 				uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
 				if (!baseaddr.HasValue)
@@ -978,7 +979,7 @@ namespace SAModel.DataToolbox
 				numericUpDownEndAddr.Value = fi.Length - numericUpDownOffset.Value;
 				if (Path.GetExtension(textBoxInputFile.Text).ToLowerInvariant() == ".prs")
 				{
-					numericUpDownEndAddr.Value = FraGag.Compression.Prs.Decompress(File.ReadAllBytes(textBoxInputFile.Text)).Length;
+					numericUpDownEndAddr.Value = PRS.Decompress(File.ReadAllBytes(textBoxInputFile.Text)).Length;
 				}
 				numericUpDownScanBinaryKey.Value = CheckBinaryFile(textBoxInputFile.Text);
 				if (string.IsNullOrEmpty(textBoxOutputFolder.Text))

@@ -11,13 +11,11 @@
 		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\SplitTools\SplitTools.csproj" />
-		<ProjectReference Include="..\SAModel\SAModel.csproj" />
-		<ProjectReference Include="..\VrSharp\VrSharp.csproj" />
+	  <PackageReference Include="AuroraLib.Compression-Extended" Version="1.1.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="AuroraLib.Compression" />
-		<PackageReference Include="Pfim" />
-		<PackageReference Include="System.Text.Encoding.CodePages" />
+		<ProjectReference Include="..\SplitTools\SplitTools.csproj" />
+		<ProjectReference Include="..\SAModel\SAModel.csproj" />
+		<ProjectReference Include="..\TextureLib\TextureLib.csproj" />
 	</ItemGroup>
 </Project>

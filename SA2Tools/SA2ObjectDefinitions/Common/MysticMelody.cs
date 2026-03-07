@@ -23,7 +23,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -36,7 +36,7 @@ namespace SA2ObjectDefinitions.Common
 				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
@@ -49,7 +49,7 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -59,7 +59,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
@@ -68,7 +68,7 @@ namespace SA2ObjectDefinitions.Common
 			Matrix matrix = Matrix.Identity;
 
 			MatrixFunctions.Translate(ref matrix, item.Position);
-			MatrixFunctions.RotateObject(ref matrix, item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			MatrixFunctions.RotateObject(ref matrix, 0, item.Rotation.Y - 0x8000, item.Rotation.Z);
 
 			return matrix;
 		}
@@ -79,6 +79,12 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
+
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Shrine ID", typeof(float), "Extended", null, null, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v),
+		};
+
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 
 		public override float DefaultXScale { get { return 0; } }
 
@@ -119,7 +125,22 @@ namespace SA2ObjectDefinitions.Common
 			meshes = ObjectHelper.GetMeshes(model);
 			texarr = NJS_TEXLIST.Load("object/tls/KDDOOR.satex");
 		}
-		
-		public override string Name { get { return "Mystic Melody Door"; } }
+
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Shrine ID", typeof(byte), "Extended", null, null, (o) => o.Rotation.X & 0xFF,
+			(o, v) => { o.Rotation.X &= 0xFF00; o.Rotation.X |= (byte)v; }),
+			new PropertySpec("Door Orientation (Debug)", typeof(MysticDoorOpen), "Extended", null, null, (o) => (MysticDoorOpen)(o.Rotation.X >> 8),
+			(o, v) => { o.Rotation.X &= 0xFF; o.Rotation.X |= (byte)v << 8; }),
+		};
+
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+		public override string Name { get { return "Mystic Melody Door (Vertical)"; } }
+		public enum MysticDoorOpen : byte
+		{
+			Upward,
+			LeftToRight,
+			Upward2,
+			RightToLeft
+		}
 	}
 }

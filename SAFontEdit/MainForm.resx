@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
   <!--
-    Microsoft ResX Schema 
+    Microsoft ResX Schema
 
     Version 2.0
 
@@ -48,7 +48,7 @@
     value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
     value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
@@ -124,9 +124,8 @@
   <data name="characterTileControl1.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vAAADrwBlbxySQAAAGVJREFUOE99zEEKxDAMBEE/x///YFYXLR0oYqiLmPaZ93y5936ajcOlqGbjcCmq
-        2Thcimo2Dpeimo3Dpahm43Apqtk4XIrq6Fj69EVRMSpFxagUFaNSVIxKUTEqRcWoFBWjv/P8AKDyOxAm
-        PdUeAAAAAElFTkSuQmCC
+        vAAADrwBlbxySQAAAEJJREFUOE/tzKENADAMA0GPk/0XbPlZCi4oOGLpnSRnMzOrGMhA/+CJAwd5WAxU
+        gQxUgQxUgQxUgQxUgQxUgQxUAS6g8jsQogqAhgAAAABJRU5ErkJggg==
 </value>
   </data>
   <metadata name="errorProvider1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

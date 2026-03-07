@@ -203,7 +203,7 @@ namespace buildSATools
 					foreach (FileInfo devfile in devf)
 					{
 						string f = devfile.FullName.ToLowerInvariant();
-						if (f.Contains("dev.json") || f.Contains("freebsd") || f.Contains("linux") || f.Contains("osx") || f.Contains("unix") || f.Contains("arm64") || f.Contains("ios") || f.Contains("solaris") || f.Contains("tvos") || f.Contains("illumos"))
+						if (f.Contains("dev.json") || f.Contains("freebsd") || f.Contains("linux") || f.Contains("osx") || f.Contains("unix") || f.Contains("arm64") || (f.Contains("ios") && !f.Contains("terios")) || f.Contains("solaris") || f.Contains("tvos") || f.Contains("illumos"))
 							File.Delete(devfile.FullName);
 						else if (Environment.Is64BitProcess && f.Contains("win-x86"))
 							File.Delete(devfile.FullName);

@@ -47,13 +47,25 @@ namespace SAModel.SAEditorCommon
 		public string TextureList { get; set; }
 		public float Height { get; set; }
 		public string StartPositions { get; set; }
+		public string EndPositions { get; set; }
+		public string AltEndPositions { get; set; }
+		public string MultiplayerIntroPositions { get; set; }
 	}
 
 	public class IniLevelData
 	{
 		public string LevelGeometry { get; set; }
+		[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+		public List<string> SecondaryGeometry { get; set; }
+		public string LevelTexlist { get; set; }
+		[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+		public List<string> SecondaryTexlists { get; set; }
+		[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+		public List<string> SecondaryTextures { get; set; }
 		[DefaultValue("0000")]
 		public string LevelID { get; set; }
+		[DefaultValue("Sonic")]
+		public string DefaultCharacter { get; set; }
 		public string SETName { get; set; }
 		[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
 		public string[] Textures { get; set; }
@@ -64,6 +76,8 @@ namespace SAModel.SAEditorCommon
 		public string Effects { get; set; }
 		public string BackgroundTextureList { get; set; }
 		public string SA2Paths { get; set; }
+		[DefaultValue("Normal")]
+		public string SA2LevelType { get; set; }
 		public string ObjectDefinition { get; set; }
 	}
 }

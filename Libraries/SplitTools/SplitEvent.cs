@@ -1,5 +1,5 @@
-﻿using FraGag.Compression;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using PSO.PRS;
 using SAModel;
 using System;
 using System.Collections.Generic;
@@ -52,7 +52,7 @@ namespace SplitTools.SAArc
 				
 				if (Path.GetExtension(eventFilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					fc = Prs.Decompress(eventFilename);
+					fc = PRS.Decompress(File.ReadAllBytes(eventFilename));
 				}
 				else
 				{
@@ -61,7 +61,7 @@ namespace SplitTools.SAArc
 
 				if (Path.GetExtension(eventFilename).Equals(".bin", StringComparison.OrdinalIgnoreCase) && fc[0] == 0x0F && fc[1] == 0x81)
 				{
-					fc = Prs.Decompress(eventFilename);
+					fc = PRS.Decompress(File.ReadAllBytes(eventFilename));
 				}
 
 				EventIniData ini = new() { Name = Path.GetFileNameWithoutExtension(eventFilename) };
@@ -111,7 +111,6 @@ namespace SplitTools.SAArc
 
 				// These are for establishing a Motions dictionary for non-Battle files to facilitiate converting between game versions
 				var m = 1;
-				Dictionary<int, string> dctogcmotions = null;
 
 				if (fc[0] == 0x81)
 				{
@@ -789,17 +788,17 @@ namespace SplitTools.SAArc
 									var cnt = ByteConverter.ToInt32(fc, ptr2 + 8);
 									for (var i = 0; i < cnt; i++)
 									{
-										big.Motions.Add([GetMotion(fc, ptr3, key, $"Scene {gn}/Big Motion {i + 1}a.saanim", motions, anicnt, $"{evname} Scene {gn} Big Motion {i + 1}A"), GetMotion(fc, ptr3 + 4, key, $"Scene {gn}\\Big Motion {i + 1}b.saanim", motions, anicnt, $"{evname} Scene {gn} Big Motion {i + 1}B")
+										big.Motions.Add([GetMotion(fc, ptr3, key, $"Scene {gn}\\Big Motion {i + 1}.saanim", motions, anicnt, $"{evname} Scene {gn} Big Motion {i + 1}"), GetMotion(fc, ptr3 + 4, key, $"Scene {gn}\\Big Shape Motion {i + 1}.saanim", motions, anicnt, $"{evname} Scene {gn} Big Shape Motion {i + 1}")
 										]);
 										// add metadata to animations found in motion.bin files
 										if (battle)
 										{
 											var ptr4 = fc.GetPointer(ptr3 + 4, key);
-											motionFiles[big.Motions[i][0]].Description = $"{evname} Scene {gn} Big Motion {i + 1}A";
+											motionFiles[big.Motions[i][0]].Description = $"{evname} Scene {gn} Big Motion {i + 1}";
 											modelFiles[big.Model].Motions.Add("../" + motionFiles[big.Motions[i][0]].Filename);
 											if (ptr4 != 0)
 											{
-												motionFiles[big.Motions[i][1]].Description = $"{evname} Scene {gn} Big Motion {i + 1}B";
+												motionFiles[big.Motions[i][1]].Description = $"{evname} Scene {gn} Big Shape Motion {i + 1}";
 												modelFiles[big.Model].Motions.Add("../" + motionFiles[big.Motions[i][1]].Filename);
 											}
 
@@ -1216,7 +1215,7 @@ namespace SplitTools.SAArc
 				byte[] fc;
 				if (Path.GetExtension(evfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					fc = Prs.Decompress(evfilename);
+					fc = PRS.Decompress(File.ReadAllBytes(evfilename));
 				}
 				else
 				{
@@ -2495,11 +2494,7 @@ namespace SplitTools.SAArc
 				}
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					FraGag.Compression.Prs.Compress(evfile.ToArray(), filename);
-					if (!File.Exists(filename))
-					{
-						File.Create(filename);
-					}
+					File.WriteAllBytes(filename, PRS.Compress(evfile.ToArray(), 255));
 				}
 				else
 				{
@@ -2590,11 +2585,7 @@ namespace SplitTools.SAArc
 				}
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					FraGag.Compression.Prs.Compress(evfile.ToArray(), filename);
-					if (!File.Exists(filename))
-					{
-						File.Create(filename);
-					}
+					File.WriteAllBytes(filename, PRS.Compress(evfile.ToArray(), 255));
 				}
 				else
 				{

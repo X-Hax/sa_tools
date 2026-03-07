@@ -10,9 +10,13 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86;x64</Platforms>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 	</PropertyGroup>
 	<ItemGroup>
 		<Content Include="icon_dxSndSharp.ico" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="VGAudio-fork" Version="2.3.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Libraries\ArchiveLib\ArchiveLib.csproj" />

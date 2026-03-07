@@ -50,8 +50,12 @@ namespace ArchiveTool
                 case "-prs":
                     CompressPRS(args);
                     return;
-                // Create PVM from a texture pack
-                case "-pvm":
+				// Decompress PRS
+				case "-uprs":
+					DecompressPRS(args);
+					return;
+				// Create PVM from a texture pack
+				case "-pvm":
                     TexPack2PVM(args);
                     break;
                 #endregion

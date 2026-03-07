@@ -2,15 +2,25 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using VrSharp.Pvr;
+using TextureLib;
 using static ArchiveLib.GenericArchive;
 
-// Headerless PVMs from Sonic Adventure (Dreamcast).
 namespace ArchiveLib
 {
-    public class PBFile : GenericArchive
+	/// <summary>Headerless PVMs used in Sonic Adventure (Dreamcast) and Rez (Dreamcast).</summary>
+	public class PBFile : GenericArchive
     {
-        public override void CreateIndexFile(string path)
+		/// <summary>Checks whether the specified byte array is a PB archive.</summary>
+		/// <param name="data">Byte array to analyze.</param>
+		/// <returns>True if the byte array is a PB archive.</returns>
+		public static bool Identify(byte[] data)
+		{
+			if (data == null || data.Length < 4)
+				return false;
+			return (BitConverter.ToUInt32(data, 0) == 0x02425650);
+		}
+
+		public override void CreateIndexFile(string path)
         {
             using (TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
             {
@@ -22,13 +32,6 @@ namespace ArchiveLib
                 texList.Close();
             }
         }
-
-		public static bool Identify(byte[] data)
-		{
-			if (data == null || data.Length < 4)
-				return false;
-			return (BitConverter.ToUInt32(data, 0) == 0x02425650);
-		}
 
 		public PBFile(byte[] pbdata)
 		{
@@ -76,7 +79,6 @@ namespace ArchiveLib
             return offset_base;
         }
 
-
         public override byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
@@ -98,27 +100,42 @@ namespace ArchiveLib
             return result.ToArray();
         }
 
+		/// <summary>Creates a PVM archive from the PB archive.</summary>
+		/// <returns>PVM archive.</returns>
 		public PuyoFile GetPVM()
 		{
 			PuyoFile pvm = new PuyoFile(PuyoArchiveType.PVMFile);
-			pvm.hasNameData = false;
+			pvm.HasNameData = false;
 			foreach (PBEntry entry in Entries)
 			{
 				pvm.Entries.Add(new PVMEntry(entry.Data, entry.Name));
 			}
 			return pvm;
 		}
-    }
+
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new PBEntry();
+		}
+	}
 
     public class PBEntry : GenericArchiveEntry
     {
+		/// <summary>PVR texture's headerless data offset.</summary>
         public int Offset { get; set; }
-        public PvrPixelFormat PixelFormat { get; set; }
-        public PvrDataFormat DataFormat { get; set; }
-        public uint GBIX { get; set; }
-        public ushort Width { get; set; }
-        public ushort Height { get; set; }
+		/// <summary>PVR texture's pixel format.</summary>
+		public PvrPixelFormat PixelFormat { get; set; }
+		/// <summary>PVR texture's data format.</summary>
+		public PvrDataFormat DataFormat { get; set; }
+		/// <summary>PVR texture's global index.</summary>
+		public uint GBIX { get; set; }
+		/// <summary>PVR texture's width.</summary>
+		public ushort Width { get; set; }
+		/// <summary>PVR texture's height.</summary>
+		public ushort Height { get; set; }
 
+		/// <summary>Gets the full PVRT header of the specified PB entry.</summary>
+		/// <returns>PVRT header as a byte array.</returns>
         public byte[] GetHeader()
         {
             List<byte> result = new List<byte>();
@@ -133,7 +150,9 @@ namespace ArchiveLib
             return result.ToArray();
         }
 
-        public byte[] GetHeaderless()
+		/// <summary>Gets the data of the specified PB entry.</summary>
+		/// <returns>Headerless texture as a byte array.</returns>
+		public byte[] GetHeaderless()
         {
             int length = BitConverter.ToInt32(Data, 20) - 8;
             byte[] result = new byte[length];
@@ -157,11 +176,11 @@ namespace ArchiveLib
 			Data = pvrdata;
 			PvrTexture pvrt = new PvrTexture(Data);
 			Offset = offset;
-			PixelFormat = pvrt.PixelFormat;
-			DataFormat = pvrt.DataFormat;
-			GBIX = pvrt.GlobalIndex;
-			Width = pvrt.TextureWidth;
-			Height = pvrt.TextureHeight;
+			PixelFormat = pvrt.PvrPixelFormat;
+			DataFormat = pvrt.PvrDataFormat;
+			GBIX = pvrt.Gbix;
+			Width = (ushort)pvrt.Width;
+			Height = (ushort)pvrt.Height;
 		}
 
 		public PBEntry(string filename, int offset)
@@ -170,11 +189,11 @@ namespace ArchiveLib
             PvrTexture pvrt = new PvrTexture(Data);
             Name = Path.GetFileNameWithoutExtension(filename);
             Offset = offset;
-            PixelFormat = pvrt.PixelFormat;
-            DataFormat = pvrt.DataFormat;
-            GBIX = pvrt.GlobalIndex;
-            Width = pvrt.TextureWidth;
-            Height = pvrt.TextureHeight;
+            PixelFormat = pvrt.PvrPixelFormat;
+            DataFormat = pvrt.PvrDataFormat;
+            GBIX = pvrt.Gbix;
+            Width = (ushort)pvrt.Width;
+            Height = (ushort)pvrt.Height;
         }
 
         public PBEntry(int offset, PvrPixelFormat pxformat, PvrDataFormat dataformat, uint gbix, ushort width, ushort height)
@@ -187,28 +206,20 @@ namespace ArchiveLib
             Height = height;
         }
 
-        public override Bitmap GetBitmap()
+		public PBEntry() { }
+
+		public override Bitmap GetBitmap()
         {
-            return new PvrTexture(Data).ToBitmap();
+            return new PvrTexture(Data).Image;
         }
 
+		/// <summary>Converts a PB entry to a texture with a complete PVRT header.</summary>
+		/// <param name="data">Byte array of the PB entry.</param>
+		/// <returns>PVR texture as a byte array.</returns>
         public byte[] GetPVR(byte[] data)
         {
             List<byte> result = new List<byte>();
             int chunksize_file = data.Length;
-			// The PVM reader in Puyo Tools crashed when chunk size and file size weren't divisible by 16.
-			// The code below was used to circumvent the crash by adding extra bytes to texture data.
-			// However, this caused rebuilt PB files to not be byte identical to originals.
-			// Since ArchiveLib has its own PVM reader that doesn't crash, this code is now disabled.
-			// Make chunk size divisible by 16
-			/*if (chunksize_file % 16 != 0)
-            {
-                do
-                {
-                    chunksize_file++;
-                }
-                while (chunksize_file % 16 != 0);
-            }*/
 			byte[] gbixheader = { 0x47, 0x42, 0x49, 0x58 };
             byte[] pvrtheader = { 0x50, 0x56, 0x52, 0x54 };
             byte[] padding = { 0x20, 0x20, 0x20, 0x20 };
@@ -225,16 +236,6 @@ namespace ArchiveLib
             result.AddRange(BitConverter.GetBytes(Width));
             result.AddRange(BitConverter.GetBytes(Height));
             result.AddRange(data);
-			// Make file size divisible by 16
-			/*
-			if (result.Count % 16 != 0)
-            {
-                do
-                {
-                    result.Add(0);
-                }
-                while (result.Count % 16 != 0);
-            }*/
 			return result.ToArray();
         }
     }

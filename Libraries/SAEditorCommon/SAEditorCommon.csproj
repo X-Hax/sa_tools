@@ -10,7 +10,11 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86;x64</Platforms>
+      	<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="AssimpNet" Version="4.1.0" />
+	</ItemGroup>
 	<ItemGroup>
 		<Compile Update="UI\ChunkModelBlendAlphaDataEditor.cs">
 		  <SubType>Form</SubType>
@@ -57,10 +61,5 @@
 		<ProjectReference Include="..\SAModel.Direct3D\SAModel.Direct3D.csproj" />
 		<ProjectReference Include="..\SAModel\SAModel.csproj" />
 		<ProjectReference Include="..\SplitTools\SplitTools.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="AssimpNet" />
-		<PackageReference Include="SharpDX.Direct3D9" />
-		<PackageReference Include="SharpDX.Mathematics" />
 	</ItemGroup>
 </Project>

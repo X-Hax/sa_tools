@@ -23,7 +23,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, 0);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -36,7 +36,7 @@ namespace SA2ObjectDefinitions.Common
 				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, 0);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
@@ -49,7 +49,7 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, 0);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -59,7 +59,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, 0);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
@@ -68,7 +68,7 @@ namespace SA2ObjectDefinitions.Common
 			Matrix matrix = Matrix.Identity;
 
 			MatrixFunctions.Translate(ref matrix, item.Position);
-			MatrixFunctions.RotateObject(ref matrix, item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			MatrixFunctions.RotateObject(ref matrix, 0, item.Rotation.Y - 0x8000, 0);
 
 			return matrix;
 		}

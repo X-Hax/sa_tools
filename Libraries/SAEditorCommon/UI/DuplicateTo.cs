@@ -104,32 +104,32 @@ namespace SAModel.SAEditorCommon.UI
 
 					if (sonicCheckBox.Checked)
 					{
-						LevelData.AddSETItem(0, new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(0, new SETItem(itemConv.SETFileName, itemConv.GetBytes(), 0, items));
 					}
 
 					if (tailsCheckBox.Checked)
 					{
-						LevelData.AddSETItem(1, new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(1, new SETItem(itemConv.SETFileName, itemConv.GetBytes(), 0, items));
 					}
 
 					if (knucklesCheckBox.Checked)
 					{
-						LevelData.AddSETItem(2, new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(2, new SETItem(itemConv.SETFileName, itemConv.GetBytes(), 0, items));
 					}
 
 					if (amyCheckBox.Checked)
 					{
-						LevelData.AddSETItem(3, new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(3, new SETItem(itemConv.SETFileName, itemConv.GetBytes(), 0, items));
 					}
 
 					if (gammaCheckBox.Checked)
 					{
-						LevelData.AddSETItem(4, new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(4, new SETItem(itemConv.SETFileName, itemConv.GetBytes(), 0, items));
 					}
 
 					if (bigCheckBox.Checked)
 					{
-						LevelData.AddSETItem(5, new SETItem(itemConv.GetBytes(), 0, items));
+						LevelData.AddSETItem(5, new SETItem(itemConv.SETFileName, itemConv.GetBytes(), 0, items));
 					}
 				}
 				else if (item is CAMItem)

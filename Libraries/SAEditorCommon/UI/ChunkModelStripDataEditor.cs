@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -32,11 +34,14 @@ namespace SAModel.SAEditorCommon.UI
 			BuildUVDataList();
 			SetStripUserFlags();
 		}
-		private void BuildStripSetList(PolyChunk poly)
+		private void BuildStripSetList(PolyChunk poly, bool edited = false, PolyChunkStrip.Strip[] newpoly = null)
 		{
 			stripSetComboBox.Items.Clear();
 			PolyChunkStrip pcs = (PolyChunkStrip)poly;
-			PolyStripCollection = pcs.Strips.ToArray();
+			if (edited)
+				PolyStripCollection = newpoly;
+			else
+				PolyStripCollection = pcs.Strips.ToArray();
 			string stripwinding = "";
 			string stripcount = "";
 			for (int i = 0; i < PolyStripCollection.Length; i++)
@@ -66,17 +71,34 @@ namespace SAModel.SAEditorCommon.UI
 			// Setting flags
 			ignoreAmbiCheck.Checked = pcs.IgnoreAmbient;
 			ignoreSpecCheck.Checked = pcs.IgnoreSpecular;
-			useAlphaCheck.Checked = pcs.UseAlpha;
+			useAlphaCheck.Checked = pcs.UseAlpha || pcs.NoAlphaTest;
 			envMapCheck.Checked = pcs.EnvironmentMapping;
 			doubleSideCheck.Checked = pcs.DoubleSide;
 			flatShadeCheck.Checked = pcs.FlatShading;
 			ignoreLightCheck.Checked = pcs.IgnoreLight;
 			userFlagsNumericUpDown.Value = pcs.UserFlags;
-			noAlphaTestCheck.Checked = pcs.NoAlphaTest;
-			//DisplayFlags(index);
+			if (useAlphaCheck.Checked)
+			{
+				if (pcs.UseAlpha && pcs.NoAlphaTest)
+					exAlphaSettingComboBox.SelectedIndex = 2;
+				else if (pcs.NoAlphaTest)
+					exAlphaSettingComboBox.SelectedIndex = 1;
+				else
+					exAlphaSettingComboBox.SelectedIndex = 0;
+			}
+			else
+			{
+				exAlphaSettingComboBox.Enabled = false;
+				exAlphaLabel.Enabled = false;
+			}
+				//DisplayFlags(index);
 
-			// Material list controls
-			resetButton.Enabled = true;
+				// Material list controls
+				resetButton.Enabled = true;
+			if (pcs.Strips.Count == 1)
+				deleteSelectedUVButton.Enabled = false;
+			else
+				deleteSelectedUVButton.Enabled = true;
 		}
 		private void RaiseFormUpdated()
 		{
@@ -131,7 +153,7 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				ListViewItem newstrip = new ListViewItem(i.ToString());
 				newstrip.SubItems.Add(PolyStrip.Indexes[i].ToString());
-				if (hasUVs)
+				if (hasUVs && PolyStrip.UVs != null)
 					newstrip.SubItems.Add(PolyStrip.UVs[i].ToStruct());
 				else
 					newstrip.SubItems.Add("N/A");
@@ -179,27 +201,43 @@ namespace SAModel.SAEditorCommon.UI
 		private void checkSettingsOnClose()
 		{
 			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
-			pcs.UseAlpha = useAlphaCheck.Checked;
 			pcs.EnvironmentMapping = envMapCheck.Checked;
 			pcs.DoubleSide = doubleSideCheck.Checked;
 			pcs.FlatShading = flatShadeCheck.Checked;
 			pcs.IgnoreLight = ignoreLightCheck.Checked;
 			pcs.IgnoreAmbient = ignoreAmbiCheck.Checked;
 			pcs.IgnoreSpecular = ignoreSpecCheck.Checked;
-			pcs.NoAlphaTest = noAlphaTestCheck.Checked;
+			pcs.CMDEStrips = PolyStripCollection.ToList();
+			if (!exAlphaSettingComboBox.Enabled)
+			{
+				pcs.NoAlphaTest = false;
+				pcs.UseAlpha = false;
+			}
+			else
+			{
+				switch (exAlphaSettingComboBox.SelectedIndex)
+				{
+					case 0:
+					default:
+						pcs.UseAlpha = true;
+						pcs.NoAlphaTest = false;
+						break;
+					case 1:
+						pcs.NoAlphaTest = true;
+						pcs.UseAlpha = false;
+						break;
+					case 2:
+						pcs.NoAlphaTest = true;
+						pcs.UseAlpha = true;
+						break;
+				}
+			}
 		}
 
 		private void ignoreAmbiCheck_Click(object sender, EventArgs e)
 		{
 			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
 			pcs.IgnoreAmbient = ignoreAmbiCheck.Checked;
-			RaiseFormUpdated();
-		}
-
-		private void noAlphaTestCheck_Click(object sender, EventArgs e)
-		{
-			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
-			pcs.NoAlphaTest = noAlphaTestCheck.Checked;
 			RaiseFormUpdated();
 		}
 
@@ -213,13 +251,10 @@ namespace SAModel.SAEditorCommon.UI
 		private void useAlphaCheck_Click(object sender, EventArgs e)
 		{
 			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
-			pcs.UseAlpha = useAlphaCheck.Checked;
-			RaiseFormUpdated();
-		}
-
-		private void useTextureCheck_Click(object sender, EventArgs e)
-		{
-			//materials[comboMaterial.SelectedIndex].UseTexture = useTextureCheck.Checked;
+			exAlphaSettingComboBox.Enabled = useAlphaCheck.Checked;
+			exAlphaLabel.Enabled = useAlphaCheck.Checked;
+			if (exAlphaSettingComboBox.SelectedIndex == -1 && useAlphaCheck.Checked)
+				exAlphaSettingComboBox.SelectedIndex = 0;
 			RaiseFormUpdated();
 		}
 
@@ -263,6 +298,9 @@ namespace SAModel.SAEditorCommon.UI
 		private void resetButton_Click(object sender, EventArgs e)
 		{
 			SetControls(PolyDataOriginal);
+			((PolyChunkStrip)PolyData).CMDEStrips.Clear();
+			foreach (PolyChunkStrip.Strip strip in ((PolyChunkStrip)PolyDataOriginal).CMDEStrips)
+				((PolyChunkStrip)PolyData).CMDEStrips.Add(strip);
 			BuildStripSetList(PolyDataOriginal);
 			stripSetComboBox.SelectedIndex = 0;
 			RaiseFormUpdated();
@@ -275,9 +313,10 @@ namespace SAModel.SAEditorCommon.UI
 			if (index == -1)
 				return;
 			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
-			PolyChunkStrip.Strip[] strips = pcs.Strips.ToArray();
+			PolyChunkStrip.Strip[] stripsoriginal = pcs.Strips.ToArray();
+			PolyChunkStrip.Strip[] strips = PolyStripCollection.ToArray();
 			PolyStrip = strips[index].Clone();
-			PolyStripOriginal = strips[index].Clone();
+			PolyStripOriginal = stripsoriginal[index].Clone();
 			BuildUVDataList();
 			SetStripUserFlags();
 		}
@@ -312,6 +351,55 @@ namespace SAModel.SAEditorCommon.UI
 			PolyStripCollection[index].CMDEReversed = PolyStripCollectionOriginal[index].Reversed;
 			BuildStripSetList(PolyData);
 			stripSetComboBox.SelectedIndex = index;
+		}
+
+		private void deleteSelectedUVButton_Click(object sender, EventArgs e)
+		{
+			int index = stripSetComboBox.SelectedIndex;
+			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
+			List<PolyChunkStrip.Strip> stripcol = [];
+			stripcol = PolyStripCollection.ToList();
+			stripcol.RemoveAt(index);
+			PolyStripCollection = stripcol.ToArray();
+			BuildStripSetList(PolyData, true, PolyStripCollection);
+			stripSetComboBox.SelectedIndex = Math.Max(0, index - 1);
+			pcs.CMDEStrips = stripcol;
+			if (stripcol.Count == 1)
+				deleteSelectedUVButton.Enabled = false;
+		}
+
+		private void deleteAllUVButton_Click(object sender, EventArgs e)
+		{
+			for (int i = 0; i < PolyStripCollectionOriginal.Length; i++)
+				PolyStripCollection[i].CMDEUVs = null;
+			BuildStripSetList(PolyData);
+			PolyData.CMDEType = ChunkType.Strip_Strip;
+			stripSetComboBox.SelectedIndex = 0;
+		}
+
+		private void exAlphaSettingComboBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			int index = stripSetComboBox.SelectedIndex;
+			if (index == -1)
+				return;
+			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
+			switch (index)
+			{
+				case 0:
+				default:
+					pcs.UseAlpha = true;
+					pcs.NoAlphaTest = false;
+					break;
+				case 1:
+					pcs.UseAlpha = false;
+					pcs.NoAlphaTest = true;
+					break;
+				case 2:
+					pcs.UseAlpha = true;
+					pcs.NoAlphaTest = true;
+					break;
+			}
+			RaiseFormUpdated();
 		}
 	}
 }

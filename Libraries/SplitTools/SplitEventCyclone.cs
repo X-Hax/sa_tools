@@ -1,5 +1,5 @@
-﻿using FraGag.Compression;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using PSO.PRS;
 using SAModel;
 using System;
 using System.Collections.Generic;
@@ -48,7 +48,7 @@ namespace SplitTools.SAArc
 				byte[] fc;
 				if (Path.GetExtension(evfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					fc = Prs.Decompress(evfilename);
+					fc = PRS.Decompress(File.ReadAllBytes(evfilename));
 				}
 				else
 				{
@@ -57,7 +57,7 @@ namespace SplitTools.SAArc
 
 				if (Path.GetExtension(evfilename).Equals(".bin", StringComparison.OrdinalIgnoreCase) && fc[0] == 0x0F && fc[1] == 0x81)
 				{
-					fc = Prs.Decompress(evfilename);
+					fc = PRS.Decompress(File.ReadAllBytes(evfilename));
 				}
 
 				EventCycloneIniData ini = new EventCycloneIniData() { Name = Path.GetFileNameWithoutExtension(evfilename) };
@@ -339,7 +339,7 @@ namespace SplitTools.SAArc
 
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{ 
-					FraGag.Compression.Prs.Compress(evfile.ToArray(), filename);
+					File.WriteAllBytes(filename, PRS.Compress(evfile.ToArray(), 255));
 					if (!File.Exists(filename))
 					{
 						File.Create(filename);

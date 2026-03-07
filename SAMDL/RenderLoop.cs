@@ -5,6 +5,9 @@ using System.Runtime.InteropServices;
 
 namespace SAModel.SAMDL
 {
+	// The line below prevents Windows Forms Designer from opening on this .cs file
+	[System.ComponentModel.DesignerCategory("")] partial class FormViewBlocker { }
+
 	public partial class MainForm
 	{
 		SAModel.SAEditorCommon.HiResTimer AnimationTimer;

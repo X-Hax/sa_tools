@@ -678,10 +678,6 @@
 		private System.Windows.Forms.Button buttonMoveTMeshDown;
 		private System.Windows.Forms.ListView listViewOMeshes;
 		private System.Windows.Forms.ColumnHeader columnHeaderIndex;
-		private System.Windows.Forms.ColumnHeader columnHeaderUV;
-		private System.Windows.Forms.ColumnHeader columnHeaderVcolor;
-		private System.Windows.Forms.ColumnHeader columnHeaderPolynormals;
-		private System.Windows.Forms.ColumnHeader columnHeaderMatID;
 		private System.Windows.Forms.ColumnHeader columnHeaderEntries;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelInfo;
@@ -706,7 +702,6 @@
 		private System.Windows.Forms.Label labelR;
 		private System.Windows.Forms.TextBox textBoxTPolyName;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.ColumnHeader columnHeaderPoly;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStripParamEdit;
 		private System.Windows.Forms.TextBox textBoxObjectName;
 		private System.Windows.Forms.Label label7;
@@ -721,8 +716,6 @@
 		private System.Windows.Forms.ColumnHeader columnHeader4;
 		private System.Windows.Forms.ColumnHeader columnHeader5;
 		private System.Windows.Forms.ColumnHeader columnHeader6;
-		private System.Windows.Forms.ColumnHeader columnHeader7;
-		private System.Windows.Forms.ColumnHeader columnHeader8;
 		private System.Windows.Forms.GroupBox groupBoxTrans;
 		private System.Windows.Forms.GroupBox groupBoxOpaque;
 		private System.Windows.Forms.ListView listViewTMeshes;

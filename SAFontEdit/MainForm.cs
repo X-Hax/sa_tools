@@ -138,7 +138,7 @@ namespace SAFontEdit
 					}
 					listBox1.EndUpdate();
 					listBox1.SelectedIndex = 0;
-					extractAllToolStripMenuItem.Enabled = exportIndividualCharactersToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
+					extractAllToolStripMenuItem.Enabled = exportIndividualCharactersToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportWidthToolStripMenuItem.Enabled = true;
 					Text = "SAFontEdit - " + filename + " / Total characters: " + files.Count.ToString();
 					pictureBoxFontColor.Visible = labelA.Visible = labelR.Visible = labelB.Visible = labelG.Visible = labelColor.Visible = numericUpDownAlpha.Visible = numericUpDownGreen.Visible = numericUpDownRed.Visible = numericUpDownBlue.Visible = argb;
 					fONTDATAFileToolStripMenuItem.Enabled = !argb;
@@ -349,7 +349,7 @@ namespace SAFontEdit
 					listBox1.EndUpdate();
 					listBox1.SelectedIndex = 0;
 					Text = "SAFontEdit - " + a.FileName + " / Total characters: " + files.Count.ToString();
-					extractAllToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportIndividualCharactersToolStripMenuItem.Enabled = true;
+					extractAllToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportIndividualCharactersToolStripMenuItem.Enabled = exportWidthToolStripMenuItem.Enabled = true;
 				}
 			}
 		}
@@ -496,8 +496,8 @@ namespace SAFontEdit
 
 		private void toolStripTextBox1_Click(object sender, EventArgs e)
 		{
-			toolStripTextBox1.Text = "";
-			toolStripTextBox1.ForeColor = Color.Black;
+			toolStripTextBoxSearch.Text = "";
+			toolStripTextBoxSearch.ForeColor = Color.Black;
 		}
 
 		private void toolStripMenuItemSearch_Click(object sender, EventArgs e)
@@ -508,7 +508,7 @@ namespace SAFontEdit
 			for (int i = start; i < listBox1.Items.Count; i++)
 			{
 				FontItem item = files[i];
-				if (item.ID.ToString("X4").ToLowerInvariant() == toolStripTextBox1.Text.ToLowerInvariant() || item.character.Substring(0, 1) == toolStripTextBox1.Text.Substring(0, 1))
+				if (item.ID.ToString("X4").ToLowerInvariant() == toolStripTextBoxSearch.Text.ToLowerInvariant() || item.character.Substring(0, 1) == toolStripTextBoxSearch.Text.Substring(0, 1))
 				{
 					listBox1.SelectedIndex = i;
 					found = true;
@@ -541,6 +541,32 @@ namespace SAFontEdit
 		private void bugReportToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start " + "https://github.com/X-Hax/sa_tools/issues/new/choose") { CreateNoWindow = false });
+		}
+
+		private void exportWidthToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (ExportWidthDialog dlg = new ExportWidthDialog())
+			{
+				if (dlg.ShowDialog() == DialogResult.OK)
+				{
+					SaveFileDialog a = new SaveFileDialog()
+					{
+						DefaultExt = "bin",
+						Filter = "BIN Files|*.bin|All Files|*.*"
+					};
+					if (a.ShowDialog() == DialogResult.OK)
+					{
+						List<byte> file = new List<byte>();
+						file.Add((byte)dlg.SpaceWidth); // Width of " "
+						for (int i = 1; i < files.Count; i++)
+						{
+							int width = files[i].bits.GetCharacterWidth();
+							file.Add(width == 0 ? (byte)dlg.EmptyWidth : (byte)width);
+						}
+						System.IO.File.WriteAllBytes(a.FileName, file.ToArray());
+					}
+				}
+			}
 		}
 	}
 

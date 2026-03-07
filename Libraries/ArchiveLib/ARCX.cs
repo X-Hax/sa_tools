@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-// ARCX is an archive format based on SonicFreak94's PVMX that is repurposed for storing models or other generic files. Supports folders.
 namespace ArchiveLib
 {
-    public class ARCXFile : GenericArchive
+	/// <summary>
+	/// ARCX is an archive format based on SonicFreak94's PVMX that is repurposed for storing models or other generic files. Supports folders.
+	/// </summary>
+	public class ARCXFile : GenericArchive
     {
         const int FourCC = 0x58435241; // 'ARCX'
         const byte Version = 0;
@@ -16,6 +18,9 @@ namespace ArchiveLib
 			return;
         }
 
+		/// <summary>Checks whether the byte array is an ARCX file.</summary>
+		/// <param name="data">Byte array to analyze.</param>
+		/// <returns>True if the byte array is an ARCX file.</returns>
         public static bool Identify(byte[] data)
         {
             return data.Length > 4 && BitConverter.ToInt32(data, 0) == FourCC;
@@ -23,22 +28,22 @@ namespace ArchiveLib
 
         public ARCXFile(byte[] ARCXdata)
         {
-            Entries = new List<GenericArchiveEntry>();
+			Entries = new List<GenericArchiveEntry>();
             if (!(ARCXdata.Length > 4 && BitConverter.ToInt32(ARCXdata, 0) == FourCC))
                 throw new FormatException("File is not a ARCX archive.");
             if (ARCXdata[4] != Version) throw new FormatException("Incorrect ARCX archive version.");
             int off = 5;
             ARCXDictionaryField type;
-            for (type = (ARCXDictionaryField)ARCXdata[off++]; type != ARCXDictionaryField.none; type = (ARCXDictionaryField)ARCXdata[off++])
+            for (type = (ARCXDictionaryField)ARCXdata[off++]; type != ARCXDictionaryField.None; type = (ARCXDictionaryField)ARCXdata[off++])
             {
                 string name = "";
 				string folder = "";
 
-                while (type != ARCXDictionaryField.none)
+                while (type != ARCXDictionaryField.None)
                 {
                     switch (type)
                     {
-                        case ARCXDictionaryField.name:
+                        case ARCXDictionaryField.Name:
 							int count = 0;
 							while (ARCXdata[off + count] != 0)
 								count++;
@@ -46,7 +51,7 @@ namespace ArchiveLib
 							off += count + 1;
 							break;
 
-                        case ARCXDictionaryField.folder:
+                        case ARCXDictionaryField.Folder:
                             int count2 = 0;
                             while (ARCXdata[off + count2] != 0)
                                 count2++;
@@ -73,53 +78,55 @@ namespace ArchiveLib
             Entries = new List<GenericArchiveEntry>();
         }
 
-        public void AddFile(string name, string path, byte[] data)
-        {
-            Entries.Add(new ARCXEntry(name, path, data));
-        }
-
         public override byte[] GetBytes()
         {
             MemoryStream str = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(str);
             bw.Write(FourCC);
             bw.Write(Version);
-            List<OffData> texdata = new List<OffData>();
+            List<OffsetData> texdata = new List<OffsetData>();
             foreach (ARCXEntry tex in Entries)
             {
-                bw.Write((byte)ARCXDictionaryField.folder);
+                bw.Write((byte)ARCXDictionaryField.Folder);
 				bw.Write(tex.Folder.ToCharArray());
 				bw.Write((byte)0);
-				bw.Write((byte)ARCXDictionaryField.name);
+				bw.Write((byte)ARCXDictionaryField.Name);
                 bw.Write(tex.Name.ToCharArray());
                 bw.Write((byte)0);
-                bw.Write((byte)ARCXDictionaryField.none);
+                bw.Write((byte)ARCXDictionaryField.None);
                 long size;
                 using (MemoryStream ms = new MemoryStream(tex.Data))
                 {
-                    texdata.Add(new OffData(str.Position, ms.ToArray()));
+                    texdata.Add(new OffsetData(str.Position, ms.ToArray()));
                     size = ms.Length;
                 }
                 bw.Write(0ul);
                 bw.Write(size);
             }
-            bw.Write((byte)ARCXDictionaryField.none);
-            foreach (OffData od in texdata)
+            bw.Write((byte)ARCXDictionaryField.None);
+            foreach (OffsetData od in texdata)
             {
                 long pos = str.Position;
-                str.Position = od.off;
+                str.Position = od.Offset;
                 bw.Write(pos);
                 str.Position = pos;
-                bw.Write(od.data);
+                bw.Write(od.Data);
             }
             return str.ToArray();
         }
 
-        public class ARCXEntry : GenericArchiveEntry
+		public override GenericArchiveEntry NewEntry()
+		{
+			return new ARCXEntry();
+		}
+
+		public class ARCXEntry : GenericArchiveEntry
         {
 			public string Folder;
 
-            public ARCXEntry(string name, string folder, byte[] data)
+			public ARCXEntry() { }
+
+			public ARCXEntry(string name, string folder, byte[] data)
             {
                 Name = name;
 				Folder = folder;
@@ -132,29 +139,30 @@ namespace ArchiveLib
 			}
         }
 
-        struct OffData
+		/// <summary>ARCX entry data.</summary>
+		private class OffsetData
         {
-            public long off;
-            public byte[] data;
-
-            public OffData(long o, byte[] d)
+			/// <summary>Entry data.</summary>
+			public byte[] Data;
+			/// <summary>Location of the data.</summary>
+			public long Offset;
+			
+            public OffsetData(long o, byte[] d)
             {
-                off = o;
-                data = d;
+                Offset = o;
+                Data = d;
             }
         }
 
-        enum ARCXDictionaryField : byte
+		/// <summary>Type of ARCX dictionary data in ARCX entry table.</summary>
+		enum ARCXDictionaryField : byte
         {
-            none,
-            /// <summary>
-            /// Relative path
-            /// </summary>
-            folder,
-            /// <summary>
-            /// Null-terminated file name
-            /// </summary>
-            name,
+			/// <summary>Entry has no metadata.</summary>
+			None,
+            /// <summary>Field is a relative path.</summary>
+            Folder,
+            /// <summary>Field is a null-terminated filename.</summary>
+            Name,
         }
     }
 }

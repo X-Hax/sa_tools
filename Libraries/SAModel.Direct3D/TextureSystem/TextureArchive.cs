@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using ArchiveLib;
+using PSO.PRS;
 using static ArchiveLib.GenericArchive;
 
 namespace SAModel.Direct3D.TextureSystem
@@ -39,7 +40,7 @@ namespace SAModel.Direct3D.TextureSystem
                     // Get sorted entires from the INF file if it exists
                     List<PAKFile.PAKEntry> sorted = pak.GetSortedEntries(filenoext);
                     arc.Entries = new List<GenericArchiveEntry>(sorted.Cast<GenericArchiveEntry>());
-                    break;
+					break;
                 case ".pvmx":
                     arc = new PVMXFile(file);
                     break;
@@ -76,7 +77,7 @@ namespace SAModel.Direct3D.TextureSystem
 					arr.Add(new BMPInfo(Path.GetFileNameWithoutExtension(filename), new System.Drawing.Bitmap(filename)));
 					return arr.ToArray();
 				case ".prs":
-                    file = FraGag.Compression.Prs.Decompress(file);
+                    file = PRS.Decompress(file);
                     goto default;
                 case ".pvm":
                 case ".gvm":
@@ -94,7 +95,7 @@ namespace SAModel.Direct3D.TextureSystem
             {
                 textures.Add(new BMPInfo(Path.GetFileNameWithoutExtension(entry.Name), entry.GetBitmap()));
 			}
-			hasNames = arc.hasNameData;
+			hasNames = arc.HasNameData;
 
 			return textures.ToArray();
         }

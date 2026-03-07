@@ -17,7 +17,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		private float offset;
 		private bool hasWeight;
 
-		public StartPosItem(NJS_OBJECT model, string textures, float offset, Vertex position, int yrot, Device dev, EditorItemSelection selectionManager)
+		public StartPosItem(NJS_OBJECT model, string textures, float offset, Vertex position, int yrot, Device dev, EditorItemSelection selectionManager, string postype = "Start Position")
 			: base(selectionManager)
 		{
 			Model = model;
@@ -40,7 +40,17 @@ namespace SAModel.SAEditorCommon.DataTypes
 			this.offset = offset;
 			Position = position;
 			YRotation = yrot;
+			PosType = postype;
 		}
+		public override BoundingSphere Bounds
+		{
+			get
+			{
+				return new BoundingSphere(Position, 0);
+			}
+		}
+		[Category("Data"), DisplayName("Position Type")]
+		public string PosType { get; set; }
 
 		[Browsable(false)]
 		public int YRotation { get; set; }

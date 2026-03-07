@@ -10,11 +10,10 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<ApplicationIcon>icon_dxLvl2.ico</ApplicationIcon>
 		<DebugType>embedded</DebugType>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
-		</ProjectReference>
 		<ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj">
 		</ProjectReference>
 		<ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">
@@ -28,7 +27,8 @@
 		<Content Include="icon_dxLvl2.ico" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+	  <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />
+	  <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Properties\Resources.Designer.cs">
@@ -41,9 +41,7 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>Settings.settings</DependentUpon>
 	  </Compile>
-	  <Compile Update="RenderLoop.cs">
-	    <SubType>Form</SubType>
-	  </Compile>
+	  <Compile Update="RenderLoop.cs" />
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Update="Properties\Resources.resx">

@@ -48,6 +48,7 @@ namespace SA2ObjectDefinitions.Level_Effects
 		
 		public override void Render(Device dev, EditorCamera cam)
 		{
+			if (texs1 == null)
 			texs1 = ObjectHelper.GetTextures("landtx16", skyboxtls, dev);
 			List<RenderInfo> result1 = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
@@ -61,7 +62,9 @@ namespace SA2ObjectDefinitions.Level_Effects
 		}
 		public override void RenderLate(Device dev, EditorCamera cam)
 		{
+			if (texs2 == null)
 			texs2 = ObjectHelper.GetTextures("stg16_wind", tunneltls, dev);
+			if (texs3 == null)
 			texs3 = ObjectHelper.GetTextures("bgtex16", lighttls, dev);
 			List<RenderInfo> result1 = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();

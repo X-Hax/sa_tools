@@ -14,7 +14,6 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
 		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
 		<ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
 		<ProjectReference Include="..\..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj" />
@@ -22,6 +21,9 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="icon_sa2EvView.ico" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="PRS" Version="1.1.2" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="RenderLoop.cs">

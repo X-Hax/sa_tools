@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
+using System.IO;
 
 namespace SAModel.SAEditorCommon.DataTypes
 {
@@ -36,12 +37,13 @@ namespace SAModel.SAEditorCommon.DataTypes
 			GetHandleMatrix();
 		}
 
-		public SETItem(byte[] file, int address, EditorItemSelection selectionManager)
+		public SETItem(string filename, byte[] file, int address, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
+			string nopathfname = Path.GetFileName(filename);
 			ushort _id = ByteConverter.ToUInt16(file, address);
 			ID = _id;
-			ClipLevel = (byte)((_id >> 12) & 7);
+			ClipLevel = (byte)((_id >> 12) & 0xF);
 			ushort xrot = ByteConverter.ToUInt16(file, address + 2);
 			ushort yrot = ByteConverter.ToUInt16(file, address + 4);
 			ushort zrot = ByteConverter.ToUInt16(file, address + 6);
@@ -50,6 +52,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			Scale = new Vertex(file, address + 0x14);
 			isLoaded = true;
 			objdef = GetObjectDefinition();
+			SETFileName = nopathfname;
 
 			GetHandleMatrix();
 		}
@@ -64,6 +67,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 
 		[Category("Common"), ParenthesizePropertyName(true)]
 		public string Name { get { return objdef.Name; } }
+		[Category("Common"), DisplayName ("File Source"), ParenthesizePropertyName(true)]
+		public string SETFileName { get; set; }
 		[Category("Data"), ParenthesizePropertyName(true)]
 		public string InternalName { get { return objdef.InternalName; } }
 		protected bool isLoaded = false;
@@ -95,11 +100,12 @@ namespace SAModel.SAEditorCommon.DataTypes
 			get { return (ClipSetting)ClipLevel; }
 			set { ClipLevel = (ushort)value; }
 		}
+
 		[Category("Common")]
 		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
 		[Category("Common")]
 		public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
-		protected Vertex scale = new Vertex();
+		new protected Vertex scale = new Vertex();
 		[Category("Common")]
 		public Vertex Scale { get { return scale; } set { scale = value; GetHandleMatrix(); } }
 
@@ -166,11 +172,12 @@ namespace SAModel.SAEditorCommon.DataTypes
 			return bytes.ToArray();
 		}
 
-		public static List<SETItem> Load(string filename, EditorItemSelection selectionManager) => Load(System.IO.File.ReadAllBytes(filename), selectionManager);
+		public static List<SETItem> Load(string filename, EditorItemSelection selectionManager) => Load(filename, System.IO.File.ReadAllBytes(filename), selectionManager);
 
-		public static List<SETItem> Load(byte[] setfile, EditorItemSelection selectionManager)
+		public static List<SETItem> Load(string filename, byte[] setfile, EditorItemSelection selectionManager)
 		{
 			bool bigendianbk = ByteConverter.BigEndian;
+			string nopathfname = Path.GetFileName(filename);
 			// Load the value as both Little and Big Endian and compare the result.
 			// If the BE number is larger, this is an LE file.
 			ByteConverter.BigEndian = false;
@@ -186,7 +193,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			int address = 0x20;
 			for (int j = 0; j < count; j++)
 			{
-				SETItem ent = new SETItem(setfile, address, selectionManager);
+				SETItem ent = new SETItem(nopathfname, setfile, address, selectionManager);
 				list.Add(ent);
 				address += 0x20;
 			}
@@ -315,6 +322,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 	{
 		All,
 		HighOnly,
-		MediumAndHigh
+		MediumAndHigh,
+		SA2Unsubstansive = 8,
 	}
 }

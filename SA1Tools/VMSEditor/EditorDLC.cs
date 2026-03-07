@@ -9,6 +9,7 @@ using System.Drawing.Imaging;
 using System.Text;
 using System.Collections.Generic;
 using SplitTools;
+using PSO.PRS;
 
 namespace VMSEditor
 {
@@ -197,7 +198,7 @@ namespace VMSEditor
                 byte[] prsdata = new byte[prs_size];
                 //Console.WriteLine("Copy from array of size {0} from {1} to array size {2}", file.Length, prs_pointer, prsdata.Length);
                 Array.Copy(file, prs_pointer, prsdata, 0, prs_size);
-                prsdata = FraGag.Compression.Prs.Decompress(prsdata);
+                prsdata = PRS.Decompress(prsdata);
                 // Model pointer
                 uint modelpointer = BitConverter.ToUInt32(prsdata, 0) - 0xCCA4000;
                 //Console.WriteLine("Model pointer: {0}", modelpointer.ToString("X"));
@@ -439,7 +440,7 @@ namespace VMSEditor
                 return;
             }
             labelModelSectionSize.Text = "Section size: " + meta.ModelData.Length.ToString() + " bytes";
-            byte[] modeldata = FraGag.Compression.Prs.Decompress(meta.ModelData);
+            byte[] modeldata = PRS.Decompress(meta.ModelData);
             uint modelpointer = BitConverter.ToUInt32(modeldata, 0) - 0xCCA4000;
             try
             {
@@ -477,7 +478,7 @@ namespace VMSEditor
                     byte[] import = File.ReadAllBytes(op.FileName);
                     // If the imported file is not a PRS, compress it
                     if (Path.GetExtension(op.FileName).ToLowerInvariant() != ".prs")
-                        import = FraGag.Compression.Prs.Compress(import);
+                        import = PRS.Compress(import, 255);
                     result.AddRange(import);
                     if (result.Count % 16 != 0)
                     {
@@ -503,7 +504,7 @@ namespace VMSEditor
                     if (Path.GetExtension(sv.FileName).ToLowerInvariant() == ".prs")
                         export = meta.ModelData;
                     else
-                        export = FraGag.Compression.Prs.Decompress(meta.ModelData);
+                        export = PRS.Decompress(meta.ModelData);
                     File.WriteAllBytes(sv.FileName, export);
                 }
             }
@@ -515,7 +516,7 @@ namespace VMSEditor
             {
                 if (sv.ShowDialog() == DialogResult.OK)
                 {
-                    byte[] modeldata = FraGag.Compression.Prs.Decompress(meta.ModelData);
+                    byte[] modeldata = PRS.Decompress(meta.ModelData);
                     uint modelpointer = BitConverter.ToUInt32(modeldata, 0) - 0xCCA4000;
                     NJS_OBJECT mdl = new NJS_OBJECT(modeldata, (int)modelpointer, 0xCCA4000, ModelFormat.Basic, null);
                     ModelFile.CreateFile(sv.FileName, mdl, null, null, null, new System.Collections.Generic.Dictionary<uint, byte[]>(), ModelFormat.Basic);
@@ -767,7 +768,7 @@ namespace VMSEditor
                 File.WriteAllBytes(Path.Combine(dir, fname + ".mlt"), meta.SoundData);
             if (meta.ModelData != null && meta.ModelData.Length > 0)
             {
-                byte[] prsdata = FraGag.Compression.Prs.Decompress(meta.ModelData);
+                byte[] prsdata = PRS.Decompress(meta.ModelData);
                 uint modelpointer = BitConverter.ToUInt32(prsdata, 0) - 0xCCA4000;
                 NJS_OBJECT mdl = new NJS_OBJECT(prsdata, (int)modelpointer, 0xCCA4000, ModelFormat.Basic, null);
                 ModelFile.CreateFile(Path.Combine(dir, fname + ".sa1mdl"), mdl, null, null, null, null, ModelFormat.Basic);

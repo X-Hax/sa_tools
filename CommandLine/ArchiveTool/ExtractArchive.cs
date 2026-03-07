@@ -4,6 +4,7 @@ using System.IO;
 using System.Drawing;
 using ArchiveLib;
 using static ArchiveLib.GenericArchive;
+using PSO.PRS;
 
 namespace ArchiveTool
 {
@@ -51,7 +52,7 @@ namespace ArchiveTool
 					arc = new NinjaBinaryFile(arcdata);
 					break;
 				case (".prs"):
-                    arcdata = FraGag.Compression.Prs.Decompress(arcdata);
+                    arcdata = PRS.Decompress(arcdata);
 					if (ARCXFile.Identify(arcdata))
 						arc = new ARCXFile(arcdata);
 					else if (PuyoFile.Identify(arcdata) == PuyoArchiveType.Unknown)
@@ -153,7 +154,7 @@ namespace ArchiveTool
                 Directory.CreateDirectory(outputPath);
                 byte[] filedata = File.ReadAllBytes(filename_full);
                 if (Path.GetExtension(filename_full).ToLowerInvariant() == ".prs")
-                    filedata = FraGag.Compression.Prs.Decompress(filedata);
+                    filedata = PRS.Decompress(filedata);
                 PuyoFile puyo = new PuyoFile(filedata);
                 using (TextWriter texList = File.CreateText(Path.Combine(outputPath, "index.txt")))
                 {
@@ -163,9 +164,9 @@ namespace ArchiveTool
                         {
                             uint gbix = 0;
                             if (entry is PVMEntry pvme)
-                                gbix = pvme.GetGBIX();
+                                gbix = pvme.GBIX;
                             else if (entry is GVMEntry gvme)
-                                gbix = gvme.GetGBIX();
+                                gbix = gvme.GBIX;
                             Bitmap bmp = entry.GetBitmap();
                             Console.WriteLine("Converting entry: {0}", entry.Name);
                             texList.WriteLine(string.Join(",", gbix, Path.GetFileNameWithoutExtension(entry.Name) + ".png", bmp.Width + "x" + bmp.Height));
@@ -182,89 +183,41 @@ namespace ArchiveTool
                 }
             }
         }
-        /// <summary>
-        /// Extract an NjUtil archive.
-        /// </summary>
-        static void ExtractNjUtil(string[] args)
+
+		/// <summary>
+		/// Decompress a PRS.
+		/// </summary>
+		static void DecompressPRS(string[] args)
+		{
+			filePath = args[1];
+			Console.WriteLine("Decompressing file from PRS: {0}", Path.GetFullPath(filePath));
+			Console.WriteLine("Output file: {0}", Path.GetFullPath(Path.ChangeExtension(filePath, ".bin")));
+			byte[] bindata = File.ReadAllBytes(filePath);
+			bindata = PRS.Decompress(bindata);
+			File.WriteAllBytes(Path.ChangeExtension(filePath, ".bin"), bindata);
+			Console.WriteLine("PRS archive was decompressed successfully!");
+		}
+
+		/// <summary>
+		/// Extract an NjUtil archive.
+		/// </summary>
+		static void ExtractNjUtil(string[] args)
         {
             filePath = args[1];
             byte[] filedata = File.ReadAllBytes(filePath);
             if (Path.GetExtension(filePath).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-                filedata = FraGag.Compression.Prs.Decompress(filedata);
+                filedata = PRS.Decompress(filedata);
             NjArchive njarc = new NjArchive(filedata);
             Console.WriteLine("Extracting Ninja archive: {0}", Path.GetFullPath(filePath));
             outputPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath));
             Directory.CreateDirectory(outputPath);
+			njarc.CreateIndexFile(outputPath);
 			for (int i = 0; i < njarc.Entries.Count; i++)
 			{
 				byte[] data = njarc.Entries[i].Data;
-				extension = ".bin";
-				string desc = "Unknown";
-				if (data.Length < 4)
-					desc = "Empty";
-				else
-					switch (System.Text.Encoding.ASCII.GetString(data, 0, 4))
-					{
-						case "NJIN":
-							desc = "Ninja Information";
-							extension = ".nji";
-							break;
-						case "NJCM":
-							desc = "Ninja Chunk model";
-							extension = ".nj";
-							break;
-						case "GJCM":
-							desc = "Ninja Chunk model (GC)";
-							extension = ".gj";
-							break;
-						case "NJBM":
-							desc = "Ninja Basic model";
-							extension = ".nj";
-							break;
-						case "NMDM":
-							desc = "Ninja Motion";
-							extension = ".njm";
-							break;
-						case "NJLI":
-							desc = "Ninja Light";
-							extension = ".njl";
-							break;
-						case "NLIM":
-							desc = "Ninja Light Motion";
-							extension = ".njlm";
-							break;
-						case "NSSM":
-							desc = "Ninja Simple Shape Motion";
-							extension = ".njsm";
-							break;
-						case "NCAM":
-							desc = "Ninja Camera Motion";
-							extension = ".ncm";
-							break;
-						case "NJTL":
-							desc = "Ninja Texlist";
-							extension = ".nj";
-							break;
-						case "GJTL":
-							desc = "Ninja Texlist (GC)";
-							extension = ".gj";
-							break;
-						case "PVMH":
-							desc = "PVM";
-							extension = ".pvm";
-							break;
-						case "GVMH":
-							desc = "GVM";
-							extension = ".gvm";
-							break;
-						case "XVMH":
-							desc = "XVM";
-							extension = ".xvm";
-							break;
-					}
-				Console.WriteLine("Entry {0} is {1}", i, desc);
-				string outpath = Path.Combine(outputPath, i.ToString("D3") + extension);
+				string outpath = Path.Combine(outputPath, njarc.Entries[i].Name);
 				File.WriteAllBytes(outpath, njarc.Entries[i].Data);
+				Console.WriteLine("Extracting file: {0}", njarc.Entries[i].Name);
 			}
             Console.WriteLine("Output folder: {0}", Path.GetFullPath(outputPath));
             Console.WriteLine("Archive extracted!");

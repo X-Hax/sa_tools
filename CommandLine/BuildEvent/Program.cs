@@ -248,19 +248,19 @@ namespace BuildEvent
 			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 			
 			var endianGame = "";
-			var endianType = "";
+			//var endianType = "";
 			
 			if (bigEndian.HasValue)
 			{
 				if (bigEndian == false)
 				{
 					endianGame = "Dreamcast";
-					endianType = "Little Endian";
+					//endianType = "Little Endian";
 				}
 				else
 				{
 					endianGame = "GameCube/PS3/X360/PC";
-					endianType = "Big Endian";
+					//endianType = "Big Endian";
 				}
 			}
 			if (name.Contains("TAILSPLAIN", StringComparison.OrdinalIgnoreCase))
