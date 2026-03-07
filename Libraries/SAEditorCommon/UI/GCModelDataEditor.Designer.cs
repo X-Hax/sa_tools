@@ -138,6 +138,7 @@
 			listViewOMeshes.UseCompatibleStateImageBehavior = false;
 			listViewOMeshes.View = System.Windows.Forms.View.Details;
 			listViewOMeshes.SelectedIndexChanged += listViewOMeshes_SelectedIndexChanged;
+			listViewOMeshes.DoubleClick += MshData_DoubleClick;
 			listViewOMeshes.MouseClick += listViewOMeshes_MouseClick;
 			// 
 			// columnHeaderIndex
@@ -156,10 +157,10 @@
 			// 
 			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
 			statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabelInfo });
-			statusStrip1.Location = new System.Drawing.Point(0, 732);
+			statusStrip1.Location = new System.Drawing.Point(0, 742);
 			statusStrip1.Name = "statusStrip1";
 			statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 15, 0);
-			statusStrip1.Size = new System.Drawing.Size(1137, 32);
+			statusStrip1.Size = new System.Drawing.Size(1137, 22);
 			statusStrip1.SizingGrip = false;
 			statusStrip1.TabIndex = 11;
 			statusStrip1.Text = "statusStrip1";
@@ -167,7 +168,7 @@
 			// toolStripStatusLabelInfo
 			// 
 			toolStripStatusLabelInfo.Name = "toolStripStatusLabelInfo";
-			toolStripStatusLabelInfo.Size = new System.Drawing.Size(514, 25);
+			toolStripStatusLabelInfo.Size = new System.Drawing.Size(343, 17);
 			toolStripStatusLabelInfo.Text = "Click a mesh to display its information. Right click to edit labels.";
 			// 
 			// labelModelName
@@ -176,7 +177,7 @@
 			labelModelName.Location = new System.Drawing.Point(12, 72);
 			labelModelName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			labelModelName.Name = "labelModelName";
-			labelModelName.Size = new System.Drawing.Size(119, 25);
+			labelModelName.Size = new System.Drawing.Size(79, 15);
 			labelModelName.TabIndex = 12;
 			labelModelName.Text = "Model Name:";
 			// 
@@ -186,7 +187,7 @@
 			labelMeshsetName.Location = new System.Drawing.Point(363, 72);
 			labelMeshsetName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			labelMeshsetName.Name = "labelMeshsetName";
-			labelMeshsetName.Size = new System.Drawing.Size(170, 25);
+			labelMeshsetName.Size = new System.Drawing.Size(113, 15);
 			labelMeshsetName.TabIndex = 13;
 			labelMeshsetName.Text = "Opaque Poly Name:";
 			// 
@@ -196,7 +197,7 @@
 			label1.Location = new System.Drawing.Point(405, 32);
 			label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label1.Name = "label1";
-			label1.Size = new System.Drawing.Size(128, 25);
+			label1.Size = new System.Drawing.Size(85, 15);
 			label1.TabIndex = 15;
 			label1.Text = "Vertices Name:";
 			// 
@@ -204,7 +205,7 @@
 			// 
 			textBoxVertexName.Location = new System.Drawing.Point(540, 27);
 			textBoxVertexName.Name = "textBoxVertexName";
-			textBoxVertexName.Size = new System.Drawing.Size(216, 31);
+			textBoxVertexName.Size = new System.Drawing.Size(216, 23);
 			textBoxVertexName.TabIndex = 3;
 			textBoxVertexName.TextChanged += textBoxVertexName_TextChanged;
 			// 
@@ -212,7 +213,7 @@
 			// 
 			textBoxOPolyName.Location = new System.Drawing.Point(540, 68);
 			textBoxOPolyName.Name = "textBoxOPolyName";
-			textBoxOPolyName.Size = new System.Drawing.Size(216, 31);
+			textBoxOPolyName.Size = new System.Drawing.Size(216, 23);
 			textBoxOPolyName.TabIndex = 4;
 			textBoxOPolyName.TextChanged += textBoxOPolyName_TextChanged;
 			// 
@@ -220,7 +221,7 @@
 			// 
 			textBoxModelName.Location = new System.Drawing.Point(138, 68);
 			textBoxModelName.Name = "textBoxModelName";
-			textBoxModelName.Size = new System.Drawing.Size(216, 31);
+			textBoxModelName.Size = new System.Drawing.Size(216, 23);
 			textBoxModelName.TabIndex = 2;
 			textBoxModelName.TextChanged += textBoxModelName_TextChanged;
 			// 
@@ -228,7 +229,7 @@
 			// 
 			textBoxModelY.Location = new System.Drawing.Point(54, 68);
 			textBoxModelY.Name = "textBoxModelY";
-			textBoxModelY.Size = new System.Drawing.Size(118, 31);
+			textBoxModelY.Size = new System.Drawing.Size(118, 23);
 			textBoxModelY.TabIndex = 8;
 			textBoxModelY.TextChanged += textBoxModelY_TextChanged;
 			// 
@@ -236,7 +237,7 @@
 			// 
 			textBoxModelZ.Location = new System.Drawing.Point(54, 108);
 			textBoxModelZ.Name = "textBoxModelZ";
-			textBoxModelZ.Size = new System.Drawing.Size(118, 31);
+			textBoxModelZ.Size = new System.Drawing.Size(118, 23);
 			textBoxModelZ.TabIndex = 9;
 			textBoxModelZ.TextChanged += textBoxModelZ_TextChanged;
 			// 
@@ -244,7 +245,7 @@
 			// 
 			textBoxModelX.Location = new System.Drawing.Point(54, 27);
 			textBoxModelX.Name = "textBoxModelX";
-			textBoxModelX.Size = new System.Drawing.Size(118, 31);
+			textBoxModelX.Size = new System.Drawing.Size(118, 23);
 			textBoxModelX.TabIndex = 7;
 			textBoxModelX.TextChanged += textBoxModelX_TextChanged;
 			// 
@@ -254,7 +255,7 @@
 			label4.Location = new System.Drawing.Point(21, 32);
 			label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label4.Name = "label4";
-			label4.Size = new System.Drawing.Size(27, 25);
+			label4.Size = new System.Drawing.Size(17, 15);
 			label4.TabIndex = 23;
 			label4.Text = "X:";
 			// 
@@ -264,7 +265,7 @@
 			label5.Location = new System.Drawing.Point(21, 72);
 			label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label5.Name = "label5";
-			label5.Size = new System.Drawing.Size(26, 25);
+			label5.Size = new System.Drawing.Size(17, 15);
 			label5.TabIndex = 24;
 			label5.Text = "Y:";
 			// 
@@ -274,7 +275,7 @@
 			label6.Location = new System.Drawing.Point(21, 112);
 			label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label6.Name = "label6";
-			label6.Size = new System.Drawing.Size(26, 25);
+			label6.Size = new System.Drawing.Size(17, 15);
 			label6.TabIndex = 25;
 			label6.Text = "Z:";
 			// 
@@ -301,7 +302,7 @@
 			// 
 			textBoxObjectName.Location = new System.Drawing.Point(138, 27);
 			textBoxObjectName.Name = "textBoxObjectName";
-			textBoxObjectName.Size = new System.Drawing.Size(216, 31);
+			textBoxObjectName.Size = new System.Drawing.Size(216, 23);
 			textBoxObjectName.TabIndex = 1;
 			// 
 			// label7
@@ -310,7 +311,7 @@
 			label7.Location = new System.Drawing.Point(10, 32);
 			label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label7.Name = "label7";
-			label7.Size = new System.Drawing.Size(120, 25);
+			label7.Size = new System.Drawing.Size(80, 15);
 			label7.TabIndex = 23;
 			label7.Text = "Object Name:";
 			// 
@@ -318,7 +319,7 @@
 			// 
 			textBoxTPolyName.Location = new System.Drawing.Point(540, 108);
 			textBoxTPolyName.Name = "textBoxTPolyName";
-			textBoxTPolyName.Size = new System.Drawing.Size(216, 31);
+			textBoxTPolyName.Size = new System.Drawing.Size(216, 23);
 			textBoxTPolyName.TabIndex = 5;
 			textBoxTPolyName.TextChanged += textBoxTPolyName_TextChanged;
 			// 
@@ -328,7 +329,7 @@
 			label2.Location = new System.Drawing.Point(336, 112);
 			label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label2.Name = "label2";
-			label2.Size = new System.Drawing.Size(193, 25);
+			label2.Size = new System.Drawing.Size(131, 15);
 			label2.TabIndex = 19;
 			label2.Text = "Translucent Poly Name:";
 			// 
@@ -353,7 +354,7 @@
 			// 
 			textBoxModelRadius.Location = new System.Drawing.Point(192, 68);
 			textBoxModelRadius.Name = "textBoxModelRadius";
-			textBoxModelRadius.Size = new System.Drawing.Size(138, 31);
+			textBoxModelRadius.Size = new System.Drawing.Size(138, 23);
 			textBoxModelRadius.TabIndex = 10;
 			textBoxModelRadius.TextChanged += textBoxModelRadius_TextChanged;
 			// 
@@ -363,7 +364,7 @@
 			labelR.Location = new System.Drawing.Point(192, 32);
 			labelR.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			labelR.Name = "labelR";
-			labelR.Size = new System.Drawing.Size(69, 25);
+			labelR.Size = new System.Drawing.Size(45, 15);
 			labelR.TabIndex = 31;
 			labelR.Text = "Radius:";
 			// 
@@ -549,19 +550,19 @@
 			contextMenuStripParamEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
 			contextMenuStripParamEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openOParameterViewerToolStripMenuItem, openTParameterViewerToolStripMenuItem });
 			contextMenuStripParamEdit.Name = "contextMenuStripLabels";
-			contextMenuStripParamEdit.Size = new System.Drawing.Size(362, 68);
+			contextMenuStripParamEdit.Size = new System.Drawing.Size(262, 48);
 			// 
 			// openOParameterViewerToolStripMenuItem
 			// 
 			openOParameterViewerToolStripMenuItem.Name = "openOParameterViewerToolStripMenuItem";
-			openOParameterViewerToolStripMenuItem.Size = new System.Drawing.Size(361, 32);
+			openOParameterViewerToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
 			openOParameterViewerToolStripMenuItem.Text = "Open Opaque Parameter Viewer";
 			openOParameterViewerToolStripMenuItem.Click += openOParameterViewerToolStripMenuItem_Click;
 			// 
 			// openTParameterViewerToolStripMenuItem
 			// 
 			openTParameterViewerToolStripMenuItem.Name = "openTParameterViewerToolStripMenuItem";
-			openTParameterViewerToolStripMenuItem.Size = new System.Drawing.Size(361, 32);
+			openTParameterViewerToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
 			openTParameterViewerToolStripMenuItem.Text = "Open Translucent Parameter Viewer";
 			openTParameterViewerToolStripMenuItem.Click += openTParameterViewerToolStripMenuItem_Click;
 			// 
@@ -572,7 +573,7 @@
 			comboBoxNode.Location = new System.Drawing.Point(12, 18);
 			comboBoxNode.Margin = new System.Windows.Forms.Padding(4);
 			comboBoxNode.Name = "comboBoxNode";
-			comboBoxNode.Size = new System.Drawing.Size(530, 33);
+			comboBoxNode.Size = new System.Drawing.Size(530, 23);
 			comboBoxNode.TabIndex = 0;
 			comboBoxNode.SelectedIndexChanged += comboBoxNode_SelectedIndexChanged;
 			// 
@@ -626,12 +627,12 @@
 			contextMenuStripVertData.ImageScalingSize = new System.Drawing.Size(24, 24);
 			contextMenuStripVertData.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { viewVertexDataToolStripMenuItem });
 			contextMenuStripVertData.Name = "contextMenuStripVertData";
-			contextMenuStripVertData.Size = new System.Drawing.Size(217, 36);
+			contextMenuStripVertData.Size = new System.Drawing.Size(162, 26);
 			// 
 			// viewVertexDataToolStripMenuItem
 			// 
 			viewVertexDataToolStripMenuItem.Name = "viewVertexDataToolStripMenuItem";
-			viewVertexDataToolStripMenuItem.Size = new System.Drawing.Size(216, 32);
+			viewVertexDataToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
 			viewVertexDataToolStripMenuItem.Text = "View Vertex Data";
 			viewVertexDataToolStripMenuItem.Click += viewVertexDataToolStripMenuItem_Click;
 			// 

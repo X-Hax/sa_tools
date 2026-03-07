@@ -705,5 +705,17 @@ namespace SAModel.SAEditorCommon.UI
 				vde.ShowDialog(this);
 			}
 		}
+
+		private void MshData_DoubleClick(object sender, EventArgs e)
+		{
+			if (listViewOMeshes.SelectedItems.Count > 0)
+			{
+				GCMesh tMeshData = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+				using (GCModelParameterDataEditor de = new GCModelParameterDataEditor(tMeshData, textures))
+				{
+					de.ShowDialog(this);
+				}
+			}
+		}
 	}
 }

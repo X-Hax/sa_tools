@@ -15,19 +15,19 @@ namespace SAModel.GC
 		/// <summary>
 		/// The seperate sets of vertex data in this attach
 		/// </summary>
-		public List<GCVertexSet> VertexData;
+		public List<GCVertexSet> VertexData = new List<GCVertexSet>();
 		public string VertexName { get; set; }
 		public uint Gap { get; set; }
 		/// <summary>
 		/// The meshes with opaque rendering properties
 		/// </summary>
-		public List<GCMesh> OpaqueMeshes;
+		public List<GCMesh> OpaqueMeshes = new List<GCMesh>();
 		public string OpaqueMeshName { get; set; }
 
 		/// <summary>
 		/// The meshes with translucent rendering properties
 		/// </summary>
-		public List<GCMesh> TranslucentMeshes;
+		public List<GCMesh> TranslucentMeshes = new List<GCMesh>();
 		public string TranslucentMeshName { get; set; }
 
 		/// <summary>
