@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using SharpDX;
-using SharpDX.Direct3D9;
-using SAModel.Direct3D;
+﻿using SAModel.Direct3D;
 using SAModel.Direct3D.TextureSystem;
 using SAModel.SAEditorCommon.Import;
 using SAModel.SAEditorCommon.SETEditing;
 using SAModel.SAEditorCommon.UI;
+using SharpDX;
+using SharpDX.Direct3D9;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
+using System.Xml;
+using static ArchiveLib.nmldGround;
 
 namespace SAModel.SAEditorCommon.DataTypes
 {
@@ -584,11 +586,26 @@ namespace SAModel.SAEditorCommon.DataTypes
 			if (objm.Attach != null)
 			{
 				objm.Attach.ProcessVertexData();
-				LevelItem lvlitem = new LevelItem(objm.Attach, new Vertex(objm.Position.X, objm.Position.Y, objm.Position.Z), objm.Rotation, levelItems.Count, selectionManager)
+				LevelItem lvlitem;
+				switch (objm.GetModelFormat())
 				{
-					Visible = true
-				};
-				createdItems.Add(lvlitem);
+					case ModelFormat.Basic:
+					case ModelFormat.BasicDX:
+						lvlitem = new SA1LevelItem(objm.Attach, new Vertex(objm.Position.X, objm.Position.Y, objm.Position.Z), objm.Rotation, levelItems.Count, selectionManager)
+						{
+							Visible = true
+						};
+						createdItems.Add(lvlitem);
+						break;
+					case ModelFormat.Chunk:
+					case ModelFormat.GC:
+						lvlitem = new SA2LevelItem(objm.Attach, new Vertex(objm.Position.X, objm.Position.Y, objm.Position.Z), objm.Rotation, levelItems.Count, selectionManager)
+						{
+							Visible = true
+						};
+						createdItems.Add(lvlitem);
+						break;
+				}
 			}
 			if (multiple)
 			{
@@ -686,16 +703,6 @@ namespace SAModel.SAEditorCommon.DataTypes
 					createdItems.AddRange(ImportFromHierarchy(objm, selectionManager, osd, multiple, isVisible, isCol));
 					osd.AddMessage("Stage import complete!", 100);
 					break;
-				case ".obj":
-				case ".objf":
-					LevelItem item = new LevelItem(filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), levelItems.Count, selectionManager)
-					{
-						Visible = true
-					};
-
-					createdItems.Add(item);
-					break;
-
 				case ".txt":
 					NodeTable.ImportFromFile(filePath, out importError, out importErrorMsg, selectionManager, isSA2);
 					break;
@@ -756,11 +763,27 @@ namespace SAModel.SAEditorCommon.DataTypes
 							}
 						}
 						obj.Attach.ProcessVertexData();
-						LevelItem newLevelItem = new LevelItem(obj.Attach, new Vertex(obj.Position.X + pos.X, obj.Position.Y + pos.Y, obj.Position.Z + pos.Z), obj.Rotation, levelItems.Count, selectionManager)
+						LevelItem newLevelItem;
+						switch (obj.GetModelFormat())
 						{
-							Visible = isVisible
-						};
-						createdItems.Add(newLevelItem);
+							case ModelFormat.Basic:
+							case ModelFormat.BasicDX:
+								newLevelItem = new SA1LevelItem(obj.Attach, new Vertex(obj.Position.X + pos.X, obj.Position.Y + pos.Y, obj.Position.Z + pos.Z), obj.Rotation, levelItems.Count, selectionManager)
+								{
+									Visible = isVisible
+								};
+								createdItems.Add(newLevelItem);
+								break;
+							case ModelFormat.Chunk:
+							case ModelFormat.GC:
+								newLevelItem = new SA2LevelItem(obj.Attach, new Vertex(obj.Position.X + pos.X, obj.Position.Y + pos.Y, obj.Position.Z + pos.Z), obj.Rotation, levelItems.Count, selectionManager)
+								{
+									Visible = isVisible
+								};
+								createdItems.Add(newLevelItem);
+								break;
+						}
+						
 					}
 					osd.ClearMessageList();
 					osd.AddMessage("Stage import complete!", 100);
