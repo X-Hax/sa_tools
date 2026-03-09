@@ -52,8 +52,14 @@ namespace ArchiveLib
 			Entries = new List<GenericArchiveEntry>();
 		}
 
-		public NinjaBinaryFile(byte[] file)
+		public NinjaBinaryFile(byte[] file, int offs = 0)
 		{
+			if (offs != 0)
+			{
+				byte[] data = new byte[file.Length - offs];
+				Array.Copy(file, offs, data, 0, data.Length);
+				file = data;
+			}
 			Entries = new List<GenericArchiveEntry>();
 			int count = 0;
 			int i = 0;

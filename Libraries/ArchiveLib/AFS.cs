@@ -185,8 +185,14 @@ namespace ArchiveLib
 			}
 		}
 
-		public AFSFile(byte[] afsdata)
+		public AFSFile(byte[] afsdata, int offset = 0)
 		{
+			if (offset != 0)
+			{
+				byte[] data = new byte[afsdata.Length - offset];
+				Array.Copy(afsdata, offset, data, 0, data.Length);
+				afsdata = data;
+			}
 			Entries = new List<GenericArchiveEntry>();
 			int numentries = BitConverter.ToInt32(afsdata, 4);
 			AFSType afstype = GetAFSType(afsdata);

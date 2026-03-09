@@ -11,6 +11,54 @@ namespace ArchiveLib
 	/// </summary>
 	public abstract class GenericArchive
 	{
+		/// <summary>
+		/// An enum containing all supported archive types.
+		/// </summary>
+		public enum ArchiveFileType
+		{
+			AFS,
+			ARCX,
+			DAT,
+			gcaxMLT,
+			KAT,
+			MLT,
+			NinjaBinary,
+			njUtil,
+			PAK,
+			PB,
+			PVM,
+			GVM,
+			XVM,
+			PVMX,
+			MLD,
+			MDL,		
+			MDT
+		}
+
+		/// <summary>
+		/// A dictionary containing all supported archive types with extensions and descriptions.
+		/// </summary>
+		public static Dictionary<ArchiveFileType, (string, string)> SupportedArchiveFiles = new()
+		{
+			{ ArchiveFileType.AFS, (".afs", "AFS") },
+			{ ArchiveFileType.ARCX, (".arcx","ARCX") },
+			{ ArchiveFileType.NinjaBinary, (".nj", "Ninja Binary") },
+			{ ArchiveFileType.DAT, (".dat","DAT (SADX)") },
+			{ ArchiveFileType.PVM, (".pvm","PVM") },
+			{ ArchiveFileType.GVM, (".gvm","GVM") },
+			{ ArchiveFileType.XVM, (".xvm","XVM") },
+			{ ArchiveFileType.PB, (".pb","PB (Dreamcast)") },
+			{ ArchiveFileType.PVMX, (".pvmx","PVMX") },
+			{ ArchiveFileType.PAK, (".pak","PAK (SA2 PC)") },
+			{ ArchiveFileType.MLT, (".mlt","MLT (Dreamcast)") },
+			{ ArchiveFileType.gcaxMLT, (".mlt","MLT (Gamecube)") },
+			{ ArchiveFileType.KAT, (".kat","KAT (Dreamcast)") },
+			{ ArchiveFileType.njUtil, (".bin","njUtil (Dreamcast/Gamecube)") },			
+			{ ArchiveFileType.MDL, (".mdl","MDL (Sonic Shuffle)") },
+			{ ArchiveFileType.MDT, (".mdt","MDT (Sonic Shuffle)") },
+			{ ArchiveFileType.MLD, (".mld", "MLD (Skies of Arcadia)") },
+		};
+
 		/// <summary>This field is true when the archive stores filenames.</summary>
 		public bool HasNameData = true;
 

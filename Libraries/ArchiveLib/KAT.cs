@@ -57,8 +57,14 @@ namespace ArchiveLib
 			public KATArchiveEntry() { }
 		}
 
-		public KATFile(byte[] file)
+		public KATFile(byte[] file, int offs = 0)
 		{
+			if (offs != 0)
+			{
+				byte[] data = new byte[file.Length - offs];
+				Array.Copy(file, offs, data, 0, data.Length);
+				file = data;
+			}
 			Entries = new List<GenericArchiveEntry>();
 			int count = ByteConverter.ToInt32(file, 0);
 			List<int> sizehdrs = new List<int>();

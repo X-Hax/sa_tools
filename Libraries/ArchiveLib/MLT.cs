@@ -10,15 +10,21 @@ namespace ArchiveLib
 	/// This class is for the base archive only, not the invidivual banks (MPB, MSB etc.) contained within.
 	/// </summary>
 	public class MLTFile : GenericArchive
-    {
+	{
 		/// <summary>MLT format version. Set to 1 in SA1 and 2 in SA2.
 		public byte Version;
 		/// <summary>MLT minor format version. Set to 1 in SA1 and 0 in SA2.
 		public byte Revision;
 
-        public MLTFile(byte[] file, string filename = "")
+		public MLTFile(byte[] file, int offs = 0, string filename = "")
         {
-            Version = file[4];
+			if (offs != 0)
+			{
+				byte[] data = new byte[file.Length - offs];
+				Array.Copy(file, offs, data, 0, data.Length);
+				file = data;
+			}
+			Version = file[4];
             Revision = file[5];
             int numfiles = BitConverter.ToInt32(file, 8);
             int fileoffset = 0x20;

@@ -26,8 +26,14 @@ namespace ArchiveLib
             return data.Length > 4 && BitConverter.ToInt32(data, 0) == FourCC;
         }
 
-        public ARCXFile(byte[] ARCXdata)
+        public ARCXFile(byte[] ARCXdata, int offs = 0)
         {
+			if (offs != 0)
+			{
+				byte[] data = new byte[ARCXdata.Length - offs];
+				Array.Copy(ARCXdata, offs, data, 0, data.Length);
+				ARCXdata = data;
+			}
 			Entries = new List<GenericArchiveEntry>();
             if (!(ARCXdata.Length > 4 && BitConverter.ToInt32(ARCXdata, 0) == FourCC))
                 throw new FormatException("File is not a ARCX archive.");

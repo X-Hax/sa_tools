@@ -2,7 +2,6 @@
 
 // TODO: Cleanup, Extract/Replace buttons
 // TODO: Editable paths for ARCX, extension filters, save settings
-// TODO: Load from an offset
 // TODO: Archive and entry properties for each archive type
 
 using ArchiveLib;
@@ -52,14 +51,11 @@ namespace SADXsndSharp
 		/// <returns>AFSFile, DATFile etc.</returns>
 		private GenericArchive IdentifyAndLoadArchive(string filename)
 		{
-			// TODO: PRS, offset
 			byte[] file = File.ReadAllBytes(filename);
 			switch (Path.GetExtension(filename).ToLowerInvariant())
 			{
 				case ".afs":
 					return new AFSFile(file);
-				case ".bin":
-					return new NjArchive(file);
 				case ".arcx":
 					return new ARCXFile(file);
 				case ".dat":
@@ -88,6 +84,52 @@ namespace SADXsndSharp
 					return new MDLArchive(file);
 				case ".mdt":
 					return new MDTArchive(file);
+				default:
+					if (Path.GetExtension(filename).ToLowerInvariant() == ".prs")
+						file = PSO.PRS.PRS.Decompress(file);
+					OpenFromOffset off = new OpenFromOffset();
+					if (off.ShowDialog() == DialogResult.OK)
+						return GetArchiveFromType(filename, file, off.outOffset, off.outFileType);
+					return null;
+			}
+		}
+
+		public GenericArchive GetArchiveFromType(string filepath, byte[] data, int offset, ArchiveFileType type)
+		{
+			switch (type)
+			{
+				case ArchiveFileType.AFS:
+					return new AFSFile(data, offset);
+				case ArchiveFileType.njUtil:
+					return new NjArchive(data, offset);
+				case ArchiveFileType.ARCX:
+					return new ARCXFile(data, offset);
+				case ArchiveFileType.DAT:
+					return new DATFile(data, offset);
+				case ArchiveFileType.gcaxMLT:
+					return new gcaxMLTFile(data, offset);
+				case ArchiveFileType.KAT:
+					return new KATFile(data, offset);
+				case ArchiveFileType.MLT:
+					return new MLTFile(data, offset);
+				case ArchiveFileType.NinjaBinary:
+					return new NinjaBinaryFile(data, offset);
+				case ArchiveFileType.PAK:
+					return new PAKFile(filepath); // No offset
+				case ArchiveFileType.PB:
+					return new PBFile(data, offset);
+				case ArchiveFileType.PVM:
+				case ArchiveFileType.GVM:
+				case ArchiveFileType.XVM:
+					return new PuyoFile(data, offset);
+				case ArchiveFileType.PVMX:
+					return new PVMXFile(data, offset);
+				case ArchiveFileType.MLD:
+					return new MLDArchive(filepath, data); // No offset
+				case ArchiveFileType.MDL:
+					return new MDLArchive(data, offset);
+				case ArchiveFileType.MDT:
+					return new MDTArchive(data, offset);
 				default:
 					return null;
 			}

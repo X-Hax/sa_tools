@@ -12,9 +12,15 @@ namespace ArchiveLib
 	/// </summary>
 	public class gcaxMLTFile : GenericArchive
     {
-        public gcaxMLTFile(byte[] file, string filename = "")
+        public gcaxMLTFile(byte[] file, int offs = 0, string filename = "")
         {
-            bool bigend = ByteConverter.BigEndian;
+			if (offs != 0)
+			{
+				byte[] data = new byte[file.Length - offs];
+				Array.Copy(file, offs, data, 0, data.Length);
+				file = data;
+			}
+			bool bigend = ByteConverter.BigEndian;
             ByteConverter.BigEndian = true;
             // Get number of MLTM entrues
             int size = ByteConverter.ToInt32(file, 0x1C);

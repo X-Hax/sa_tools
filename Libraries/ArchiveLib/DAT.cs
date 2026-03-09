@@ -54,9 +54,15 @@ namespace ArchiveLib
             }
         }
 
-        public DATFile(byte[] file)
+        public DATFile(byte[] file, int offs = 0)
         {
-            switch (Identify(file))
+			if (offs != 0)
+			{
+				byte[] data = new byte[file.Length - offs];
+				Array.Copy(file, offs, data, 0, data.Length);
+				file = data;
+			}
+			switch (Identify(file))
             {
                 case DATArchiveType.SADX2004:
                     Steam = false;

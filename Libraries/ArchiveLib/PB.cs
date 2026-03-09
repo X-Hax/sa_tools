@@ -33,8 +33,14 @@ namespace ArchiveLib
             }
         }
 
-		public PBFile(byte[] pbdata)
+		public PBFile(byte[] pbdata, int offs = 0)
 		{
+			if (offs != 0)
+			{
+				byte[] data = new byte[pbdata.Length - offs];
+				Array.Copy(pbdata, offs, data, 0, data.Length);
+				pbdata = data;
+			}
 			Entries = new List<GenericArchiveEntry>();
 			int numtextures = pbdata[4];
 			for (int u = 0; u < numtextures; u++)

@@ -84,9 +84,15 @@ namespace ArchiveLib
 			public NjArchiveEntry() { }
 		}
 
-        public NjArchive(byte[] file)
+        public NjArchive(byte[] file, int off = 0)
         {
-            bool bigendbk = ByteConverter.BigEndian;
+			if (off != 0)
+			{
+				byte[] data = new byte[file.Length - off];
+				Array.Copy(file, off, data, 0, data.Length);
+				file = data;
+			}
+			bool bigendbk = ByteConverter.BigEndian;
             if (file[0] == 0)
                 ByteConverter.BigEndian = true;
             Entries = new List<GenericArchiveEntry>();

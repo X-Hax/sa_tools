@@ -199,7 +199,6 @@ namespace ArchiveLib
 			// The flags below are often used in general.
 			Flags |= PuyoArchiveFlags.TextureDimensions;
 			Flags |= PuyoArchiveFlags.PixelDataFormat;
-
 		}
 
         /// <summary>
@@ -244,9 +243,15 @@ namespace ArchiveLib
             }
         }
 
-        public PuyoFile(byte[] pvmdata)
+		public PuyoFile(byte[] pvmdata, int offs = 0)
         {
-            ByteConverter.BackupBigEndian();
+			if (offs != 0)
+			{
+				byte[] data = new byte[pvmdata.Length - offs];
+				Array.Copy(pvmdata, offs, data, 0, data.Length);
+				pvmdata = data;
+			}
+			ByteConverter.BackupBigEndian();
             Entries = new List<GenericArchiveEntry>();
             Type = Identify(pvmdata);
             switch (Type)

@@ -50,8 +50,14 @@ namespace ArchiveLib
 			Unknown = 10,
 		}
 
-		public MDLArchive(byte[] file)
+		public MDLArchive(byte[] file, int offs = 0)
 		{
+			if (offs != 0)
+			{
+				byte[] data = new byte[file.Length - offs];
+				Array.Copy(file, offs, data, 0, data.Length);
+				file = data;
+			}
 			bool bigendbk = ByteConverter.BigEndian;
 			if (file[0] == 0)
 				ByteConverter.BigEndian = true;
@@ -195,8 +201,14 @@ namespace ArchiveLib
 			return MDTArchiveType.Manatee;
 		}
 
-		public MDTArchive(byte[] file)
+		public MDTArchive(byte[] file, int offs = 0)
 		{
+			if (offs != 0)
+			{
+				byte[] data = new byte[file.Length - offs];
+				Array.Copy(file, offs, data, 0, data.Length);
+				file = data;
+			}
 			bool bigendbk = ByteConverter.BigEndian;
 			MDTArchiveType type = Identify(file);
 			if (type == MDTArchiveType.CRIBigEndian)

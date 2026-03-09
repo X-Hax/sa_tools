@@ -40,9 +40,15 @@ namespace ArchiveLib
             return data.Length > 4 && BitConverter.ToInt32(data, 0) == FourCC;
         }
 
-        public PVMXFile(byte[] pvmxdata)
+        public PVMXFile(byte[] pvmxdata, int offs = 0)
         {
-            Entries = new List<GenericArchiveEntry>();
+			if (offs != 0)
+			{
+				byte[] data = new byte[pvmxdata.Length - offs];
+				Array.Copy(pvmxdata, offs, data, 0, data.Length);
+				pvmxdata = data;
+			}
+			Entries = new List<GenericArchiveEntry>();
             if (!(pvmxdata.Length > 4 && BitConverter.ToInt32(pvmxdata, 0) == 0x584D5650))
                 throw new FormatException("File is not a PVMX archive.");
             if (pvmxdata[4] != 1) throw new FormatException("Incorrect PVMX archive version.");
