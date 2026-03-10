@@ -83,7 +83,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			transform.Push();
 			transform.NJTranslate(0, offset, 0);
 			transform.NJTranslate(Position);
-			transform.NJRotateY(YRotation);
+			transform.NJRotateY(-0x8000 - YRotation);
 			return Model.CheckHit(Near, Far, Viewport, Projection, View, transform, Meshes);
 		}
 
