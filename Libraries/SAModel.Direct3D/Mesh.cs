@@ -353,6 +353,8 @@ namespace SAModel.Direct3D
 			Vector3 pos = Viewport.Unproject(Near, Projection, View, transform);
 			Vector3 dir = Vector3.Normalize(Vector3.Subtract(pos, Viewport.Unproject(Far, Projection, View, transform)));
 			Ray ray = new Ray(pos, dir);
+			HitResult closestHit = HitResult.NoHit;
+			float closestDistance = float.MaxValue;
 			foreach (short[] sub in indexBuffer)
 				for (int i = 0; i < sub.Length; i += 3)
 				{
@@ -366,11 +368,15 @@ namespace SAModel.Direct3D
 					Vector3 v3 = vertexBuffer[v3Index].GetPosition();
 					if (Collision.RayIntersectsTriangle(ref ray, ref v1, ref v2, ref v3, out float distance))
 					{
-						Vector3 norm = Vector3.TransformNormal(Vector3.Normalize(Vector3.Cross(v2 - v1, v3 - v1)), transform);
-						return new HitResult(model, distance, ray.Position + (ray.Direction * distance), norm);
+						if (distance < closestDistance)
+						{
+							closestDistance = distance;
+							Vector3 norm = Vector3.TransformNormal(Vector3.Normalize(Vector3.Cross(v2 - v1, v3 - v1)), transform);
+							closestHit = new HitResult(model, distance, ray.Position + (ray.Direction * distance), norm);
+						}
 					}
 				}
-			return HitResult.NoHit;
+			return closestHit;
 		}
 	}
 
