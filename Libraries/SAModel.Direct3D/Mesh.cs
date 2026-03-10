@@ -371,8 +371,12 @@ namespace SAModel.Direct3D
 						if (distance < closestDistance)
 						{
 							closestDistance = distance;
+							Vector3 localHitPoint = ray.Position + (ray.Direction * distance);
+							Vector3 worldHitPoint = Vector3.TransformCoordinate(localHitPoint, transform);
+							Vector3 worldRayOrigin = Vector3.TransformCoordinate(ray.Position, transform);
+							float worldDistance = (worldHitPoint - worldRayOrigin).Length();
 							Vector3 norm = Vector3.TransformNormal(Vector3.Normalize(Vector3.Cross(v2 - v1, v3 - v1)), transform);
-							closestHit = new HitResult(model, distance, ray.Position + (ray.Direction * distance), norm);
+							closestHit = new HitResult(model, worldDistance, worldHitPoint, norm);
 						}
 					}
 				}
