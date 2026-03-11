@@ -85,6 +85,8 @@ namespace SAModel.GC
 			// The struct is 36/0x24 bytes long
 
 			var vertexAddress = ByteConverter.ToUInt32(file, address) - imageBase;
+			//This part is meant to be a pointer for weight data.
+			//SA2 doesn't utilize this part for GC models, but it is implemented for Billy Hatcher.
 			Gap = ByteConverter.ToUInt32(file, address + 4);
 			var opaqueAddress = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
 			var translucentAddress = (int)(ByteConverter.ToInt32(file, address + 12) - imageBase);
