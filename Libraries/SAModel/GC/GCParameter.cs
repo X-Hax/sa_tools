@@ -13,10 +13,13 @@ namespace SAModel.GC
 		VtxAttrFmt = 0,
 		IndexAttributeFlags = 1,
 		Lighting = 2,
+		StripFlags = 3,
 		BlendAlpha = 4,
-		AmbientColor = 5,
+		DiffuseColor = 5,
+		AmbientColor = 6,
+		SpecularColor = 7,
 		Texture = 8,
-		Unknown_9 = 9,
+		TextureTEVMode = 9,
 		TexCoordGen = 10,
 	}
 	
@@ -64,9 +67,9 @@ namespace SAModel.GC
 				ParameterType.IndexAttributeFlags => new IndexAttributeParameter(),
 				ParameterType.Lighting => new LightingParameter(),
 				ParameterType.BlendAlpha => new BlendAlphaParameter(),
-				ParameterType.AmbientColor => new AmbientColorParameter(),
+				ParameterType.DiffuseColor => new DiffuseColorParameter(),
 				ParameterType.Texture => new TextureParameter(),
-				ParameterType.Unknown_9 => new Unknown9Parameter(),
+				ParameterType.TextureTEVMode => new TexTEVModeParameter(),
 				ParameterType.TexCoordGen => new TexCoordGenParameter(),
 				_ => null
 			};
@@ -141,13 +144,13 @@ namespace SAModel.GC
 				case ParameterType.BlendAlpha: 
 					writer.WriteLine($"\tGJD_PARAM_BLEND    ( {(GCBlendModeControl)((Data >> 11) & 7)}, {(GCBlendModeControl)((Data >> 8) & 7)} ),");
 					break;
-				case ParameterType.AmbientColor:
-					writer.WriteLine($"\tGJD_PARAM_ACOLOR   ( {(byte)Data}, {(byte)(Data >> 8)}, {(byte)(Data >> 16)}, {(byte)(Data >> 24)} ),");
+				case ParameterType.DiffuseColor:
+					writer.WriteLine($"\tGJD_PARAM_DCOLOR   ( {(byte)Data}, {(byte)(Data >> 8)}, {(byte)(Data >> 16)}, {(byte)(Data >> 24)} ),");
 					break;
 				case ParameterType.Texture:
 					writer.WriteLine($"\tGJD_PARAM_TEX      ( {(short)Data}, {((GCTileMode)(short)(Data >> 16)).ToString().Replace(", ", " | ")} ),");
 					break;
-				case ParameterType.Unknown_9: writer.WriteLine($"\tGJD_PARAM_UNK      ( {(short)Data}, {(short)(Data >> 16)} ),");
+				case ParameterType.TextureTEVMode: writer.WriteLine($"\tGJD_PARAM_TEV      ( {(short)Data}, {(short)(Data >> 16)} ),");
 					break;
 				case ParameterType.TexCoordGen:
 					writer.WriteLine($"\tGJD_PARAM_TEXCOORD ( {(GCTexCoordID)((Data >> 16) & 0xFF)}, {(GCTexGenType)((Data >> 12) & 0xF)}, {(GCTexGenSrc)((Data >> 4) & 0xFF)}, {(GCTexGenMatrix)(Data & 0xF)} ),");
@@ -413,12 +416,12 @@ namespace SAModel.GC
 	/// Ambient color of the geometry
 	/// </summary>
 	[Serializable]
-	public class AmbientColorParameter : GCParameter
+	public class DiffuseColorParameter : GCParameter
 	{
 		/// <summary>
 		/// The Color of the geometry
 		/// </summary>
-		public Color AmbientColor
+		public Color DiffuseColor
 		{
 			get
 			{
@@ -432,7 +435,7 @@ namespace SAModel.GC
 			set => Data = value.ARGB;
 		}
 
-		public AmbientColorParameter() : base(ParameterType.AmbientColor)
+		public DiffuseColorParameter() : base(ParameterType.DiffuseColor)
 		{
 			Data = uint.MaxValue; // White is default
 		}
@@ -487,7 +490,7 @@ namespace SAModel.GC
 	/// No idea what this is for, but its needed
 	/// </summary>
 	[Serializable]
-	public class Unknown9Parameter : GCParameter
+	public class TexTEVModeParameter : GCParameter
 	{
 		/// <summary>
 		/// No idea what this does. Default is 4
@@ -515,7 +518,7 @@ namespace SAModel.GC
 			}
 		}
 
-		public Unknown9Parameter() : base(ParameterType.Unknown_9)
+		public TexTEVModeParameter() : base(ParameterType.TextureTEVMode)
 		{
 			// Default values
 			Unknown1 = 4;

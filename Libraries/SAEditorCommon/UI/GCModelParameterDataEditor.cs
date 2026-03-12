@@ -93,7 +93,7 @@ namespace SAModel.SAEditorCommon.UI
 						comboBoxUVScale.SelectedIndex = (byte)gp.Data;
 					}
 				}
-				if (gp.Type == GC.ParameterType.AmbientColor)
+				if (gp.Type == GC.ParameterType.DiffuseColor)
 				{
 					diffuseSettingBox.Enabled = true;
 					alphaDiffuseNumeric.Value = (byte)gp.Data;
@@ -229,7 +229,7 @@ namespace SAModel.SAEditorCommon.UI
 							datatype = "BlendMode";
 							rawdata = $"{(GCBlendModeControl)((pdata.Data >> 11) & 7)}, {(GCBlendModeControl)((pdata.Data >> 8) & 7)}";
 							break;
-						case GC.ParameterType.AmbientColor:
+						case GC.ParameterType.DiffuseColor:
 							datatype = "Diffuse";
 							rawdata = $"A{(byte)pdata.Data}, R{(byte)(pdata.Data >> 8)}, G{(byte)(pdata.Data >> 16)}, B{(byte)(pdata.Data >> 24)}";
 							break;
@@ -237,8 +237,8 @@ namespace SAModel.SAEditorCommon.UI
 							datatype = "Texture";
 							rawdata = $"TID {(short)pdata.Data}, {((GCTileMode)(short)(pdata.Data >> 16)).ToString().Replace(", ", " | ")}";
 							break;
-						case GC.ParameterType.Unknown_9:
-							datatype = "Unknown";
+						case GC.ParameterType.TextureTEVMode:
+							datatype = "TEVMode";
 							rawdata = $"{(short)pdata.Data}, {(short)(pdata.Data >> 16)}";
 							break;
 						case GC.ParameterType.TexCoordGen:
@@ -319,7 +319,7 @@ namespace SAModel.SAEditorCommon.UI
 					blend |= ((uint)dstAlphaCombo.SelectedIndex & 7) << 8;
 					gp.Data = blend;
 				}
-				if (gp.Type == GC.ParameterType.AmbientColor)
+				if (gp.Type == GC.ParameterType.DiffuseColor)
 				{
 					uint amb = gp.Data;
 					amb &= 0xFFFFFF00;
@@ -441,7 +441,7 @@ namespace SAModel.SAEditorCommon.UI
 			for (int i = 0; i < gcp.Count; i++)
 			{
 				GCParameter gp = gcp[i];
-				if (gp.Type == GC.ParameterType.AmbientColor)
+				if (gp.Type == GC.ParameterType.DiffuseColor)
 				{
 					gp.Data &= 0xFFFF00FF;
 					gp.Data |= (uint)diffuseRUpDown.Value << 8;
@@ -456,7 +456,7 @@ namespace SAModel.SAEditorCommon.UI
 			for (int i = 0; i < gcp.Count; i++)
 			{
 				GCParameter gp = gcp[i];
-				if (gp.Type == GC.ParameterType.AmbientColor)
+				if (gp.Type == GC.ParameterType.DiffuseColor)
 				{
 					gp.Data &= 0xFF00FFFF;
 					gp.Data |= (uint)diffuseGUpDown.Value << 16;
@@ -471,7 +471,7 @@ namespace SAModel.SAEditorCommon.UI
 			for (int i = 0; i < gcp.Count; i++)
 			{
 				GCParameter gp = gcp[i];
-				if (gp.Type == GC.ParameterType.AmbientColor)
+				if (gp.Type == GC.ParameterType.DiffuseColor)
 				{
 					gp.Data &= 0x00FFFFFF;
 					gp.Data |= (uint)diffuseBUpDown.Value << 24;
@@ -486,7 +486,7 @@ namespace SAModel.SAEditorCommon.UI
 			for (int i = 0; i < gcp.Count; i++)
 			{
 				GCParameter gp = gcp[i];
-				if (gp.Type == GC.ParameterType.AmbientColor)
+				if (gp.Type == GC.ParameterType.DiffuseColor)
 				{
 					gp.Data &= 0xFFFFFF00;
 					gp.Data |= (uint)alphaDiffuseNumeric.Value;
@@ -500,7 +500,7 @@ namespace SAModel.SAEditorCommon.UI
 			for (int i = 0; i < gcp.Count; i++)
 			{
 				GCParameter gp = gcp[i];
-				if (gp.Type == GC.ParameterType.AmbientColor)
+				if (gp.Type == GC.ParameterType.DiffuseColor)
 				{
 					uint edata = gp.Data;
 					byte Alpha = (byte)(edata & 0xFF);

@@ -596,18 +596,23 @@ namespace SAModel.SAEditorCommon.UI
 						}
 						newvert.SubItems.Add(mainvtype);
 						string vertexdata = "";
-						switch (vc.Type)
+						if (vc.Flags >> 4 == 0xC)
 						{
-							case ChunkType.Vertex_VertexNormalNinjaFlags:
-							case ChunkType.Vertex_VertexNinjaFlags:
-								if (vc.Flags >> 4 == 8 && vc.HasWeight)
-								{
-									vertexdata += "V_CONTINUE, ";
-								}
-								vertexdata += "Weight " + vc.WeightStatus.ToString() + ", ";
-								break;
+							vertexdata += "V_SHAPE, V_CONT";
 						}
+						else if (vc.Flags >> 4 == 8)
+						{
+							vertexdata += "V_CONT";
+						}
+						if (vc.Flags >> 4 == 4)
+						{
+							vertexdata += "V_SHAPE";
+						}
+						if (vc.HasWeight)
+							vertexdata += ", Weight " + vc.WeightStatus.ToString();
 						string ent = vc.VertexCount == 1 ? " Entity" : " Entities";
+						if (vertexdata != "")
+							vertexdata += ", ";
 						vertexdata += vc.VertexCount.ToString() + ent;
 						newvert.SubItems.Add(vertexdata);
 						listViewVertices.Items.Add(newvert);

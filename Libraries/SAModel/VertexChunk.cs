@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace SAModel
 {
@@ -464,22 +465,30 @@ namespace SAModel
 			switch (WeightStatus)
 			{
 				case WeightStatus.Start:
-					weighttype = "FW_START";
+					weighttype = "|FW_START";
 					break;
 				case WeightStatus.Middle:
-					weighttype = "FW_MIDDLE";
+					weighttype = "|FW_MIDDLE";
 					break;
 				case WeightStatus.End:
-					weighttype = "FW_END";
+					weighttype = "|FW_END";
 					break;
 			}
 			string vertcalctype = string.Empty;
-			if (Flags >> 4 == 8)
-				vertcalctype = "FV_CONT|";
-			switch(Type)
+			if (Flags >> 4 == 0xC)
+				vertcalctype = "FV_SHAPE|FV_CONT";
+			else if (Flags >> 4 == 8)
+				vertcalctype = "FV_CONT";
+			else if (Flags >>4 == 4)
+				vertcalctype = "FV_SHAPE";
+			else
+				vertcalctype = "0x0";
+			ushort nflagindex = 0;
+			float nflagval = 0.0f;
+			switch (Type)
 			{
 				case ChunkType.Vertex_VertexSH:
-					writer.WriteLine("\tCnkV_SH(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_SH(" + vertcalctype + ", " + (VertexCount * 4 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -487,7 +496,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalSH:
-					writer.WriteLine("\tCnkV_VN_SH(0, " + (VertexCount * 8 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_VN_SH(" + vertcalctype + ", " + (VertexCount * 8 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -496,7 +505,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_Vertex:
-					writer.WriteLine("\tCnkV(0, " + (VertexCount * 3 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV(" + vertcalctype + ", " + (VertexCount * 3 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -504,7 +513,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexDiffuse8:
-					writer.WriteLine("\tCnkV_D8(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_D8(" + vertcalctype + ", " + (VertexCount * 4 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -513,7 +522,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexUserFlags:
-					writer.WriteLine("\tCnkV_UF(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_UF(" + vertcalctype + ", " + (VertexCount * 4 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -522,19 +531,26 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNinjaFlags:
-					if (HasWeight)
+					//if (HasWeight)
 						writer.WriteLine("\tCnkV_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 4 + 1).ToString() + "),");
-					else
-						writer.WriteLine("\tCnkV_NF(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					//else
+					//	writer.WriteLine("\tCnkV_NF(" + vertcalctype + ", " + (VertexCount * 4 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
 						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNFlags(0x" + NinjaFlags[i].ToString("X8").ToLowerInvariant() + "),");
+						//Version 1. Uncomment if problems arise
+						//writer.WriteLine("\tNFlags(0x" + NinjaFlags[i].ToString("X8").ToLowerInvariant() + "),");
+
+						//Version 2
+						nflagindex = (ushort)NinjaFlags[i];
+						//nflagval = (float)((ushort)(NinjaFlags[i] >> 16) * 65535.0F) / 100.0F + 0.5F;
+						nflagval = (float)((NinjaFlags[i] >> 16) / 255.0F * 100.0F);
+						writer.WriteLine("\tNFlagsW( " + nflagindex + ", " + nflagval + " ),");
 					}
 					break;
 				case ChunkType.Vertex_VertexDiffuseSpecular5:
-					writer.WriteLine("\tCnkV_S5(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_S5(" + vertcalctype + ", " + (VertexCount * 4 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -544,7 +560,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexDiffuseSpecular4:
-					writer.WriteLine("\tCnkV_S4(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_S4(" + vertcalctype + ", " + (VertexCount * 4 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -554,7 +570,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexDiffuseSpecular16:
-					writer.WriteLine("\tCnkV_IN(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_IN(" + vertcalctype + ", " + (VertexCount * 4 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -563,7 +579,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormal:
-					writer.WriteLine("\tCnkV_VN(0, " + (VertexCount * 6 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_VN(" + vertcalctype + ", " + (VertexCount * 6 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -572,7 +588,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalDiffuse8:
-					writer.WriteLine("\tCnkV_VN_D8(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_VN_D8(" + vertcalctype + ", " + (VertexCount * 7 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -582,7 +598,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalUserFlags:
-					writer.WriteLine("\tCnkV_VN_UF(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_VN_UF(" + vertcalctype + ", " + (VertexCount * 7 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -592,20 +608,27 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalNinjaFlags:
-					if (HasWeight)
+					//if (HasWeight)
 						writer.WriteLine("\tCnkV_VN_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 7 + 1).ToString() + "),");
-					else
-						writer.WriteLine("\tCnkV_VN_NF(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					//else
+						//writer.WriteLine("\tCnkV_VN_NF(" + vertcalctype + ", " + (VertexCount * 7 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
 						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNFlags(0x" + NinjaFlags[i].ToString("X8").ToLowerInvariant() + "),");
+						//Version 1. Uncomment if problems arise
+						//writer.WriteLine("\tNFlags(0x" + NinjaFlags[i].ToString("X8").ToLowerInvariant() + "),");
+
+						//Version 2
+						nflagindex = (ushort)NinjaFlags[i];
+						//nflagval = (float)((ushort)(NinjaFlags[i] >> 16) * 65535.0F) / 100.0F + 0.5F;
+						nflagval = (float)((NinjaFlags[i] >> 16) / 255.0F * 100.0F);
+						writer.WriteLine("\tNFlagsW( " + nflagindex + ", " + nflagval + " ),");
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
-					writer.WriteLine("\tCnkV_VN_S5(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_VN_S5(" + vertcalctype + ", " + (VertexCount * 7 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -616,7 +639,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
-					writer.WriteLine("\tCnkV_VN_S4(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_VN_S4(" + vertcalctype + ", " + (VertexCount * 7 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -627,7 +650,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular16:
-					writer.WriteLine("\tCnkV_VN_IN(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_VN_IN(" + vertcalctype + ", " + (VertexCount * 7 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -637,7 +660,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalX:
-					writer.WriteLine("\tCnkV_VNX(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_VNX(" + vertcalctype + ", " + (VertexCount * 4 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -646,7 +669,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalXDiffuse8:
-					writer.WriteLine("\tCnkV_VNX_D8(0, " + (VertexCount * 5 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_VNX_D8(" + vertcalctype + ", " + (VertexCount * 5 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -656,7 +679,7 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalXUserFlags:
-					writer.WriteLine("\tCnkV_VNX_UF(0, " + (VertexCount * 5 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_VNX_UF(" + vertcalctype + ", " + (VertexCount * 5 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{

@@ -309,9 +309,9 @@ namespace SAModel.GC
 						material.SourceAlpha = blend.NJSourceAlpha; 
 						material.DestinationAlpha = blend.NJDestAlpha;
 						break;
-					case ParameterType.AmbientColor:
-						var ambientCol = param as AmbientColorParameter; 
-						material.DiffuseColor = ambientCol.AmbientColor.SystemCol; 
+					case ParameterType.DiffuseColor:
+						var diffuseCol = param as DiffuseColorParameter; 
+						material.DiffuseColor = diffuseCol.DiffuseColor.SystemCol; 
 						break;
 					case ParameterType.Texture:
 						var tex = param as TextureParameter;
