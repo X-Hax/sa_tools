@@ -196,10 +196,7 @@ namespace TextureLib
 			HeaderlessData = new byte[dataSize];
 			// DMA offset
 			if (PvrDataFormat == PvrDataFormat.SquareTwiddledMipmapsDma)
-			{
 				currentOffset += 4;
-				dataSize -= 4;
-			}
 			Array.Copy(RawData, currentOffset, HeaderlessData, 0, dataSize);
 
 			ReadOnlySpan<byte> palette = DecodeInternalPalette(dataCodec, out int paletteSize);
