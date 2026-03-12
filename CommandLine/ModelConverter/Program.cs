@@ -11,6 +11,15 @@ namespace ModelConverter
 	{
 		static void Main(string[] args)
 		{
+			if ((args[0] == "-h" || args[0] == "--help"))
+			{
+				Console.WriteLine("ModelConverter, X-Hax");
+				Console.WriteLine("Usage: ModelConverter [file] [format]");
+				Console.WriteLine("Formats: \n- basic (.sa1mdl) \n- basicdx (.sa1mdl) \n- chunk (.sa2mdl) \n- gc (.sa2bmdl) \n- xj (.xjmdl)");
+				
+				return;
+			}
+
 			string filename;
 			if (args.Length > 0)
 			{
