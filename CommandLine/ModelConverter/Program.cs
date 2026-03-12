@@ -11,7 +11,7 @@ namespace ModelConverter
 	{
 		static void Main(string[] args)
 		{
-			if ((args[0] == "-h" || args[0] == "--help"))
+			if (args.Length > 0 && (args[0] == "-h" || args[0] == "--help"))
 			{
 				Console.WriteLine("ModelConverter, X-Hax");
 				Console.WriteLine("Usage: ModelConverter [file] [format]");
