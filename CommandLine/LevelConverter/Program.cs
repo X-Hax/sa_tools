@@ -11,6 +11,15 @@ namespace LevelConverter
 	{
 		static void Main(string[] args)
 		{
+			if (args.Length > 0 && (args[0] == "-h" || args[0] == "--help"))
+			{
+				Console.WriteLine("LevelConverter, X-Hax");
+				Console.WriteLine("Usage: LevelConverter [file] [format]");
+				Console.WriteLine("Formats: \n- SA1 (.sa1lvl) \n- SADX (.sa1lvl) \n- SA2 (.sa2lvl) \n- SA2B (.sa2blvl) (Conversion to not supported)");
+
+				return;
+			}
+
 			string filename;
 			if (args.Length > 0)
 			{
