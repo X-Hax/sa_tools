@@ -58,6 +58,8 @@ namespace SAToolsHub
 		public static List<Templates.SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static List<Templates.SplitEntryEvent> projSplitEventEntries { get; set; }
 		public static SAToolsHubSettings hubSettings { get; set; }
+
+		private string updatePath;
 		List<string> copyPaths;
 		public static bool resplit { get; set; }
 
@@ -89,7 +91,9 @@ namespace SAToolsHub
 		public SAToolsHub()
 		{
 			InitializeComponent();
-			toolStripLabelBuildDate.Text = "Build Date: " + File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture);
+			updatePath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), ".updates");
+			string currentTagName = File.Exists("satoolsver.txt") ? File.ReadAllText("satoolsver.txt") : "Unknown";
+			toolStripLabelBuildDate.Text = "Version: " + currentTagName + " (Built " + File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture) +")";
 			lvwColumnSorter = new ListViewColumnSorter();
 			this.listView1.ListViewItemSorter = lvwColumnSorter;
 			Application.ThreadException += Application_ThreadException;
@@ -1486,7 +1490,6 @@ namespace SAToolsHub
 		#endregion
 
 		#region Update Code
-		const string updatePath = ".updates";
 
 		private static bool UpdateTimeElapsed(SAToolsHubSettings.UpdateUnits unit, int amount, DateTime start)
 		{
