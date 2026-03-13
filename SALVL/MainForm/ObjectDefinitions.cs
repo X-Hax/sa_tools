@@ -118,7 +118,7 @@ namespace SAModel.SALVL
 					// Otherwise, if the model file doesn't exist and/or no texture file is defined,
 					// load the "default object" instead ("?").
 
-					//SA2 Check
+					// SA2 Check
 					if (defgroup.TexturePacks.Count > 0)
 					{
 						if (!File.Exists(defgroup.Model) || // Model file missing OR
@@ -132,14 +132,26 @@ namespace SAModel.SALVL
 							defgroup.Model = null;
 						}
 					}
+					// General check
 					else
 					{
-						if (!File.Exists(defgroup.Model) || // Model file missing OR
-							string.IsNullOrEmpty(defgroup.Texture) || // Texture file undefined OR
-							LevelData.Textures == null ||  // Textures not loaded OR
-									((!LevelData.Textures.ContainsKey(defgroup.Texture) && // Texture file not among loaded textures 1 AND
-									(!LevelData.Textures.ContainsKey(defgroup.Texture.ToLowerInvariant()) && // Texture file not among loaded textures 2 AND
-									(!LevelData.Textures.ContainsKey(defgroup.Texture.ToUpperInvariant())))))) // Texture file not among loaded textures 3
+						bool err = false;
+						// Model file missing
+						if (!File.Exists(defgroup.Model))
+							err = true;
+						// Textures not loaded at all
+						else if (LevelData.Textures == null)
+							err = true;
+						// Check object textures
+						if (!string.IsNullOrEmpty(defgroup.Texture))
+						{
+							// Texture file not among loaded textures
+							if (!LevelData.Textures.ContainsKey(defgroup.Texture) &&
+							   !LevelData.Textures.ContainsKey(defgroup.Texture.ToLowerInvariant()) &&
+							   !LevelData.Textures.ContainsKey(defgroup.Texture.ToUpperInvariant()))
+								err = true;
+						}
+						if (err)
 						{
 							ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
 							objectErrors.Add(error);
