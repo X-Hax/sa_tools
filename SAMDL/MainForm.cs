@@ -923,7 +923,8 @@ namespace SAModel.SAMDL
 				settingsfile.AlternativeCamera = alternativeCameraModeToolStripMenuItem.Checked;
 				settingsfile.Save();
 			}
-			catch { };
+			catch { }
+			;
 			AnimationTimer.Stop();
 		}
 
@@ -4559,6 +4560,78 @@ namespace SAModel.SAMDL
 		private void exportNJTLChunkToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			settingsfile.ExportNJTL = exportNJTLChunkToolStripMenuItem.Checked;
+		}
+
+		private void ninjaDefaultToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string outfn = !string.IsNullOrEmpty(currentFileName) ? Path.ChangeExtension(Path.GetFileName(currentFileName), ".nja") : "model.nja";
+			using (SaveFileDialog sd = new SaveFileDialog() { FileName = outfn, DefaultExt = "nja", Filter = "Ninja Ascii Files|*.nja" })
+				if (sd.ShowDialog(this) == DialogResult.OK)
+				{
+					List<string> labels = new List<string>() { model.Name };
+					using (StreamWriter sw = File.CreateText(sd.FileName))
+					{
+						if (TexList != null)
+							TexList.ToNJA(sw, labels);
+						else if (TexturePackName != null)
+						{
+							string[] texnames = new string[TextureInfoCurrent.Length];
+							for (int i = 0; i < TextureInfoCurrent.Length; i++)
+								texnames[i] = string.Format("{0}", TextureInfoCurrent[i].Name);
+							NJS_TEXLIST tls = new NJS_TEXLIST(texnames);
+							tls.Name = "texlist_" + TexturePackName;
+							tls.TexnameArrayName = "textures_" + TexturePackName;
+							tls.ToNJA(sw, labels);
+						}
+						if (rootSiblingMode)
+							model.Children[0].ToNJA(sw, labels, labels.ToArray());
+						else
+							model.ToNJA(sw, labels, labels.ToArray());
+						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
+						{
+							foreach (NJS_MOTION anim in animationList)
+							{
+								anim.ToNJA(sw, labels);
+							}
+						}
+					}
+				}
+		}
+
+		private void ninja2ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string outfn = !string.IsNullOrEmpty(currentFileName) ? Path.ChangeExtension(Path.GetFileName(currentFileName), ".nja") : "model.nja";
+			using (SaveFileDialog sd = new SaveFileDialog() { FileName = outfn, DefaultExt = "nja", Filter = "Ninja Ascii Files|*.nja" })
+				if (sd.ShowDialog(this) == DialogResult.OK)
+				{
+					List<string> labels = new List<string>() { model.Name };
+					using (StreamWriter sw = File.CreateText(sd.FileName))
+					{
+						if (TexList != null)
+							TexList.ToNJA(sw, labels);
+						else if (TexturePackName != null)
+						{
+							string[] texnames = new string[TextureInfoCurrent.Length];
+							for (int i = 0; i < TextureInfoCurrent.Length; i++)
+								texnames[i] = string.Format("{0}", TextureInfoCurrent[i].Name);
+							NJS_TEXLIST tls = new NJS_TEXLIST(texnames);
+							tls.Name = "texlist_" + TexturePackName;
+							tls.TexnameArrayName = "textures_" + TexturePackName;
+							tls.ToNJA(sw, labels);
+						}
+						if (rootSiblingMode)
+							model.Children[0].ToNJA(sw, labels, labels.ToArray(), isNinja2: true);
+						else
+							model.ToNJA(sw, labels, labels.ToArray(), isNinja2: true);
+						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
+						{
+							foreach (NJS_MOTION anim in animationList)
+							{
+								anim.ToNJA(sw, labels);
+							}
+						}
+					}
+				}
 		}
 	}
 }

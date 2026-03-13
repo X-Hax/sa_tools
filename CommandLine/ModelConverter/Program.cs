@@ -11,6 +11,22 @@ namespace ModelConverter
 	{
 		static void Main(string[] args)
 		{
+			if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
+			{
+				Console.WriteLine("ModelConverter is a command line tool to convert model files to other formats used in SA1/2.");
+				Console.WriteLine("Usage:\n");
+				Console.WriteLine("Converting a file:\nModelConverter <modelFile> <modelFormat>\n");
+				Console.WriteLine("Supported Formats:");
+				Console.WriteLine("Basic (.sa1mdl)");
+				Console.WriteLine("BasicDX (.sa1mdl)");
+				Console.WriteLine("Chunk (.sa2mdl)");
+				Console.WriteLine("GC (.sa2bmdl)");
+				Console.WriteLine("XJ (.xjmdl)\n");
+				Console.WriteLine("Press ENTER to exit.");
+				Console.ReadLine();
+				return;
+			}
+
 			string filename;
 			if (args.Length > 0)
 			{

@@ -10,6 +10,17 @@ namespace SplitShapeMotion
 	{
 		private static void Main(string[] args)
 		{
+			if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
+			{
+				Console.WriteLine("SplitShapeMotion is a command line tool for splitting shape motion files into individual models.\n");
+				Console.WriteLine("Usage:\n");
+				Console.WriteLine("SplitShapeMotion <base model> <motion> [output directory]\n");
+				Console.WriteLine("Note: If the shape motion data doesn't match with the base model, it will lead to unintended morphing.");
+				Console.WriteLine("The output directory defaults to the same location as the motion file, with the same name as the motion file.\n");
+				Console.WriteLine("Press ENTER to exit.");
+				return;
+			}
+
 			string baseModelName;
 
 			if (args.Length > 0)

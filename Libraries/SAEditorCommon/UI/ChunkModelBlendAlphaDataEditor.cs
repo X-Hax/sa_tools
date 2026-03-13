@@ -1,8 +1,9 @@
-﻿using System;
+﻿using SAModel.Direct3D.TextureSystem;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using SAModel.Direct3D.TextureSystem;
+using static SAModel.PolyChunkVolume;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -44,6 +45,8 @@ namespace SAModel.SAEditorCommon.UI
 			PolyChunkBitsBlendAlpha pba = (PolyChunkBitsBlendAlpha)poly;
 			srcAlphaCombo.SelectedIndex = (int)pba.SourceAlpha;
 			dstAlphaCombo.SelectedIndex = (int)pba.DestinationAlpha;
+			checkBoxSourceBuffer.Checked = pba.SourceBufferSelect;
+			checkBoxDestBuffer.Checked = pba.DestinationBufferSelect;
 
 			//DisplayFlags(index);
 
@@ -75,6 +78,8 @@ namespace SAModel.SAEditorCommon.UI
 			PolyChunkBitsBlendAlpha pba = (PolyChunkBitsBlendAlpha)PolyData;
 			pba.SourceAlpha = (AlphaInstruction)srcAlphaCombo.SelectedIndex;
 			pba.DestinationAlpha = (AlphaInstruction)dstAlphaCombo.SelectedIndex;
+			pba.SourceBufferSelect = checkBoxSourceBuffer.Checked;
+			pba.DestinationBufferSelect = checkBoxDestBuffer.Checked;
 		}
 
 		#endregion
@@ -110,14 +115,17 @@ namespace SAModel.SAEditorCommon.UI
 		}
 		#endregion
 
-		private void generalSettingBox_Enter(object sender, EventArgs e)
+		private void checkBoxSourceBuffer_Click(object sender, EventArgs e)
 		{
-
+			PolyChunkBitsBlendAlpha pba = (PolyChunkBitsBlendAlpha)PolyData;
+			pba.SourceBufferSelect = checkBoxSourceBuffer.Checked;
+			RaiseFormUpdated();
 		}
-
-		private void label1_Click(object sender, EventArgs e)
+		private void checkBoxDestBuffer_Click(object sender, EventArgs e)
 		{
-
+			PolyChunkBitsBlendAlpha pba = (PolyChunkBitsBlendAlpha)PolyData;
+			pba.DestinationBufferSelect = checkBoxDestBuffer.Checked;
+			RaiseFormUpdated();
 		}
 	}
 }

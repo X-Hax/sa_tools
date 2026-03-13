@@ -33,9 +33,9 @@ namespace BuildEvent
 
 		private static void Main(string[] args)
 		{
-			if (args.Length == 0)
+			if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
 			{
-				Console.WriteLine("This program builds SA2 Event files with optional settings.\n");
+				Console.WriteLine("BuildEvent is a command line tool for building SA2 Event files with optional settings.\n");
 				Console.WriteLine("File types are automatically detected if they match the names that the game normally loads.");
 				Console.WriteLine("\te.g E0127.PRS is a main Event file\n\tE0127_0.PRS is an Event Extra file");
 				Console.WriteLine("\tME0127.PRS is a Mini-Event file\n\tME0127_0.SCR is a Mini-Event Extra File");

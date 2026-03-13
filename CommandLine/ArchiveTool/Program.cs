@@ -12,7 +12,7 @@ namespace ArchiveTool
         static void Main(string[] args)
         {
             // Usage
-            if (args.Length == 0)
+            if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
             {
                 Console.WriteLine("ArchiveTool is a command line tool to extract and create archives in various formats used in SA1/2.");
                 Console.WriteLine("Usage:\n");

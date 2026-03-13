@@ -14,7 +14,9 @@ namespace PAKtool
 		static void Main(string[] args)
 		{
 			if (args.Length == 0)
+			{
 				args = new string[] { "/?" };
+			}
 			switch (args[0].ToLowerInvariant())
 			{
 				case "/t":
@@ -58,16 +60,16 @@ namespace PAKtool
 					catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 					break;
 				case "/?":
-					Console.WriteLine("Arguments:");
-					Console.WriteLine();
-					Console.WriteLine("/?\tShow this help.");
-					Console.WriteLine();
+					Console.WriteLine("PAKtool is a command line tool that packs and unpacks PAK archives.\n");
+					Console.WriteLine("Usage:\n");
+					Console.WriteLine("PAKtool [/?|/t|/u|/p] <filename>");
+					Console.WriteLine("Arguments:\n");
+					Console.WriteLine("/?\t\tShow this help.");
 					Console.WriteLine("/t filename\tReads text file filename as a commandline.");
-					Console.WriteLine();
 					Console.WriteLine("/u filename\tExtracts files from an archive.");
-					Console.WriteLine();
 					Console.WriteLine("/p filename\tPacks files into an archive.");
-					Console.WriteLine();
+					Console.WriteLine("Press ENTER to exit.");
+					Console.ReadLine();
 					break;
 				default:
 					if (args.Length == 0) goto case "/?";

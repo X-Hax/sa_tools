@@ -196,7 +196,17 @@ namespace SAModel
 			get { return (AlphaInstruction)(Flags & 7); }
 			set { Flags = (byte)((Flags & ~7) | (byte)value); }
 		}
+		public bool SourceBufferSelect
+		{
+			get { return (Flags & 0x40) == 0x40; }
+			set { Flags = (byte)((Flags & ~0x40) | (value ? 0x40 : 0)); }
+		}
 
+		public bool DestinationBufferSelect
+		{
+			get { return (Flags & 0x80) == 0x80; }
+			set { Flags = (byte)((Flags & ~0x80) | (value ? 0x80 : 0 )); }
+		}
 		public PolyChunkBitsBlendAlpha()
 		{
 			Type = ChunkType.Bits_BlendAlpha;
@@ -266,8 +276,14 @@ namespace SAModel
 					blendDstStr = "FBD_IDA";
 					break;
 			}
+			string sourcebffr = string.Empty;
+			string dstbffr = string.Empty;
+			if (SourceBufferSelect)
+				sourcebffr = "|FBS_SEL";
+			if (DestinationBufferSelect)
+				dstbffr = "|FBD_SEL";
 
-			writer.WriteLine("\tCnkB_BA( " + blendSrcStr.ToString() + "|" + blendDstStr.ToString() + " ),");
+			writer.WriteLine("\tCnkB_BA( " + blendSrcStr.ToString() + "|" + blendDstStr.ToString() + sourcebffr + dstbffr + " ),");
 		}
 	}
 
@@ -371,7 +387,62 @@ namespace SAModel
 
 		public override void ToNJA(TextWriter writer)
 		{
-			throw new NotSupportedException("Unsupported chunk type " + Type + ".");
+			string bits = "FEXP_";
+			switch (Flags & 0x1F)
+			{
+				case 0:
+					bits += "00";
+					break;
+				case 1:
+					bits += "01";
+					break;
+				case 2:
+					bits += "02";
+					break;
+				case 3:
+					bits += "03";
+					break;
+				case 4:
+					bits += "04";
+					break;
+				case 5:
+					bits += "05";
+					break;
+				case 6:
+					bits += "06";
+					break;
+				case 7:
+					bits += "07";
+					break;
+				case 8:
+					bits += "08";
+					break;
+				case 9:
+					bits += "09";
+					break;
+				case 10:
+					bits += "10";
+					break;
+				case 11:
+					bits += "11";
+					break;
+				case 12:
+					bits += "12";
+					break;
+				case 13:
+					bits += "13";
+					break;
+				case 14:
+					bits += "14";
+					break;
+				case 15:
+					bits += "15";
+					break;
+				case 16:
+					bits += "16";
+					break;
+			}
+			writer.WriteLine("\tCnkB_EXP( " + bits + " ),");
 		}
 	}
 
@@ -647,6 +718,18 @@ namespace SAModel
 			set { Flags = (byte)((Flags & ~7) | (byte)value); }
 		}
 
+		public bool SourceBufferSelect
+		{
+			get { return (Flags & 0x40) == 0x40; }
+			set { Flags = (byte)((Flags & ~0x40) | (value ? 0x40 : 0)); }
+		}
+
+		public bool DestinationBufferSelect
+		{
+			get { return (Flags & 0x80) == 0x80; }
+			set { Flags = (byte)((Flags & ~0x80) | (value ? 0x80 : 0)); }
+		}
+
 		public Color? Diffuse { get; set; }
 		public Color? Ambient { get; set; }
 		public Color? Specular { get; set; }
@@ -854,12 +937,17 @@ namespace SAModel
 					blendDstStr = "FBD_IDA";
 					break;
 			}
-
-			writer.WriteLine("\tCnkM_" + letters + "( " + blendSrcStr.ToString() + "|" + blendDstStr.ToString() + " ), " + size.ToString() +",");
+			string sourcebffr = string.Empty;
+			string dstbffr = string.Empty;
+			if (SourceBufferSelect)
+				sourcebffr = "|FBS_SEL";
+			if (DestinationBufferSelect)
+				dstbffr = "|FBD_SEL";
+			writer.WriteLine("\tCnkM_" + letters + "( " + blendSrcStr.ToString() + "|" + blendDstStr.ToString() + sourcebffr + dstbffr + " ), " + size.ToString() +",");
 			if (Diffuse.HasValue)
 				writer.WriteLine("\tMDiff( " + Diffuse.Value.A.ToString() + ", " + Diffuse.Value.R.ToString() + ", " + Diffuse.Value.G.ToString() + ", " + Diffuse.Value.B.ToString() + " ),");
 			if (Ambient.HasValue)
-				writer.WriteLine("\tMAmbi( " + Ambient.Value.A.ToString() + ", " + Ambient.Value.R.ToString() + ", " + Ambient.Value.G.ToString() + ", " + Ambient.Value.B.ToString() + " ),");
+				writer.WriteLine("\tMAmbi( 255" + ", " + Ambient.Value.R.ToString() + ", " + Ambient.Value.G.ToString() + ", " + Ambient.Value.B.ToString() + " ),");
 			if (Specular.HasValue)
 				writer.WriteLine("\tMSpec( " + SpecularExponent.ToString() + ", " + Specular.Value.R.ToString() + ", " + Specular.Value.G.ToString() + ", " + Specular.Value.B.ToString() + " ),");
 		}
@@ -868,12 +956,12 @@ namespace SAModel
 	[Serializable]
 	public class PolyChunkMaterialBump : PolyChunkSize
 	{
-		public ushort DX { get; set; }
-		public ushort DY { get; set; }
-		public ushort DZ { get; set; }
-		public ushort UX { get; set; }
-		public ushort UY { get; set; }
-		public ushort UZ { get; set; }
+		public short DX { get; set; }
+		public short DY { get; set; }
+		public short DZ { get; set; }
+		public short UX { get; set; }
+		public short UY { get; set; }
+		public short UZ { get; set; }
 
 		public PolyChunkMaterialBump()
 		{
@@ -887,17 +975,17 @@ namespace SAModel
 			address += sizeof(ushort);
 			Size = ByteConverter.ToUInt16(file, address);
 			address += sizeof(ushort);
-			DX = ByteConverter.ToUInt16(file, address);
+			DX = ByteConverter.ToInt16(file, address);
 			address += sizeof(ushort);
-			DY = ByteConverter.ToUInt16(file, address);
+			DY = ByteConverter.ToInt16(file, address);
 			address += sizeof(ushort);
-			DZ = ByteConverter.ToUInt16(file, address);
+			DZ = ByteConverter.ToInt16(file, address);
 			address += sizeof(ushort);
-			UX = ByteConverter.ToUInt16(file, address);
+			UX = ByteConverter.ToInt16(file, address);
 			address += sizeof(ushort);
-			UY = ByteConverter.ToUInt16(file, address);
+			UY = ByteConverter.ToInt16(file, address);
 			address += sizeof(ushort);
-			UZ = ByteConverter.ToUInt16(file, address);
+			UZ = ByteConverter.ToInt16(file, address);
 			address += sizeof(ushort);
 		}
 
@@ -915,7 +1003,15 @@ namespace SAModel
 
 		public override void ToNJA(TextWriter writer)
 		{
-			throw new NotSupportedException("Unsupported chunk type " + Type + ".");
+			float DXVal = DX / 32767F;
+			float DYVal = DY / 32767F;
+			float DZVal = DZ / 32767F;
+			float UXVal = UX / 32767F;
+			float UYVal = UY / 32767F;
+			float UZVal = UZ / 32767F;
+			writer.WriteLine("\tCnkM_BU(0), 6,");
+			writer.WriteLine("\t_BuDir(  " + DXVal.ToNJA() + ",  " + DYVal.ToNJA() + ",  " + DZVal.ToNJA() + "),");
+			writer.WriteLine("\t_BuUp(  " + UXVal.ToNJA() + ",  " + UYVal.ToNJA() + ",  " + UZVal.ToNJA() + "),");
 		}
 	}
 

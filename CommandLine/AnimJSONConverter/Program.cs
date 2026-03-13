@@ -11,6 +11,15 @@ namespace AnimJSONConverter
 	{
 		static void Main(string[] args)
 		{
+			if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
+			{
+				Console.WriteLine("AnimJSONConverter is a command line tool to convert Ninja motion files to JSON files and vice verse.\n");
+				Console.WriteLine("Usage:\n");
+				Console.WriteLine("AnimJSONConverter <inputAnimationFile> [outputAnimationFile ...]\n");
+				Console.WriteLine("Press ENTER to exit.");
+				Console.ReadLine();
+				return;
+			}
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);

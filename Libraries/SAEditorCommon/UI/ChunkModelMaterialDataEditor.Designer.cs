@@ -69,6 +69,8 @@
 			label9 = new System.Windows.Forms.Label();
 			label10 = new System.Windows.Forms.Label();
 			blendModeSettingsBox = new System.Windows.Forms.GroupBox();
+			checkBoxDestBuffer = new System.Windows.Forms.CheckBox();
+			checkBoxSourceBuffer = new System.Windows.Forms.CheckBox();
 			useDiffuseCheckBox = new System.Windows.Forms.CheckBox();
 			useAmbientCheckBox = new System.Windows.Forms.CheckBox();
 			useSpecularCheckBox = new System.Windows.Forms.CheckBox();
@@ -122,7 +124,7 @@
 			diffuseBUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			diffuseBUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			diffuseBUpDown.Name = "diffuseBUpDown";
-			diffuseBUpDown.Size = new System.Drawing.Size(73, 31);
+			diffuseBUpDown.Size = new System.Drawing.Size(73, 23);
 			diffuseBUpDown.TabIndex = 8;
 			diffuseBUpDown.ValueChanged += diffuseBUpDown_ValueChanged;
 			// 
@@ -132,7 +134,7 @@
 			diffuseGUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			diffuseGUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			diffuseGUpDown.Name = "diffuseGUpDown";
-			diffuseGUpDown.Size = new System.Drawing.Size(73, 31);
+			diffuseGUpDown.Size = new System.Drawing.Size(73, 23);
 			diffuseGUpDown.TabIndex = 7;
 			diffuseGUpDown.ValueChanged += diffuseGUpDown_ValueChanged;
 			// 
@@ -142,7 +144,7 @@
 			diffuseRUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			diffuseRUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			diffuseRUpDown.Name = "diffuseRUpDown";
-			diffuseRUpDown.Size = new System.Drawing.Size(73, 31);
+			diffuseRUpDown.Size = new System.Drawing.Size(73, 23);
 			diffuseRUpDown.TabIndex = 6;
 			diffuseRUpDown.ValueChanged += diffuseRUpDown_ValueChanged;
 			// 
@@ -151,7 +153,7 @@
 			label4.AutoSize = true;
 			label4.Location = new System.Drawing.Point(163, 83);
 			label4.Name = "label4";
-			label4.Size = new System.Drawing.Size(49, 25);
+			label4.Size = new System.Drawing.Size(33, 15);
 			label4.TabIndex = 5;
 			label4.Text = "Blue:";
 			// 
@@ -160,7 +162,7 @@
 			label2.AutoSize = true;
 			label2.Location = new System.Drawing.Point(9, 83);
 			label2.Name = "label2";
-			label2.Size = new System.Drawing.Size(62, 25);
+			label2.Size = new System.Drawing.Size(41, 15);
 			label2.TabIndex = 4;
 			label2.Text = "Green:";
 			// 
@@ -169,7 +171,7 @@
 			label1.AutoSize = true;
 			label1.Location = new System.Drawing.Point(166, 34);
 			label1.Name = "label1";
-			label1.Size = new System.Drawing.Size(46, 25);
+			label1.Size = new System.Drawing.Size(30, 15);
 			label1.TabIndex = 3;
 			label1.Text = "Red:";
 			// 
@@ -179,7 +181,7 @@
 			labelAlpha.Location = new System.Drawing.Point(9, 130);
 			labelAlpha.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			labelAlpha.Name = "labelAlpha";
-			labelAlpha.Size = new System.Drawing.Size(62, 25);
+			labelAlpha.Size = new System.Drawing.Size(41, 15);
 			labelAlpha.TabIndex = 2;
 			labelAlpha.Text = "Alpha:";
 			// 
@@ -189,7 +191,7 @@
 			alphaDiffuseNumeric.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			alphaDiffuseNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			alphaDiffuseNumeric.Name = "alphaDiffuseNumeric";
-			alphaDiffuseNumeric.Size = new System.Drawing.Size(73, 31);
+			alphaDiffuseNumeric.Size = new System.Drawing.Size(73, 23);
 			alphaDiffuseNumeric.TabIndex = 2;
 			alphaDiffuseNumeric.ValueChanged += alphaDiffuseNumeric_ValueChanged;
 			// 
@@ -211,7 +213,7 @@
 			diffuseLabel.Location = new System.Drawing.Point(12, 34);
 			diffuseLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			diffuseLabel.Name = "diffuseLabel";
-			diffuseLabel.Size = new System.Drawing.Size(59, 25);
+			diffuseLabel.Size = new System.Drawing.Size(39, 15);
 			diffuseLabel.TabIndex = 0;
 			diffuseLabel.Text = "Color:";
 			// 
@@ -233,7 +235,7 @@
 			ambientLabel.Location = new System.Drawing.Point(12, 34);
 			ambientLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			ambientLabel.Name = "ambientLabel";
-			ambientLabel.Size = new System.Drawing.Size(59, 25);
+			ambientLabel.Size = new System.Drawing.Size(39, 15);
 			ambientLabel.TabIndex = 16;
 			ambientLabel.Text = "Color:";
 			// 
@@ -245,7 +247,7 @@
 			dstAlphaCombo.Location = new System.Drawing.Point(34, 130);
 			dstAlphaCombo.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			dstAlphaCombo.Name = "dstAlphaCombo";
-			dstAlphaCombo.Size = new System.Drawing.Size(244, 33);
+			dstAlphaCombo.Size = new System.Drawing.Size(244, 23);
 			dstAlphaCombo.TabIndex = 8;
 			dstAlphaCombo.SelectedIndexChanged += dstAlphaCombo_SelectedIndexChanged;
 			// 
@@ -267,7 +269,7 @@
 			destinationAlphaLabel.Location = new System.Drawing.Point(29, 104);
 			destinationAlphaLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			destinationAlphaLabel.Name = "destinationAlphaLabel";
-			destinationAlphaLabel.Size = new System.Drawing.Size(157, 25);
+			destinationAlphaLabel.Size = new System.Drawing.Size(104, 15);
 			destinationAlphaLabel.TabIndex = 13;
 			destinationAlphaLabel.Text = "Destination Alpha:";
 			// 
@@ -276,7 +278,7 @@
 			exponentTextBox.Location = new System.Drawing.Point(248, 33);
 			exponentTextBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			exponentTextBox.Name = "exponentTextBox";
-			exponentTextBox.Size = new System.Drawing.Size(61, 31);
+			exponentTextBox.Size = new System.Drawing.Size(61, 23);
 			exponentTextBox.TabIndex = 5;
 			exponentTextBox.Leave += exponentTextBox_Leave;
 			// 
@@ -288,7 +290,7 @@
 			srcAlphaCombo.Location = new System.Drawing.Point(34, 62);
 			srcAlphaCombo.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			srcAlphaCombo.Name = "srcAlphaCombo";
-			srcAlphaCombo.Size = new System.Drawing.Size(244, 33);
+			srcAlphaCombo.Size = new System.Drawing.Size(244, 23);
 			srcAlphaCombo.TabIndex = 7;
 			srcAlphaCombo.SelectionChangeCommitted += srcAlphaCombo_SelectionChangeCommitted;
 			// 
@@ -298,7 +300,7 @@
 			srcAlphaLabel.Location = new System.Drawing.Point(29, 36);
 			srcAlphaLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			srcAlphaLabel.Name = "srcAlphaLabel";
-			srcAlphaLabel.Size = new System.Drawing.Size(121, 25);
+			srcAlphaLabel.Size = new System.Drawing.Size(80, 15);
 			srcAlphaLabel.TabIndex = 11;
 			srcAlphaLabel.Text = "Source Alpha:";
 			// 
@@ -308,7 +310,7 @@
 			exponentLabel.Location = new System.Drawing.Point(156, 36);
 			exponentLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			exponentLabel.Name = "exponentLabel";
-			exponentLabel.Size = new System.Drawing.Size(90, 25);
+			exponentLabel.Size = new System.Drawing.Size(59, 15);
 			exponentLabel.TabIndex = 6;
 			exponentLabel.Text = "Exponent:";
 			// 
@@ -318,7 +320,7 @@
 			specColorLabel.Location = new System.Drawing.Point(12, 36);
 			specColorLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			specColorLabel.Name = "specColorLabel";
-			specColorLabel.Size = new System.Drawing.Size(59, 25);
+			specColorLabel.Size = new System.Drawing.Size(39, 15);
 			specColorLabel.TabIndex = 4;
 			specColorLabel.Text = "Color:";
 			// 
@@ -376,7 +378,7 @@
 			ambientBUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ambientBUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			ambientBUpDown.Name = "ambientBUpDown";
-			ambientBUpDown.Size = new System.Drawing.Size(73, 31);
+			ambientBUpDown.Size = new System.Drawing.Size(73, 23);
 			ambientBUpDown.TabIndex = 23;
 			ambientBUpDown.ValueChanged += ambientBUpDown_ValueChanged;
 			// 
@@ -386,7 +388,7 @@
 			ambientGUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ambientGUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			ambientGUpDown.Name = "ambientGUpDown";
-			ambientGUpDown.Size = new System.Drawing.Size(73, 31);
+			ambientGUpDown.Size = new System.Drawing.Size(73, 23);
 			ambientGUpDown.TabIndex = 22;
 			ambientGUpDown.ValueChanged += ambientGUpDown_ValueChanged;
 			// 
@@ -396,7 +398,7 @@
 			ambientRUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ambientRUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			ambientRUpDown.Name = "ambientRUpDown";
-			ambientRUpDown.Size = new System.Drawing.Size(73, 31);
+			ambientRUpDown.Size = new System.Drawing.Size(73, 23);
 			ambientRUpDown.TabIndex = 21;
 			ambientRUpDown.ValueChanged += ambientRUpDown_ValueChanged;
 			// 
@@ -405,7 +407,7 @@
 			label5.AutoSize = true;
 			label5.Location = new System.Drawing.Point(163, 83);
 			label5.Name = "label5";
-			label5.Size = new System.Drawing.Size(49, 25);
+			label5.Size = new System.Drawing.Size(33, 15);
 			label5.TabIndex = 20;
 			label5.Text = "Blue:";
 			// 
@@ -414,7 +416,7 @@
 			label6.AutoSize = true;
 			label6.Location = new System.Drawing.Point(9, 83);
 			label6.Name = "label6";
-			label6.Size = new System.Drawing.Size(62, 25);
+			label6.Size = new System.Drawing.Size(41, 15);
 			label6.TabIndex = 19;
 			label6.Text = "Green:";
 			// 
@@ -423,7 +425,7 @@
 			label7.AutoSize = true;
 			label7.Location = new System.Drawing.Point(166, 34);
 			label7.Name = "label7";
-			label7.Size = new System.Drawing.Size(46, 25);
+			label7.Size = new System.Drawing.Size(30, 15);
 			label7.TabIndex = 18;
 			label7.Text = "Red:";
 			// 
@@ -452,7 +454,7 @@
 			specularBUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			specularBUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			specularBUpDown.Name = "specularBUpDown";
-			specularBUpDown.Size = new System.Drawing.Size(73, 31);
+			specularBUpDown.Size = new System.Drawing.Size(73, 23);
 			specularBUpDown.TabIndex = 21;
 			specularBUpDown.ValueChanged += specularBUpDown_ValueChanged;
 			// 
@@ -462,7 +464,7 @@
 			specularGUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			specularGUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			specularGUpDown.Name = "specularGUpDown";
-			specularGUpDown.Size = new System.Drawing.Size(73, 31);
+			specularGUpDown.Size = new System.Drawing.Size(73, 23);
 			specularGUpDown.TabIndex = 20;
 			specularGUpDown.ValueChanged += specularGUpDown_ValueChanged;
 			// 
@@ -472,7 +474,7 @@
 			specularRUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			specularRUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			specularRUpDown.Name = "specularRUpDown";
-			specularRUpDown.Size = new System.Drawing.Size(73, 31);
+			specularRUpDown.Size = new System.Drawing.Size(73, 23);
 			specularRUpDown.TabIndex = 19;
 			specularRUpDown.ValueChanged += specularRUpDown_ValueChanged;
 			// 
@@ -481,7 +483,7 @@
 			label8.AutoSize = true;
 			label8.Location = new System.Drawing.Point(22, 133);
 			label8.Name = "label8";
-			label8.Size = new System.Drawing.Size(49, 25);
+			label8.Size = new System.Drawing.Size(33, 15);
 			label8.TabIndex = 18;
 			label8.Text = "Blue:";
 			// 
@@ -490,7 +492,7 @@
 			label9.AutoSize = true;
 			label9.Location = new System.Drawing.Point(163, 84);
 			label9.Name = "label9";
-			label9.Size = new System.Drawing.Size(62, 25);
+			label9.Size = new System.Drawing.Size(41, 15);
 			label9.TabIndex = 17;
 			label9.Text = "Green:";
 			// 
@@ -499,29 +501,53 @@
 			label10.AutoSize = true;
 			label10.Location = new System.Drawing.Point(25, 84);
 			label10.Name = "label10";
-			label10.Size = new System.Drawing.Size(46, 25);
+			label10.Size = new System.Drawing.Size(30, 15);
 			label10.TabIndex = 16;
 			label10.Text = "Red:";
 			// 
 			// blendModeSettingsBox
 			// 
+			blendModeSettingsBox.Controls.Add(checkBoxDestBuffer);
+			blendModeSettingsBox.Controls.Add(checkBoxSourceBuffer);
 			blendModeSettingsBox.Controls.Add(srcAlphaCombo);
 			blendModeSettingsBox.Controls.Add(destinationAlphaLabel);
 			blendModeSettingsBox.Controls.Add(dstAlphaCombo);
 			blendModeSettingsBox.Controls.Add(srcAlphaLabel);
 			blendModeSettingsBox.Location = new System.Drawing.Point(15, 201);
 			blendModeSettingsBox.Name = "blendModeSettingsBox";
-			blendModeSettingsBox.Size = new System.Drawing.Size(323, 198);
+			blendModeSettingsBox.Size = new System.Drawing.Size(323, 222);
 			blendModeSettingsBox.TabIndex = 20;
 			blendModeSettingsBox.TabStop = false;
 			blendModeSettingsBox.Text = "Blend Modes";
+			// 
+			// checkBoxDestBuffer
+			// 
+			checkBoxDestBuffer.AutoSize = true;
+			checkBoxDestBuffer.Location = new System.Drawing.Point(149, 176);
+			checkBoxDestBuffer.Name = "checkBoxDestBuffer";
+			checkBoxDestBuffer.Size = new System.Drawing.Size(155, 19);
+			checkBoxDestBuffer.TabIndex = 15;
+			checkBoxDestBuffer.Text = "Destination Buffer Select";
+			checkBoxDestBuffer.UseVisualStyleBackColor = true;
+			checkBoxDestBuffer.Click += checkBoxDestBuffer_Click;
+			// 
+			// checkBoxSourceBuffer
+			// 
+			checkBoxSourceBuffer.AutoSize = true;
+			checkBoxSourceBuffer.Location = new System.Drawing.Point(12, 176);
+			checkBoxSourceBuffer.Name = "checkBoxSourceBuffer";
+			checkBoxSourceBuffer.Size = new System.Drawing.Size(131, 19);
+			checkBoxSourceBuffer.TabIndex = 14;
+			checkBoxSourceBuffer.Text = "Source Buffer Select";
+			checkBoxSourceBuffer.UseVisualStyleBackColor = true;
+			checkBoxSourceBuffer.Click += checkBoxSourceBuffer_Click;
 			// 
 			// useDiffuseCheckBox
 			// 
 			useDiffuseCheckBox.AutoSize = true;
 			useDiffuseCheckBox.Location = new System.Drawing.Point(359, 354);
 			useDiffuseCheckBox.Name = "useDiffuseCheckBox";
-			useDiffuseCheckBox.Size = new System.Drawing.Size(151, 29);
+			useDiffuseCheckBox.Size = new System.Drawing.Size(101, 19);
 			useDiffuseCheckBox.TabIndex = 21;
 			useDiffuseCheckBox.Text = "Enable Diffuse";
 			useDiffuseCheckBox.UseVisualStyleBackColor = true;
@@ -532,7 +558,7 @@
 			useAmbientCheckBox.AutoSize = true;
 			useAmbientCheckBox.Location = new System.Drawing.Point(522, 354);
 			useAmbientCheckBox.Name = "useAmbientCheckBox";
-			useAmbientCheckBox.Size = new System.Drawing.Size(163, 29);
+			useAmbientCheckBox.Size = new System.Drawing.Size(110, 19);
 			useAmbientCheckBox.TabIndex = 22;
 			useAmbientCheckBox.Text = "Enable Ambient";
 			useAmbientCheckBox.UseVisualStyleBackColor = true;
@@ -543,7 +569,7 @@
 			useSpecularCheckBox.AutoSize = true;
 			useSpecularCheckBox.Location = new System.Drawing.Point(359, 392);
 			useSpecularCheckBox.Name = "useSpecularCheckBox";
-			useSpecularCheckBox.Size = new System.Drawing.Size(162, 29);
+			useSpecularCheckBox.Size = new System.Drawing.Size(109, 19);
 			useSpecularCheckBox.TabIndex = 23;
 			useSpecularCheckBox.Text = "Enable Specular";
 			useSpecularCheckBox.UseVisualStyleBackColor = true;
@@ -642,5 +668,7 @@
 		private System.Windows.Forms.CheckBox useDiffuseCheckBox;
 		private System.Windows.Forms.CheckBox useAmbientCheckBox;
 		private System.Windows.Forms.CheckBox useSpecularCheckBox;
+		private System.Windows.Forms.CheckBox checkBoxDestBuffer;
+		private System.Windows.Forms.CheckBox checkBoxSourceBuffer;
 	}
 }
