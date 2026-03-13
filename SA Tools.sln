@@ -892,6 +892,46 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextureTool", "CommandLine\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextureLib", "Libraries\TextureLib\TextureLib.csproj", "{8C06ECB5-90BD-6D74-55DB-3683E6AB75F5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Object Definitions", "Object Definitions", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		GameConfig\PC_SADX\objdefs\adv00.ini = GameConfig\PC_SADX\objdefs\adv00.ini
+		GameConfig\PC_SADX\objdefs\adv01.ini = GameConfig\PC_SADX\objdefs\adv01.ini
+		GameConfig\PC_SADX\objdefs\adv01c.ini = GameConfig\PC_SADX\objdefs\adv01c.ini
+		GameConfig\PC_SADX\objdefs\adv02.ini = GameConfig\PC_SADX\objdefs\adv02.ini
+		GameConfig\PC_SADX\objdefs\adv03.ini = GameConfig\PC_SADX\objdefs\adv03.ini
+		GameConfig\PC_SADX\objdefs\bchaos0.ini = GameConfig\PC_SADX\objdefs\bchaos0.ini
+		GameConfig\PC_SADX\objdefs\bchaos2.ini = GameConfig\PC_SADX\objdefs\bchaos2.ini
+		GameConfig\PC_SADX\objdefs\bchaos4.ini = GameConfig\PC_SADX\objdefs\bchaos4.ini
+		GameConfig\PC_SADX\objdefs\bchaos6.ini = GameConfig\PC_SADX\objdefs\bchaos6.ini
+		GameConfig\PC_SADX\objdefs\bchaos7.ini = GameConfig\PC_SADX\objdefs\bchaos7.ini
+		GameConfig\PC_SADX\objdefs\be101.ini = GameConfig\PC_SADX\objdefs\be101.ini
+		GameConfig\PC_SADX\objdefs\be101r.ini = GameConfig\PC_SADX\objdefs\be101r.ini
+		GameConfig\PC_SADX\objdefs\begm1.ini = GameConfig\PC_SADX\objdefs\begm1.ini
+		GameConfig\PC_SADX\objdefs\begm2.ini = GameConfig\PC_SADX\objdefs\begm2.ini
+		GameConfig\PC_SADX\objdefs\begm3.ini = GameConfig\PC_SADX\objdefs\begm3.ini
+		GameConfig\PC_SADX\objdefs\brobo.ini = GameConfig\PC_SADX\objdefs\brobo.ini
+		GameConfig\PC_SADX\objdefs\crace.ini = GameConfig\PC_SADX\objdefs\crace.ini
+		GameConfig\PC_SADX\objdefs\hedgehoghammer.ini = GameConfig\PC_SADX\objdefs\hedgehoghammer.ini
+		GameConfig\PC_SADX\objdefs\minicart.ini = GameConfig\PC_SADX\objdefs\minicart.ini
+		GameConfig\PC_SADX\objdefs\mission.ini = GameConfig\PC_SADX\objdefs\mission.ini
+		GameConfig\PC_SADX\objdefs\sandboarding.ini = GameConfig\PC_SADX\objdefs\sandboarding.ini
+		GameConfig\PC_SADX\objdefs\shooting.ini = GameConfig\PC_SADX\objdefs\shooting.ini
+		GameConfig\PC_SADX\objdefs\stg01.ini = GameConfig\PC_SADX\objdefs\stg01.ini
+		GameConfig\PC_SADX\objdefs\stg02.ini = GameConfig\PC_SADX\objdefs\stg02.ini
+		GameConfig\PC_SADX\objdefs\stg03.ini = GameConfig\PC_SADX\objdefs\stg03.ini
+		GameConfig\PC_SADX\objdefs\stg04.ini = GameConfig\PC_SADX\objdefs\stg04.ini
+		GameConfig\PC_SADX\objdefs\stg05.ini = GameConfig\PC_SADX\objdefs\stg05.ini
+		GameConfig\PC_SADX\objdefs\stg06.ini = GameConfig\PC_SADX\objdefs\stg06.ini
+		GameConfig\PC_SADX\objdefs\stg07.ini = GameConfig\PC_SADX\objdefs\stg07.ini
+		GameConfig\PC_SADX\objdefs\stg08.ini = GameConfig\PC_SADX\objdefs\stg08.ini
+		GameConfig\PC_SADX\objdefs\stg09.ini = GameConfig\PC_SADX\objdefs\stg09.ini
+		GameConfig\PC_SADX\objdefs\stg10.ini = GameConfig\PC_SADX\objdefs\stg10.ini
+		GameConfig\PC_SADX\objdefs\stg12a.ini = GameConfig\PC_SADX\objdefs\stg12a.ini
+		GameConfig\PC_SADX\objdefs\stg12b.ini = GameConfig\PC_SADX\objdefs\stg12b.ini
+		GameConfig\PC_SADX\objdefs\stg12c.ini = GameConfig\PC_SADX\objdefs\stg12c.ini
+		GameConfig\PC_SADX\objdefs\stg12d.ini = GameConfig\PC_SADX\objdefs\stg12d.ini
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1526,6 +1566,7 @@ Global
 		{0720E412-3623-41A2-8F47-6C66B41E1EE9} = {485AB560-BEA5-4CC1-9324-43B12A687E57}
 		{3CDADC0F-7F93-767A-3B87-A3440778513A} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
 		{8C06ECB5-90BD-6D74-55DB-3683E6AB75F5} = {AD8162B4-58AB-4700-84DD-E2244DCED68C}
+		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {E0F2E50F-55D2-4256-844F-BD4218F1B56E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A67C9CC3-1711-423D-BF49-9228EB5E90B0}

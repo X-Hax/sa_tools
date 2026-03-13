@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.SETEditing;
@@ -157,8 +152,8 @@ namespace SAModel.SALVL
 					{
 						ObjectData objData = new ObjectData();
 						objData.Name = obj.Name;
-						objData.RotType = "XYZ";
-						objData.SclType = "None";
+						objData.RotType = RotationOrder.XYZ;
+						objData.SclType = ScaleOrder.None;
 						if (!tempObjDefs.ContainsKey(obj.Name))
 							tempObjDefs.Add(obj.Name, objData);
 					}
@@ -309,8 +304,8 @@ namespace SAModel.SALVL
 			newObj.Code = 0;
 
 			newObjDef.Name = newObj.Name;
-			newObjDef.RotType = "XYZ";
-			newObjDef.SclType = "None";
+			newObjDef.RotType = RotationOrder.XYZ;
+			newObjDef.SclType = ScaleOrder.None;
 
 			objList.Add(newObj);
 			objDefinitions.Add(newObj.Name, newObjDef);
@@ -473,6 +468,76 @@ namespace SAModel.SALVL
 			curObj.Distance = (float)numDistance.Value;
 		}
 
+		private ScaleOrder ParseScaleOrder(string scale)
+		{
+			switch (scale.ToUpperInvariant())
+			{
+				case "X":
+					return ScaleOrder.X;
+				case "Y":
+					return ScaleOrder.Y;
+				case "Z":
+					return ScaleOrder.Z;
+				case "XY":
+					return ScaleOrder.XY;
+				case "XZ":
+					return ScaleOrder.XZ;
+				case "YZ":
+					return ScaleOrder.YZ;
+				case "XYZ":
+					return ScaleOrder.XYZ;
+				case "AllX":
+					return ScaleOrder.AllX;
+				case "AllY":
+					return ScaleOrder.AllY;
+				case "AllZ":
+					return ScaleOrder.AllZ;
+				case "None":
+				default:
+					return ScaleOrder.None;
+			}
+		}
+
+		private static RotationOrder ParseRotationOrder(string rotation)
+		{
+			switch (rotation.ToUpperInvariant())
+			{
+				case "X":
+					return RotationOrder.X;
+				case "Y":
+					return RotationOrder.Y;
+				case "Z":
+					return RotationOrder.Z;
+				case "XY":
+					return RotationOrder.XY;
+				case "XZ":
+					return RotationOrder.XZ;
+				case "YX":
+					return RotationOrder.YX;
+				case "YZ":
+					return RotationOrder.YZ;
+				case "ZX":
+					return RotationOrder.ZX;
+				case "ZY":
+					return RotationOrder.ZY;
+				case "XZY":
+					return RotationOrder.XZY;
+				case "YXZ":
+					return RotationOrder.YXZ;
+				case "YZX":
+					return RotationOrder.YZX;
+				case "ZXY":
+					return RotationOrder.ZXY;
+				case "ZYX":
+					return RotationOrder.ZYX;
+				case "None":
+					return RotationOrder.None;
+				case "XYZ":
+				default:
+					return RotationOrder.XYZ;
+			}
+		}
+
 		private void UpdateEntries(object sender, EventArgs e)
 		{
 			if (modified)
@@ -509,14 +574,14 @@ namespace SAModel.SALVL
 					curObjDef.Texlist = null;
 
 				if (lstRotType.SelectedIndex > -1)
-					curObjDef.RotType = lstRotType.Text;
+					curObjDef.RotType = ParseRotationOrder(lstRotType.Text);
 				else
-					curObjDef.SclType = null;
+					curObjDef.RotType = RotationOrder.XYZ;
 
 				if (lstSclType.SelectedIndex > -1)
-					curObjDef.SclType = lstSclType.Text;
+					curObjDef.SclType = ParseScaleOrder(lstSclType.Text);
 				else
-					curObjDef.SclType = null;
+					curObjDef.SclType = ScaleOrder.None;
 
 				if (numGrndDist.Value > 0)
 					curObjDef.GndDst = (float)numGrndDist.Value;

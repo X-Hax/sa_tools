@@ -46,9 +46,11 @@ namespace SAModel.SAEditorCommon.SETEditing
 
 		public static Texture[] GetTextures(string name, SplitTools.NJS_TEXLIST texnames = null, Device dev = null)
 		{
-			Texture[] result = null;
+			if (string.IsNullOrEmpty(name))
+				return null;
 			if (LevelData.Textures == null || EditorOptions.DisableTextures)
-				return result;
+				return null;
+			Texture[] result = null;
 			if (LevelData.Textures.ContainsKey(name))
 				result = LevelData.Textures[name];
 			else if (LevelData.Textures.ContainsKey(name.ToUpperInvariant()))
@@ -221,79 +223,79 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return bounds;
 		}
 
-		public static void RotateObject(MatrixStack transform, SETItem item, Rotation addrot, string type = "XYZ")
+		public static void RotateObject(MatrixStack transform, SETItem item, Rotation addrot, RotationOrder type = RotationOrder.XYZ)
 		{
-			if (addrot.X != 0 && addrot.Y != 0 && addrot.Z != 0)
+			if (addrot.X != 0 || addrot.Y != 0 || addrot.Z != 0)
 				transform.NJRotateObject(addrot);
 
 			switch (type)
 			{
-				case "X":
+				case RotationOrder.X:
 					transform.NJRotateX(item.Rotation.X);
 					break;
-				case "Y":
+				case RotationOrder.Y:
 					transform.NJRotateY(item.Rotation.Y);
 					break;
-				case "Z":
+				case RotationOrder.Z:
 					transform.NJRotateZ(item.Rotation.Z);
 					break;
-				case "XY":
-					transform.NJRotateX(item.Rotation.X);
-					transform.NJRotateY(item.Rotation.Y);
-					break;
-				case "XZ":
-					transform.NJRotateX(item.Rotation.X);
-					transform.NJRotateZ(item.Rotation.Z);
-					break;
-				case "YX":
-					transform.NJRotateY(item.Rotation.Y);
-					transform.NJRotateX(item.Rotation.X);
-					break;
-				case "YZ":
-					transform.NJRotateY(item.Rotation.Y);
-					transform.NJRotateZ(item.Rotation.Z);
-					break;
-				case "ZX":
-					transform.NJRotateZ(item.Rotation.Z);
-					transform.NJRotateX(item.Rotation.X);
-					break;
-				case "ZY":
-					transform.NJRotateZ(item.Rotation.Z);
-					transform.NJRotateY(item.Rotation.Y);
-					break;
-				case "XZY":
-					transform.NJRotateX(item.Rotation.X);
-					transform.NJRotateZ(item.Rotation.Z);
-					transform.NJRotateY(item.Rotation.Y);
-					break;
-				case "YXZ":
-					transform.NJRotateY(item.Rotation.Y);
-					transform.NJRotateX(item.Rotation.X);
-					transform.NJRotateZ(item.Rotation.Z);
-					break;
-				case "YZX":
-					transform.NJRotateY(item.Rotation.Y);
-					transform.NJRotateZ(item.Rotation.Z);
-					transform.NJRotateX(item.Rotation.X);
-					break;
-				case "ZXY":
-					transform.NJRotateZ(item.Rotation.Z);
+				case RotationOrder.XY:
 					transform.NJRotateX(item.Rotation.X);
 					transform.NJRotateY(item.Rotation.Y);
 					break;
-				case "ZYX":
+				case RotationOrder.XZ:
+					transform.NJRotateX(item.Rotation.X);
+					transform.NJRotateZ(item.Rotation.Z);
+					break;
+				case RotationOrder.YX:
+					transform.NJRotateY(item.Rotation.Y);
+					transform.NJRotateX(item.Rotation.X);
+					break;
+				case RotationOrder.YZ:
+					transform.NJRotateY(item.Rotation.Y);
+					transform.NJRotateZ(item.Rotation.Z);
+					break;
+				case RotationOrder.ZX:
+					transform.NJRotateZ(item.Rotation.Z);
+					transform.NJRotateX(item.Rotation.X);
+					break;
+				case RotationOrder.ZY:
+					transform.NJRotateZ(item.Rotation.Z);
+					transform.NJRotateY(item.Rotation.Y);
+					break;
+				case RotationOrder.XZY:
+					transform.NJRotateX(item.Rotation.X);
+					transform.NJRotateZ(item.Rotation.Z);
+					transform.NJRotateY(item.Rotation.Y);
+					break;
+				case RotationOrder.YXZ:
+					transform.NJRotateY(item.Rotation.Y);
+					transform.NJRotateX(item.Rotation.X);
+					transform.NJRotateZ(item.Rotation.Z);
+					break;
+				case RotationOrder.YZX:
+					transform.NJRotateY(item.Rotation.Y);
+					transform.NJRotateZ(item.Rotation.Z);
+					transform.NJRotateX(item.Rotation.X);
+					break;
+				case RotationOrder.ZXY:
+					transform.NJRotateZ(item.Rotation.Z);
+					transform.NJRotateX(item.Rotation.X);
+					transform.NJRotateY(item.Rotation.Y);
+					break;
+				case RotationOrder.ZYX:
 					transform.NJRotateZYX(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
 					break;
-				case "None":
+				case RotationOrder.None:
 					break;
-				case "XYZ":
+				case RotationOrder.XYZ:
 				default:
 					transform.NJRotateXYZ(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
 					break;
 			}
 		}
 
-		public static Vector3 GetScale(SETItem item, Vector3 addscl, string type = "None")
+		public static Vector3 GetScale(SETItem item, Vector3 addscl, ScaleOrder type = ScaleOrder.None)
 		{
 			float x = 1;
 			float y = 1;
@@ -301,48 +303,48 @@ namespace SAModel.SAEditorCommon.SETEditing
 
 			switch (type)
 			{
-				case "X":
+				case ScaleOrder.X:
 					x = item.Scale.X;
 					break;
-				case "Y":
+				case ScaleOrder.Y:
 					y = item.Scale.Y;
 					break;
-				case "Z":
+				case ScaleOrder.Z:
 					z = item.Scale.Z;
 					break;
-				case "XY":
+				case ScaleOrder.XY:
 					x = item.Scale.X;
 					y = item.Scale.Y;
 					break;
-				case "XZ":
+				case ScaleOrder.XZ:
 					x = item.Scale.X;
 					z = item.Scale.Z;
 					break;
-				case "YZ":
-					y = item.Scale.Y;
-					z = item.Scale.Z;
-					break;
-				case "XYZ":
-					x = item.Scale.X;
+				case ScaleOrder.YZ:
 					y = item.Scale.Y;
 					z = item.Scale.Z;
 					break;
-				case "AllX":
+				case ScaleOrder.XYZ:
+					x = item.Scale.X;
+					y = item.Scale.Y;
+					z = item.Scale.Z;
+					break;
+				case ScaleOrder.AllX:
 					x = item.Scale.X;
 					y = item.Scale.X;
 					z = item.Scale.X;
 					break;
-				case "AllY":
+				case ScaleOrder.AllY:
 					x = item.Scale.Y;
 					y = item.Scale.Y;
 					z = item.Scale.Y;
 					break;
-				case "AllZ":
+				case ScaleOrder.AllZ:
 					x = item.Scale.Z;
 					y = item.Scale.Z;
 					z = item.Scale.Z;
 					break;
-				case "None":
+				case ScaleOrder.None:
 				default:
 					break;
 			}

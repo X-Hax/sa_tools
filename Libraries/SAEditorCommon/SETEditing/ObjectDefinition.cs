@@ -8,6 +8,9 @@ using SAModel.SAEditorCommon.DataTypes;
 
 namespace SAModel.SAEditorCommon.SETEditing
 {
+	/// <summary>
+	/// General class for both simple (codeless) and custom coded object definitions for SALVL.
+	/// </summary>
 	public abstract class ObjectDefinition
 	{
 		public abstract void Init(ObjectData data, string name);
@@ -44,6 +47,9 @@ namespace SAModel.SAEditorCommon.SETEditing
 		public virtual float DefaultYScale { get { return 1; } }
 		public virtual float DefaultZScale { get { return 1; } }
 		public virtual float DistanceFromGround { get { return 0; } }
+		public virtual float AddXPosition { get { return 0; } }
+		public virtual float AddYPosition { get { return 0; } }
+		public virtual float AddZPosition { get { return 0; } }
 		public virtual ushort AddXRotation { get { return 0; } }
 		public virtual ushort AddYRotation { get { return 0; } }
 		public virtual ushort AddZRotation { get { return 0; } }
