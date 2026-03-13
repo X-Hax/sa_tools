@@ -594,7 +594,7 @@ namespace SplitTools
 			if (converter == null)
 				converter = TypeDescriptor.GetConverter(type);
 			if (converter != null && !(converter is ComponentConverter) && converter.GetType() != typeof(TypeConverter))
-				if (converter.CanConvertFrom(typeof(string)))
+				if (converter.CanConvertFrom(typeof(string)) && !string.IsNullOrEmpty(value))
 					return converter.ConvertFromInvariantString(value);
 			if (type == typeof(Type))
 				return Type.GetType(value);
