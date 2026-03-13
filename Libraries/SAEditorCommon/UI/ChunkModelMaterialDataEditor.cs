@@ -42,6 +42,8 @@ namespace SAModel.SAEditorCommon.UI
 			PolyChunkMaterial pcm = (PolyChunkMaterial)poly;
 			srcAlphaCombo.SelectedIndex = (int)pcm.SourceAlpha;
 			dstAlphaCombo.SelectedIndex = (int)pcm.DestinationAlpha;
+			checkBoxSourceBuffer.Checked = pcm.SourceBufferSelect;
+			checkBoxDestBuffer.Checked = pcm.DestinationBufferSelect;
 			diffuseSettingBox.Enabled = useDiffuseCheckBox.Checked = pcm.Diffuse.HasValue;
 			ambientSettingBox.Enabled = useAmbientCheckBox.Checked = pcm.Ambient.HasValue;
 			specularSettingBox.Enabled = useSpecularCheckBox.Checked = pcm.Specular.HasValue;
@@ -191,6 +193,8 @@ namespace SAModel.SAEditorCommon.UI
 			}
 			pcm.SourceAlpha = (AlphaInstruction)srcAlphaCombo.SelectedIndex;
 			pcm.DestinationAlpha = (AlphaInstruction)dstAlphaCombo.SelectedIndex;
+			pcm.SourceBufferSelect = checkBoxSourceBuffer.Checked;
+			pcm.DestinationBufferSelect = checkBoxDestBuffer.Checked;
 		}
 
 		private void exponentTextBox_Leave(object sender, EventArgs e)
@@ -400,6 +404,20 @@ namespace SAModel.SAEditorCommon.UI
 			//	useAmbientCheckBox.Enabled = false;
 			//else
 			//	useAmbientCheckBox.Enabled = true;
+		}
+
+		private void checkBoxSourceBuffer_Click(object sender, EventArgs e)
+		{
+			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
+			pcm.SourceBufferSelect = checkBoxSourceBuffer.Checked;
+			RaiseFormUpdated();
+		}
+
+		private void checkBoxDestBuffer_Click(object sender, EventArgs e)
+		{
+			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
+			pcm.DestinationBufferSelect = checkBoxDestBuffer.Checked;
+			RaiseFormUpdated();
 		}
 	}
 }

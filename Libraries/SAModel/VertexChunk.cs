@@ -485,6 +485,9 @@ namespace SAModel
 				vertcalctype = "0x0";
 			ushort nflagindex = 0;
 			float nflagval = 0.0f;
+			string nflagtype = "";
+			int ninjaflags2count = 0;
+			bool ninjaflags2 = false;
 			switch (Type)
 			{
 				case ChunkType.Vertex_VertexSH:
@@ -531,11 +534,17 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNinjaFlags:
-					//if (HasWeight)
-						writer.WriteLine("\tCnkV_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 4 + 1).ToString() + "),");
-					//else
-					//	writer.WriteLine("\tCnkV_NF(" + vertcalctype + ", " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 4 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						if ((NinjaFlags[i] >> 16) > 255)
+							ninjaflags2count++;
+					}
+					if (ninjaflags2count > 0)
+						ninjaflags2 = true;
+					else
+						ninjaflags2 = false;
 					for (int i = 0; i < VertexCount; ++i)
 					{
 						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
@@ -544,9 +553,17 @@ namespace SAModel
 
 						//Version 2
 						nflagindex = (ushort)NinjaFlags[i];
-						//nflagval = (float)((ushort)(NinjaFlags[i] >> 16) * 65535.0F) / 100.0F + 0.5F;
-						nflagval = (float)((NinjaFlags[i] >> 16) / 255.0F * 100.0F);
-						writer.WriteLine("\tNFlagsW( " + nflagindex + ", " + nflagval + " ),");
+						if (ninjaflags2)
+						{
+							nflagval = (float)((NinjaFlags[i] >> 16) / 65535.0F * 100.0F);
+							nflagtype = "NFlagsW2";
+						}
+						else
+						{
+							nflagval = (float)((NinjaFlags[i] >> 16) / 255.0F * 100.0F);
+							nflagtype = "NFlagsW";
+						}
+						writer.WriteLine("\t" + nflagtype + "( " + nflagindex + ", " + nflagval.ToString("N6") + " ),");
 					}
 					break;
 				case ChunkType.Vertex_VertexDiffuseSpecular5:
@@ -608,11 +625,17 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalNinjaFlags:
-					//if (HasWeight)
-						writer.WriteLine("\tCnkV_VN_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 7 + 1).ToString() + "),");
-					//else
-						//writer.WriteLine("\tCnkV_VN_NF(" + vertcalctype + ", " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tCnkV_VN_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 7 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						if ((NinjaFlags[i] >> 16) > 255)
+							ninjaflags2count++;
+					}
+					if (ninjaflags2count > 0)
+						ninjaflags2 = true;
+					else
+						ninjaflags2 = false;
 					for (int i = 0; i < VertexCount; ++i)
 					{
 						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
@@ -622,9 +645,17 @@ namespace SAModel
 
 						//Version 2
 						nflagindex = (ushort)NinjaFlags[i];
-						//nflagval = (float)((ushort)(NinjaFlags[i] >> 16) * 65535.0F) / 100.0F + 0.5F;
-						nflagval = (float)((NinjaFlags[i] >> 16) / 255.0F * 100.0F);
-						writer.WriteLine("\tNFlagsW( " + nflagindex + ", " + nflagval + " ),");
+						if (ninjaflags2)
+						{
+							nflagval = (float)((NinjaFlags[i] >> 16) / 65535.0F * 100.0F);
+							nflagtype = "NFlagsW2";
+						}
+						else
+						{
+							nflagval = (float)((NinjaFlags[i] >> 16) / 255.0F * 100.0F);
+							nflagtype = "NFlagsW";
+						}
+						writer.WriteLine("\t" + nflagtype + "( " + nflagindex + ", " + nflagval.ToString("N6") + " ),");
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular5:

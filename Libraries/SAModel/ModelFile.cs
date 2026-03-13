@@ -370,7 +370,7 @@ namespace SAModel
 			}
 		}
 
-		public byte[] GetBytes(string filename, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false)
+		public byte[] GetBytes(string filename, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false, bool isNinja2 = false)
 		{
 			uint ninjaMagic;
 			uint imageBase = (uint)(useNinjaMetaData ? 0 : 0x10);
@@ -407,13 +407,13 @@ namespace SAModel
 
 			if (useNinjaMetaData)
 			{
-				mdl = Model.NJGetBytes(imageBase, false, labels, njOffsets, out addr);
+				mdl = Model.NJGetBytes(imageBase, false, labels, njOffsets, out addr, isNinja2);
 				file.AddRange(BitConverter.GetBytes(ninjaMagic));
 				file.AddRange(njbLittleEndian ? BitConverter.GetBytes(mdl.Length) : ByteConverter.GetBytes(mdl.Length));
 			}
 			else
 			{
-				mdl = Model.GetBytes(imageBase, false, labels, njOffsets, out addr);
+				mdl = Model.GetBytes(imageBase, false, labels, njOffsets, out addr, isNinja2);
 				file.AddRange(ByteConverter.GetBytes(magic));
 				file.AddRange(ByteConverter.GetBytes(addr + 0x10));
 				file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));

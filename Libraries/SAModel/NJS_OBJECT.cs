@@ -19,6 +19,8 @@ namespace SAModel
 		public Rotation Rotation { get; set; }
 		[Description("Makes the node bigger or smaller. In Landtable items, it is used for collision but not for rendering.")]
 		public Vertex Scale { get; set; }
+		[Description("Only used for models that have the Quaternion eval flag enabled.")]
+		public float QuaternionScalar { get; set; }
 
 		[Browsable(false)]
 		public NJS_OBJECT Parent { get; private set; }
@@ -126,7 +128,7 @@ namespace SAModel
 			: this(file, address, imageBase, format, null, labels, attaches)
 		{ }
 
-		private NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, NJS_OBJECT parent, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
+		private NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, NJS_OBJECT parent, Dictionary<int, string> labels, Dictionary<int, Attach> attaches, bool isNinja2 = false)
 		{
 			if (labels.ContainsKey(address))
 				Name = labels[address];
@@ -203,13 +205,17 @@ namespace SAModel
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				Sibling = new NJS_OBJECT(file, tmpaddr, imageBase, format, parent, labels, attaches);
 			}
+			if (isNinja2)
+				QuaternionScalar = ByteConverter.ToSingle(file, address + 0x34);
+			else
+				QuaternionScalar = 0.0F;
 
 			//Assimp.AssimpContext context = new AssimpContext();
 			//Scene scene = context.ImportFile("F:\\untitled.obj", PostProcessSteps.Triangulate);
 			//AssimpLoad(scene, scene.RootNode);
 		}
 
-		public byte[] NJGetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
+		public byte[] NJGetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address, bool isNinja2 = false)
 		{
 			List<byte> result = new List<byte>();
 			ObjectFlags flags = GetFlags();
@@ -226,9 +232,9 @@ namespace SAModel
 			result.AddRange(Scale.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(0)); //Child placeholder
 			result.AddRange(ByteConverter.GetBytes(0)); //Sibling placeholder
-			// Ginja NJS_OBJECT has an extra 4 bytes at the end
-			if (GetModelFormat() == ModelFormat.GC)
-				result.AddRange(new byte[4]);
+			// Ginja and/or Ninja2 NJS_OBJECTs have an extra 4 bytes at the end for quaternion scalar, if it exists
+			if (GetModelFormat() == ModelFormat.GC || isNinja2)
+				result.AddRange(ByteConverter.GetBytes(QuaternionScalar));
 			// Add pointers for POF0
 			int currentEnd = result.Count;
 			if (Attach != null)
@@ -256,7 +262,7 @@ namespace SAModel
 				}
 				else
 				{
-					result.AddRange(Children[0].NJGetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out uint childAddress));
+					result.AddRange(Children[0].NJGetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out uint childAddress, isNinja2));
 					result.SetByteListInt(childAddressAddress, (int)(imageBase + currentEnd + childAddress));
 				}
 			}
@@ -272,7 +278,7 @@ namespace SAModel
 				}
 				else
 				{
-					result.AddRange(Sibling.NJGetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out uint siblingAddress));
+					result.AddRange(Sibling.NJGetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out uint siblingAddress, isNinja2));
 					result.SetByteListInt(siblingAddressAddress, (int)(imageBase + currentEnd + siblingAddress));
 				}
 			}
@@ -284,7 +290,7 @@ namespace SAModel
 			return result.ToArray();
 		}
 
-		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
+		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address, bool isNinja2 = false)
 		{
 			List<byte> result = new List<byte>();
 			FixSiblings();
@@ -299,7 +305,7 @@ namespace SAModel
 				else
 				{
 					result.Align(4);
-					tmpbyte = Children[0].GetBytes(imageBase + (uint)result.Count, DX, labels, njOffsets, out childaddr);
+					tmpbyte = Children[0].GetBytes(imageBase + (uint)result.Count, DX, labels, njOffsets, out childaddr, isNinja2);
 					childaddr += imageBase + (uint)result.Count;
 					result.AddRange(tmpbyte);
 				}
@@ -311,7 +317,7 @@ namespace SAModel
 				else
 				{
 					result.Align(4);
-					tmpbyte = Sibling.GetBytes(imageBase + (uint)result.Count, DX, labels, njOffsets, out siblingaddr);
+					tmpbyte = Sibling.GetBytes(imageBase + (uint)result.Count, DX, labels, njOffsets, out siblingaddr, isNinja2);
 					siblingaddr += imageBase + (uint)result.Count;
 					result.AddRange(tmpbyte);
 				}
@@ -340,9 +346,9 @@ namespace SAModel
 			objBytes.AddRange(Scale.GetBytes());
 			objBytes.AddRange(ByteConverter.GetBytes(childaddr));
 			objBytes.AddRange(ByteConverter.GetBytes(siblingaddr));
-			// Ginja NJS_OBJECT has an extra 4 bytes at the end
-			if (GetModelFormat() == ModelFormat.GC)
-			objBytes.AddRange(new byte[4]);
+			// Ginja and/or Ninja2 NJS_OBJECTs have an extra 4 bytes at the end for quaternion scalar, if it exists
+			if (GetModelFormat() == ModelFormat.GC || isNinja2)
+				objBytes.AddRange(ByteConverter.GetBytes(QuaternionScalar));
 			result.AddRange(objBytes);
 			labels.Add(Name, address + imageBase);
 			return result.ToArray();
@@ -413,9 +419,9 @@ namespace SAModel
 			return flags;
 		}
 
-		public byte[] GetBytes(uint imageBase, bool DX, out uint address)
+		public byte[] GetBytes(uint imageBase, bool DX, out uint address, bool isNinja2 = false)
 		{
-			return GetBytes(imageBase, DX, new Dictionary<string, uint>(), new List<uint>(), out address);
+			return GetBytes(imageBase, DX, new Dictionary<string, uint>(), new List<uint>(), out address, isNinja2);
 		}
 
 		public byte[] GetBytes(uint imageBase, bool DX)
@@ -602,7 +608,7 @@ namespace SAModel
 			return result.ToString();
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null, bool isDup = false, bool exportDefaults = true)
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null, bool isDup = false, bool exportDefaults = true, bool isNinja2 = false)
 		{
 			for (int i = 1; i < Children.Count; i++)
 				Children[i - 1].Sibling = Children[i];
@@ -611,14 +617,14 @@ namespace SAModel
 				if (!labels.Contains(Children[i].Name))
 				{
 					labels.Add(Children[i].Name);
-					Children[i].ToNJA(writer, labels, textures, exportDefaults: exportDefaults);
+					Children[i].ToNJA(writer, labels, textures, exportDefaults: exportDefaults, isNinja2: isNinja2);
 					writer.WriteLine();
 				}
 			}
 			if (Parent == null && Sibling != null && !labels.Contains(Sibling.Name))
 			{
 				labels.Add(Sibling.Name);
-				Sibling.ToNJA(writer, labels, textures, exportDefaults: exportDefaults);
+				Sibling.ToNJA(writer, labels, textures, exportDefaults: exportDefaults, isNinja2: isNinja2);
 				writer.WriteLine();
 			}
 
@@ -694,10 +700,46 @@ namespace SAModel
 				else if (isXinja)
 					writer.Write("XBOBJECT    ");
 
+				string evflags = string.Empty;
+				if (IgnorePosition)
+					evflags += "FEV_UT|";
+				if (IgnoreRotation)
+					evflags += "FEV_UR|";
+				if (IgnoreScale)
+					evflags += "FEV_US|";
+				if (SkipDraw)
+					evflags += "FEV_HD|";
+				if (SkipChildren)
+					evflags += "FEV_BR|";
+				if (RotateZYX)
+					evflags += "FEV_ZYX|";
+				if (!Animate)
+					evflags += "FEV_SK|";
+				if (!Morph)
+					evflags += "FEV_SSK|";
+				if (Clip)
+					evflags += "FEV_CL|";
+				if (Modifier)
+					evflags += "FEV_MD|";
+				if (Quaternion)
+					evflags += "FEV_QU|";
+				if (RotateBase)
+					evflags += "0x800|";
+				if (RotateSet)
+					evflags += "0x1000|";
+				if (Envelope)
+					evflags += "FEV_EN|";
+				if (evflags != string.Empty)
+					evflags = evflags.Remove(evflags.Length - 1);
+				if (evflags == string.Empty)
+					evflags = "0x0";
 				writer.Write(Name.MakeIdentifier());
 				writer.WriteLine("[]");
 				writer.WriteLine("START");
-				writer.WriteLine("EvalFlags ( 0x" + ((int)GetFlags()).ToString("x8") + " ),");
+				if (isNinja2)
+					writer.WriteLine("EvalFlags ( " + evflags + " ),");
+				else
+					writer.WriteLine("EvalFlags ( 0x" + ((int)GetFlags()).ToString("x8") + " ),");
 				if (isBasic)
 					writer.WriteLine("Model       " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
 				else if (isChunk)
@@ -707,10 +749,15 @@ namespace SAModel
 				else if (isXinja)
 					writer.WriteLine("XINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
 				writer.WriteLine("OPosition  {0},", Position.ToNJA());
-				writer.WriteLine("OAngle     ( " + ((float)Rotation.X / 182.044f).ToNJA() + ", " + ((float)Rotation.Y / 182.044f).ToNJA() + ", " + ((float)Rotation.Z / 182.044f).ToNJA() + " ),");
+				if (isNinja2 && Quaternion)
+					writer.WriteLine("OAngle     (  0x" + Rotation.X.ToCHex() + ", 0x" + Rotation.Y.ToCHex() + ", 0x" + Rotation.Z.ToCHex() + " ),");
+				else
+				    writer.WriteLine("OAngle     ( " + ((float)Rotation.X / 182.044f).ToNJA() + ", " + ((float)Rotation.Y / 182.044f).ToNJA() + ", " + ((float)Rotation.Z / 182.044f).ToNJA() + " ),");
 				writer.WriteLine("OScale     {0},", Scale.ToNJA());
 				writer.WriteLine("Child       " + (Children.Count > 0 ? Children[0].Name.MakeIdentifier() : "NULL") + ",");
 				writer.WriteLine("Sibling     " + (Sibling != null ? Sibling.Name.MakeIdentifier() : "NULL") + ",");
+				if (isNinja2)
+					writer.WriteLine("OQuatRe    ( " + QuaternionScalar.ToString("N6") + " ),");
 				writer.WriteLine("END" + Environment.NewLine);
 
 				if (isBasic)

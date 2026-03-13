@@ -38,6 +38,8 @@
 			toolTip = new System.Windows.Forms.ToolTip(components);
 			resetButton = new System.Windows.Forms.Button();
 			blendModeSettingsBox = new System.Windows.Forms.GroupBox();
+			checkBoxDestBuffer = new System.Windows.Forms.CheckBox();
+			checkBoxSourceBuffer = new System.Windows.Forms.CheckBox();
 			blendModeSettingsBox.SuspendLayout();
 			SuspendLayout();
 			// 
@@ -52,20 +54,20 @@
 			dstAlphaCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			dstAlphaCombo.FormattingEnabled = true;
 			dstAlphaCombo.Items.AddRange(new object[] { "Zero", "One", "OtherColor", "InverseOtherColor", "SourceAlpha", "InverseSourceAlpha", "DestinationAlpha", "InverseDestinationAlpha" });
-			dstAlphaCombo.Location = new System.Drawing.Point(34, 130);
-			dstAlphaCombo.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			dstAlphaCombo.Location = new System.Drawing.Point(23, 87);
+			dstAlphaCombo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			dstAlphaCombo.Name = "dstAlphaCombo";
-			dstAlphaCombo.Size = new System.Drawing.Size(244, 33);
+			dstAlphaCombo.Size = new System.Drawing.Size(164, 23);
 			dstAlphaCombo.TabIndex = 8;
 			dstAlphaCombo.SelectedIndexChanged += dstAlphaCombo_SelectedIndexChanged;
 			// 
 			// destinationAlphaLabel
 			// 
 			destinationAlphaLabel.AutoSize = true;
-			destinationAlphaLabel.Location = new System.Drawing.Point(29, 104);
-			destinationAlphaLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			destinationAlphaLabel.Location = new System.Drawing.Point(19, 69);
+			destinationAlphaLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			destinationAlphaLabel.Name = "destinationAlphaLabel";
-			destinationAlphaLabel.Size = new System.Drawing.Size(157, 25);
+			destinationAlphaLabel.Size = new System.Drawing.Size(104, 15);
 			destinationAlphaLabel.TabIndex = 13;
 			destinationAlphaLabel.Text = "Destination Alpha:";
 			// 
@@ -74,30 +76,29 @@
 			srcAlphaCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			srcAlphaCombo.FormattingEnabled = true;
 			srcAlphaCombo.Items.AddRange(new object[] { "Zero", "One", "OtherColor", "InverseOtherColor", "SourceAlpha", "InverseSourceAlpha", "DestinationAlpha", "InverseDestinationAlpha" });
-			srcAlphaCombo.Location = new System.Drawing.Point(34, 62);
-			srcAlphaCombo.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			srcAlphaCombo.Location = new System.Drawing.Point(23, 41);
+			srcAlphaCombo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			srcAlphaCombo.Name = "srcAlphaCombo";
-			srcAlphaCombo.Size = new System.Drawing.Size(244, 33);
+			srcAlphaCombo.Size = new System.Drawing.Size(164, 23);
 			srcAlphaCombo.TabIndex = 7;
 			srcAlphaCombo.SelectionChangeCommitted += srcAlphaCombo_SelectionChangeCommitted;
 			// 
 			// srcAlphaLabel
 			// 
 			srcAlphaLabel.AutoSize = true;
-			srcAlphaLabel.Location = new System.Drawing.Point(29, 36);
-			srcAlphaLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			srcAlphaLabel.Location = new System.Drawing.Point(19, 24);
+			srcAlphaLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			srcAlphaLabel.Name = "srcAlphaLabel";
-			srcAlphaLabel.Size = new System.Drawing.Size(121, 25);
+			srcAlphaLabel.Size = new System.Drawing.Size(80, 15);
 			srcAlphaLabel.TabIndex = 11;
 			srcAlphaLabel.Text = "Source Alpha:";
 			// 
 			// doneButton
 			// 
 			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(209, 242);
-			doneButton.Margin = new System.Windows.Forms.Padding(4);
+			doneButton.Location = new System.Drawing.Point(202, 215);
 			doneButton.Name = "doneButton";
-			doneButton.Size = new System.Drawing.Size(132, 40);
+			doneButton.Size = new System.Drawing.Size(88, 27);
 			doneButton.TabIndex = 0;
 			doneButton.Text = "Done";
 			doneButton.UseVisualStyleBackColor = true;
@@ -112,10 +113,10 @@
 			// resetButton
 			// 
 			resetButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			resetButton.Location = new System.Drawing.Point(50, 242);
-			resetButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			resetButton.Location = new System.Drawing.Point(96, 215);
+			resetButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			resetButton.Name = "resetButton";
-			resetButton.Size = new System.Drawing.Size(132, 40);
+			resetButton.Size = new System.Drawing.Size(88, 27);
 			resetButton.TabIndex = 6;
 			resetButton.Text = "Reset";
 			toolTip.SetToolTip(resetButton, "Reset the poly data to the state it was when this dialog opened.");
@@ -124,30 +125,56 @@
 			// 
 			// blendModeSettingsBox
 			// 
+			blendModeSettingsBox.Controls.Add(checkBoxDestBuffer);
+			blendModeSettingsBox.Controls.Add(checkBoxSourceBuffer);
 			blendModeSettingsBox.Controls.Add(srcAlphaCombo);
 			blendModeSettingsBox.Controls.Add(destinationAlphaLabel);
 			blendModeSettingsBox.Controls.Add(dstAlphaCombo);
 			blendModeSettingsBox.Controls.Add(srcAlphaLabel);
-			blendModeSettingsBox.Location = new System.Drawing.Point(15, 22);
+			blendModeSettingsBox.Location = new System.Drawing.Point(10, 15);
+			blendModeSettingsBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			blendModeSettingsBox.Name = "blendModeSettingsBox";
-			blendModeSettingsBox.Size = new System.Drawing.Size(323, 198);
+			blendModeSettingsBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			blendModeSettingsBox.Size = new System.Drawing.Size(279, 182);
 			blendModeSettingsBox.TabIndex = 20;
 			blendModeSettingsBox.TabStop = false;
 			blendModeSettingsBox.Text = "Blend Modes";
 			// 
+			// checkBoxDestBuffer
+			// 
+			checkBoxDestBuffer.AutoSize = true;
+			checkBoxDestBuffer.Location = new System.Drawing.Point(19, 141);
+			checkBoxDestBuffer.Name = "checkBoxDestBuffer";
+			checkBoxDestBuffer.Size = new System.Drawing.Size(155, 19);
+			checkBoxDestBuffer.TabIndex = 17;
+			checkBoxDestBuffer.Text = "Destination Buffer Select";
+			checkBoxDestBuffer.UseVisualStyleBackColor = true;
+			checkBoxDestBuffer.Click += checkBoxDestBuffer_Click;
+			// 
+			// checkBoxSourceBuffer
+			// 
+			checkBoxSourceBuffer.AutoSize = true;
+			checkBoxSourceBuffer.Location = new System.Drawing.Point(19, 116);
+			checkBoxSourceBuffer.Name = "checkBoxSourceBuffer";
+			checkBoxSourceBuffer.Size = new System.Drawing.Size(131, 19);
+			checkBoxSourceBuffer.TabIndex = 16;
+			checkBoxSourceBuffer.Text = "Source Buffer Select";
+			checkBoxSourceBuffer.UseVisualStyleBackColor = true;
+			checkBoxSourceBuffer.Click += checkBoxSourceBuffer_Click;
+			// 
 			// ChunkModelBlendAlphaDataEditor
 			// 
 			AcceptButton = doneButton;
-			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+			AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(356, 303);
+			ClientSize = new System.Drawing.Size(300, 256);
 			ControlBox = false;
 			Controls.Add(blendModeSettingsBox);
 			Controls.Add(resetButton);
 			Controls.Add(doneButton);
 			FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-			Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			MaximizeBox = false;
 			MinimizeBox = false;
 			Name = "ChunkModelBlendAlphaDataEditor";
@@ -172,5 +199,7 @@
 		private System.Windows.Forms.ToolTip toolTip;
 		private System.Windows.Forms.Button resetButton;
 		private System.Windows.Forms.GroupBox blendModeSettingsBox;
+		private System.Windows.Forms.CheckBox checkBoxDestBuffer;
+		private System.Windows.Forms.CheckBox checkBoxSourceBuffer;
 	}
 }

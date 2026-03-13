@@ -595,7 +595,7 @@ namespace SAModel.SAEditorCommon.UI
 								break;
 						}
 						newvert.SubItems.Add(mainvtype);
-						string vertexdata = "";
+						string vertexdata = string.Empty;
 						if (vc.Flags >> 4 == 0xC)
 						{
 							vertexdata += "V_SHAPE, V_CONT";
@@ -609,7 +609,11 @@ namespace SAModel.SAEditorCommon.UI
 							vertexdata += "V_SHAPE";
 						}
 						if (vc.HasWeight)
-							vertexdata += ", Weight " + vc.WeightStatus.ToString();
+						{
+							if (vertexdata != string.Empty)
+								vertexdata += ", ";
+							vertexdata += "Weight " + vc.WeightStatus.ToString();
+						}
 						string ent = vc.VertexCount == 1 ? " Entity" : " Entities";
 						if (vertexdata != "")
 							vertexdata += ", ";
@@ -721,15 +725,21 @@ namespace SAModel.SAEditorCommon.UI
 								newmesh.SubItems.Add(pcv.Type.ToString());
 								break;
 							case PolyChunkMaterialBump pcmb:
-								newmesh.SubItems.Add("Material_Bump");
+								newmesh.SubItems.Add("Material_BU");
 								string bumpD = "D( ";
 								string bumpU = "U( ";
-								bumpD += pcmb.DX.ToString() + ", ";
-								bumpD += pcmb.DY.ToString() + ", ";
-								bumpD += pcmb.DZ.ToString() + " ), ";
-								bumpU += pcmb.UX.ToString() + ", ";
-								bumpU += pcmb.UY.ToString() + ", ";
-								bumpU += pcmb.UZ.ToString() + " )";
+								float DXVal = pcmb.DX / 32767F;
+								float DYVal = pcmb.DY / 32767F;
+								float DZVal = pcmb.DZ / 32767F;
+								float UXVal = pcmb.UX / 32767F;
+								float UYVal = pcmb.UY / 32767F;
+								float UZVal = pcmb.UZ / 32767F;
+								bumpD += DXVal.ToString() + ", ";
+								bumpD += DYVal.ToString() + ", ";
+								bumpD += DZVal.ToString() + " ), ";
+								bumpU += UXVal.ToString() + ", ";
+								bumpU += UYVal.ToString() + ", ";
+								bumpU += UZVal.ToString() + " )";
 								newmesh.SubItems.Add(bumpD + bumpU);
 								break;
 							case PolyChunkMaterial pcm:
@@ -773,6 +783,8 @@ namespace SAModel.SAEditorCommon.UI
 									blendmodes += ", BL( ";
 								string sourcealpha = "";
 								string destalpha = ", ";
+								string sourcebffr = string.Empty;
+								string dstbffr = string.Empty;
 								switch (pcm.SourceAlpha)
 								{
 									case AlphaInstruction.Zero:
@@ -827,7 +839,11 @@ namespace SAModel.SAEditorCommon.UI
 										destalpha += "IDA";
 										break;
 								}
-								blendmodes += sourcealpha + destalpha + " )";
+								if (pcm.SourceBufferSelect)
+									sourcebffr = ", S_SEL";
+								if (pcm.DestinationBufferSelect)
+									dstbffr = ", D_SEL";
+								blendmodes += sourcealpha + destalpha + sourcebffr + dstbffr + " )";
 
 								newmesh.SubItems.Add(diffuse + ambient + specular + blendmodes);
 								break;
@@ -1003,6 +1019,8 @@ namespace SAModel.SAEditorCommon.UI
 								newmesh.SubItems.Add("Bits_BA");
 								string sourcealphapba = "BS_";
 								string destalphapba = ", BD_";
+								string sourcebffrba = string.Empty;
+								string dstbffrba = string.Empty;
 								switch (pba.SourceAlpha)
 								{
 									case AlphaInstruction.Zero:
@@ -1057,7 +1075,11 @@ namespace SAModel.SAEditorCommon.UI
 										destalphapba += "IDA";
 										break;
 								}
-								newmesh.SubItems.Add(sourcealphapba + destalphapba);
+								if (pba.SourceBufferSelect)
+									sourcebffrba = ", S_SEL";
+								if (pba.DestinationBufferSelect)
+									dstbffrba = ", D_SEL";
+								newmesh.SubItems.Add(sourcealphapba + destalphapba + sourcebffrba + dstbffrba);
 								break;
 							default:
 								newmesh.SubItems.Add("Undefined Type");
