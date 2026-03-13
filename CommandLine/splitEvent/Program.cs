@@ -37,10 +37,17 @@ namespace splitEvent
 			string fullpath_out;
 			string fullpath_bin;
 			
-			if (args.Length == 0)
+			if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
 			{
-				Console.Write("Filename: ");
-				args = [Console.ReadLine().Trim('"')];
+				Console.WriteLine("SplitEvent is a command line tool for extracting SA2 Event files into a new folder.\n");
+				Console.WriteLine("File types are automatically detected if they match the names that the game normally loads.");
+				Console.WriteLine("\te.g E0127.PRS is a main Event file\n\tE0127_0.PRS is an Event Extra file");
+				Console.WriteLine("\tME0127.PRS is a Mini-Event file\n\tME0127_0.SCR is a Mini-Event Extra File");
+				Console.WriteLine("\tME0127TEXLIST.PRS is an Event Texlist file\n\tTAILSPLAIN.PRS is the Tails' Cyclone file");
+				Console.WriteLine("splitEvent <input file> [output folder]\n");
+				Console.WriteLine("Press ENTER to exit.");
+				Console.ReadLine();
+				return;
 			}
 			
 			fullpath_bin = Path.GetFullPath(args[0]);

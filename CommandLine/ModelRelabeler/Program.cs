@@ -8,6 +8,15 @@ namespace ModelRelabeler
 	{
 		private static void Main(string[] args)
 		{
+			if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
+			{
+				Console.WriteLine("ModelRelabeler is a command line tool to copy labels from one model to another.");
+				Console.WriteLine("Usage:\n");
+				Console.WriteLine("Relabeling a model:\nModelRelabeler <newModelFile> <oldModelFile>\nThe new model's labels will be transferred into the old model.\n");
+				Console.WriteLine("Press ENTER to exit.");
+				Console.ReadLine();
+				return;
+			}
 			Queue<string> fileQueue = new Queue<string>(args);
 			string newModelFile;
 

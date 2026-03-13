@@ -10,6 +10,16 @@ namespace WeldConverter
 	{
 		private static void Main(string[] args)
 		{
+			if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
+			{
+				Console.WriteLine("WeldConverter is a command line tool for converting weld lists to vertex weights in a model.\n");
+				Console.WriteLine("Usage:\n");
+				Console.WriteLine("WeldConverter <model file> <weld list file>\n");
+				Console.WriteLine("Press ENTER to exit.");
+				Console.ReadLine();
+				return;
+			}
+
 			string modelFile;
 			if (args.Length > 0)
 			{

@@ -11,12 +11,19 @@ namespace LevelConverter
 	{
 		static void Main(string[] args)
 		{
-			if (args.Length > 0 && (args[0] == "-h" || args[0] == "--help"))
+			if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
 			{
-				Console.WriteLine("LevelConverter, X-Hax");
-				Console.WriteLine("Usage: LevelConverter [file] [format]");
-				Console.WriteLine("Formats: \n- SA1 (.sa1lvl) \n- SADX (.sa1lvl) \n- SA2 (.sa2lvl) \n- SA2B (.sa2blvl) (Conversion to not supported)");
-
+				Console.WriteLine("LevelConverter is a command line tool to convert landtables to other formats used in SA1/2.");
+				Console.WriteLine("Usage:\n");
+				Console.WriteLine("Converting a file:\nLevelConverter <levelFile> <levelFormat>\n");
+				Console.WriteLine("Formats:");
+				Console.WriteLine("SA1 (.sa1lvl)");
+				Console.WriteLine("SADX (.sa1lvl)");
+				Console.WriteLine("SA2 (.sa2lvl)");
+				Console.WriteLine("GC (.sa2blvl)\n");
+				Console.WriteLine("[Note]: Conversion to GC is not currently supported.");
+				Console.WriteLine("Press ENTER to exit.");
+				Console.ReadLine();
 				return;
 			}
 

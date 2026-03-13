@@ -11,6 +11,16 @@ namespace SplitMDL
 		[STAThread]
 		static void Main(string[] args)
 		{
+			if ((args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
+			{
+				Console.WriteLine("SplitMDL is a command line tool for splitting SA2 MDL files into a folder of model data.\n");
+				Console.WriteLine("Usage:\n");
+				Console.WriteLine("SplitMDL <file>\n");
+				Console.WriteLine("Press ENTER to exit.");
+				Console.ReadLine();
+				return;
+			}
+
 			Queue<string> argq = new Queue<string>(args);
 			if (argq.Count > 0)
 			{

@@ -8,6 +8,19 @@ namespace buildMTN
 	{
 		private static void Main(string[] args)
 		{
+			if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
+			{
+				Console.WriteLine("BuildMTN is a command line tool for building SA2 MTN files from a folder of motion data.\n");
+				Console.WriteLine("Usage:\n");
+				Console.WriteLine("BuildMTN [/be|/le] <folder>\n");
+				Console.WriteLine("/be: Use big-endian byte order");
+				Console.WriteLine("/le: Use little-endian byte order (default)");
+				Console.WriteLine("Note: Little-endian is used by default but big-endian will be used if specified in the input folder.");
+				Console.WriteLine("Press ENTER to exit.");
+				Console.ReadLine();
+				return;
+			}
+
 			var argQueue = new Queue<string>(args);
 			
 			bool? bigEndian = null;
