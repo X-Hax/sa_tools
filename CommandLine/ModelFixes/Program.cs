@@ -11,6 +11,16 @@ namespace ModelFixes
 	{
 		private static void Main(string[] args)
 		{
+			if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
+			{
+				Console.WriteLine("ModelFixes is a command line too for fixing the wrong flags, rotation and scaling values from a new model based on an existing one (usually legacy).\n");
+				Console.WriteLine("Usage:\n");
+				Console.WriteLine("ModelFixes <newModelFile> <legacyModelFile>\n");
+				Console.WriteLine("Press ENTER to exit.");
+				Console.ReadLine();
+				return;
+			}
+
 			Queue<string> fileQueue = new(args);
 			string newModelFile;
 

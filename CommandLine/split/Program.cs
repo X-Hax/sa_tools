@@ -16,7 +16,7 @@ namespace Split
 			string mode;
 			string fullpath_out;
 			List<string> mdlanimfiles;
-			if (args.Length == 0)
+			if (args.Length == 0 || (args.Length > 0 && (args[0] == "-h" || args[0] == "--help")))
             {
                 Console.WriteLine("Split any binary files supported by SA Tools.\n");
                 Console.WriteLine("-Splitting using an XML template-");
