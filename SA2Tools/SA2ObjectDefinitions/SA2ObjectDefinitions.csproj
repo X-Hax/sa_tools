@@ -11,6 +11,12 @@
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="NewFolder\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="NewFolder\**" />
+  </ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
 		<ProjectReference Include="..\..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj" />
