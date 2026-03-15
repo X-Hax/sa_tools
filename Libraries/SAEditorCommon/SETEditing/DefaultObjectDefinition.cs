@@ -117,11 +117,12 @@ namespace SAModel.SAEditorCommon.SETEditing
 				// Get textures
 				if (texs == null)
 				{
+					// Regular
+					texs = ObjectHelper.GetTextures(texture, texnames, dev);
+
 					// SA2 multi-textured
 					if (texturesmulti.Count > 0)
 						texs = ObjectHelper.GetTexturesMultiSource(texturesmulti, texnames, dev);
-					// Regular
-					texs = ObjectHelper.GetTextures(texture, texnames, dev);
 				}
 				// Scale
 				Vector3 addscl = new Vector3(addxscl ?? 0, addyscl ?? 0, addzscl ?? 0);
