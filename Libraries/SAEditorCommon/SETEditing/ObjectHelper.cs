@@ -16,9 +16,15 @@ namespace SAModel.SAEditorCommon.SETEditing
 	{
 		private static NJS_OBJECT QuestionBoxModel;
 		private static Mesh QuestionBoxMesh;
+		private static Dictionary<string, NJS_OBJECT> ModelCache;
+		private static Dictionary<NJS_OBJECT, Mesh[]> MeshCache;
+		private static Dictionary<string, Texture[]> PartialTexlistCache;		
 
 		public static void Init(Device device)
-		{
+		{		
+			ModelCache = new(StringComparer.OrdinalIgnoreCase);
+			MeshCache = new();
+			PartialTexlistCache = new();
 			QuestionBoxModel = new ModelFile(Resources.questionmark).Model;
 			QuestionBoxMesh = GetMeshes(QuestionBoxModel).First();
 			QuestionMark = Resources.questionmark_t.ToTexture(device);
@@ -30,17 +36,24 @@ namespace SAModel.SAEditorCommon.SETEditing
 		{
 			if (!System.IO.File.Exists(file))
 				return QuestionBoxModel;
-			return new ModelFile(file).Model;
+			if (ModelCache.TryGetValue(file, out NJS_OBJECT value))
+				return value;
+			NJS_OBJECT model = new ModelFile(file).Model;
+			ModelCache.Add(file, model);
+			return model;
 		}
 
 		public static Mesh[] GetMeshes(NJS_OBJECT model)
 		{
+			if (MeshCache.TryGetValue(model, out Mesh[] value))
+				return value;
 			model.ProcessVertexData();
 			NJS_OBJECT[] models = model.GetObjects();
 			Mesh[] Meshes = new Mesh[models.Length];
 			for (int i = 0; i < models.Length; i++)
 				if (models[i].Attach != null)
 					Meshes[i] = models[i].Attach.CreateD3DMesh();
+			MeshCache.Add(model, Meshes);
 			return Meshes;
 		}
 
@@ -51,26 +64,20 @@ namespace SAModel.SAEditorCommon.SETEditing
 			if (LevelData.Textures == null || EditorOptions.DisableTextures)
 				return null;
 			Texture[] result = null;
-			if (LevelData.Textures.ContainsKey(name))
-				result = LevelData.Textures[name];
-			else if (LevelData.Textures.ContainsKey(name.ToUpperInvariant()))
-				result = LevelData.Textures[name.ToUpperInvariant()];
-			else if (LevelData.Textures.ContainsKey(name.ToLowerInvariant()))
-				result = LevelData.Textures[name.ToLowerInvariant()];
+			if (LevelData.Textures.TryGetValue(name, out Texture[] value))
+				result = value;
 			if (texnames == null)
 				return result;
 			// Partial texlist
 			else
 			{
+				if (PartialTexlistCache.TryGetValue(texnames.Name, out Texture[] value2))
+					return value2;
 				if (LevelData.TextureBitmaps == null || dev == null)
 					return result;
 				Direct3D.TextureSystem.BMPInfo[] texturebmps = null;
-				if (LevelData.TextureBitmaps.ContainsKey(name))
-					texturebmps = LevelData.TextureBitmaps[name];
-				else if (LevelData.TextureBitmaps.ContainsKey(name.ToUpperInvariant()))
-					texturebmps = LevelData.TextureBitmaps[name.ToUpperInvariant()];
-				else if (LevelData.TextureBitmaps.ContainsKey(name.ToLowerInvariant()))
-					texturebmps = LevelData.TextureBitmaps[name.ToLowerInvariant()];
+				if (LevelData.TextureBitmaps.TryGetValue(name, out BMPInfo[] value3))
+					texturebmps = value3;
 				List<Texture> texlist = new List<Texture>();
 				if (texturebmps == null)
 					return result;
@@ -78,20 +85,23 @@ namespace SAModel.SAEditorCommon.SETEditing
 				{
 					for (int b = 0; b < texturebmps.Length; b++)
 					{
-						if (texturebmps[b].Name.ToLowerInvariant() == texnames.TextureNames[i].ToLowerInvariant())
+						if (string.Equals(texturebmps[b].Name, texnames.TextureNames[i], StringComparison.OrdinalIgnoreCase))
 						{
 							texlist.Add(texturebmps[b].Image.ToTexture(dev));
 							break;
 						}
 					}
 				}
-				return texlist.ToArray();
+				PartialTexlistCache.Add(texnames.Name, texlist.ToArray());
+				return PartialTexlistCache[texnames.Name];
 			}
 		}
 		// This is primarily used for SA2 level objects that pull from multiple texture sources.
 		// Copied from pieces of SAMDL's code.
 		public static Texture[] GetTexturesMultiSource(List<string> name, SplitTools.NJS_TEXLIST texnames = null, Device dev = null)
 		{
+			if (PartialTexlistCache.TryGetValue(texnames.Name, out Texture[] value))
+				return value;
 			Texture[] result = null;
 			if (texnames == null)
 				return result;
@@ -105,10 +115,6 @@ namespace SAModel.SAEditorCommon.SETEditing
 				{
 					if (LevelData.TextureBitmaps.ContainsKey(name[i]))
 						texturedata.AddRange(LevelData.TextureBitmaps[name[i]]);
-					else if (LevelData.TextureBitmaps.ContainsKey(name[i].ToUpperInvariant()))
-						texturedata.AddRange(LevelData.TextureBitmaps[name[i].ToUpperInvariant()]);
-					else if (LevelData.TextureBitmaps.ContainsKey(name[i].ToLowerInvariant()))
-						texturedata.AddRange(LevelData.TextureBitmaps[name[i].ToLowerInvariant()]);
 				}
 				texturebmps = texturedata.ToArray();
 				if (LevelData.TextureBitmaps == null || dev == null)
@@ -129,7 +135,8 @@ namespace SAModel.SAEditorCommon.SETEditing
 						}
 					}
 				}
-				return texlist.ToArray();
+				PartialTexlistCache.Add(texnames.Name, texlist.ToArray());
+				return PartialTexlistCache[texnames.Name];
 			}
 		}
 

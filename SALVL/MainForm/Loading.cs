@@ -785,8 +785,8 @@ namespace SAModel.SALVL
 				}
 
 				// Initialize level textures
-				LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
-				LevelData.Textures = new Dictionary<string, Texture[]>();
+				LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>(StringComparer.OrdinalIgnoreCase);
+				LevelData.Textures = new Dictionary<string, Texture[]>(StringComparer.OrdinalIgnoreCase);
 				if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
 					LevelData.leveltexs = LevelData.geo.TextureFileName;
 			}
