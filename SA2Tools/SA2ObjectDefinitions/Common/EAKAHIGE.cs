@@ -81,39 +81,42 @@ namespace SA2ObjectDefinitions.Common
 			}
 
 			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y + 0x4000, item.Rotation.Z);
-			result.AddRange(
-				pObject.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode),
-				transform,
-				texs,
-				pMesh,
-				EditorOptions.IgnoreMaterialColors,
-				EditorOptions.OverrideLighting));
-
-			if (item.Selected)
 			{
-				result.AddRange(pObject.DrawModelTreeInvert(transform, pMesh));
-			}
-
-			for (int i = 0; i < bombCount; i++)
-			{
-				transform.Push();
-				transform.NJRotateObject(0, 0, ObjectHelper.DegToBAMS(120 / (bombCount / 3)) * i);
+				transform.NJTranslate(item.Position);
+				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, item.Rotation.Z);
 				result.AddRange(
-					object_akahige_bomb.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode),
+					pObject.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode),
 					transform,
 					texs,
-					mesh_akahige_bomb,
+					pMesh,
 					EditorOptions.IgnoreMaterialColors,
 					EditorOptions.OverrideLighting));
+
 				if (item.Selected)
 				{
-					result.AddRange(object_akahige_bomb.DrawModelTreeInvert(transform, mesh_akahige_bomb));
+					result.AddRange(pObject.DrawModelTreeInvert(transform, pMesh));
 				}
-				transform.Pop();
-			}
 
+				for (int i = 0; i < bombCount; i++)
+				{
+					transform.Push();
+					{
+						transform.NJRotateObject(0, 0, ObjectHelper.DegToBAMS(120 / (bombCount / 3)) * i);
+						result.AddRange(
+							object_akahige_bomb.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode),
+							transform,
+							texs,
+							mesh_akahige_bomb,
+							EditorOptions.IgnoreMaterialColors,
+							EditorOptions.OverrideLighting));
+						if (item.Selected)
+						{
+							result.AddRange(object_akahige_bomb.DrawModelTreeInvert(transform, mesh_akahige_bomb));
+						}
+					}
+					transform.Pop();
+				}
+			}
 			transform.Pop();
 
 			return result;
