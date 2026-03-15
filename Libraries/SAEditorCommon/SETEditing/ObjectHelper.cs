@@ -18,11 +18,13 @@ namespace SAModel.SAEditorCommon.SETEditing
 		private static Mesh QuestionBoxMesh;
 		private static Dictionary<string, NJS_OBJECT> ModelCache;
 		private static Dictionary<NJS_OBJECT, Mesh[]> MeshCache;
-		private static Dictionary<string, Texture[]> PartialTexlistCache;		
+		private static Dictionary<string, Texture[]> PartialTexlistCache;
+		private static Dictionary<string, NJS_MOTION> MotionCache;
 
 		public static void Init(Device device)
 		{		
 			ModelCache = new(StringComparer.OrdinalIgnoreCase);
+			MotionCache = new(StringComparer.OrdinalIgnoreCase);
 			MeshCache = new();
 			PartialTexlistCache = new();
 			QuestionBoxModel = new ModelFile(Resources.questionmark).Model;
@@ -41,6 +43,17 @@ namespace SAModel.SAEditorCommon.SETEditing
 			NJS_OBJECT model = new ModelFile(file).Model;
 			ModelCache.Add(file, model);
 			return model;
+		}
+
+		public static NJS_MOTION LoadMotion(string file)
+		{
+			if (!System.IO.File.Exists(file))
+				return null;
+			if (MotionCache.TryGetValue(file, out NJS_MOTION value))
+				return value;
+			NJS_MOTION motion = NJS_MOTION.Load(file);
+			MotionCache.Add(file, motion);
+			return motion;
 		}
 
 		public static Mesh[] GetMeshes(NJS_OBJECT model)
