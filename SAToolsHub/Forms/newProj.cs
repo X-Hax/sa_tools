@@ -26,6 +26,8 @@ namespace SAToolsHub
 		string checkFile;
 		string projName;
 		bool isNJA;
+		bool useNinja2;
+		bool includetlsInModels;
 
 		// Variables (split)
 		Stream projFileStream;
@@ -296,6 +298,7 @@ namespace SAToolsHub
 				projectType = template.GameInfo.ProjectType;
 				gamePath = ProjectFunctions.GetGamePath(template.GameInfo.GameName);
 				isNJA = template.GameInfo.NJA;
+				useNinja2 = template.GameInfo.GameName == "SA2PC";
 				// This should never happen under normal circumstances
 				if (gamePath == "")
 					throw new Exception("Game path not set");
@@ -470,6 +473,8 @@ namespace SAToolsHub
 				splitFlags |= SplitFlags.NoMeta;
 			if (comboBoxLabels.SelectedIndex != 1 && !isNJA)
 				splitFlags |= SplitFlags.NoLabels;
+			if (useNinja2)
+				splitFlags |= SplitFlags.Ninja2;
 			progress.SetMaxSteps(setProgressMaxStep());
 
 			if (Directory.Exists(Path.Combine(appPath, "GameConfig", dataFolder)))
@@ -582,7 +587,7 @@ namespace SAToolsHub
 						case ".sa2bmdl":
 						case ".saanim":
 						case ".satex":
-							StructConversion.ConvertFileToText(file, StructConversion.TextType.NJA, file[..file.LastIndexOf(".")], false, true);
+							StructConversion.ConvertFileToText(file, StructConversion.TextType.NJA, file[..file.LastIndexOf(".")], false, true, useNinja2);
 							File.Delete(file);
 							break;
 						case ".nja":

@@ -21,7 +21,7 @@ namespace SplitTools
 		/// <param name="type">Type of text conversion.</param>
 		/// <param name="destination">Destination pathname. Leave blank to export in the same folder with a swapped extension.</param>
 		/// <param name="basicDX">Use the SADX2004 format for Basic models.</param>
-		public static void ConvertFileToText(string source, TextType type, string destination = "", bool basicDX = true, bool overwrite = true)
+		public static void ConvertFileToText(string source, TextType type, string destination = "", bool basicDX = true, bool overwrite = true, bool isNinja2 = false, bool includetls = false)
 		{
 			string outext = ".c";
 			string extension = Path.GetExtension(source);
@@ -101,6 +101,7 @@ namespace SplitTools
 					break;
 				case ".sa1mdl":
 				case ".sa2mdl":
+				case ".sa2bmdl":
 					ModelFile modelFile = new ModelFile(source);
 					NJS_OBJECT model = modelFile.Model;
 					List<NJS_MOTION> animations = new List<NJS_MOTION>(modelFile.Animations);
@@ -189,8 +190,13 @@ namespace SplitTools
 						}
 						using (StreamWriter sw2 = File.CreateText(destination))
 						{
+							//if (includetls)
+							//{
+							//	SplitTools.NJS_TEXLIST mdltexlist = SplitTools.NJS_TEXLIST.Load();
+							//	mdltexlist.ToNJA(sw2);
+							//}
 							List<string> labels_nj = new List<string>() { model.Name };
-							model.ToNJA(sw2, labels_nj, null, isDup);
+							model.ToNJA(sw2, labels_nj, null, isDup, isNinja2: isNinja2);
 							sw2.Flush();
 							sw2.Close();
 						}

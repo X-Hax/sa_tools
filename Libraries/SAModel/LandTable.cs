@@ -57,12 +57,12 @@ namespace SAModel
 			Metadata = new Dictionary<uint, byte[]>();
 		}
 
-		public LandTable(byte[] file, int address, uint imageBase, LandTableFormat format)
+		public LandTable(byte[] file, int address, uint imageBase, LandTableFormat format, bool isNinja2 = false)
 			: this(file, address, imageBase, format, new Dictionary<int, string>())
 		{
 		}
 
-		public LandTable(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, uint offset = 0)
+		public LandTable(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, uint offset = 0, bool isNinja2 = false)
 		{
 			Format = format;
 			if (labels.ContainsKey(address))
@@ -136,7 +136,7 @@ namespace SAModel
 							COLName = "collist_" + tmpaddr.ToString("X8");
 						for (int i = 0; i < colcnt; i++)
 						{
-							COL.Add(new COL(file, tmpaddr, imageBase, format, labels, cnkcnt < 0 ? null : (bool?)(i >= cnkcnt), attaches));
+							COL.Add(new COL(file, tmpaddr, imageBase, format, labels, cnkcnt < 0 ? null : (bool?)(i >= cnkcnt), attaches, isNinja2));
 							tmpaddr += SAModel.COL.Size(format);
 						}
 					}

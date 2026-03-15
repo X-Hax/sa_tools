@@ -259,7 +259,6 @@ namespace SAModel.SALVL
 				else
 					textureFallbackPath = Path.Combine(systemFallback, "PRS", pvmName) + extension;
 				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath), out bool hasNames);
-				log.Add("Loading textures: " + ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
 				Texture[] d3dTextures;
 				if (textureBitmaps != null)
 				{
@@ -269,6 +268,7 @@ namespace SAModel.SALVL
 
 					LevelData.TextureBitmaps.Add(pvmName, textureBitmaps);
 					LevelData.Textures.Add(pvmName, d3dTextures);
+					log.Add("Loaded textures: " + ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
 				}
 				else
 				{
@@ -792,8 +792,8 @@ namespace SAModel.SALVL
 				}
 
 				// Initialize level textures
-				LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
-				LevelData.Textures = new Dictionary<string, Texture[]>();
+				LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>(StringComparer.OrdinalIgnoreCase);
+				LevelData.Textures = new Dictionary<string, Texture[]>(StringComparer.OrdinalIgnoreCase);
 				if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
 					LevelData.leveltexs = LevelData.geo.TextureFileName;
 			}
