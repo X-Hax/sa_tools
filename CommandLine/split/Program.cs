@@ -55,6 +55,11 @@ namespace Split
 					splitFlags |= SplitFlags.ForceBinary;
 					Console.WriteLine("Using SplitBinary for DLLs");
 				}
+				if (args[u] == "-ninja2")
+				{
+					splitFlags |= SplitFlags.Ninja2;
+					Console.WriteLine("Models will use Ninja2 formatting");
+				}
 			}
 			mode = args[0];
 			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
