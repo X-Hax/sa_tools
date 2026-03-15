@@ -14,155 +14,185 @@ namespace SA2ObjectDefinitions.Common
 {
 	public class EAI : ObjectDefinition
 	{
-		private NJS_OBJECT model1;
-		private Mesh[] mesh1;
-		private NJS_OBJECT model2;
-		private Mesh[] mesh2;
-		private NJS_OBJECT model3;
-		private Mesh[] mesh3;
+		private NJS_OBJECT object_eai_gun;
+		private NJS_OBJECT object_eai_laser;
+		private NJS_OBJECT object_eai_shield;
+
+		private NJS_MOTION motion_eai_activate;
+		private NJS_MOTION motion_eai_idle;
+		private NJS_MOTION motion_eai_move;
+		private NJS_MOTION motion_eai_drop;
 
 		public override void Init(ObjectData data, string name)
 		{
-			model1 = ObjectHelper.LoadModel("enemy/ai/E_AI_GUN.sa2mdl");
-			mesh1 = ObjectHelper.GetMeshes(model1);
-			model2 = ObjectHelper.LoadModel("enemy/ai/E_AI_LASER.sa2mdl");
-			mesh2 = ObjectHelper.GetMeshes(model2);
-			model3 = ObjectHelper.LoadModel("enemy/ai/E_AI_SHIELDER.sa2mdl");
-			mesh3 = ObjectHelper.GetMeshes(model3);
+			object_eai_gun = ObjectHelper.LoadModel("enemy/ai/E_AI_GUN.sa2mdl");
+			object_eai_laser = ObjectHelper.LoadModel("enemy/ai/E_AI_LASER.sa2mdl");
+			object_eai_shield = ObjectHelper.LoadModel("enemy/ai/E_AI_SHIELDER.sa2mdl");
+
+			motion_eai_activate = NJS_MOTION.Load("enemy/ai/Hunter11.saanim");
+			motion_eai_idle = NJS_MOTION.Load("enemy/ai/Hunter2.saanim");
+			motion_eai_move = NJS_MOTION.Load("enemy/ai/Hunter3.saanim");
+			motion_eai_drop = NJS_MOTION.Load("enemy/ai/Hunter1.saanim");
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			int hunterID = Math.Max((int)item.Scale.X, 0);
-			if (hunterID == 2 || hunterID == 3 || hunterID == 7)
+
+			HitResult result;
+
+			NJS_OBJECT model;
+
+			switch (hunterID)
 			{
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, 0);
-				HitResult result = model2.CheckHit(Near, Far, Viewport, Projection, View, transform, mesh2);
-				transform.Pop();
-				return result;
+				case 2:
+				case 3:
+				case 7:
+					model = object_eai_laser;
+					break;
+				case 5:
+					model = object_eai_shield;
+					break;
+				default:
+					model = object_eai_gun;
+					break;
 			}
-			else if (hunterID == 5)
+
+			Mesh[] mesh = ObjectHelper.GetMeshes(model);
+
+			transform.Push();
 			{
-				transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, 0);
-				HitResult result = model3.CheckHit(Near, Far, Viewport, Projection, View, transform, mesh3);
-				transform.Pop();
-				return result;
+				transform.NJRotateObject(0, item.Rotation.Y + ObjectHelper.DegToBAMS(90), 0);
+				result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, mesh);
 			}
-			else
-			{
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, 0);
-				HitResult result = model1.CheckHit(Near, Far, Viewport, Projection, View, transform, mesh1);
-				transform.Pop();
-				return result;
-			}
+			transform.Pop();
+
+			return result;
 		}
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			int hunterID = Math.Max((int)item.Scale.X, 0);
-			if (hunterID == 2 || hunterID == 3 || hunterID == 7)
+
+			List<RenderInfo> result = new List<RenderInfo>();
+
+			NJS_OBJECT model;
+
+			NJS_MOTION motion = motion_eai_idle;
+
+			switch (hunterID)
 			{
-				List<RenderInfo> result = new List<RenderInfo>();
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, item.Rotation.Z);
-				result.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("e_aitex"), mesh2, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-				if (item.Selected)
-					result.AddRange(model2.DrawModelTreeInvert(transform, mesh2));
-				transform.Pop();
-				return result;
+				case 0:
+					model = object_eai_gun;
+					break;
+				case 2:
+				case 3:
+				case 7:
+					model = object_eai_laser;
+					break;
+				case 5:
+					model = object_eai_shield;
+					break;
+				default:
+					model = object_eai_gun;
+					break;
 			}
-			else if (hunterID == 5)
+
+
+			switch (hunterID)
 			{
-				List<RenderInfo> result = new List<RenderInfo>();
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, item.Rotation.Z);
-				result.AddRange(model3.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("e_aitex"), mesh3, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-				if (item.Selected)
-					result.AddRange(model3.DrawModelTreeInvert(transform, mesh3));
-				transform.Pop();
-				return result;
+				case 0:
+					motion = motion_eai_activate;
+					break;
+				case 1:
+				case 3:
+					motion = motion_eai_move;
+					break;
+				case 6:
+				case 7:
+					motion = motion_eai_drop;
+					break;
+				default:
+					motion = motion_eai_idle;
+					break;
 			}
-			else
+
+			Mesh[] mesh = ObjectHelper.GetMeshes(model);
+
+			transform.Push();
 			{
-				List<RenderInfo> result = new List<RenderInfo>();
-				transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, item.Rotation.Z);
-				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("e_aitex"), mesh1, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				transform.NJRotateObject(0, item.Rotation.Y + ObjectHelper.DegToBAMS(90), item.Rotation.Z);
+//				result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("e_aitex"), mesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				result.AddRange(model.DrawModelTreeAnimated(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("e_aitex"), mesh, motion, 0.0f, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				if (item.Selected)
-					result.AddRange(model1.DrawModelTreeInvert(transform, mesh1));
-				transform.Pop();
-				return result;
+					result.AddRange(model.DrawModelTreeAnimatedInvert(transform, mesh, motion, 0.0f));
 			}
+			transform.Pop();
+
+			return result;
 		}
 
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
 			int hunterID = Math.Max((int)item.Scale.X, 0);
-			if (hunterID == 2 || hunterID == 3 || hunterID == 7)
+
+			List<ModelTransform> result = new List<ModelTransform>();
+
+			NJS_OBJECT model;
+
+			switch (hunterID)
 			{
-				List<ModelTransform> result = new List<ModelTransform>();
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, item.Rotation.Z);
-				result.Add(new ModelTransform(model2, transform.Top));
-				transform.Pop();
-				return result;
+				case 2:
+				case 3:
+				case 7:
+					model = object_eai_laser;
+					break;
+				case 5:
+					model = object_eai_shield;
+					break;
+				default:
+					model = object_eai_gun;
+					break;
 			}
-			else if (hunterID == 5)
+
+			transform.Push();
 			{
-				List<ModelTransform> result = new List<ModelTransform>();
-				transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, item.Rotation.Z);
-				result.Add(new ModelTransform(model3, transform.Top));
-				transform.Pop();
-				return result;
+				transform.NJRotateObject(0, item.Rotation.Y + ObjectHelper.DegToBAMS(90), item.Rotation.Z);
+				result.Add(new ModelTransform(model, transform.Top));
 			}
-			else
-			{
-				List<ModelTransform> result = new List<ModelTransform>();
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, item.Rotation.Z);
-				result.Add(new ModelTransform(model1, transform.Top));
-				transform.Pop();
-				return result;
-			}
+			transform.Pop();
+			return result;
 		}
 
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			int hunterID = Math.Max((int)item.Scale.X, 0);
-			if (hunterID == 2 || hunterID == 3 || hunterID == 7)
+
+			MatrixStack transform = new MatrixStack();
+
+			NJS_OBJECT model;
+
+			switch (hunterID)
 			{
-				MatrixStack transform = new MatrixStack();
-				transform.NJTranslate(item.Position.ToVector3());
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, item.Rotation.Z);
-				return ObjectHelper.GetModelBounds(model2, transform);
+				case 2:
+				case 3:
+				case 7:
+					model = object_eai_laser;
+					break;
+				case 5:
+					model = object_eai_shield;
+					break;
+				default:
+					model = object_eai_gun;
+					break;
 			}
-			if (hunterID == 5)
-			{
-				MatrixStack transform = new MatrixStack();
-				transform.NJTranslate(item.Position.ToVector3());
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, item.Rotation.Z);
-				return ObjectHelper.GetModelBounds(model3, transform);
-			}
-			else
-			{
-				MatrixStack transform = new MatrixStack();
-				transform.NJTranslate(item.Position.ToVector3());
-				transform.NJRotateObject(0, item.Rotation.Y + 0x4000, item.Rotation.Z);
-				return ObjectHelper.GetModelBounds(model1, transform);
-			}
+
+			transform.NJTranslate(item.Position.ToVector3());
+			transform.NJRotateObject(0, item.Rotation.Y + ObjectHelper.DegToBAMS(90), item.Rotation.Z);
+			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
 		public override Matrix GetHandleMatrix(SETItem item)
@@ -170,7 +200,7 @@ namespace SA2ObjectDefinitions.Common
 			Matrix matrix = Matrix.Identity;
 
 			MatrixFunctions.Translate(ref matrix, item.Position);
-			MatrixFunctions.RotateObject(ref matrix, 0, item.Rotation.Y + 0x4000, item.Rotation.Z);
+			MatrixFunctions.RotateObject(ref matrix, 0, item.Rotation.Y + ObjectHelper.DegToBAMS(90), item.Rotation.Z);
 
 			return matrix;
 		}
@@ -178,7 +208,7 @@ namespace SA2ObjectDefinitions.Common
 		public override void SetOrientation(SETItem item, Vertex direction)
 		{
 			int x; int z; direction.GetRotation(out x, out z);
-			item.Rotation.X = x + 0x4000;
+			item.Rotation.X = x + ObjectHelper.DegToBAMS(90);
 			item.Rotation.Z = -z;
 		}
 
