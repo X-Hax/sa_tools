@@ -51,12 +51,12 @@ namespace SAModel
 		{
 		}
 
-		public COL(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
-			: this(file, address, imageBase, format, labels, false, attaches)
+		public COL(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches, bool isNinja2 = false)
+			: this(file, address, imageBase, format, labels, false, attaches, isNinja2)
 		{
 		}
 
-		public COL(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, bool? forceBasic, Dictionary<int, Attach> attaches)
+		public COL(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, bool? forceBasic, Dictionary<int, Attach> attaches, bool isNinja2 = false)
 		{
 			Bounds = new BoundingSphere(file, address);
 			ModelFormat mfmt = 0;
@@ -98,7 +98,7 @@ namespace SAModel
 					if (!forceBasic.HasValue && Flags >= 0)
 						mfmt = ModelFormat.Basic;
 					tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
-					Model = new NJS_OBJECT(file, (int)tmpaddr, imageBase, mfmt, labels, attaches);
+					Model = new NJS_OBJECT(file, (int)tmpaddr, imageBase, mfmt, labels, attaches, isNinja2);
 					WidthZ = ByteConverter.ToInt32(file, address + 0x14);
 					BlockBits = ByteConverter.ToUInt32(file, address + 0x18);
 					break;

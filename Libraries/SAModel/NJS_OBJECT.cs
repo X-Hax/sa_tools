@@ -120,12 +120,12 @@ namespace SAModel
 			Children = new ReadOnlyCollection<NJS_OBJECT>(children);
 		}
 
-		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, Attach> attaches)
-			: this(file, address, imageBase, format, new Dictionary<int, string>(), attaches)
+		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, Attach> attaches, bool isNinja2 = false)
+			: this(file, address, imageBase, format, new Dictionary<int, string>(), attaches, isNinja2)
 		{ }
 
-		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
-			: this(file, address, imageBase, format, null, labels, attaches)
+		public NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches, bool isNinja2 = false)
+			: this(file, address, imageBase, format, null, labels, attaches, isNinja2)
 		{ }
 
 		private NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, NJS_OBJECT parent, Dictionary<int, string> labels, Dictionary<int, Attach> attaches, bool isNinja2 = false)

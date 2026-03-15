@@ -18,7 +18,8 @@ namespace SplitTools.Split
 		Overwrite = 0x4, // Overwrite existing files
 		Log = 0x8, // Enable output log
 		NJA = 0x10, // Output NJA instead of SAModel
-		ForceBinary = 0x20 // Use SplitBinary instead of SplitDLL for DLL files
+		ForceBinary = 0x20, // Use SplitBinary instead of SplitDLL for DLL files
+		Ninja2 = 0x40 // Output using Ninja2 formatting when using NJA
 	}
 
 	public static class SplitBinary
@@ -207,6 +208,7 @@ namespace SplitTools.Split
 			ModelFormat modelfmt_def = 0;
 			LandTableFormat landfmt_def = 0;
 			bool SA2 = false;
+			bool ninja2 = splitFlags.HasFlag(SplitFlags.Ninja2);
 			Attach dummy;
 			switch (game)
 			{
@@ -236,7 +238,7 @@ namespace SplitTools.Split
 				case "landtable":
 					if (data.CustomProperties.ContainsKey("format"))
 						landfmt_def = (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]);
-					LandTable lt = new LandTable(datafile, address, imageBase, landfmt_def, labels, offset) { Description = itemName };
+					LandTable lt = new LandTable(datafile, address, imageBase, landfmt_def, labels, offset, ninja2) { Description = itemName };
 					if (splitFlags.HasFlag(SplitFlags.NoMeta))
 					{
 						lt.TextureList = 0;
@@ -271,11 +273,14 @@ namespace SplitTools.Split
 								break;
 						}
 						bool rev = ByteConverter.Reverse;
+						bool writetls = false;
 						if (data.CustomProperties.ContainsKey("format"))
 							mdlformat = (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]);
 						if (data.CustomProperties.ContainsKey("reverse"))
 							ByteConverter.Reverse = true;
-						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, mdlformat, labels, new Dictionary<int, Attach>());
+						if (data.CustomProperties.ContainsKey("includetls"))
+							writetls = true;
+						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, mdlformat, labels, new Dictionary<int, Attach>(), ninja2);
 						List<string> mdlanis = new List<string>();
 						string[] mdlanisfiles;
 						string[] mdlmorphs;
@@ -466,7 +471,7 @@ namespace SplitTools.Split
 								else
 									file_tosave = i.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext_arr;
 								string file = Path.Combine(path, file_tosave);
-								ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address, imageBase), imageBase, modelfmt_arr, new Dictionary<int, Attach>()), null, null, null, null, modelfmt_arr, splitFlags.HasFlag(SplitFlags.NoMeta));
+								ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address, imageBase), imageBase, modelfmt_arr, new Dictionary<int, Attach>(), ninja2), null, null, null, null, modelfmt_arr, splitFlags.HasFlag(SplitFlags.NoMeta));
 							}
 							address += 4;
 						}
@@ -859,6 +864,7 @@ namespace SplitTools.Split
 								{
 									List<SA2BDeathZoneFlags> flags = new List<SA2BDeathZoneFlags>();
 									string path = Path.GetDirectoryName(fileOutputPath);
+									string extension = string.Empty;
 									List<string> hashes = new List<string>();
 									int num = 0;
 									while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
@@ -867,10 +873,16 @@ namespace SplitTools.Split
 										if (customProperties.ContainsKey("filename" + num.ToString()))
 											file_tosave = customProperties["filename" + num++.ToString()];
 										else
-											file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
+										{
+											if (splitFlags.HasFlag(SplitFlags.NJA))
+												extension = ".nja.sa1mdl";
+											else
+												extension = ".sa1mdl";
+											file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + extension;
+										}
 										string file = Path.Combine(path, file_tosave);
 										flags.Add(new SA2BDeathZoneFlags(datafile, address, file_tosave));
-										ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, labels, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, splitFlags.HasFlag(SplitFlags.NoMeta));
+										ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, labels, new Dictionary<int, Attach>(), ninja2), null, null, null, null, ModelFormat.Basic, splitFlags.HasFlag(SplitFlags.NoMeta));
 										hashes.Add(HelperFunctions.FileHash(file));
 										address += 8;
 
@@ -1073,7 +1085,7 @@ namespace SplitTools.Split
 									break;
 							}
 							CharaObjectData chara = new CharaObjectData();
-							NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+							NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>(), ninja2);
 							chara.MainModel = model.Name;
 							NJS_MOTION anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, model.CountAnimated());
 							chara.Animation1 = anim.Name;
@@ -1095,7 +1107,7 @@ namespace SplitTools.Split
 							int ptr = ByteConverter.ToInt32(datafile, address + 16);
 							if (ptr != 0)
 							{
-								model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+								model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>(), ninja2);
 								chara.AccessoryModel = model.Name;
 								chara.AccessoryAttachNode = "object_" + (ByteConverter.ToInt32(datafile, address + 20) - imageBase).ToString("X8");
 								ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, splitFlags.HasFlag(SplitFlags.NoMeta));
@@ -1104,7 +1116,7 @@ namespace SplitTools.Split
 							ptr = ByteConverter.ToInt32(datafile, address + 24);
 							if (ptr != 0)
 							{
-								model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+								model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>(), ninja2);
 								chara.SuperModel = model.Name;
 								anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 28) - imageBase), imageBase, model.CountAnimated());
 								chara.SuperAnimation1 = anim.Name;
@@ -1148,7 +1160,7 @@ namespace SplitTools.Split
 							KartMenuElements menu = new KartMenuElements();
 							menu.CharacterID = (SA2Characters)ByteConverter.ToUInt32(datafile, address);
 							menu.PortraitID = ByteConverter.ToUInt32(datafile, address + 4);
-							NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToUInt32(datafile, address + 8) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+							NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToUInt32(datafile, address + 8) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>(), ninja2);
 							menu.KartModel = model.Name;
 							string file_tosave;
 							if (customProperties.ContainsKey("filename" + i.ToString()))
@@ -1188,7 +1200,7 @@ namespace SplitTools.Split
 								para.FirstVoice = ByteConverter.ToUInt32(datafile, address + 0xC);
 								para.LastVoice = ByteConverter.ToUInt32(datafile, address + 0x10);
 							}
-							NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToUInt32(datafile, address + 0x14) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+							NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToUInt32(datafile, address + 0x14) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>(), ninja2);
 							para.ShadowModel = model.Name;
 							string file_tosave;
 							if (customProperties.ContainsKey("filename" + i.ToString()))
@@ -1221,7 +1233,7 @@ namespace SplitTools.Split
 									{
 										DCKartSpecialInfo kart = new DCKartSpecialInfo();
 										kart.ID = (SA2KartCharacters)ByteConverter.ToInt32(datafile, address);
-										NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+										NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>(), ninja2);
 										kart.Model = model.Name;
 										string file_tosave;
 										if (customProperties.ContainsKey("filename" + i.ToString()))
@@ -1234,7 +1246,7 @@ namespace SplitTools.Split
 										int ptr = ByteConverter.ToInt32(datafile, address + 8);
 										if (ptr != 0)
 										{
-											model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+											model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>(), ninja2);
 											kart.LowModel = model.Name;
 											string file_tosave_l;
 											if (customProperties.ContainsKey("filename" + i.ToString()))
@@ -1265,7 +1277,7 @@ namespace SplitTools.Split
 									{
 										KartSpecialInfo kart = new KartSpecialInfo();
 										kart.ID = (SA2KartCharacters)ByteConverter.ToInt32(datafile, address);
-										NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+										NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>(), ninja2);
 										kart.Model = model.Name;
 										string file_tosave;
 										if (customProperties.ContainsKey("filename" + i.ToString()))
@@ -1278,7 +1290,7 @@ namespace SplitTools.Split
 										int ptr = ByteConverter.ToInt32(datafile, address + 8);
 										if (ptr != 0)
 										{
-											model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+											model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>(), ninja2);
 											kart.LowModel = model.Name;
 											string file_tosave_l;
 											if (customProperties.ContainsKey("filename" + i.ToString()))
@@ -1328,7 +1340,7 @@ namespace SplitTools.Split
 										modelext_krt = ".sa2bmdl";
 										break;
 								}
-								NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, modelfmt_def, new Dictionary<int, Attach>());
+								NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, modelfmt_def, new Dictionary<int, Attach>(), ninja2);
 								kartobj.Model = model.Name;
 								string file_tosave;
 								if (customProperties.ContainsKey("filename" + i.ToString()))
@@ -1338,7 +1350,7 @@ namespace SplitTools.Split
 								string file = Path.Combine(path, file_tosave);
 								ModelFile.CreateFile(file, model, null, null, null, null, modelfmt_def, splitFlags.HasFlag(SplitFlags.NoMeta));
 								hashes.Add(HelperFunctions.FileHash(file));
-								NJS_OBJECT collision = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
+								NJS_OBJECT collision = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>(), ninja2);
 								kartobj.Collision = collision.Name;
 								string file_tosave_col;
 								if (customProperties.ContainsKey("filename" + i.ToString()))
