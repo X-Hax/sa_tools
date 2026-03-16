@@ -1598,6 +1598,7 @@
 			RenderPanel.DragEnter += RenderPanel_DragEnter;
 			RenderPanel.DragOver += RenderPanel_DragOver;
 			RenderPanel.DragLeave += RenderPanel_DragLeave;
+			RenderPanel.Paint += RenderPanel_Paint;
 			RenderPanel.KeyDown += panel1_KeyDown;
 			RenderPanel.KeyUp += panel1_KeyUp;
 			RenderPanel.MouseDown += panel1_MouseDown;

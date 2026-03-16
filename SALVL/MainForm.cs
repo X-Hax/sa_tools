@@ -2897,5 +2897,10 @@ namespace SAModel.SALVL
 				exportVisibleGeometry.Checked = false;
 			}
 		}
+
+		private void RenderPanel_Paint(object sender, PaintEventArgs e)
+		{
+			NeedRedraw = true;
+		}
 	}
 }
