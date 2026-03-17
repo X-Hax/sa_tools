@@ -1427,7 +1427,7 @@ namespace SAModel.SALVL
 					// Assign SET data
 					if (LevelData.ObjDefs.Count > 0)
 					{
-						LevelData.SETName = level.SETName ?? level.LevelID;
+						LevelData.SETName = level.SETName ?? level.LevelID;						
 						string setTxt = "SET";
 						string setEnd = "{0}.bin";
 
@@ -1550,8 +1550,9 @@ namespace SAModel.SALVL
 
 				progress.SetTaskAndStep("Loading CAM items", "Initializing...");
 
-				string camFallback = Path.Combine(systemFallback, "CAM" + LevelData.SETName + "{0}.bin");
-				string camstr = Path.Combine(modSystemFolder, "CAM" + LevelData.SETName + "{0}.bin");
+				LevelData.CAMName = level.CAMName ?? LevelData.SETName;
+				string camFallback = Path.Combine(systemFallback, "CAM" + LevelData.CAMName + "{0}.bin");
+				string camstr = Path.Combine(modSystemFolder, "CAM" + LevelData.CAMName + "{0}.bin");
 
 				LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
 				for (int i = 0; i < LevelData.SETChars.Length; i++)

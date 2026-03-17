@@ -67,6 +67,7 @@ namespace SAModel.SAEditorCommon
 		[DefaultValue("Sonic")]
 		public string DefaultCharacter { get; set; }
 		public string SETName { get; set; }
+		public string CAMName { get; set; }
 		[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
 		public string[] Textures { get; set; }
 		public string TextureList { get; set; }

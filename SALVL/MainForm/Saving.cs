@@ -224,7 +224,7 @@ namespace SAModel.SALVL
 			{
 				for (int i = 0; i < LevelData.CAMItems.Length; i++)
 				{
-					string camString = Path.Combine(modSystemFolder, "CAM" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
+					string camString = Path.Combine(modSystemFolder, "CAM" + LevelData.CAMName + LevelData.SETChars[i] + ".bin");
 					/*if (modpath != null)
 						camString = Path.Combine(modpath, camString);*/
 

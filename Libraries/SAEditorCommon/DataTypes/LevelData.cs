@@ -80,6 +80,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		}
 		public static string LevelName;
 		public static string SETName;
+		public static string CAMName;
 		public static List<ObjectDefinition> ObjDefs;
 		public static List<ObjectDefinition> MisnObjDefs;
 		public static LevelDefinition leveleff;
