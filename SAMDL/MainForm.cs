@@ -33,7 +33,6 @@ namespace SAModel.SAMDL
 		// Editor variables
 		bool loaded;
 		bool unsavedChanges = false;
-		bool rootSiblingMode = false;
 		bool DeviceResizing;
 		string currentFileName = "";
 		bool hasWeight;
@@ -495,18 +494,7 @@ namespace SAModel.SAMDL
 					if (!string.IsNullOrEmpty(modelFile.Author))
 						modelAuthor = modelFile.Author;
 					outfmt = modelFile.Format;
-					if (modelFile.Model.Sibling != null)
-					{
-						model = new NJS_OBJECT { Name = "Root" };
-						model.AddChild(modelFile.Model);
-						model.FixParents();
-						rootSiblingMode = true;
-					}
-					else
-					{
-						model = modelFile.Model;
-						rootSiblingMode = false;
-					}
+					model = modelFile.Model;
 					animationList = new List<NJS_MOTION>(modelFile.Animations);
 					setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
 						buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
@@ -815,18 +803,7 @@ namespace SAModel.SAMDL
 			if (modelinfo.radioButtonObject.Checked)
 			{
 				NJS_OBJECT tempmodel = new NJS_OBJECT(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null);
-				if (tempmodel.Sibling != null)
-				{
-					model = new NJS_OBJECT { Name = "Root" };
-					model.AddChild(tempmodel);
-					model.FixParents();
-					rootSiblingMode = true;
-				}
-				else
-				{
-					model = tempmodel;
-					rootSiblingMode = false;
-				}
+				model = tempmodel;
 				if (modelinfo.checkBoxLoadMotion.Checked)
 				{
 					animationList = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.numericUpDownKey.Value, null) };
@@ -899,6 +876,8 @@ namespace SAModel.SAMDL
 			nodeDict[model] = node;
 			foreach (NJS_OBJECT child in model.Children)
 				AddTreeNode(child, ref index, node.Nodes);
+			if (model.Parent == null && model.Sibling != null)
+				AddTreeNode(model.Sibling, ref index, nodes);
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -1027,7 +1006,7 @@ namespace SAModel.SAMDL
 					{
 						texDict.Add(uint.MaxValue, NJTLHelper.GenerateNJTexList(texList.ToArray(), isGC, settingsfile.NjbSizeLittleEndian));
 					}
-					ModelFile.CreateFile(fileName, rootSiblingMode ? model.Children[0] : model, new string[0], modelAuthor, modelDescription, texDict, outfmt, true, true, settingsfile.NjbSizeLittleEndian);
+					ModelFile.CreateFile(fileName, model, new string[0], modelAuthor, modelDescription, texDict, outfmt, true, true, settingsfile.NjbSizeLittleEndian);
 					break;
 				default:
 					string[] animfiles;
@@ -1044,7 +1023,7 @@ namespace SAModel.SAMDL
 					}
 					else
 						animfiles = null;
-					ModelFile.CreateFile(fileName, rootSiblingMode ? model.Children[0] : model, animfiles, modelAuthor, modelDescription, null, outfmt);
+					ModelFile.CreateFile(fileName, model, animfiles, modelAuthor, modelDescription, null, outfmt);
 					break;
 			}
 
@@ -1079,7 +1058,6 @@ namespace SAModel.SAMDL
 
 		private void NewFile(ModelFormat modelFormat)
 		{
-			rootSiblingMode = false;
 			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			AnimationPlaying = false;
@@ -1309,6 +1287,13 @@ namespace SAModel.SAMDL
 					return true;
 				}
 			transform.Pop();
+			if (obj.Parent == null && obj.Sibling != null)
+			{
+				if (DrawSelectedObject(obj.Sibling, transform, ref modelindex, ref animindex))
+				{
+					return true;
+				}
+			}
 			return false;
 		}
 
@@ -1911,10 +1896,7 @@ namespace SAModel.SAMDL
 							sw.WriteLine("};");
 							sw.WriteLine();
 						}
-						if (rootSiblingMode)
-							model.Children[0].ToStructVariables(sw, dx, labels, texnames);
-						else
-							model.ToStructVariables(sw, dx, labels, texnames);
+						model.ToStructVariables(sw, dx, labels, texnames);
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
 							foreach (NJS_MOTION anim in animationList)
@@ -2399,10 +2381,7 @@ namespace SAModel.SAMDL
 							tls.TexnameArrayName = "textures_" + TexturePackName;
 							tls.ToNJA(sw, labels);
 						}
-						if (rootSiblingMode)
-							model.Children[0].ToNJA(sw, labels, labels.ToArray());
-						else
-							model.ToNJA(sw, labels, labels.ToArray());
+						model.ToNJA(sw, labels, labels.ToArray());
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
 							foreach (NJS_MOTION anim in animationList)
@@ -2537,8 +2516,6 @@ namespace SAModel.SAMDL
 			NJS_OBJECT exportmodel;
 			if (selected)
 				exportmodel = selectedObject;
-			else if (rootSiblingMode)
-				exportmodel = model.Children[0];
 			else
 				exportmodel = model;
 			SAEditorCommon.Import.AssimpStuff.AssimpExport(exportmodel, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
@@ -2565,8 +2542,6 @@ namespace SAModel.SAMDL
 				if (MessageBox.Show(this, "No textures are loaded. Materials may not be exported properly. Continue?", "SAMDL Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
 					return;
 			string expname = model.Name;
-			if (rootSiblingMode)
-				expname = model.Children[0].Name;
 			using (SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = "dae",
@@ -4583,10 +4558,7 @@ namespace SAModel.SAMDL
 							tls.TexnameArrayName = "textures_" + TexturePackName;
 							tls.ToNJA(sw, labels);
 						}
-						if (rootSiblingMode)
-							model.Children[0].ToNJA(sw, labels, labels.ToArray());
-						else
-							model.ToNJA(sw, labels, labels.ToArray());
+						model.ToNJA(sw, labels, labels.ToArray());
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
 							foreach (NJS_MOTION anim in animationList)
@@ -4619,10 +4591,7 @@ namespace SAModel.SAMDL
 							tls.TexnameArrayName = "textures_" + TexturePackName;
 							tls.ToNJA(sw, labels);
 						}
-						if (rootSiblingMode)
-							model.Children[0].ToNJA(sw, labels, labels.ToArray(), isNinja2: true);
-						else
-							model.ToNJA(sw, labels, labels.ToArray(), isNinja2: true);
+						model.ToNJA(sw, labels, labels.ToArray(), isNinja2: true);
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
 							foreach (NJS_MOTION anim in animationList)
