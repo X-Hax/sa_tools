@@ -20,23 +20,23 @@ namespace ArchiveTool
     {
 		static string outputPath;
         static ArchiveFromFolderMode folderMode;
-        /// <summary>
-        /// Compress a binary to PRS.
-        /// </summary>
-        static void CompressPRS(string[] args)
-        {
-            filePath = args[1];
-            Console.WriteLine("Compressing file to PRS: {0}", Path.GetFullPath(filePath));
-            Console.WriteLine("Output file: {0}", Path.GetFullPath(Path.ChangeExtension(filePath, ".prs")));
-            byte[] bindata = File.ReadAllBytes(filePath);
-            bindata = PRS.Compress(bindata, 255);
-            File.WriteAllBytes(Path.ChangeExtension(filePath, ".prs"), bindata);
-            Console.WriteLine("PRS archive was compiled successfully!");
-        }
-        /// <summary>
-        /// Main function for automatic archive building from a folder.
-        /// </summary>
-        static void BuildFromFolder(string[] args)
+		/// <summary>
+		/// Compress a binary to PRS.
+		/// </summary>
+		static void CompressPRS(string[] args)
+		{
+			filePath = args[1];
+			Console.WriteLine("Compressing file to PRS: {0}", Path.GetFullPath(filePath));
+			Console.WriteLine("Output file: {0}", Path.GetFullPath(Path.ChangeExtension(filePath, ".prs")));
+			byte[] bindata = File.ReadAllBytes(filePath);
+			bindata = PRS.Compress(bindata, 255);
+			File.WriteAllBytes(Path.ChangeExtension(filePath, ".prs"), bindata);
+			Console.WriteLine("PRS archive was compiled successfully!");
+		}
+		/// <summary>
+		/// Main function for automatic archive building from a folder.
+		/// </summary>
+		static void BuildFromFolder(string[] args)
         {
             bool createPB = false;
 			bool createARCX = false;
@@ -71,8 +71,8 @@ namespace ArchiveTool
                     return;
                 }
                 List<string> filenames = new List<string>(File.ReadAllLines(indexfilename).Where(a => !string.IsNullOrEmpty(a)));
-                string ext = Path.GetExtension(filenames[0]).ToLowerInvariant();
-                if (filenames[0].Contains(","))
+				string ext = Path.GetExtension(filenames[0]).ToLowerInvariant();
+				if (filenames[0].Contains(","))
                 {
                     string[] checkf = filenames[0].Split(',');
                     ext = Path.GetExtension(checkf[0].ToLowerInvariant());
@@ -244,10 +244,46 @@ namespace ArchiveTool
                 File.WriteAllBytes(outputPath, data);
             }
         }
-        /// <summary>
-        /// Create a PAK archive from a folder produced by ArchiveTool or PAKTool.
-        /// </summary>
-        static void BuildPAK(string filePath)
+		/// <summary>
+		/// Adds metadata to existing files. Primarily used for AFS containers.
+		/// </summary>
+		static void AppendMetadataToFile(string[] args)
+		{
+			byte[] afsdata = File.ReadAllBytes(args[1]);
+			string indexmetadata = args[2];
+			List<string> filenames = new List<string>(File.ReadAllLines(indexmetadata).Where(a => !string.IsNullOrEmpty(a)));
+			int dataoffset = ByteConverter.ToInt32(afsdata, 8);
+			int metasize = 48 * filenames.Count;
+			int afssize = afsdata.Length;
+			Array.Copy(BitConverter.GetBytes(afssize), 0, afsdata, dataoffset - 8, 4);
+			Array.Copy(BitConverter.GetBytes(metasize), 0, afsdata, dataoffset - 4, 4);
+			List<byte> afsfile = afsdata.ToList();
+			foreach (string line in filenames)
+			{
+				string[] split = [];
+				string filename = line;
+				uint customdata = 0;
+				if (line.Contains(","))
+				{
+					split = line.Split(',');
+					filename = split[0];
+					customdata = uint.Parse(split[1]);
+				}
+				afsfile.AddRange(new AFSMetadata(filename, DateTime.Now, customdata).GetBytes());
+			}
+			// Add bytes to align with blocksize
+			if (afsfile.Count % 2048 != 0)
+			{
+				while (afsfile.Count % 2048 > 0)
+					afsfile.Add(0);
+			}
+			outputPath = Path.Combine(Path.GetDirectoryName(args[1]), Path.GetFileNameWithoutExtension(args[1]) + "_new.afs");
+			File.WriteAllBytes(outputPath, afsfile.ToArray());
+		}
+		/// <summary>
+		/// Create a PAK archive from a folder produced by ArchiveTool or PAKTool.
+		/// </summary>
+		static void BuildPAK(string filePath)
         {
             Console.WriteLine("Building PAK from folder: {0}", Path.GetFullPath(filePath));
             outputPath = Path.Combine(Environment.CurrentDirectory, filePath);
