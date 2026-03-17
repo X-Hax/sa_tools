@@ -15,6 +15,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 	public static class ObjectHelper
 	{
 		private static NJS_OBJECT QuestionBoxModel;
+		private static NJS_OBJECT FlatSquareModel;
 		private static Mesh QuestionBoxMesh;
 		private static Dictionary<string, NJS_OBJECT> ModelCache;
 		private static Dictionary<NJS_OBJECT, Mesh[]> MeshCache;
@@ -28,6 +29,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			MeshCache = new();
 			PartialTexlistCache = new();
 			QuestionBoxModel = new ModelFile(Resources.questionmark).Model;
+			FlatSquareModel = new ModelFile(Resources.flatSquare).Model;
 			QuestionBoxMesh = GetMeshes(QuestionBoxModel).First();
 			QuestionMark = Resources.questionmark_t.ToTexture(device);
 		}
@@ -183,6 +185,11 @@ namespace SAModel.SAEditorCommon.SETEditing
 		public static BoundingSphere GetQuestionBoxBounds(MatrixStack transform)
 		{
 			return GetQuestionBoxBounds(transform, 1);
+		}
+
+		public static NJS_OBJECT GetFlatSquareModel()
+		{
+			return FlatSquareModel.Clone();
 		}
 
 		public static BoundingSphere GetQuestionBoxBounds(MatrixStack transform, float scale)

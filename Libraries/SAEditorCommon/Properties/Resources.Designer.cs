@@ -99,11 +99,23 @@ namespace SAModel.SAEditorCommon.Properties {
                 return ((byte[])(obj));
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap questionmark_t {
+
+		/// <summary>
+		///   Looks up a localized resource of type System.Byte[].
+		/// </summary>
+		public static byte[] flatSquare
+		{
+			get
+			{
+				object obj = ResourceManager.GetObject("flatSquare", resourceCulture);
+				return ((byte[])(obj));
+			}
+		}
+
+		/// <summary>
+		///   Looks up a localized resource of type System.Drawing.Bitmap.
+		/// </summary>
+		public static System.Drawing.Bitmap questionmark_t {
             get {
                 object obj = ResourceManager.GetObject("questionmark_t", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
