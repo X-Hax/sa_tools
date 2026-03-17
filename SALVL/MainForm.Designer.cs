@@ -195,7 +195,7 @@
 			normalSETStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			twoPTStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
-			RenderPanel = new System.Windows.Forms.UserControl();
+			RenderPanel = new D3DPanel();
 			backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(components);
 			addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -2496,7 +2496,7 @@
 		private System.Windows.Forms.MenuStrip menuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-		private System.Windows.Forms.UserControl RenderPanel;
+		private D3DPanel RenderPanel;
 		private System.ComponentModel.BackgroundWorker backgroundWorker1;
 		private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
