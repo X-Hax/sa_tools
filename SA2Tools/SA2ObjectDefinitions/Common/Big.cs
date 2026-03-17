@@ -54,28 +54,28 @@ namespace SA2ObjectDefinitions.Common
 			meshes = ObjectHelper.GetMeshes(object_big);
 			texlist_big = NJS_TEXLIST.Load("enemy/big/tls/BIG.satex");
 
-			motion_big_normal = NJS_MOTION.Load("enemy/big/Big1.saanim");
-			motion_big_shake = NJS_MOTION.Load("enemy/big/Big2.saanim");
-			motion_big_clap = NJS_MOTION.Load("enemy/big/Big3.saanim");
-			motion_big_sit = NJS_MOTION.Load("enemy/big/Big4.saanim");
-			motion_big_rod = NJS_MOTION.Load("enemy/big/Big5.saanim");
-			motion_big_bellyscratch = NJS_MOTION.Load("enemy/big/Big6.saanim");
-			motion_big_lay = NJS_MOTION.Load("enemy/big/Big7.saanim");
-			motion_big_cheer = NJS_MOTION.Load("enemy/big/Big8.saanim");
-			motion_big_wait = NJS_MOTION.Load("enemy/big/Big9.saanim");
-			motion_big_hipsway = NJS_MOTION.Load("enemy/big/Big10.saanim");
-			motion_big_wave = NJS_MOTION.Load("enemy/big/Big11.saanim");
-			motion_big_chestscratch = NJS_MOTION.Load("enemy/big/Big12.saanim");
-			motion_big_buttscratch = NJS_MOTION.Load("enemy/big/Big13.saanim");
-			motion_big_fan = NJS_MOTION.Load("enemy/big/Big14.saanim");
-			motion_big_running = NJS_MOTION.Load("enemy/big/Big15.saanim");
-			motion_big_runningfish = NJS_MOTION.Load("enemy/big/Big16.saanim");
-			motion_big_lookup = NJS_MOTION.Load("enemy/big/Big17.saanim");
-			motion_big_lookdown = NJS_MOTION.Load("enemy/big/Big18.saanim");
-			motion_big_layback = NJS_MOTION.Load("enemy/big/Big19.saanim");
-			motion_big_sitlookleft = NJS_MOTION.Load("enemy/big/Big20.saanim");
-			motion_big_holdfroggy = NJS_MOTION.Load("enemy/big/Big21.saanim");
-			motion_big_holdrod = NJS_MOTION.Load("enemy/big/Big22.saanim");
+			motion_big_normal = ObjectHelper.LoadMotion("enemy/big/Big1.saanim");
+			motion_big_shake = ObjectHelper.LoadMotion("enemy/big/Big2.saanim");
+			motion_big_clap = ObjectHelper.LoadMotion("enemy/big/Big3.saanim");
+			motion_big_sit = ObjectHelper.LoadMotion("enemy/big/Big4.saanim");
+			motion_big_rod = ObjectHelper.LoadMotion("enemy/big/Big5.saanim");
+			motion_big_bellyscratch = ObjectHelper.LoadMotion("enemy/big/Big6.saanim");
+			motion_big_lay = ObjectHelper.LoadMotion("enemy/big/Big7.saanim");
+			motion_big_cheer = ObjectHelper.LoadMotion("enemy/big/Big8.saanim");
+			motion_big_wait = ObjectHelper.LoadMotion("enemy/big/Big9.saanim");
+			motion_big_hipsway = ObjectHelper.LoadMotion("enemy/big/Big10.saanim");
+			motion_big_wave = ObjectHelper.LoadMotion("enemy/big/Big11.saanim");
+			motion_big_chestscratch = ObjectHelper.LoadMotion("enemy/big/Big12.saanim");
+			motion_big_buttscratch = ObjectHelper.LoadMotion("enemy/big/Big13.saanim");
+			motion_big_fan = ObjectHelper.LoadMotion("enemy/big/Big14.saanim");
+			motion_big_running = ObjectHelper.LoadMotion("enemy/big/Big15.saanim");
+			motion_big_runningfish = ObjectHelper.LoadMotion("enemy/big/Big16.saanim");
+			motion_big_lookup = ObjectHelper.LoadMotion("enemy/big/Big17.saanim");
+			motion_big_lookdown = ObjectHelper.LoadMotion("enemy/big/Big18.saanim");
+			motion_big_layback = ObjectHelper.LoadMotion("enemy/big/Big19.saanim");
+			motion_big_sitlookleft = ObjectHelper.LoadMotion("enemy/big/Big20.saanim");
+			motion_big_holdfroggy = ObjectHelper.LoadMotion("enemy/big/Big21.saanim");
+			motion_big_holdrod = ObjectHelper.LoadMotion("enemy/big/Big22.saanim");
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)

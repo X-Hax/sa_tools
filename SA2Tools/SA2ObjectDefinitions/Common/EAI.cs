@@ -29,10 +29,10 @@ namespace SA2ObjectDefinitions.Common
 			object_eai_laser = ObjectHelper.LoadModel("enemy/ai/E_AI_LASER.sa2mdl");
 			object_eai_shield = ObjectHelper.LoadModel("enemy/ai/E_AI_SHIELDER.sa2mdl");
 
-			motion_eai_activate = NJS_MOTION.Load("enemy/ai/Hunter11.saanim");
-			motion_eai_idle = NJS_MOTION.Load("enemy/ai/Hunter2.saanim");
-			motion_eai_move = NJS_MOTION.Load("enemy/ai/Hunter3.saanim");
-			motion_eai_drop = NJS_MOTION.Load("enemy/ai/Hunter1.saanim");
+			motion_eai_activate = ObjectHelper.LoadMotion("enemy/ai/Hunter11.saanim");
+			motion_eai_idle = ObjectHelper.LoadMotion("enemy/ai/Hunter2.saanim");
+			motion_eai_move = ObjectHelper.LoadMotion("enemy/ai/Hunter3.saanim");
+			motion_eai_drop = ObjectHelper.LoadMotion("enemy/ai/Hunter1.saanim");
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
