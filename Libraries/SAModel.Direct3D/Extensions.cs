@@ -1111,12 +1111,12 @@ namespace SAModel.Direct3D
 
 		private static List<RenderInfo> DrawModelTreeInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, ref int modelindex, bool ignorematcolor = false, bool ignorelight = false, bool boundsByMesh = false)
 		{
-			return DrawModelTree(obj, FillMode.Wireframe, transform, null, meshes, ignorematcolor, ignorelight, true, boundsByMesh);
+			return DrawModelTree(obj, FillMode.Wireframe, transform, null, meshes, ref modelindex, ignorematcolor, ignorelight, true, boundsByMesh);
 		}
 
 		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, NJS_MOTION anim, float animframe, ref int modelindex, ref int animindex, bool ignorematcolor = false, bool ignorelight = false, bool invert = false, bool boundsByMesh = false)
 		{
-			return DrawModelTreeAnimated(obj, FillMode.Wireframe, transform, null, meshes, anim, animframe, ignorematcolor, ignorelight, true, boundsByMesh);
+			return DrawModelTreeAnimated(obj, FillMode.Wireframe, transform, null, meshes, anim, animframe, ref modelindex, ref animindex, ignorematcolor, ignorelight, true, boundsByMesh);
 		}
 
 		public static List<RenderInfo> DrawModelTreeWeightedInvert(this NJS_OBJECT obj, Matrix transform, Mesh[] meshes, bool ignorematcolor = false, bool ignorelight = false, bool invert = false, bool boundsByMesh = false)
