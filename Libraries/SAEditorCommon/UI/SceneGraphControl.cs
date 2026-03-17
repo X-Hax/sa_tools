@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 using SAModel.SAEditorCommon.DataTypes;
@@ -203,14 +204,15 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				// go through the level data and add all the things
 				sceneTreeView.BeginUpdate();
-				levelItemNode = sceneTreeView.Nodes.Add("Level Objects");
-				exLevelItemNode = sceneTreeView.Nodes.Add("Extra Level Objects");
+				levelItemNode = sceneTreeView.Nodes.Add("Level Geometry");
+				exLevelItemNode = sceneTreeView.Nodes.Add("Extra Level Geometry");
+
 				levelAnimNode = sceneTreeView.Nodes.Add("Level Animations");
 				deathZoneNode = sceneTreeView.Nodes.Add("Death Zones");
-				setNode = sceneTreeView.Nodes.Add("SET Items");
+				setNode = sceneTreeView.Nodes.Add("SET Objects");
 				camNode = sceneTreeView.Nodes.Add("CAM Items");
-				splineNode = sceneTreeView.Nodes.Add("Spline Objects");
-				missionSETNode = sceneTreeView.Nodes.Add("MI SET Items");
+				splineNode = sceneTreeView.Nodes.Add("Splines");
+				missionSETNode = sceneTreeView.Nodes.Add("Mission SET Objects");
 				sceneTreeView.EndUpdate();
 
 				// subscribe to our level data changed event
@@ -278,11 +280,11 @@ namespace SAModel.SAEditorCommon.UI
 
 			// set node
 			if (!LevelData.SETItemsIsNull() && LevelData.CharHasSETItems(LevelData.Character))
-				foreach (SETItem setItem in LevelData.SETItems(LevelData.Character))
+				for (int i = 0; i < LevelData.SETItems(LevelData.Character).Count(); i++)
 				{
-					setNode.Nodes.Add(setItem.Name);
+					SETItem setItem = LevelData.SETItems(LevelData.Character).ElementAt(i);
+					setNode.Nodes.Add($"[{i.ToString("D3")}] {setItem.InternalName}");
 				}
-
 			// cam node
 			if (LevelData.CAMItems != null && LevelData.CAMItems[LevelData.Character] != null)
 			{
@@ -305,7 +307,9 @@ namespace SAModel.SAEditorCommon.UI
 				{
 					missionSETNode.Nodes.Add(missionSet.Name);
 				}
-
+			// Hide empty nodes
+			//if(LevelData.MissionSETItems == null || LevelData.MissionSETItems[LevelData.Character] == null || LevelData.MissionSETItems[LevelData.Character].Count() == 0)
+				//missionSETNode.Remove();
 			sceneTreeView.EndUpdate();
 		}
 

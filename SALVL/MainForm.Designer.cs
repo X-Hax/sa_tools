@@ -195,7 +195,7 @@
 			normalSETStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			twoPTStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
-			RenderPanel = new D3DPanel();
+			RenderPanel = new SAModel.SAEditorCommon.D3DPanel();
 			backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(components);
 			addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1598,7 +1598,6 @@
 			RenderPanel.DragEnter += RenderPanel_DragEnter;
 			RenderPanel.DragOver += RenderPanel_DragOver;
 			RenderPanel.DragLeave += RenderPanel_DragLeave;
-			RenderPanel.Paint += RenderPanel_Paint;
 			RenderPanel.KeyDown += panel1_KeyDown;
 			RenderPanel.KeyUp += panel1_KeyUp;
 			RenderPanel.MouseDown += panel1_MouseDown;
@@ -2496,7 +2495,7 @@
 		private System.Windows.Forms.MenuStrip menuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-		private D3DPanel RenderPanel;
+		private SAModel.SAEditorCommon.D3DPanel RenderPanel;
 		private System.ComponentModel.BackgroundWorker backgroundWorker1;
 		private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;

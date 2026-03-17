@@ -1,6 +1,6 @@
 using System.Windows.Forms;
 
-namespace SAModel.SALVL
+namespace SAModel.SAEditorCommon
 {
 	public class D3DPanel : UserControl
 	{

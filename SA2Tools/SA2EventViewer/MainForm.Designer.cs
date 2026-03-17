@@ -43,7 +43,7 @@ namespace SA2EventViewer
 			showCameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			showHintsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			showAdvancedCameraInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			RenderPanel = new System.Windows.Forms.UserControl();
+			RenderPanel = new SAModel.SAEditorCommon.D3DPanel();
 			backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			splitContainer1 = new System.Windows.Forms.SplitContainer();
 			textBoxEntityName = new System.Windows.Forms.TextBox();
@@ -651,7 +651,7 @@ namespace SA2EventViewer
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-		private System.Windows.Forms.UserControl RenderPanel;
+		private SAModel.SAEditorCommon.D3DPanel RenderPanel;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;

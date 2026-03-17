@@ -802,8 +802,7 @@ namespace SAModel.SAMDL
 			ByteConverter.Reverse = modelinfo.checkBoxReverse.Checked;
 			if (modelinfo.radioButtonObject.Checked)
 			{
-				NJS_OBJECT tempmodel = new NJS_OBJECT(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null);
-				model = tempmodel;
+				model = new NJS_OBJECT(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null);
 				if (modelinfo.checkBoxLoadMotion.Checked)
 				{
 					animationList = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.numericUpDownKey.Value, null) };
