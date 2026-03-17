@@ -15,20 +15,13 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
-		protected Mesh[] meshes2;
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
-			HitResult result = HitResult.NoHit;
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
-			result = HitResult.Min(result, model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes));
-			transform.Pop();
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation);
-			result = HitResult.Min(result, model.Sibling.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes2));
+			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
 		}
@@ -43,13 +36,6 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation);
-			result.AddRange(model.Sibling.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-			if (item.Selected)
-				result.AddRange(model.Sibling.DrawModelTreeInvert(transform, meshes2));
-			transform.Pop();
 			return result;
 		}
 
@@ -60,11 +46,6 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
 			result.Add(new ModelTransform(model, transform.Top));
-			transform.Pop();
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation);
-			result.Add(new ModelTransform(model.Sibling, transform.Top));
 			transform.Pop();
 			return result;
 		}
@@ -94,7 +75,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		{
 			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_yashi00.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
+
 		}
 
 		public override string Name { get { return "Palm Tree 1"; } }
@@ -106,7 +87,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		{
 			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_yashi01.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
+
 		}
 
 		public override string Name { get { return "Palm Tree 2"; } }
@@ -118,7 +99,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		{
 			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_yashi02.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
+
 		}
 
 		public override string Name { get { return "Palm Tree 3"; } }
@@ -130,7 +111,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		{
 			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_yashi04.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
+
 		}
 
 		public override string Name { get { return "Palm Tree 4"; } }
