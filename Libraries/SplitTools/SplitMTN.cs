@@ -88,10 +88,7 @@ namespace SplitTools.SAArc
 				
 				foreach (var file in Directory.GetFiles(Path.GetFileNameWithoutExtension(mtnFilename), "*.saanim"))
 				{
-					if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out var i))
-					{
-						anims.Add(NJS_MOTION.Load(file));
-					}
+					anims.Add(NJS_MOTION.Load(file));
 				}
 
 				var mtnInfo = IniSerializer.Deserialize<MTNInfo>(Path.Combine(Path.GetFileNameWithoutExtension(mtnFilename), Path.GetFileNameWithoutExtension(mtnFilename) + ".ini"));

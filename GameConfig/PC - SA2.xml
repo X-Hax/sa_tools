@@ -93,7 +93,7 @@
   <SplitEntry SourceFile="sonic2app.exe" IniFile="ObjectLists" CmnName="Object List Data"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="Misc" CmnName="Miscellaneous Data"/>
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="LeftoverDLL" CmnName="Stage Landtables and Texlists"/>
-  <SplitEntryMDL ModelFile="resource/gd_PC/sonicmdl.prs" LabelFile="SONICMDL" MTNLabelFile="SONICMTN" EXMTNFile="SONICMTN_EX" CmnName="Sonic Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/sonicmdl.prs" LabelFile="SONICMDL" MTNLabelFile="SONICMTN" EXMTNFile="SONICMTN_EX" CmnName="Sonic Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>sonicmtn.prs</MotionFile>
   </SplitEntryMDL>

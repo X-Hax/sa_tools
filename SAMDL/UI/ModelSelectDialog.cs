@@ -95,6 +95,8 @@ namespace SAModel.SAMDL
 				{
 					string[] mdlMeta = mdlitem.Value.Split('|');
 					entryFilename = mdlMeta[0];
+					if (mdlMeta.Length > 3)
+						entryFilename = Path.Combine(Path.GetDirectoryName(mdlMeta[0]), mdlMeta[3]);
 				}
 				switch (Path.GetExtension(entryFilename).ToLowerInvariant())
 				{
@@ -264,6 +266,8 @@ namespace SAModel.SAMDL
 								entryDescription = mdlMeta[1];
 							if (mdlMeta.Length > 2)
 								entryTexture = mdlMeta[2];
+							if (mdlMeta.Length > 3)
+								entryFilename = Path.Combine(Path.GetDirectoryName(mdlMeta[0]), mdlMeta[3]);
 						}
 						else
 							entryDescription = Path.GetFileNameWithoutExtension(mdlitem.Value);
@@ -394,7 +398,7 @@ namespace SAModel.SAMDL
 									case "gcmodelarray":
 									case "gcattacharray":
 										for (int i = 0; i < item.Value.Length; i++)
-											Models.Add(new ModelLoadInfo(item.Key + " " + (i + 1), item.Value, item.Value.Length, modFolder)); 
+											Models.Add(new ModelLoadInfo(item.Key + " " + (i + 1), item.Value, item.Value.Length, modFolder));
 										break;
 									default:
 										break;

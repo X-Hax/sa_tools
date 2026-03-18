@@ -235,6 +235,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			[XmlAttribute("EXMTNFile")]
 			public string EXMTNFile { get; set; }
 			/// <summary>
+			/// Determines if the extracted model files should use names instead of the internal IDs.
+			/// </summary>
+			[XmlAttribute("UseNames")]
+			public bool UseProperNames { get; set; }
+			/// <summary>
 			/// List of Motion files uses by the Model File.
 			/// </summary>
 			[XmlElement("MotionFile")]
@@ -672,10 +677,16 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			string mtnlabelfile = Path.Combine(Path.Combine(iniFolder, "MDL"), (splitMDL.MTNLabelFile.ToLower() + ".ini"));
 
 			string exmtnfile = null;
+
+			bool useNames = false;
 			
 			if (splitMDL.EXMTNFile != null)
 			{
 				exmtnfile = Path.Combine(Path.Combine(iniFolder, "MDL"), (splitMDL.EXMTNFile.ToLower() + ".ini"));
+			}
+			if (splitMDL.UseProperNames)
+			{
+				useNames = splitMDL.UseProperNames;
 			}
 
 			string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
@@ -701,7 +712,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			#endregion
 
 			if (overwrite)
-				SA2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), mdllabelfile, mtnlabelfile, exmtnfile);
+				SA2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), mdllabelfile, mtnlabelfile, exmtnfile, useNames);
 		}
 
 		/// <summary>
