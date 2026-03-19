@@ -634,16 +634,19 @@ namespace SAToolsHub
 
 		private void BackgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
+			string errorMessage = "Unknown error";
+			if (e.Error != null)
+				errorMessage = e.Error.Message;
 			switch (splitCheck)
 			{
 				case ProjectSplitResult.Cancelled:
 					MessageBox.Show(this, "Project split has been cancelled.", "SA Tools Hub", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 					break;
 				case ProjectSplitResult.ProjectFailure:
-					MessageBox.Show(this, "Project failed to split: " + e.Error.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(this, "Project failed to split: " + errorMessage, "Project creation failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					break;
 				case ProjectSplitResult.ItemFailure:
-					if (MessageBox.Show(this, "Item failed to split properly: " + e.Error.Message + ". The log file is located at:\n\n" + projFolder + ".\n\nWould you like to open it?", "Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+					if (MessageBox.Show(this, "Item failed to split properly: " + errorMessage + "\nThe log file is located at:\n\n" + projFolder + ".\n\nWould you like to open it?", "Item split failure", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
 						System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("notepad", $"\"" + Path.Combine(projFolder, "SplitLog.log") + "\"") { CreateNoWindow = false });
 					break;
 				case ProjectSplitResult.Success:
