@@ -33,6 +33,7 @@ namespace SAModel.SAMDL
 		// Editor variables
 		bool loaded;
 		bool unsavedChanges = false;
+		DateTime lastScrollTime = DateTime.MinValue;
 		bool DeviceResizing;
 		string currentFileName = "";
 		bool hasWeight;
@@ -4351,10 +4352,18 @@ namespace SAModel.SAMDL
 			if (!loaded || !RenderPanel.Focused)
 				return;
 
+			DateTime now = DateTime.UtcNow;
+			double elapsed = (now - lastScrollTime).TotalMilliseconds;
+			lastScrollTime = now;
+			float speedMultiplier = elapsed < 50 ? 4.0f : elapsed < 100 ? 2.0f : 0.5f;
+			if ((Control.ModifierKeys & Keys.Shift) != 0)
+				speedMultiplier *= 15.0f;
+			float scrollAmount = cam.MoveSpeed * (e.Delta / 120f) * -1 * speedMultiplier;
+
 			if (cam.mode == 0)
-				cam.Position += cam.Look * (cam.MoveSpeed * e.Delta * -1);
+				cam.Position += cam.Look * scrollAmount;
 			else if (cam.mode == 1)
-				cam.Distance += (cam.MoveSpeed * e.Delta * -1);
+				cam.Distance += scrollAmount;
 
 			NeedRedraw = true;
 		}
