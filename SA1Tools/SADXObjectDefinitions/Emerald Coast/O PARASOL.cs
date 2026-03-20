@@ -282,7 +282,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		internal int[] itemType = { 0, 1, 2, 3, 4 };
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Variant", typeof(Item), "Extended", null, null, (o) => (ParasolVariants)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
+			new PropertySpec("Variant", typeof(ParasolVariants), "Extended", null, null, (o) => (ParasolVariants)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }

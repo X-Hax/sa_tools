@@ -165,7 +165,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 		}
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Variant", typeof(Item), "Extended", null, null, (o) => (PlantVars)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
+			new PropertySpec("Variant", typeof(PlantVars), "Extended", null, null, (o) => (PlantVars)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }

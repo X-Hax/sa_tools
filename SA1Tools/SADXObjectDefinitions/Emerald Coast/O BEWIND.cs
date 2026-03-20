@@ -193,6 +193,8 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			new PropertySpec("Power", typeof(float), "Extended", null, null, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v)
 		};
 
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+
 		public override Matrix GetHandleMatrix(SETItem item)
 		{
 			Matrix matrix = Matrix.Identity;
