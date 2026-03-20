@@ -694,7 +694,7 @@ namespace SAModel.SALVL
 
                     break;
             }
-            mouseBounds = (wrapAroundScreenEdgesToolStripMenuItem.Checked) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+			mouseBounds = (wrapAroundScreenEdgesToolStripMenuItem.Checked) ? Screen.FromControl(RenderPanel).Bounds : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
             EditorCamera.CameraUpdateFlags camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, hideCursorDuringCameraMovementToolStripMenuItem.Checked, gizmo);
 
 			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.Redraw) || draw)

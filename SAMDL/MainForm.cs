@@ -1744,7 +1744,7 @@ namespace SAModel.SAMDL
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
-			mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+			mouseBounds = (mouseWrapScreen) ? Screen.FromControl(RenderPanel).Bounds : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 			EditorCamera.CameraUpdateFlags camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraModeToolStripMenuItem.Checked);
 			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.Redraw))
 				NeedRedraw = true;
@@ -2255,6 +2255,8 @@ namespace SAModel.SAMDL
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			optionsEditor.StartPosition = FormStartPosition.Manual;
+			optionsEditor.Location = new Point(Location.X + Width / 2 - optionsEditor.Width / 2, Location.Y + Height / 2 - optionsEditor.Height / 2);
 			optionsEditor.Show();
 			optionsEditor.BringToFront();
 			optionsEditor.Focus();

@@ -1060,6 +1060,8 @@ namespace SAModel.SALVL
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			optionsEditor.StartPosition = FormStartPosition.Manual;
+			optionsEditor.Location = new Point(Location.X + Width / 2 - optionsEditor.Width / 2, Location.Y + Height / 2 - optionsEditor.Height / 2);
 			optionsEditor.Show();
 			optionsEditor.BringToFront();
 			optionsEditor.Focus();

@@ -588,7 +588,7 @@ namespace SA2EventViewer
 			EditorCamera.CameraUpdateFlags camresult = EditorCamera.CameraUpdateFlags.None;
 			if (!eventcamera || animframe == -1)
 			{
-				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.FromControl(RenderPanel).Bounds : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 				camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown);
 			}
 			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.Redraw))
@@ -1072,6 +1072,8 @@ namespace SA2EventViewer
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			optionsEditor.StartPosition = FormStartPosition.Manual;
+			optionsEditor.Location = new Point(Location.X + Width / 2 - optionsEditor.Width / 2, Location.Y + Height / 2 - optionsEditor.Height / 2);
 			optionsEditor.Show();
 			optionsEditor.BringToFront();
 			optionsEditor.Focus();
