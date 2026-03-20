@@ -13,17 +13,175 @@ namespace SAModel.SAEditorCommon.SETEditing
 	/// </summary>
 	public abstract class ObjectDefinition
 	{
-		public abstract void Init(ObjectData data, string name);
-		public abstract HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform);
-		public abstract List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform);
-		public abstract List<ModelTransform> GetModels(SETItem item, MatrixStack transform);
-		public virtual void SetOrientation(SETItem item, Vertex direction) { }
-		public virtual void PointTo(SETItem item, Vertex location) { }
-		public abstract Matrix GetHandleMatrix(SETItem item);
+		#region Variables
+		/// <summary>
+		/// The internal name of the object from the game.
+		/// </summary>
+		public string InternalName { get; protected set; }
+
+		/// <summary>
+		/// Public function to assign a string to the internal name externally.
+		/// </summary>
+		/// <param name="name"></param>
+		public void SetInternalName(string name)
+		{
+			InternalName = name;
+		}
+
+		/// <summary>
+		/// The common/displayed name of the object in SALVL. If not assigned, it will return the <see cref="InternalName"/>.
+		/// </summary>
 		public abstract string Name { get; }
+
+		/// <summary>
+		/// The default X Axis rotation of an object.
+		/// </summary>
+		public virtual ushort DefaultXRotation { get { return 0; } }
+
+		/// <summary>
+		/// The default Y Axis rotation of an object.
+		/// </summary>
+		public virtual ushort DefaultYRotation { get { return 0; } }
+
+		/// <summary>
+		/// The default Z Axis rotation of an object.
+		/// </summary>
+		public virtual ushort DefaultZRotation { get { return 0; } }
+
+		/// <summary>
+		/// The default X Axis scale of an object.
+		/// </summary>
+		public virtual float DefaultXScale { get { return 1.0f; } }
+
+		/// <summary>
+		/// The default Y Axis scale of an object.
+		/// </summary>
+		public virtual float DefaultYScale { get { return 1.0f; } }
+
+		/// <summary>
+		/// The default Z Axis scale of an object.
+		/// </summary>
+		public virtual float DefaultZScale { get { return 1.0f; } }
+
+		/// <summary>
+		/// The distance in which an object should sit from the ground.
+		/// 
+		/// This is referenced when using the "To Ground" feature within SALVL.
+		/// </summary>
+		public virtual float DistanceFromGround { get { return 0; } }
+
+		/// <summary>
+		/// Additional X Axis position data added to the object without affecting the <see cref="SETItem"/> info.
+		/// </summary>
+		public virtual float AddXPosition { get { return 0; } }
+
+		/// <summary>
+		/// Additional Y Axis position data added to the object without affecting the <see cref="SETItem"/> info.
+		/// </summary>
+		public virtual float AddYPosition { get { return 0; } }
+
+		/// <summary>
+		/// Additional Z Axis position data added to the object without affecting the <see cref="SETItem"/> info.
+		/// </summary>
+		public virtual float AddZPosition { get { return 0; } }
+
+		/// <summary>
+		/// Additional X Axis rotation data added to the object without affecting the <see cref="SETItem"/> info.
+		/// </summary>
+		public virtual ushort AddXRotation { get { return 0; } }
+
+		/// <summary>
+		/// Additional Y Axis rotation data added to the object without affecting the <see cref="SETItem"/> info.
+		/// </summary>
+		public virtual ushort AddYRotation { get { return 0; } }
+
+		/// <summary>
+		/// Additional Z Axis rotation data added to the object without affecting the <see cref="SETItem"/> info.
+		/// </summary>
+		public virtual ushort AddZRotation { get { return 0; } }
+
+		/// <summary>
+		/// Additional X Axis scale data added to the object without affecting the <see cref="SETItem"/> info.
+		/// </summary>
+		public virtual float AddXScale { get { return 0; } }
+
+		/// <summary>
+		/// Additional Y Axis scale data added to the object without affecting the <see cref="SETItem"/> info.
+		/// </summary>
+		public virtual float AddYScale { get { return 0; } }
+
+		/// <summary>
+		/// Additional Z Axis scale data added to the object without affecting the <see cref="SETItem"/> info.
+		/// </summary>
+		public virtual float AddZScale { get { return 0; } }
+
 		public virtual PropertySpec[] CustomProperties { get { return new PropertySpec[0]; } }
 		public virtual PropertySpec[] MissionProperties { get { return null; } }
 		public virtual VerbSpec[] CustomVerbs { get { return new VerbSpec[0]; } }
+
+		#endregion
+
+		/// <summary>
+		/// Initializes the object when it is loaded in SALVL.
+		/// </summary>
+		/// <param name="data"></param>
+		/// <param name="name"></param>
+		public abstract void Init(ObjectData data, string name);
+
+		/// <summary>
+		/// Renders the object into the scene. 
+		/// 
+		/// Typically this should replicate the behavior of an object from the base game when using custom code.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <param name="dev"></param>
+		/// <param name="camera"></param>
+		/// <param name="transform"></param>
+		/// <returns></returns>
+		public abstract List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform);
+
+		/// <summary>
+		/// Returns a <see cref="HitResult"/> if a mouse click cast collides with the object.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <param name="Near"></param>
+		/// <param name="Far"></param>
+		/// <param name="Viewport"></param>
+		/// <param name="Projection"></param>
+		/// <param name="View"></param>
+		/// <param name="transform"></param>
+		/// <returns></returns>
+		public abstract HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform);
+		
+		/// <summary>
+		/// Returns a list of a <see cref="ModelTransform"/> for the object.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <param name="transform"></param>
+		/// <returns></returns>
+		public abstract List<ModelTransform> GetModels(SETItem item, MatrixStack transform);
+
+		/// <summary>
+		/// Intended to set the orientation of an object based on the supplied direction.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <param name="direction"></param>
+		public virtual void SetOrientation(SETItem item, Vertex direction) { }
+
+		/// <summary>
+		/// Intended to direct the object to point toward a supplied location.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <param name="location"></param>
+		public virtual void PointTo(SETItem item, Vertex location) { }
+
+		/// <summary>
+		/// Returns the <see cref="Matrix"/> used for the handle for the object.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public abstract Matrix GetHandleMatrix(SETItem item);
+		
 		/// <summary>
 		/// Returns a bounding sphere for the supplied SET Item.
 		/// </summary>
@@ -33,29 +191,6 @@ namespace SAModel.SAEditorCommon.SETEditing
 		{
 			return new BoundingSphere(item.Position, 0);
 		}
-
-		public string InternalName { get; protected set; }
-		public void SetInternalName(string name)
-		{
-			InternalName = name;
-		}
-
-		public virtual ushort DefaultXRotation { get { return 0; } }
-		public virtual ushort DefaultYRotation { get { return 0; } }
-		public virtual ushort DefaultZRotation { get { return 0; } }
-		public virtual float DefaultXScale { get { return 1; } }
-		public virtual float DefaultYScale { get { return 1; } }
-		public virtual float DefaultZScale { get { return 1; } }
-		public virtual float DistanceFromGround { get { return 0; } }
-		public virtual float AddXPosition { get { return 0; } }
-		public virtual float AddYPosition { get { return 0; } }
-		public virtual float AddZPosition { get { return 0; } }
-		public virtual ushort AddXRotation { get { return 0; } }
-		public virtual ushort AddYRotation { get { return 0; } }
-		public virtual ushort AddZRotation { get { return 0; } }
-		public virtual float AddXScale { get { return 0; } }
-		public virtual float AddYScale { get { return 0; } }
-		public virtual float AddZScale { get { return 0; } }
 	}
 
 	public class ModelTransform
@@ -75,17 +210,104 @@ namespace SAModel.SAEditorCommon.SETEditing
 	/// </summary>
 	public class PropertySpec
 	{
+		#region Variables
 		private Attribute[] attributes;
+
+		/// <summary>
+		/// Gets or sets a collection of additional Attributes for this property.
+		/// 
+		/// This can be used to specify attributes beyond those supported intrinsically by the PropertySpec class, such as ReadOnly and Browsable.
+		/// </summary>
+		public Attribute[] Attributes
+		{
+			get { return attributes; }
+			set { attributes = value; }
+		}
+
 		private string category;
+
+		/// <summary>
+		/// Gets or sets the category name of this property.
+		/// </summary>
+		public string Category
+		{
+			get { return category; }
+			set { category = value; }
+		}
+
 		private object defaultValue;
+
+		/// <summary>
+		/// Gets or sets the default value of this property.
+		/// </summary>
+		public object DefaultValue
+		{
+			get { return defaultValue; }
+			set { defaultValue = value; }
+		}
+
 		private string description;
+
+		/// <summary>
+		/// Gets or sets the help text description of this property.
+		/// </summary>
+		public string Description
+		{
+			get { return description; }
+			set { description = value; }
+		}
+
 		private string name;
+
+		/// <summary>
+		/// Gets or sets the name of this property.
+		/// </summary>
+		public string Name
+		{
+			get { return name; }
+			set { name = value; }
+		}
+
 		private Type type;
+
+		/// <summary>
+		/// Gets or sets the <see cref="System.Type"/> of this property.
+		/// </summary>
+		public Type Type
+		{
+			get { return type; }
+			set { type = value; }
+		}
+
 		private Type typeConverter;
+
+		/// <summary>
+		/// Gets or sets the type converter for the value of this property.
+		/// </summary>
+		public Type ConverterType
+		{
+			get { return typeConverter; }
+			set { typeConverter = value; }
+		}
+
 		private Dictionary<string, int> @enum;
+
+		/// <summary>
+		/// Internally created enumeration list using a <see cref="Dictionary{TKey, TValue}"/>.
+		/// </summary>
+		public Dictionary<string, int> Enumeration
+		{
+			get { return @enum; }
+			set { @enum = value; }
+		}
+
 		private Func<SETItem, object> getMethod;
+
 		private Action<SETItem, object> setMethod;
 
+		#endregion
+
+		#region Constructors
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
 		/// </summary>
@@ -285,86 +507,26 @@ namespace SAModel.SAEditorCommon.SETEditing
 			this.@enum = @enum;
 		}
 
-		/// <summary>
-		/// Gets or sets a collection of additional Attributes for this property.  This can
-		/// be used to specify attributes beyond those supported intrinsically by the
-		/// PropertySpec class, such as ReadOnly and Browsable.
-		/// </summary>
-		public Attribute[] Attributes
-		{
-			get { return attributes; }
-			set { attributes = value; }
-		}
+		#endregion
 
 		/// <summary>
-		/// Gets or sets the category name of this property.
+		/// Returns the Value of the property.
 		/// </summary>
-		public string Category
-		{
-			get { return category; }
-			set { category = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the default value of this property.
-		/// </summary>
-		public object DefaultValue
-		{
-			get { return defaultValue; }
-			set { defaultValue = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the help text description of this property.
-		/// </summary>
-		public string Description
-		{
-			get { return description; }
-			set { description = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the name of this property.
-		/// </summary>
-		public string Name
-		{
-			get { return name; }
-			set { name = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the type of this property.
-		/// </summary>
-		public Type Type
-		{
-			get { return type; }
-			set { type = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the type converter
-		/// type for this property.
-		/// </summary>
-		public Type ConverterType
-		{
-			get { return typeConverter; }
-			set { typeConverter = value; }
-		}
-
+		/// <param name="item"></param>
+		/// <returns></returns>
 		public object GetValue(SETItem item)
 		{
 			return getMethod(item);
 		}
 
+		/// <summary>
+		/// Sets the Value of the property.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <param name="value"></param>
 		public void SetValue(SETItem item, object value)
 		{
 			setMethod(item, value);
-		}
-
-		public Dictionary<string, int> Enumeration
-		{
-			get { return @enum; }
-			set { @enum = value; }
 		}
 	}
 
