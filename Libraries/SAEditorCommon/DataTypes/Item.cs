@@ -13,7 +13,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 	public abstract class Item : IComponent
 	{
 		[ReadOnly(true)]
-		[Category("Common"), ParenthesizePropertyName(true)]
+		[Category("Common"), Description("Type of the selected item."), ParenthesizePropertyName(true)]
 		public string Type { get { return GetType().Name; } }
 
 		[Browsable(false)]
