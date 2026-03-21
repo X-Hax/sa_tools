@@ -650,7 +650,7 @@ namespace SAModel
 				else if (isChunk)
 					writer.WriteLine("CNKOBJECT_START" + Environment.NewLine);
 				else if (isGinja)
-					writer.WriteLine("GCOBJECT_START" + Environment.NewLine);
+					writer.WriteLine("GJOBJECT_START" + Environment.NewLine);
 				else if (isXinja)
 					writer.WriteLine("XBOBJECT_START" + Environment.NewLine);
 			}
@@ -696,7 +696,7 @@ namespace SAModel
 				else if (isChunk)
 					writer.Write("CNKOBJECT  ");
 				else if (isGinja)
-					writer.Write("GCOBJECT    ");
+					writer.Write("GJOBJECT    ");
 				else if (isXinja)
 					writer.Write("XBOBJECT    ");
 
@@ -745,7 +745,7 @@ namespace SAModel
 				else if (isChunk)
 					writer.WriteLine("CNKModel   " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
 				else if (isGinja)
-					writer.WriteLine("GINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+					writer.WriteLine("GjModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
 				else if (isXinja)
 					writer.WriteLine("XINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
 				writer.WriteLine("OPosition  {0},", Position.ToNJA());
@@ -765,7 +765,7 @@ namespace SAModel
 				else if (isChunk)
 					writer.WriteLine("CNKOBJECT_END");
 				else if (isGinja)
-					writer.WriteLine("GCOBJECT_END");
+					writer.WriteLine("GJOBJECT_END");
 				else if (isXinja)
 					writer.WriteLine("XBOBJECT_END");
 

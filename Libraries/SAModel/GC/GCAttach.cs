@@ -809,37 +809,37 @@ namespace SAModel.GC
 		{
 			if (!labels.Contains(VertexName))
 			{
-				writer.WriteLine($"VLIST      {VertexName}[]");
-				writer.WriteLine($"START{Environment.NewLine}");
-				
 				foreach (var item in VertexData)
 				{
 					item.ToNJA(writer);
 				}
+
+				writer.WriteLine($"GJARRAY      {VertexName}[]");
+				writer.WriteLine($"START{Environment.NewLine}");
 
 				foreach (var item in VertexData)
 				{
 					item.RefToNJA(writer);
 				}
 
-				writer.WriteLine("\tVertAttr     NULL,");
-				writer.WriteLine("\tElementSize  0,");
-				writer.WriteLine("\tPoints       0,");
-				writer.WriteLine("\tType         NULL,");
-				writer.WriteLine("\tName         NULL,");
-				writer.WriteLine("\tCheckSize    0,");
+				writer.WriteLine("ATTRSTART");
+				writer.WriteLine($"GjId         GJ_VA_NULL,");
+				writer.WriteLine($"ATTREND{Environment.NewLine}");
+
 				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
+			var indexFlags = GCIndexAttributeFlags.HasPosition;
+
 			if (OpaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
 			{
-				writer.WriteLine($"OPLIST      {OpaqueMeshName}[]");
-				writer.WriteLine($"START{Environment.NewLine}");
-				
 				foreach (var item in OpaqueMeshes)
 				{
-					item.ToNJA(writer);
+					item.ToNJA(writer, ref indexFlags);
 				}
+
+				writer.WriteLine($"GJMESHSET     {OpaqueMeshName}[]");
+				writer.WriteLine($"START{Environment.NewLine}");
 
 				foreach (var item in OpaqueMeshes)
 				{
@@ -851,14 +851,14 @@ namespace SAModel.GC
 
 			if (TranslucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
 			{
-				writer.WriteLine($"APLIST      {TranslucentMeshName}[]");
-				writer.WriteLine($"START{Environment.NewLine}");
-				
 				foreach (var item in TranslucentMeshes)
 				{
-					item.ToNJA(writer);
+					item.ToNJA(writer, ref indexFlags);
 				}
 
+				writer.WriteLine($"GJMESHSET    {TranslucentMeshName}[]");
+				writer.WriteLine($"START{Environment.NewLine}");
+				
 				foreach (var item in TranslucentMeshes)
 				{
 					item.RefToNJA(writer);
@@ -867,30 +867,31 @@ namespace SAModel.GC
 				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
-			writer.WriteLine($"GINJAMODEL  {Name}[]");
+			writer.WriteLine($"GJMODEL     {Name}[]");
 			writer.WriteLine("START");
-			writer.WriteLine($"VList       {VertexName},");
+			writer.WriteLine($"GjArray     {VertexName},");
+			writer.WriteLine("GjVlist     NULL,");
 			
 			if (OpaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
 			{
-				writer.WriteLine($"OPList      {OpaqueMeshName},");
+				writer.WriteLine($"GjOMesh     {OpaqueMeshName},");
 			}
 			else
 			{
-				writer.WriteLine("OPList      NULL,");
+				writer.WriteLine("GjOMesh     NULL,");
 			}
 
 			if (TranslucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
 			{
-				writer.WriteLine($"APList      {TranslucentMeshName},");
+				writer.WriteLine($"GjAMesh     {TranslucentMeshName},");
 			}
 			else
 			{
-				writer.WriteLine("APList      NULL,");
+				writer.WriteLine("GjAMesh     NULL,");
 			}
 
-			writer.WriteLine($"OPNum       {OpaqueMeshes.Count},");
-			writer.WriteLine($"APNum       {TranslucentMeshes.Count},");
+			writer.WriteLine($"GjNbOMesh   {OpaqueMeshes.Count},");
+			writer.WriteLine($"GjNbAMesh   {TranslucentMeshes.Count},");
 			writer.WriteLine($"Center     {Bounds.Center.X.ToNJA()}, {Bounds.Center.Y.ToNJA()}, {Bounds.Center.Z.ToNJA()},");
 			writer.WriteLine($"Radius     {Bounds.Radius.ToNJA()},");
 			writer.Write($"END{Environment.NewLine}{Environment.NewLine}");

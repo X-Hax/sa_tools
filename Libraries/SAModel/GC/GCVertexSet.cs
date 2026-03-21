@@ -321,20 +321,20 @@ namespace SAModel.GC
 			switch (Attribute)
 			{
 				case GCVertexAttribute.Position:
-					vertType = "POINT";
-					vertType2 = "POSITION   ";
+					vertType = "VERT ";
+					vertType2 = "POINT      ";
 					break;
 				case GCVertexAttribute.Normal:
-					vertType = "NORMAL";
-					vertType2 = "NORMAL     ";
+					vertType = "NORM ";
+					vertType2 = "NORMAL      ";
 					break;
 				case GCVertexAttribute.Color0:
-					vertType = "COLOR";
-					vertType2 = "COLOR0     ";
+					vertType = "ARGB ";
+					vertType2 = "VERTCOLOR      ";
 					break;
 				case GCVertexAttribute.Tex0:
-					vertType = "UV";
-					vertType2 = "TEX0       ";
+					vertType = "UV ";
+					vertType2 = "VERTUV      ";
 					break;
 			}
 			
@@ -353,19 +353,24 @@ namespace SAModel.GC
 		{
 			var vertType = Attribute switch
 			{
-				GCVertexAttribute.Position => "POSITION",
-				GCVertexAttribute.Normal => "NORMAL",
-				GCVertexAttribute.Color0 => "COLOR0",
-				GCVertexAttribute.Tex0 => "TEX0",
+				GCVertexAttribute.Position => "GJ_VA_POS",
+				GCVertexAttribute.Normal => "GJ_VA_NRM",
+				GCVertexAttribute.Color0 => "GJ_VA_CLR0",
+				GCVertexAttribute.Tex0 => "GJ_VA_TEX0",
 				_ => null
 			};
 
-			writer.WriteLine($"\tVertAttr     {vertType},");
-			writer.WriteLine($"\tElementSize  {StructSize},");
-			writer.WriteLine($"\tPoints       {Data.Count},");
-			writer.WriteLine($"\tType         ( {StructType}, {DataType} ),");
-			writer.WriteLine($"\tName         {DataName},");
-			writer.WriteLine($"\tCheckSize    {Data.Count * StructSize},{Environment.NewLine}");
+			writer.WriteLine("ATTRSTART");
+			writer.WriteLine($"GjId         {vertType},");
+			writer.WriteLine($"GjStride     {StructSize},");
+			writer.WriteLine($"GjCount      {Data.Count},");
+
+			var structure = (uint)StructType;
+			structure |= (uint)((byte)DataType << 4);
+			writer.WriteLine($"GjAttrflags  {structure},");
+			writer.WriteLine($"GjBaseptr    {DataName},");
+			writer.WriteLine($"GjSize       {Data.Count * StructSize},");
+			writer.WriteLine($"ATTREND{Environment.NewLine}");
 		}
 
 		public GCVertexSet Clone()
