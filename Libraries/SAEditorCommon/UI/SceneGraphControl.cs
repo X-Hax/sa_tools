@@ -289,7 +289,7 @@ namespace SAModel.SAEditorCommon.UI
 						itemString += " ";
 					itemString += levelItem.Name;
 				}
-				levelItemNode.Nodes.Add(itemString);
+				exLevelItemNode.Nodes.Add(itemString);
 			}
 			// Level Geometry Animations
 			for (int i = 0; i < LevelData.LevelAnims.Count(); i++)
@@ -308,7 +308,7 @@ namespace SAModel.SAEditorCommon.UI
 						itemString += " ";
 					itemString += levelItem.ActionName;
 				}
-				levelItemNode.Nodes.Add(itemString);
+				levelAnimNode.Nodes.Add(itemString);
 			}
 			// Death Zones
 			if (LevelData.DeathZones != null)
