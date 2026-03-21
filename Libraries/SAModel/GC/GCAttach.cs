@@ -17,7 +17,11 @@ namespace SAModel.GC
 		/// </summary>
 		public List<GCVertexSet> VertexData = new List<GCVertexSet>();
 		public string VertexName { get; set; }
-		public uint Gap { get; set; }
+		/// <summary>
+		/// For some reason, skinned GC meshes have a separate type of vertex data.
+		/// </summary>
+		public List<GCSkinVertexSet> vertexSkinData = new List<GCSkinVertexSet>();
+		public string VertexSkinName { get; set; }
 		/// <summary>
 		/// The meshes with opaque rendering properties
 		/// </summary>
@@ -29,6 +33,29 @@ namespace SAModel.GC
 		/// </summary>
 		public List<GCMesh> TranslucentMeshes = new List<GCMesh>();
 		public string TranslucentMeshName { get; set; }
+
+		public override bool HasWeight
+		{
+			get
+			{
+			//	if (VertexData?.Count > 0)
+			//	{
+			//		foreach (var set in VertexData)
+			//		{
+			//			if (set.Attribute == GCVertexAttribute.Position)
+			//			{
+			//				return false;
+			//			}
+			//		}
+
+			//		return true;
+			//	}
+			//	else
+			//	{
+					return vertexSkinData?.Count > 0;
+				//}
+			}
+		}
 
 		/// <summary>
 		/// Create a new empty GC attach
@@ -87,7 +114,7 @@ namespace SAModel.GC
 			var vertexAddress = ByteConverter.ToUInt32(file, address) - imageBase;
 			//This part is meant to be a pointer for weight data.
 			//SA2 doesn't utilize this part for GC models, but it is implemented for Billy Hatcher.
-			Gap = ByteConverter.ToUInt32(file, address + 4);
+			var gcSkinnedVertexAddress = ByteConverter.ToUInt32(file, address + 4) - imageBase;
 			var opaqueAddress = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
 			var translucentAddress = (int)(ByteConverter.ToInt32(file, address + 12) - imageBase);
 
@@ -98,24 +125,45 @@ namespace SAModel.GC
 
 			// Reading vertex data
 			VertexData = [];
-			var vertexSet = new GCVertexSet(file, vertexAddress, imageBase, labels);
-			
-			if (labels.TryGetValue((int)vertexAddress, out var vertexName))
+			if (vertexAddress > 0)
 			{
-				VertexName = vertexName;
-			}
-			else
-			{
-				VertexName = $"vertex_{vertexAddress:X8}";
+				var vertexSet = new GCVertexSet(file, vertexAddress, imageBase, labels);
+
+				if (labels.TryGetValue((int)vertexAddress, out var vertexName))
+				{
+					VertexName = vertexName;
+				}
+				else
+				{
+					VertexName = $"vertex_{vertexAddress:X8}";
+				}
+
+				while (vertexSet.Attribute != GCVertexAttribute.Null)
+				{
+					VertexData.Add(vertexSet);
+					vertexAddress += 16;
+					vertexSet = new GCVertexSet(file, vertexAddress, imageBase, labels);
+				}
 			}
 
-			while (vertexSet.Attribute != GCVertexAttribute.Null)
+			if (gcSkinnedVertexAddress > 0)
 			{
-				VertexData.Add(vertexSet);
-				vertexAddress += 16;
-				vertexSet = new GCVertexSet(file, vertexAddress, imageBase, labels);
+				vertexSkinData = new List<GCSkinVertexSet>();
+				GCSkinVertexSet skinMesh;
+				int i = 0;
+				do
+				{
+					skinMesh = new GCSkinVertexSet(file, (int)gcSkinnedVertexAddress + (0x10 * i), imageBase, labels);
+					vertexSkinData.Add(skinMesh);
+					i++;
+				} while (skinMesh.elementType < GCSkinAttribute.WeightStructEndMarker);
+
+				if (labels.ContainsKey((int)gcSkinnedVertexAddress))
+					VertexSkinName = labels[(int)gcSkinnedVertexAddress];
+				else
+					VertexSkinName = "vertexskin_" + gcSkinnedVertexAddress.ToString("X8");
 			}
-			
+
 			// Reading geometry
 			var indexFlags = GCIndexAttributeFlags.HasPosition;
 			OpaqueMeshes = [];
@@ -236,7 +284,59 @@ namespace SAModel.GC
 					result.AddRange(new byte[15]);
 				}
 			}
-			
+			uint vertexSkinAddress = 0;
+			if (vertexSkinData?.Count > 0)
+			{
+				if (labels.ContainsKey(VertexSkinName))
+					vertexSkinAddress = labels[VertexSkinName];
+				else
+				{
+					uint[] vdataAddrs = new uint[vertexSkinData.Count];
+					uint[] wdataAddrs = new uint[vertexSkinData.Count];
+					for (int i = 0; i < vertexSkinData.Count; i++)
+					{
+						if (labels.ContainsKey(vertexSkinData[i].DataName))
+							vdataAddrs[i] = labels[vertexSkinData[i].DataName];
+						else
+						{
+							result.Align(4);
+							vdataAddrs[i] = (uint)result.Count + imageBase;
+							labels.Add(vertexSkinData[i].DataName, vdataAddrs[i]);
+							for (int j = 0; j < vertexSkinData[i].posNrms.Count; j++)
+							{
+								result.AddRange((vertexSkinData[i].posNrms[j].pos.GetBytes()));
+								result.AddRange((vertexSkinData[i].posNrms[j].nrm.GetBytes()));
+							}
+
+							wdataAddrs[i] = (uint)result.Count + imageBase;
+							for (int j = 0; j < vertexSkinData[i].weightData.Count; j++)
+							{
+								result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].weightData[j].vertIndex));
+								result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].weightData[j].weight));
+							}
+						}
+					}
+
+					vertexSkinAddress = (uint)result.Count + imageBase;
+					labels.Add(VertexSkinName, vertexSkinAddress);
+					for (int i = 0; i < vertexSkinData.Count; i++)
+					{
+						//POF0
+						if (vdataAddrs[i] != 0)
+							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
+						if (wdataAddrs[i] != 0)
+							njOffsets.Add((uint)(result.Count + imageBase + 0xC));
+
+						result.AddRange(ByteConverter.GetBytes((ushort)vertexSkinData[i].elementType));
+						result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].elementType > 0 ? (ushort)(4 * vertexSkinData[i].posNrms.Count) : (ushort)(3 * vertexSkinData[i].posNrms.Count)));
+						result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].startingIndex));
+						result.AddRange(ByteConverter.GetBytes((ushort)vertexSkinData[i].posNrms.Count));
+						result.AddRange(ByteConverter.GetBytes(vdataAddrs[i]));
+						result.AddRange(ByteConverter.GetBytes(wdataAddrs[i]));
+					}
+				}
+			}
+
 			uint oPolyAddress = 0;
 			// Writing geometry data
 			var indexFlags = GCIndexAttributeFlags.HasPosition;
@@ -430,7 +530,7 @@ namespace SAModel.GC
 			}
 
 			result.AddRange(ByteConverter.GetBytes(vertexAddress));
-			result.AddRange(new byte[4]);
+			result.AddRange(ByteConverter.GetBytes(vertexSkinAddress));
 			result.AddRange(ByteConverter.GetBytes(oPolyAddress));
 			result.AddRange(ByteConverter.GetBytes(tPolyAddress));
 			result.AddRange(ByteConverter.GetBytes((ushort)OpaqueMeshes.Count));
@@ -537,7 +637,7 @@ namespace SAModel.GC
 			var result = new StringBuilder("{ ");
 			result.Append(VertexData != null ? VertexName : "NULL");
 			result.Append(", ");
-			result.Append(Gap);
+			result.Append(vertexSkinData != null ? VertexSkinName : "NULL");
 			result.Append(", ");
 			result.Append(OpaqueMeshes.Count != 0 ? OpaqueMeshName : "NULL");
 			result.Append(", ");
@@ -631,8 +731,56 @@ namespace SAModel.GC
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
-			
-			var indexFlags = GCIndexAttributeFlags.HasPosition;
+			if (vertexSkinData.Count != 0 && !labels.Contains(VertexSkinName))
+			{
+				foreach (var data in vertexSkinData)
+				{
+					if (!labels.Contains(data.DataName))
+					{
+						labels.Add(data.DataName);
+						switch (data.elementType)
+						{
+							case GCSkinAttribute.StaticWeight:
+								writer.Write("SA2B_WeightData ");
+								break;
+							case GCSkinAttribute.PartialWeightStart:
+							case GCSkinAttribute.PartialWeight:
+								writer.Write("SA2B_WeightData ");
+								break;
+						}
+						writer.Write(data.DataName);
+						writer.WriteLine("[] = {");
+						switch (data.elementType)
+						{
+							case GCSkinAttribute.StaticWeight:
+								foreach (GCSkinVertexSetPosNrm item in data.posNrms)
+									writer.WriteLine("\t" + string.Join($",{Environment.NewLine}\t", item.ToStruct()));
+								break;
+							case GCSkinAttribute.PartialWeightStart:
+							case GCSkinAttribute.PartialWeight:
+								foreach (GCSkinVertexSetPosNrm item in data.posNrms)
+									writer.WriteLine("\t" + string.Join($",{Environment.NewLine}\t", item.ToStruct()));
+								foreach (GCSkinVertexSetWeight weight in data.weightData)
+									writer.WriteLine("\t" + string.Join($",{Environment.NewLine}\t", weight.ToStruct()));
+								break;
+							case GCSkinAttribute.WeightStructEndMarker:
+								break;
+						}
+					}
+					writer.WriteLine("};");
+					writer.WriteLine();
+				}
+				labels.Add(VertexSkinName);
+				writer.Write("SA2B_VertexSkinData ");
+				writer.Write(VertexSkinName);
+				writer.Write("[] = {");
+				var chunks = new List<string>(VertexData.Count);
+				chunks.AddRange(vertexSkinData.Select(item => item.ToStruct()));
+				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", chunks.ToArray())},");
+				writer.WriteLine(" };");
+				writer.WriteLine();
+			}
+				var indexFlags = GCIndexAttributeFlags.HasPosition;
 			if (OpaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
 			{
 				foreach (var mesh in OpaqueMeshes)
