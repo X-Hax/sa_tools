@@ -88,8 +88,6 @@ namespace SAModel.SALVL
                     break;
 
                 case ("Delete"):
-					if (propertyGrid1.Focused)
-						break;
                     foreach (Item item in selectedItems.GetSelection())
                         item.Delete(selectedItems);
                     selectedItems.Clear();
