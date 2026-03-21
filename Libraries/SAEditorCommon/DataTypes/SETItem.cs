@@ -94,7 +94,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			set { cliplevel = (byte)(value & 0xF); }
 		}
 
-		[Category("Data"), DisplayName("Clip Level"), Description("Game detail setting required to display the object.")]
+		[Category("Data"), DisplayName("Clip Level"), Description("Game detail setting required to display the object. In SADX, the \"PlayerOrUnsubstantive\" flag is \"player dependent set\" flag (unused). In SA2, it is used by all objects in \"_u\" SET files.")]
 		public ClipSetting ClipSetting
 		{
 			get { return (ClipSetting)ClipLevel; }
@@ -320,9 +320,16 @@ namespace SAModel.SAEditorCommon.DataTypes
 
 	public enum ClipSetting : ushort
 	{
+		/// <summary>The object will appear in all Clip Level settings.</summary>
 		All,
+		/// <summary>The object will only appear in High (Far) Clip Level settings.</summary>
 		HighOnly,
+		/// <summary>The object will appear in High (Far) and Medium Clip Level settings.</summary>
 		MediumAndHigh,
-		SA2Unsubstansive = 8,
+		/// <summary>
+		/// SADX: The object sets the "player dependent set" flag (unused).
+		/// SA2: Additional objects in '_u' SET files.
+		/// </summary>
+		PlayerOrUnsubstantive = 8,
 	}
 }
