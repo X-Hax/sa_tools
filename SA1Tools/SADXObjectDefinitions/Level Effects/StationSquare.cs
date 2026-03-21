@@ -14,8 +14,10 @@ namespace SADXObjectDefinitions.Level_Effects
 	{
 		NJS_OBJECT model;
 		Mesh[] meshes;
+		NJS_OBJECT[] casino_models;
+		Mesh[][] casino_meshes;
 		Vector3 Skybox_Scale;
-		Texture[] texs_bg, texs_advss03, texs_advss04;
+		Texture[] texs_bg, texs_advss03, texs_advss04, texs_ss_casino;
 		byte Act;
 		byte TimeOfDay;
 
@@ -40,6 +42,19 @@ namespace SADXObjectDefinitions.Level_Effects
 					break;
 			}
 			meshes = ObjectHelper.GetMeshes(model);
+			// Casino decorations
+			if (Act == 1)
+			{
+				casino_models = new NJS_OBJECT[5];
+				casino_meshes = new Mesh[5][];
+				casino_models[0] = ObjectHelper.LoadModel("adv00_stationsquare/object/no_unite/casino/casinoobj_casinobuil.nja.sa1mdl");
+				casino_models[1] = ObjectHelper.LoadModel("adv00_stationsquare/object/no_unite/casino/casinoobj_casinoji.nja.sa1mdl");
+				casino_models[2] = ObjectHelper.LoadModel("adv00_stationsquare/object/no_unite/casino/casinoobj_builg.nja.sa1mdl");
+				casino_models[3] = ObjectHelper.LoadModel("adv00_stationsquare/object/no_unite/casino/casinoobj_builh.nja.sa1mdl");
+				casino_models[4] = ObjectHelper.LoadModel("adv00_stationsquare/object/no_unite/casino/cajinoobj_casinostar.nja.sa1mdl");
+				for (int i = 0; i < casino_models.Length; i++)
+					casino_meshes[i] = ObjectHelper.GetMeshes(casino_models[i]);
+			}
 			SetOceanData();
 		}
 
@@ -55,11 +70,24 @@ namespace SADXObjectDefinitions.Level_Effects
 			transform.NJScale(Skybox_Scale);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_bg, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			transform.Pop();
+			if (Act == 1)
+			{
+				texs_ss_casino = ObjectHelper.GetTextures("SS_CASINO");
+				dev.SetRenderState(RenderState.ZWriteEnable, true);
+				for (int i = 0; i < casino_models.Length; i++)
+				{
+					transform.Push();
+					result.AddRange(casino_models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_ss_casino, casino_meshes[i], EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+					transform.Pop();
+				}
+			}
 			RenderInfo.Draw(result, dev, cam);
 		}
 
 		public override void RenderLate(Device dev, EditorCamera cam)
 		{
+			if (Act != 3 && Act != 4)
+				return;
 			List<RenderInfo> result3 = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			dev.SetRenderState(RenderState.ZWriteEnable, false);
