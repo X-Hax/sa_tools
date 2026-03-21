@@ -111,10 +111,10 @@ namespace SAModel.GC
 
 			// The struct is 36/0x24 bytes long
 
-			var vertexAddress = ByteConverter.ToUInt32(file, address) - imageBase;
+			var vertexAddress = (int)(ByteConverter.ToInt32(file, address) - imageBase);
 			//This part is meant to be a pointer for weight data.
 			//SA2 doesn't utilize this part for GC models, but it is implemented for Billy Hatcher.
-			var gcSkinnedVertexAddress = ByteConverter.ToUInt32(file, address + 4) - imageBase;
+			var gcSkinnedVertexAddress = (int)(ByteConverter.ToInt32(file, address + 4) - imageBase);
 			var opaqueAddress = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
 			var translucentAddress = (int)(ByteConverter.ToInt32(file, address + 12) - imageBase);
 
@@ -127,9 +127,9 @@ namespace SAModel.GC
 			VertexData = [];
 			if (vertexAddress > 0)
 			{
-				var vertexSet = new GCVertexSet(file, vertexAddress, imageBase, labels);
+				var vertexSet = new GCVertexSet(file, (uint)vertexAddress, imageBase, labels);
 
-				if (labels.TryGetValue((int)vertexAddress, out var vertexName))
+				if (labels.TryGetValue(vertexAddress, out var vertexName))
 				{
 					VertexName = vertexName;
 				}
@@ -142,7 +142,7 @@ namespace SAModel.GC
 				{
 					VertexData.Add(vertexSet);
 					vertexAddress += 16;
-					vertexSet = new GCVertexSet(file, vertexAddress, imageBase, labels);
+					vertexSet = new GCVertexSet(file, (uint)vertexAddress, imageBase, labels);
 				}
 			}
 
