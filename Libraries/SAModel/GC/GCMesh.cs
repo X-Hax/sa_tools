@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace SAModel.GC
@@ -228,11 +229,11 @@ namespace SAModel.GC
 		}
 
 		// WIP
-		public void ToNJA(TextWriter writer)
+		public void ToNJA(TextWriter writer, ref GCIndexAttributeFlags indexFlags)
 		{
 			if (Parameters != null && Parameters.Count != 0)
 			{
-				writer.WriteLine($"PARAMETER   {ParameterName}[]");
+				writer.WriteLine($"GJMATERIAL   {ParameterName}[]");
 				writer.WriteLine("START");
 				
 				foreach (var item in Parameters)
@@ -245,13 +246,37 @@ namespace SAModel.GC
 
 			if (Primitives != null)
 			{
-				writer.WriteLine($"PRIMITIVE   {PrimitiveName}[]");
+				writer.WriteLine($"GJDRAWLIST   {PrimitiveName}[]");
 				writer.WriteLine("START");
-				
+
+				var pbytes = new List<byte>();
 				foreach (var item in Primitives)
 				{
-					item.ToNJA(writer);
+					var t = IndexFlags;
+					if (t.HasValue)
+					{
+						indexFlags = t.Value;
+					}
+
+					foreach (var primitive in Primitives)
+					{
+						pbytes.AddRange(primitive.GetBytes(indexFlags));
+					}
 				}
+
+				var cb = pbytes.ToArray();
+				var dataSize = Convert.ToInt32(Math.Ceiling(decimal.Divide(cb.Length, 32)) * 32);
+				var buffSize = dataSize - cb.Length;
+				var s = new List<string>(dataSize);
+
+				s.AddRange(cb.Select(b => $"0x{b:X}"));
+
+				for (var l = 0; l < buffSize; l++)
+				{
+					s.Add("0x0");
+				}
+
+				writer.WriteLine(string.Join(", ", s.ToArray()));
 
 				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
@@ -259,27 +284,29 @@ namespace SAModel.GC
 		
 		public void RefToNJA(TextWriter writer)
 		{
+			writer.WriteLine("MESHSTART");
 			if (Parameters != null && Parameters.Count != 0)
 			{
-				writer.WriteLine($"Parameter   {ParameterName},");
+				writer.WriteLine($"GjMats        {ParameterName},");
 			}
 			else
 			{
-				writer.WriteLine($"Parameter   NULL{ParameterName},");
+				writer.WriteLine($"GjMats        NULL{ParameterName},");
 			}
 
-			writer.WriteLine($"ParamNum    {Parameters.Count},");
+			writer.WriteLine($"GjNbMat       {Parameters.Count},");
 
 			if (Primitives != null)
 			{
-				writer.WriteLine($"Primitive   {PrimitiveName},");
+				writer.WriteLine($"GjDispList    {PrimitiveName},");
 			}
 			else
 			{
-				writer.WriteLine($"Primitive   NULL{PrimitiveName},");
+				writer.WriteLine($"GjDispList    NULL{PrimitiveName},");
 			}
 
-			writer.WriteLine($"PrimNum     {_primitiveSize},");
+			writer.WriteLine($"GjSzDispList  {_primitiveSize},");
+			writer.Write($"MESHEND{Environment.NewLine}{Environment.NewLine}");
 		}
 
 		/// <summary>

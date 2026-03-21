@@ -284,26 +284,6 @@ namespace SAModel.GC
 			return result;
 		}
 
-		public void ToNJA(TextWriter writer)
-		{
-			var primtype = PrimitiveType switch
-			{
-				GCPrimitiveType.Triangles => "GJD_PRIM_TRIANGLE",
-				GCPrimitiveType.TriangleStrip => "GJD_PRIM_TRISTRIP",
-				GCPrimitiveType.TriangleFan => "GJD_PRIM_TRIFAN",
-				GCPrimitiveType.Lines => "GJD_PRIM_LINE",
-				GCPrimitiveType.LineStrip => "GJD_PRIM_LINESTRIP",
-				GCPrimitiveType.Points => "GJD_PRIM_POINT",
-				_ => null
-			};
-			
-			writer.WriteLine($"\t{primtype}({Loops.Count}),");
-			foreach (var loop in Loops)
-			{
-				writer.WriteLine($"\t{loop},");
-			}
-		}
-
 		/// <summary>
 		/// Convert the primitive into a triangle list
 		/// </summary>
