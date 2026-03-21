@@ -410,6 +410,7 @@ namespace SAModel.GC
 
 			// Creating the vertex data
 			var vertData = new VertexData[corners.Count];
+			var hasVerts = positions != null;
 			var hasNormals = normals != null;
 			var hasColors = colors != null;
 			var hasUVs = uvs != null;
@@ -418,7 +419,7 @@ namespace SAModel.GC
 			{
 				var l = corners[i];
 				vertData[i] = new VertexData(
-					(Vector3)positions[l.PositionIndex],
+					hasVerts ? (Vector3)positions[l.PositionIndex]: new Vector3(0, 0, 0),
 					hasNormals ? (Vector3)normals[l.NormalIndex] : new Vector3(0, 1, 0),
 					hasColors ? (Color)colors[l.Color0Index] : new Color(255, 255, 255, 255),
 					hasUVs ? (UV)uvs[l.UV0Index] : new UV(0, 0),
