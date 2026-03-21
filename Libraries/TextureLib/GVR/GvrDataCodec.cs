@@ -51,7 +51,7 @@ namespace TextureLib
 
 		public static GvrDataCodec GetDataCodec(GvrDataFormat pixelFormat)
 		{
-			if(_codecs.TryGetValue(pixelFormat, out GvrDataCodec? result))
+			if(_codecs.TryGetValue(pixelFormat, out GvrDataCodec result))
 			{
 				return result;
 			}

@@ -751,7 +751,6 @@
 		private System.Windows.Forms.ContextMenuStrip contextMenuStripObjSet;
 		private System.Windows.Forms.ToolStripMenuItem editObjectSettingsToolStripMenuItem;
 		private System.Windows.Forms.ToolStrip toolStrip1;
-		private System.Windows.Forms.ToolStripButton toolStripButton1;
 		private System.Windows.Forms.ToolStripDropDownButton toolStripButtonAddPoly;
 		private System.Windows.Forms.ToolStripMenuItem addMaterialToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem addTextureToolStripMenuItem;
