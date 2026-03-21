@@ -108,6 +108,15 @@ namespace SAModel.SAEditorCommon
 
 			[DefaultValue(6000.0f)]
 			public float DrawDistanceGeometry { get; set; }
+			
+			[DefaultValue(true)]
+			public bool ShowSceneGraphIndices { get; set; }
+
+			[DefaultValue(true)]
+			public bool ShowSceneGraphNames { get; set; }
+
+			[DefaultValue(false)]
+			public bool ShowSceneGraphDescriptions { get; set; }
 
 			public Settings_SALVL()
 			{
@@ -139,6 +148,10 @@ namespace SAModel.SAEditorCommon
 				BackLightAmbient = Color.FromArgb(255, 40, 40, 40);
 				BackLightSpecular = Color.FromArgb(255, 127, 127, 127);
 				BackLightDirection = new Vertex(-0.45f, 1f, 0.25f);
+
+				ShowSceneGraphIndices = true;
+				ShowSceneGraphNames = true;
+				ShowSceneGraphDescriptions = false;
 			}
 
 			public static Settings_SALVL Load()

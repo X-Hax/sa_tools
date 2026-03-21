@@ -21,7 +21,7 @@ namespace SAModel.SAEditorCommon.UI
 		ActionKeyMapping[] defaultActionKeyMappings;
 		private bool suspend = false;
 
-		public EditorOptionsEditor(EditorCamera camera, ActionKeyMapping[] actionKeyMappings_f, ActionKeyMapping[] defaultActionKeyMappings_f, bool setdist_enabled_a, bool leveldist_enabled_a)
+		public EditorOptionsEditor(EditorCamera camera, ActionKeyMapping[] actionKeyMappings_f, ActionKeyMapping[] defaultActionKeyMappings_f, bool setdist_enabled_a, bool leveldist_enabled_a, bool sceneGraphEnabled)
 		{
 			InitializeComponent();
 			this.camera = camera;
@@ -56,6 +56,11 @@ namespace SAModel.SAEditorCommon.UI
 				listBoxActions.Items.Add(keyMapping.Name);
 			SelectedKeyChanged();
 			ModifierKeyUpdated();
+			// Scene Graph settings
+			if (!sceneGraphEnabled)
+				tabControlOptions.TabPages.Remove(tabPageSceneGraph);
+			else
+				GetSceneGraphSettings();
 			// Lighting editor
 			suspend = true;
 			comboBoxLightType.SelectedIndex = 0;
@@ -534,6 +539,43 @@ namespace SAModel.SAEditorCommon.UI
 			SaveLightData();
 			suspend = false;
 			FormUpdated();
+		}
+		#endregion
+
+		#region Scene Graph Options
+		private void GetSceneGraphSettings()
+		{
+			checkBoxShowInternalNames.Checked = EditorOptions.SceneGraphShowNames;
+			checkBoxShowDescriptions.Checked = EditorOptions.SceneGraphShowDescriptions;
+			checkBoxShowIndices.Checked = EditorOptions.SceneGraphShowIndices;
+		}
+
+		private void SetSceneGraphSettings()
+		{
+			EditorOptions.SceneGraphShowNames = checkBoxShowInternalNames.Checked;
+			EditorOptions.SceneGraphShowDescriptions = checkBoxShowDescriptions.Checked;
+			EditorOptions.SceneGraphShowIndices = checkBoxShowIndices.Checked;
+		}
+
+		private void checkBoxShowIndices_Click(object sender, EventArgs e)
+		{
+			if (!checkBoxShowIndices.Checked && !checkBoxShowInternalNames.Checked && !checkBoxShowDescriptions.Checked)
+				checkBoxShowIndices.Checked = true;
+			SetSceneGraphSettings();
+		}
+
+		private void checkBoxShowInternalNames_Click(object sender, EventArgs e)
+		{
+			if (!checkBoxShowIndices.Checked && !checkBoxShowInternalNames.Checked && !checkBoxShowDescriptions.Checked)
+				checkBoxShowIndices.Checked = true;
+			SetSceneGraphSettings();
+		}
+
+		private void checkBoxShowDescriptions_Click(object sender, EventArgs e)
+		{
+			if (!checkBoxShowIndices.Checked && !checkBoxShowInternalNames.Checked && !checkBoxShowDescriptions.Checked)
+				checkBoxShowIndices.Checked = true;
+			SetSceneGraphSettings();
 		}
 		#endregion
 	}

@@ -334,7 +334,7 @@ namespace SAModel.SAMDL
 			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
 			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
-			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, false, false);
+			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, false, false, false);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.FormUpdatedKeys += optionsEditor_FormUpdatedKeys;
 			optionsEditor.ResetDefaultKeybindsCommand += () =>
