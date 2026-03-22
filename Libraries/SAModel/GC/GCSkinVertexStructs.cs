@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace SAModel.GC
@@ -70,14 +71,20 @@ namespace SAModel.GC
 
 			return result.ToString();
 		}
+
+		public void ToNJA(TextWriter writer)
+		{
+			writer.WriteLine($"\tGJWPos( {pos.XF.ToNJA()}, {pos.YF.ToNJA()}, {pos.ZF.ToNJA()} ),");
+			writer.WriteLine($"\tGJWNrm( {nrm.XF.ToNJA()}, {nrm.YF.ToNJA()}, {nrm.ZF.ToNJA()} ),");
+		}
 	}
 	public class GCSkinVertexSetWeight
 	{
 		/// <summary>
 		/// Only used if the elementType in the containing GCSkinVertexSet is 2, AKA PartialWeight. 
 		/// </summary>
-		public short vertIndex;
-		public short weight;
+		public ushort vertIndex;
+		public ushort weight;
 		public byte[] GetBytes()
 		{
 			List<byte> result = [];
@@ -98,6 +105,11 @@ namespace SAModel.GC
 			result.Append(" }");
 
 			return result.ToString();
+		}
+		public void ToNJA(TextWriter writer, bool weightpower)
+		{
+			var translatedweight = weight / (weightpower? 65535.0F : 255.0F) * 100.0F;
+			writer.WriteLine($"\tGJWIdx( {vertIndex}, {translatedweight.ToString("N6")} ),");
 		}
 	}
 }

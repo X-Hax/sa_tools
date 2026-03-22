@@ -468,6 +468,7 @@ namespace SAModel.DataToolbox
 						break;
 					case ".sa1mdl":
 					case ".sa2mdl":
+					case ".sa2bmdl":
 					default:
 						outext = ".nja";
 						if (FileName.ToLowerInvariant().Contains(".dup"))

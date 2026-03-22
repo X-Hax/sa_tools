@@ -337,6 +337,7 @@ namespace SAModel.GC
 						1 => "GJ_DIRECT",
 						2 => "GJ_INDEX8",
 						3 => "GJ_INDEX16",
+						_ => $"{src}"
 					};
 
 					list.Add($"GjVtxDescAttr ( {attr_str}, {src_str} )");
