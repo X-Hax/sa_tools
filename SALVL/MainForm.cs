@@ -168,6 +168,9 @@ namespace SAModel.SALVL
 			EditorOptions.LevelDrawDistance = settingsfile.DrawDistanceGeometry;
 			EditorOptions.SetItemDrawDistance = settingsfile.DrawDistanceSET;
 			EditorOptions.FillColor = settingsfile.BackgroundColor;
+			EditorOptions.SceneGraphShowIndices = settingsfile.ShowSceneGraphIndices;
+			EditorOptions.SceneGraphShowDescriptions = settingsfile.ShowSceneGraphDescriptions;
+			EditorOptions.SceneGraphShowNames = settingsfile.ShowSceneGraphNames;
 			disableModelLibraryToolStripMenuItem.Checked = settingsfile.DisableModelLibrary;
 			hideCursorDuringCameraMovementToolStripMenuItem.Checked = settingsfile.AlternativeCamera;
 			wrapAroundScreenEdgesToolStripMenuItem.Checked = settingsfile.MouseWrapScreen;
@@ -199,7 +202,7 @@ namespace SAModel.SALVL
 
 			cam.ModifierKey = settingsfile.CameraModifier;
 			InitializeDirect3D();
-			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, true, true);
+			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, true, true, true);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.FormUpdatedKeys += optionsEditor_UpdateKeys;
 
@@ -1083,23 +1086,29 @@ namespace SAModel.SALVL
 
 		void optionsEditor_FormUpdated()
 		{
+			// Scene Graph
+			settingsfile.ShowSceneGraphIndices = EditorOptions.SceneGraphShowIndices;
+			settingsfile.ShowSceneGraphDescriptions = EditorOptions.SceneGraphShowDescriptions;
+			settingsfile.ShowSceneGraphNames = EditorOptions.SceneGraphShowNames;
+			// Display Settings
 			settingsfile.DrawDistanceGeneral = EditorOptions.RenderDrawDistance;
 			settingsfile.DrawDistanceGeometry = EditorOptions.LevelDrawDistance;
 			settingsfile.DrawDistanceSET = EditorOptions.SetItemDrawDistance;
 			settingsfile.CameraModifier = cam.ModifierKey;
 			settingsfile.BackgroundColor = EditorOptions.FillColor;
+			// Light Settings
 			settingsfile.EnableSpecular = EditorOptions.EnableSpecular;
-			// Key Light
+			// Light Settings - Key Light
 			settingsfile.KeyLightDirection = new Vertex(EditorOptions.KeyLight.Direction.X, EditorOptions.KeyLight.Direction.Y, EditorOptions.KeyLight.Direction.Z);
 			settingsfile.KeyLightAmbient = Color.FromArgb((int)(EditorOptions.KeyLight.Ambient.R * 255.0f), (int)(EditorOptions.KeyLight.Ambient.G * 255.0f), (int)(EditorOptions.KeyLight.Ambient.B * 255.0f));
 			settingsfile.KeyLightDiffuse = Color.FromArgb((int)(EditorOptions.KeyLight.Diffuse.R * 255.0f), (int)(EditorOptions.KeyLight.Diffuse.G * 255.0f), (int)(EditorOptions.KeyLight.Diffuse.B * 255.0f));
 			settingsfile.KeyLightSpecular = Color.FromArgb((int)(EditorOptions.KeyLight.Specular.R * 255.0f), (int)(EditorOptions.KeyLight.Specular.G * 255.0f), (int)(EditorOptions.KeyLight.Specular.B * 255.0f));
-			// Fill Light
+			// Light Settings - Fill Light
 			settingsfile.FillLightDirection = new Vertex(EditorOptions.FillLight.Direction.X, EditorOptions.FillLight.Direction.Y, EditorOptions.FillLight.Direction.Z);
 			settingsfile.FillLightAmbient = Color.FromArgb((int)(EditorOptions.FillLight.Ambient.R * 255.0f), (int)(EditorOptions.FillLight.Ambient.G * 255.0f), (int)(EditorOptions.FillLight.Ambient.B * 255.0f));
 			settingsfile.FillLightDiffuse = Color.FromArgb((int)(EditorOptions.FillLight.Diffuse.R * 255.0f), (int)(EditorOptions.FillLight.Diffuse.G * 255.0f), (int)(EditorOptions.FillLight.Diffuse.B * 255.0f));
 			settingsfile.FillLightSpecular = Color.FromArgb((int)(EditorOptions.FillLight.Specular.R * 255.0f), (int)(EditorOptions.FillLight.Specular.G * 255.0f), (int)(EditorOptions.FillLight.Specular.B * 255.0f));
-			// Back Light
+			// Light Settings - Back Light
 			settingsfile.BackLightDirection = new Vertex(EditorOptions.BackLight.Direction.X, EditorOptions.BackLight.Direction.Y, EditorOptions.BackLight.Direction.Z);
 			settingsfile.BackLightAmbient = Color.FromArgb((int)(EditorOptions.BackLight.Ambient.R * 255.0f), (int)(EditorOptions.BackLight.Ambient.G * 255.0f), (int)(EditorOptions.BackLight.Ambient.B * 255.0f));
 			settingsfile.BackLightDiffuse = Color.FromArgb((int)(EditorOptions.BackLight.Diffuse.R * 255.0f), (int)(EditorOptions.BackLight.Diffuse.G * 255.0f), (int)(EditorOptions.BackLight.Diffuse.B * 255.0f));

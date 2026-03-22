@@ -206,13 +206,12 @@ namespace SAModel.SAEditorCommon.UI
 				sceneTreeView.BeginUpdate();
 				levelItemNode = sceneTreeView.Nodes.Add("Level Geometry");
 				exLevelItemNode = sceneTreeView.Nodes.Add("Extra Level Geometry");
-
-				levelAnimNode = sceneTreeView.Nodes.Add("Level Animations");
+				levelAnimNode = sceneTreeView.Nodes.Add("Animated Level Geometry");
 				deathZoneNode = sceneTreeView.Nodes.Add("Death Zones");
-				setNode = sceneTreeView.Nodes.Add("SET Objects");
+				setNode = sceneTreeView.Nodes.Add("SET Items");
 				camNode = sceneTreeView.Nodes.Add("CAM Items");
 				splineNode = sceneTreeView.Nodes.Add("Splines");
-				missionSETNode = sceneTreeView.Nodes.Add("Mission SET Objects");
+				missionSETNode = sceneTreeView.Nodes.Add("Mission SET Items");
 				sceneTreeView.EndUpdate();
 
 				// subscribe to our level data changed event
@@ -240,7 +239,7 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			LoadFullTree();
 		}
-
+		
 		void LoadFullTree()
 		{
 			sceneTreeView.BeginUpdate();
@@ -254,68 +253,179 @@ namespace SAModel.SAEditorCommon.UI
 			splineNode.Nodes.Clear();
 			missionSETNode.Nodes.Clear();
 
-			// level items
-			foreach (LevelItem levelItem in LevelData.LevelItems)
+			// Level Geometry
+			for (int i = 0; i < LevelData.LevelItems.Count(); i++)
 			{
-				levelItemNode.Nodes.Add(levelItem.Name);
+				LevelItem levelItem = LevelData.LevelItems.ElementAt(i);
+				string itemString = "";
+				bool prevItem = false;
+				if (EditorOptions.SceneGraphShowIndices)
+				{
+					itemString += $"[{i.ToString("D3")}] ";
+					prevItem = true;
+				}
+				if (EditorOptions.SceneGraphShowNames || !EditorOptions.SceneGraphShowIndices)
+				{
+					if (prevItem)
+						itemString += " ";
+					itemString += levelItem.Name;
+				}
+				levelItemNode.Nodes.Add(itemString);
 			}
-			foreach (LevelItem levelItem in LevelData.EXLevelItems)
+			// Extra Level Geometry (SA2)
+			for (int i = 0; i < LevelData.EXLevelItems.Count(); i++)
 			{
-				exLevelItemNode.Nodes.Add(levelItem.Name);
+				LevelItem levelItem = LevelData.EXLevelItems.ElementAt(i);
+				string itemString = "";
+				bool prevItem = false;
+				if (EditorOptions.SceneGraphShowIndices)
+				{
+					itemString += $"[{i.ToString("D3")}] ";
+					prevItem = true;
+				}
+				if (EditorOptions.SceneGraphShowNames || !EditorOptions.SceneGraphShowIndices)
+				{
+					if (prevItem)
+						itemString += " ";
+					itemString += levelItem.Name;
+				}
+				exLevelItemNode.Nodes.Add(itemString);
 			}
-			// level animations
-			foreach (LevelAnim levelAnimItem in LevelData.LevelAnims)
+			// Level Geometry Animations
+			for (int i = 0; i < LevelData.LevelAnims.Count(); i++)
 			{
-				levelAnimNode.Nodes.Add(levelAnimItem.ActionName);
+				LevelAnim levelItem = LevelData.LevelAnims.ElementAt(i);
+				string itemString = "";
+				bool prevItem = false;
+				if (EditorOptions.SceneGraphShowIndices)
+				{
+					itemString += $"[{i.ToString("D3")}] ";
+					prevItem = true;
+				}
+				if (EditorOptions.SceneGraphShowNames || !EditorOptions.SceneGraphShowIndices)
+				{
+					if (prevItem)
+						itemString += " ";
+					itemString += levelItem.ActionName;
+				}
+				levelAnimNode.Nodes.Add(itemString);
 			}
-
-			// death zones
+			// Death Zones
 			if (LevelData.DeathZones != null)
 			{
-				foreach (DeathZoneItem deathZone in LevelData.DeathZones)
+				for (int i = 0; i < LevelData.DeathZones.Count(); i++)
 				{
-					deathZoneNode.Nodes.Add(deathZone.Name);
+					DeathZoneItem item = LevelData.DeathZones.ElementAt(i);
+					string itemString = "";
+					bool prevItem = false;
+					if (EditorOptions.SceneGraphShowIndices)
+					{
+						itemString += $"[{i.ToString("D3")}] ";
+						prevItem = true;
+					}
+					if (EditorOptions.SceneGraphShowNames || !EditorOptions.SceneGraphShowIndices)
+					{
+						if (prevItem)
+							itemString += " ";
+						itemString += item.Name;
+					}
+					deathZoneNode.Nodes.Add(itemString);
 				}
 			}
-
-			// set node
+			// SET Items
 			if (!LevelData.SETItemsIsNull() && LevelData.CharHasSETItems(LevelData.Character))
+			{
 				for (int i = 0; i < LevelData.SETItems(LevelData.Character).Count(); i++)
 				{
 					SETItem setItem = LevelData.SETItems(LevelData.Character).ElementAt(i);
-					setNode.Nodes.Add($"[{i.ToString("D3")}] {setItem.InternalName}");
+					string setItemString = "";
+					bool prevItem = false;
+					if (EditorOptions.SceneGraphShowIndices)
+					{
+						setItemString += $"[{i.ToString("D3")}] ";
+						prevItem = true;
+					}
+					if (EditorOptions.SceneGraphShowNames)
+					{
+						setItemString += setItem.InternalName;
+						prevItem = true;
+					}
+					if (EditorOptions.SceneGraphShowDescriptions || (!EditorOptions.SceneGraphShowIndices && !EditorOptions.SceneGraphShowNames))
+					{
+						if (prevItem)
+							setItemString += " | ";
+						setItemString += setItem.Name;
+					}
+					setNode.Nodes.Add(setItemString);
 				}
-			// cam node
+			}
+			// CAM Items
 			if (LevelData.CAMItems != null && LevelData.CAMItems[LevelData.Character] != null)
 			{
-				foreach (CAMItem camItem in LevelData.CAMItems[LevelData.Character])
+				for (int i = 0; i < LevelData.CAMItems[LevelData.Character].Count(); i++)
 				{
-					camNode.Nodes.Add(camItem.CamType.ToString());
+					CAMItem camItem = LevelData.CAMItems[LevelData.Character].ElementAt(i);
+					string itemString = "";
+					bool prevItem = false;
+					if (EditorOptions.SceneGraphShowIndices)
+					{
+						itemString += $"[{i.ToString("D3")}] ";
+						prevItem = true;
+					}
+					if (EditorOptions.SceneGraphShowNames || !EditorOptions.SceneGraphShowIndices)
+					{
+						if (prevItem)
+							itemString += " ";
+						itemString += camItem.CamType.ToString();
+					}
+					camNode.Nodes.Add(itemString);
 				}
 			}
-
+			// Splines
 			if (LevelData.LevelSplines != null)
 			{
-				foreach (SplineData splineData in LevelData.LevelSplines)
+				for (int i = 0; i < LevelData.LevelSplines.Count; i++)
 				{
-					splineNode.Nodes.Add("spline_" + splineData.Code.ToString("X"));
+					SplineData splineData = LevelData.LevelSplines[i];
+					string itemString = "";
+					bool prevItem = false;
+					if (EditorOptions.SceneGraphShowIndices)
+					{
+						itemString += $"[{i.ToString("D3")}] ";
+						prevItem = true;
+					}
+					if (EditorOptions.SceneGraphShowNames || !EditorOptions.SceneGraphShowIndices)
+					{
+						if (prevItem)
+							itemString += " ";
+						itemString += "spline_" + splineData.Code.ToString("X");
+					}
+					splineNode.Nodes.Add(itemString);
 				}
 			}
-
+			// Mission SET Items
 			if (LevelData.MissionSETItems != null && LevelData.MissionSETItems[LevelData.Character] != null)
-				foreach (MissionSETItem missionSet in LevelData.MissionSETItems[LevelData.Character])
+			{
+				for (int i = 0; i < LevelData.MissionSETItems[LevelData.Character].Count; i++)
 				{
-					missionSETNode.Nodes.Add(missionSet.Name);
+					MissionSETItem missionSet = LevelData.MissionSETItems[LevelData.Character][i];
+					string itemString = "";
+					bool prevItem = false;
+					if (EditorOptions.SceneGraphShowIndices)
+					{
+						itemString += $"[{i.ToString("D3")}] ";
+						prevItem = true;
+					}
+					if (EditorOptions.SceneGraphShowNames || !EditorOptions.SceneGraphShowIndices)
+					{
+						if (prevItem)
+							itemString += " ";
+						itemString += missionSet.Name;
+					}
+					missionSETNode.Nodes.Add(itemString);
 				}
-			// Hide empty nodes
-			//if(LevelData.MissionSETItems == null || LevelData.MissionSETItems[LevelData.Character] == null || LevelData.MissionSETItems[LevelData.Character].Count() == 0)
-				//missionSETNode.Remove();
+			}
 			sceneTreeView.EndUpdate();
-		}
-
-		void ChangeCharacterRelevantNodes()
-		{
-			LoadFullTree();
 		}
 	}
 }

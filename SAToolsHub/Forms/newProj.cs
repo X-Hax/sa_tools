@@ -27,7 +27,7 @@ namespace SAToolsHub
 		string projName;
 		bool isNJA;
 		bool useNinja2;
-		bool includetlsInModels;
+		//bool includetlsInModels;
 
 		// Variables (split)
 		Stream projFileStream;

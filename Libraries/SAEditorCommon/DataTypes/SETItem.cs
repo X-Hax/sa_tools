@@ -14,6 +14,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 	[Serializable]
 	public class SETItem : Item, ICustomTypeDescriptor, IScaleable
 	{
+		[Description("Coordinates and radius of a sphere used to determine whether the item should be rendered. Calculated automatically for SET items.")]
 		public override BoundingSphere Bounds { get { return objdef.GetBounds(this); } }
 
 		protected ObjectDefinition objdef;
@@ -65,16 +66,16 @@ namespace SAModel.SAEditorCommon.DataTypes
 				return DefaultObjectDefinition.DefaultInstance;
 		}
 
-		[Category("Common"), ParenthesizePropertyName(true)]
+		[Category("Common"), DisplayName("Description"), Description("The item's description in its definition."), ParenthesizePropertyName(true)]
 		public string Name { get { return objdef.Name; } }
-		[Category("Common"), DisplayName ("File Source"), ParenthesizePropertyName(true)]
+		[Category("Common"), DisplayName ("File Source"), Description("The SET file that stores data for this item."), ParenthesizePropertyName(true)]
 		public string SETFileName { get; set; }
-		[Category("Data"), ParenthesizePropertyName(true)]
+		[Category("Data"), Description("The item's internal name in the level object list."), ParenthesizePropertyName(true)]
 		public string InternalName { get { return objdef.InternalName; } }
 		protected bool isLoaded = false;
 
 		protected ushort id;
-		[Category("Data"), Editor(typeof(IDEditor), typeof(UITypeEditor))]
+		[Category("Data"), Description("The ID of the item type in the level object list."), Editor(typeof(IDEditor), typeof(UITypeEditor))]
 		public ushort ID
 		{
 			get { return id; }
@@ -94,19 +95,19 @@ namespace SAModel.SAEditorCommon.DataTypes
 			set { cliplevel = (byte)(value & 0xF); }
 		}
 
-		[Category("Data"), DisplayName("Clip Level"), Description("Game detail setting required to display the object.")]
+		[Category("Data"), DisplayName("Clip Level"), Description("Game detail setting required to display the object. In SADX, the \"PlayerOrUnsubstantive\" flag is \"player dependent set\" flag (unused). In SA2, it is used by all objects in \"_u\" SET files.")]
 		public ClipSetting ClipSetting
 		{
 			get { return (ClipSetting)ClipLevel; }
 			set { ClipLevel = (ushort)value; }
 		}
 
-		[Category("Common")]
+		[Category("Common"), Description("Initial position of the item.")]
 		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
-		[Category("Common")]
+		[Category("Common"), Description("Initial rotation of the item. Depending on the object, some or all axes may be ignored or used for other purposes.")]
 		public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
 		new protected Vertex scale = new Vertex();
-		[Category("Common")]
+		[Category("Common"), Description("Depending on the object, these values can define how big the item is, adjust its parameters or pick a variation of the object.")]
 		public Vertex Scale { get { return scale; } set { scale = value; GetHandleMatrix(); } }
 
 		public Vertex GetScale()
@@ -320,9 +321,16 @@ namespace SAModel.SAEditorCommon.DataTypes
 
 	public enum ClipSetting : ushort
 	{
+		/// <summary>The object will appear in all Clip Level settings.</summary>
 		All,
+		/// <summary>The object will only appear in High (Far) Clip Level settings.</summary>
 		HighOnly,
+		/// <summary>The object will appear in High (Far) and Medium Clip Level settings.</summary>
 		MediumAndHigh,
-		SA2Unsubstansive = 8,
+		/// <summary>
+		/// SADX: The object sets the "player dependent set" flag (unused).
+		/// SA2: Additional objects in '_u' SET files.
+		/// </summary>
+		PlayerOrUnsubstantive = 8,
 	}
 }

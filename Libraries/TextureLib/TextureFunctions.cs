@@ -80,7 +80,7 @@ namespace TextureLib
 		/// <param name="codec">Data codec to use.</param>
 		/// <param name="size">Size of the mipmap.</param>
 		/// <param name="writer">Output memory stream.</param>
-		public static void EncodeMipMap(Image<Rgba32> image, IQuantizer<Rgba32>? quantizer, DataCodec codec, int size, MemoryStream writer)
+		public static void EncodeMipMap(Image<Rgba32> image, IQuantizer<Rgba32> quantizer, DataCodec codec, int size, MemoryStream writer)
 		{
 			byte[] mipMapPixels;
 			Image<Rgba32> mipMapImage = image.Clone();

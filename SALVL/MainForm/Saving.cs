@@ -374,8 +374,8 @@ namespace SAModel.SALVL
 				for (int i = 0; i < LevelData.SA2SetTypes.Length; i++)
 				{
 
-					List<SETItem> subItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting != ClipSetting.SA2Unsubstansive).ToList();
-					List<SETItem> unsubItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting == ClipSetting.SA2Unsubstansive).ToList();
+					List<SETItem> subItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting != ClipSetting.PlayerOrUnsubstantive).ToList();
+					List<SETItem> unsubItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting == ClipSetting.PlayerOrUnsubstantive).ToList();
 
 					string filetype = string.Empty;
 					string id = LevelData.SA2SetTypes[i].ToLowerInvariant();
@@ -403,7 +403,7 @@ namespace SAModel.SALVL
 			{
 				for (int i = 0; i < LevelData.SA2SetTypes.Length; i++)
 				{
-					List<SETItem> subItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting != ClipSetting.SA2Unsubstansive).ToList();
+					List<SETItem> subItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting != ClipSetting.PlayerOrUnsubstantive).ToList();
 					if (subItems.Count > 0)
 					{
 						string subName = "set" + LevelData.SETName + LevelData.SA2SetTypes[i] + "_s.bin";
@@ -411,7 +411,7 @@ namespace SAModel.SALVL
 						SETItem.Save(subItems, subNamePath, isBigEndian);
 					}
 
-					List<SETItem> unsubItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting == ClipSetting.SA2Unsubstansive).ToList();
+					List<SETItem> unsubItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting == ClipSetting.PlayerOrUnsubstantive).ToList();
 					if (unsubItems.Count > 0)
 					{
 						string unsubName = "set" + LevelData.SETName + LevelData.SA2SetTypes[i] + "_u.bin";

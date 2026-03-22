@@ -95,12 +95,12 @@ namespace TextureLib
 			return ddsHeader;
 		}
 
-		public XvrTexture Clone()
+		public new XvrTexture Clone()
 		{
 			return new XvrTexture(RawData, 0, Name) { PakMetadata = PakMetadata, PvmxOriginalDimensions = PvmxOriginalDimensions };
 		}
 
-		public static bool Identify(byte[] data, int offset = 0)
+		public static new bool Identify(byte[] data, int offset = 0)
 		{
 			const uint Magic_XVRT = 0x54525658;
 			return BitConverter.ToUInt32(data, offset) == Magic_XVRT;

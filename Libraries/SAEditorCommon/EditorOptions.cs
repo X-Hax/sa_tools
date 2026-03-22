@@ -692,7 +692,14 @@ namespace SAModel.SAEditorCommon
 			{
 				return BitConverter.ToSingle(BitConverter.GetBytes(value), 0);
 			}
-			#endregion
 		}
+		#endregion
+
+		#region Scene Graph
+		// Controls the info displayed for items in SALVL's Scene Graph
+		public static bool SceneGraphShowIndices;
+		public static bool SceneGraphShowNames;
+		public static bool SceneGraphShowDescriptions;
+		#endregion
 	}
 }

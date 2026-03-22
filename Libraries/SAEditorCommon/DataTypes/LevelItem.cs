@@ -117,7 +117,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			Paste();
 		}
 
-		[Category("Common"), DisplayName("File Source"), ParenthesizePropertyName(true)]
+		[Category("Common"), DisplayName("File Source"), Description("The LandTable file that stores data for this item."), ParenthesizePropertyName(true)]
 		public string LevelFileName { get; set; }
 
 		[Category("Common")]

@@ -273,13 +273,13 @@ namespace SplitTools.Split
 								break;
 						}
 						bool rev = ByteConverter.Reverse;
-						bool writetls = false;
+						//bool writetls = false;
 						if (data.CustomProperties.ContainsKey("format"))
 							mdlformat = (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]);
 						if (data.CustomProperties.ContainsKey("reverse"))
 							ByteConverter.Reverse = true;
-						if (data.CustomProperties.ContainsKey("includetls"))
-							writetls = true;
+						//if (data.CustomProperties.ContainsKey("includetls"))
+							//writetls = true;
 						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, mdlformat, labels, new Dictionary<int, Attach>(), ninja2);
 						List<string> mdlanis = new List<string>();
 						string[] mdlanisfiles;

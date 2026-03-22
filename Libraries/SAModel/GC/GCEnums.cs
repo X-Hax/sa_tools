@@ -271,7 +271,16 @@ namespace SAModel.GC
 
 		Null = 255
 	}
-
+	/// <summary>
+	/// Skin vertex attribute type
+	/// </summary>
+	public enum GCSkinAttribute : ushort
+	{
+		StaticWeight = 0,
+		PartialWeightStart = 1,
+		PartialWeight = 2,
+		WeightStructEndMarker = 3,
+	}
 	/// <summary>
 	/// Holds information about the vertex data that's stored in the geometry
 	/// </summary>
