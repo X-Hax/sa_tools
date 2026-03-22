@@ -5,6 +5,47 @@ using SplitTools;
 namespace SAModel.SAEditorCommon.SETEditing
 {
 	/// <summary>
+	/// Type of rotation by axis. Depends on the object.
+	/// </summary>
+	public enum RotationOrder
+	{
+		None,
+		XYZ,
+		X,
+		Y,
+		Z,
+		XY,
+		XZ,
+		YX,
+		YZ,
+		ZX,
+		ZY,
+		XZY,
+		YXZ,
+		YZX,
+		ZXY,
+		ZYX
+	}
+
+	/// <summary>
+	/// Type of scaling by axis. Depends on the object.
+	/// </summary>
+	public enum ScaleOrder
+	{
+		None,
+		XYZ,
+		X,
+		Y,
+		Z,
+		XY,
+		XZ,
+		YZ,
+		AllX,
+		AllY,
+		AllZ
+	}
+
+	/// <summary>
 	/// Class for object definition data entries stored in INI files in the objdefs folder.
 	/// </summary>
 	public class ObjectData
@@ -104,46 +145,5 @@ namespace SAModel.SAEditorCommon.SETEditing
 		/// Set to true if the model's root NJS_OBJECT position should be ignored for rendering and collision.
 		/// </summary>
 		public bool IgnorePos;
-	}
-
-	/// <summary>
-	/// Type of rotation by axis. Depends on the object.
-	/// </summary>
-	public enum RotationOrder
-	{
-		None,
-		XYZ,
-		X,
-		Y,
-		Z,
-		XY,
-		XZ,
-		YX,
-		YZ,
-		ZX,
-		ZY,
-		XZY,
-		YXZ,
-		YZX,
-		ZXY,
-		ZYX
-	}
-
-	/// <summary>
-	/// Type of scaling by axis. Depends on the object.
-	/// </summary>
-	public enum ScaleOrder
-	{
-		None,
-		XYZ,
-		X,
-		Y,
-		Z,
-		XY,
-		XZ,
-		YZ,
-		AllX,
-		AllY,
-		AllZ
 	}
 }
