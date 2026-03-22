@@ -131,6 +131,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 
 		#endregion
 
+		#region Override Functions
 		/// <summary>
 		/// Initializes the object when it is loaded in SALVL.
 		/// </summary>
@@ -201,6 +202,8 @@ namespace SAModel.SAEditorCommon.SETEditing
 		{
 			return new BoundingSphere(item.Position, 0);
 		}
+
+		#endregion
 	}
 
 	public class ModelTransform
