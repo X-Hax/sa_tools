@@ -33,36 +33,8 @@ namespace SAModel.SAEditorCommon.SETEditing
 		/// </summary>
 		public abstract string Name { get; }
 
-		/// <summary>
-		/// The default X Axis rotation of an object.
-		/// </summary>
-		public virtual ushort DefaultXRotation { get { return 0; } }
 
-		/// <summary>
-		/// The default Y Axis rotation of an object.
-		/// </summary>
-		public virtual ushort DefaultYRotation { get { return 0; } }
-
-		/// <summary>
-		/// The default Z Axis rotation of an object.
-		/// </summary>
-		public virtual ushort DefaultZRotation { get { return 0; } }
-
-		/// <summary>
-		/// The default X Axis scale of an object.
-		/// </summary>
-		public virtual float DefaultXScale { get { return 1.0f; } }
-
-		/// <summary>
-		/// The default Y Axis scale of an object.
-		/// </summary>
-		public virtual float DefaultYScale { get { return 1.0f; } }
-
-		/// <summary>
-		/// The default Z Axis scale of an object.
-		/// </summary>
-		public virtual float DefaultZScale { get { return 1.0f; } }
-
+		#region Position Variables
 		/// <summary>
 		/// The distance in which an object should sit from the ground.
 		/// 
@@ -85,6 +57,24 @@ namespace SAModel.SAEditorCommon.SETEditing
 		/// </summary>
 		public virtual float AddZPosition { get { return 0; } }
 
+		#endregion
+
+		#region Rotation Variables
+		/// <summary>
+		/// The default X Axis rotation of an object.
+		/// </summary>
+		public virtual ushort DefaultXRotation { get { return 0; } }
+
+		/// <summary>
+		/// The default Y Axis rotation of an object.
+		/// </summary>
+		public virtual ushort DefaultYRotation { get { return 0; } }
+
+		/// <summary>
+		/// The default Z Axis rotation of an object.
+		/// </summary>
+		public virtual ushort DefaultZRotation { get { return 0; } }
+
 		/// <summary>
 		/// Additional X Axis rotation data added to the object without affecting the <see cref="SETItem"/> info.
 		/// </summary>
@@ -100,6 +90,24 @@ namespace SAModel.SAEditorCommon.SETEditing
 		/// </summary>
 		public virtual ushort AddZRotation { get { return 0; } }
 
+		#endregion
+
+		#region Scale Variables
+		/// <summary>
+		/// The default X Axis scale of an object.
+		/// </summary>
+		public virtual float DefaultXScale { get { return 1.0f; } }
+
+		/// <summary>
+		/// The default Y Axis scale of an object.
+		/// </summary>
+		public virtual float DefaultYScale { get { return 1.0f; } }
+
+		/// <summary>
+		/// The default Z Axis scale of an object.
+		/// </summary>
+		public virtual float DefaultZScale { get { return 1.0f; } }
+
 		/// <summary>
 		/// Additional X Axis scale data added to the object without affecting the <see cref="SETItem"/> info.
 		/// </summary>
@@ -114,6 +122,8 @@ namespace SAModel.SAEditorCommon.SETEditing
 		/// Additional Z Axis scale data added to the object without affecting the <see cref="SETItem"/> info.
 		/// </summary>
 		public virtual float AddZScale { get { return 0; } }
+
+		#endregion
 
 		public virtual PropertySpec[] CustomProperties { get { return new PropertySpec[0]; } }
 		public virtual PropertySpec[] MissionProperties { get { return null; } }
