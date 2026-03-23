@@ -64,9 +64,9 @@ namespace SAModel.GC
 		{
 			var result = new StringBuilder("{ ");
 
-			result.Append(pos);
+			result.Append(pos.ToStruct());
 			result.Append(", ");
-			result.Append(nrm);
+			result.Append(nrm.ToStruct());
 			result.Append(" }");
 
 			return result.ToString();

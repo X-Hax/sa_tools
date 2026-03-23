@@ -86,6 +86,15 @@ namespace SAModel
 		{
 			return "( " + X.ToNJA() + ", " + Y.ToNJA() + ", " + Z.ToNJA() + " )";
 		}
+		//Because why is this a separate variable again?
+		public GC.Vector3 ToGCVector3()
+		{
+			GC.Vector3 newvector = new GC.Vector3(0, 0, 0);
+			newvector.X = X;
+			newvector.Y = Y;
+			newvector.Z = Z;
+			return (newvector);
+		}
 
 		public float[] ToArray()
 		{

@@ -652,9 +652,9 @@ namespace SAModel.GC
 		public override string ToStruct(bool dx)
 		{
 			var result = new StringBuilder("{ ");
-			result.Append(VertexData != null ? VertexName : "NULL");
+			result.Append(VertexData.Count > 0 ? VertexName : "NULL");
 			result.Append(", ");
-			result.Append(vertexSkinData != null ? VertexSkinName : "NULL");
+			result.Append(vertexSkinData.Count > 0 ? VertexSkinName : "NULL");
 			result.Append(", ");
 			result.Append(OpaqueMeshes.Count != 0 ? OpaqueMeshName : "NULL");
 			result.Append(", ");
@@ -752,37 +752,42 @@ namespace SAModel.GC
 			{
 				foreach (var data in vertexSkinData)
 				{
-					if (!labels.Contains(data.DataNamePos))
+					switch (data.elementType)
 					{
-						labels.Add(data.DataNamePos);
-						switch (data.elementType)
+						case GCSkinAttribute.StaticWeight:
+						if (!labels.Contains(data.DataNamePos))
 						{
-							case GCSkinAttribute.StaticWeight:
-								writer.Write("SA2B_WeightData ");
-								break;
-							case GCSkinAttribute.PartialWeightStart:
-							case GCSkinAttribute.PartialWeight:
-								writer.Write("SA2B_WeightData ");
-								break;
+							labels.Add(data.DataNamePos);
+							writer.Write("SA2B_WeightData_PosNrm ");
+							writer.Write(data.DataNamePos);
+							writer.WriteLine("[] = {");
+							foreach (GCSkinVertexSetPosNrm item in data.posNrms)
+								writer.WriteLine("\t" + string.Join($",{Environment.NewLine}\t", item.ToStruct()));
 						}
-						writer.Write(data.DataNamePos);
-						writer.WriteLine("[] = {");
-						switch (data.elementType)
-						{
-							case GCSkinAttribute.StaticWeight:
+							break;
+						case GCSkinAttribute.PartialWeightStart:
+						case GCSkinAttribute.PartialWeight:
+							if (!labels.Contains(data.DataNamePos))
+							{
+								labels.Add(data.DataNamePos);
+								writer.Write("SA2B_WeightData ");
+								writer.Write(data.DataNamePos);
+								writer.WriteLine("[] = {");
 								foreach (GCSkinVertexSetPosNrm item in data.posNrms)
 									writer.WriteLine("\t" + string.Join($",{Environment.NewLine}\t", item.ToStruct()));
-								break;
-							case GCSkinAttribute.PartialWeightStart:
-							case GCSkinAttribute.PartialWeight:
-								foreach (GCSkinVertexSetPosNrm item in data.posNrms)
-									writer.WriteLine("\t" + string.Join($",{Environment.NewLine}\t", item.ToStruct()));
+							}
+							if (!labels.Contains(data.DataNameWeight))
+							{
+								labels.Add(data.DataNameWeight);
+								writer.Write("SA2B_WeightData ");
+								writer.Write(data.DataNameWeight);
+								writer.WriteLine("[] = {");
 								foreach (GCSkinVertexSetWeight weight in data.weightData)
 									writer.WriteLine("\t" + string.Join($",{Environment.NewLine}\t", weight.ToStruct()));
-								break;
-							case GCSkinAttribute.WeightStructEndMarker:
-								break;
-						}
+							}
+							break;
+						case GCSkinAttribute.WeightStructEndMarker:
+							break;
 					}
 					writer.WriteLine("};");
 					writer.WriteLine();

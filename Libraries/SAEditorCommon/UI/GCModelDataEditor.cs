@@ -30,101 +30,14 @@ namespace SAModel.SAEditorCommon.UI
 			BuildNodeList();
 			comboBoxNode.SelectedIndex = index;
 			BuildVertexList();
+			BuildVertexWeightList();
 			BuildOpaqueMeshList();
 			BuildTranslucentMeshList();
 			this.textures = textures;
 			freeze = false;
 		}
 
-		#region Meshset label and material ID editing
-		#endregion
-
 		#region Mesh management
-
-		private void FixLabels()
-		{
-			List<string> labels = new List<string>();
-			int counter = 0;
-			foreach (NJS_MESHSET meshset in ((BasicAttach)editedModel).Mesh)
-			{
-				// Poly
-				counter = 0;
-				if (meshset.Poly != null)
-				{
-					if (!labels.Contains(meshset.PolyName))
-					{
-						counter = 0;
-						labels.Add(meshset.PolyName);
-					}
-					else
-					{
-						do
-						{
-							counter++;
-							meshset.PolyName += "_" + counter.ToString();
-						}
-						while (labels.Contains(meshset.PolyName));
-					}
-				}
-				// UV
-				counter = 0;
-				if (meshset.UV != null)
-				{
-					if (!labels.Contains(meshset.UVName))
-					{
-						counter = 0;
-						labels.Add(meshset.UVName);
-					}
-					else
-					{
-						do
-						{
-							counter++;
-							meshset.UVName += "_" + counter.ToString();
-						}
-						while (labels.Contains(meshset.UVName));
-					}
-				}
-				counter = 0;
-				if (meshset.VColor != null)
-				{
-					// VColor
-					if (!labels.Contains(meshset.VColorName))
-					{
-						counter = 0;
-						labels.Add(meshset.VColorName);
-					}
-					else
-					{
-						do
-						{
-							counter++;
-							meshset.VColorName += "_" + counter.ToString();
-						}
-						while (labels.Contains(meshset.VColorName));
-					}
-				}
-				counter = 0;
-				// Polynormal	
-				if (meshset.PolyNormal != null)
-				{
-					if (!labels.Contains(meshset.PolyNormalName))
-					{
-						counter = 0;
-						labels.Add(meshset.PolyNormalName);
-					}
-					else
-					{
-						do
-						{
-							counter++;
-							meshset.PolyNormalName += "_" + counter.ToString();
-						}
-						while (labels.Contains(meshset.PolyNormalName));
-					}
-				}
-			}
-		}
 
 		private void buttonResetTMeshes_Click(object sender, System.EventArgs e)
 		{
@@ -336,99 +249,149 @@ namespace SAModel.SAEditorCommon.UI
 		private void BuildVertexList()
 		{
 			listViewVertices.Items.Clear();
-			groupBoxVertexList.Enabled = editedModel != null;
+			groupBoxVertices.Enabled = false;
 			if (editedModel is GC.GCAttach gcmodel)
 			{
-				Dictionary<int, GCVertexSet> vertdata = new Dictionary<int, GCVertexSet>();
-				for (int i = 0; i < gcmodel.VertexData.Count; i++)
+				if (gcmodel.VertexData.Count > 0)
 				{
-					vertdata.Add(i, gcmodel.VertexData[i]);
-				}
-				foreach (KeyValuePair<int, GCVertexSet> verts in vertdata)
-				{
-					ListViewItem newvert = new ListViewItem(verts.Key.ToString());
-					GCVertexSet vx = verts.Value;
-					string maintype = "";
-					string subtype = "";
-					switch (vx.Attribute)
+					groupBoxVertices.Enabled = true;
+					Dictionary<int, GCVertexSet> vertdata = new Dictionary<int, GCVertexSet>();
+					for (int i = 0; i < gcmodel.VertexData.Count; i++)
 					{
-						case GCVertexAttribute.Position:
-							maintype += "Position";
-							break;
-						case GCVertexAttribute.Normal:
-							maintype += "Normal";
-							break;
-						case GCVertexAttribute.Color0:
-							maintype += "VColor";
-							break;
-						case GCVertexAttribute.Tex0:
-							maintype += "UV";
-							break;
+						vertdata.Add(i, gcmodel.VertexData[i]);
 					}
-					newvert.SubItems.Add(maintype);
-					newvert.SubItems.Add(vx.Data.Count.ToString());
-					switch (vx.DataType)
+					foreach (KeyValuePair<int, GCVertexSet> verts in vertdata)
 					{
-						case GCDataType.Signed16:
-							subtype += "S16, ";
-							break;
-						case GCDataType.Unsigned16:
-							subtype += "U16, ";
-							break;
-						case GCDataType.Signed8:
-							subtype += "S8, ";
-							break;
-						case GCDataType.Unsigned8:
-							subtype += "U8, ";
-							break;
-						case GCDataType.RGB565:
-							subtype += "RGB565, ";
-							break;
-						case GCDataType.RGB8:
-							subtype += "RGB8, ";
-							break;
-						case GCDataType.RGBA8:
-							subtype += "RGBA8, ";
-							break;
-						case GCDataType.Float32:
-							subtype += "F32, ";
-							break;
+						ListViewItem newvert = new ListViewItem(verts.Key.ToString());
+						GCVertexSet vx = verts.Value;
+						string maintype = "";
+						string subtype = "";
+						switch (vx.Attribute)
+						{
+							case GCVertexAttribute.Position:
+								maintype += "Position";
+								break;
+							case GCVertexAttribute.Normal:
+								maintype += "Normal";
+								break;
+							case GCVertexAttribute.Color0:
+								maintype += "VColor";
+								break;
+							case GCVertexAttribute.Tex0:
+								maintype += "UV";
+								break;
+						}
+						newvert.SubItems.Add(maintype);
+						newvert.SubItems.Add(vx.Data.Count.ToString());
+						switch (vx.DataType)
+						{
+							case GCDataType.Signed16:
+								subtype += "S16, ";
+								break;
+							case GCDataType.Unsigned16:
+								subtype += "U16, ";
+								break;
+							case GCDataType.Signed8:
+								subtype += "S8, ";
+								break;
+							case GCDataType.Unsigned8:
+								subtype += "U8, ";
+								break;
+							case GCDataType.RGB565:
+								subtype += "RGB565, ";
+								break;
+							case GCDataType.RGB8:
+								subtype += "RGB8, ";
+								break;
+							case GCDataType.RGBA8:
+								subtype += "RGBA8, ";
+								break;
+							case GCDataType.Float32:
+								subtype += "F32, ";
+								break;
+						}
+						switch (vx.StructType)
+						{
+							case GCStructType.Position_XY:
+								subtype += "XY";
+								break;
+							case GCStructType.Normal_NBT:
+								subtype += "NBT";
+								break;
+							case GCStructType.Normal_NBT3:
+								subtype += "NBT3";
+								break;
+							case GCStructType.Position_XYZ:
+							case GCStructType.Normal_XYZ:
+								subtype += "XYZ";
+								break;
+							case GCStructType.Color_RGB:
+								subtype += "RGB";
+								break;
+							case GCStructType.Color_RGBA:
+								subtype += "RGBA";
+								break;
+							case GCStructType.TexCoord_S:
+								subtype += "S";
+								break;
+							case GCStructType.TexCoord_ST:
+								subtype += "ST";
+								break;
+						}
+						newvert.SubItems.Add(subtype);
+						listViewVertices.Items.Add(newvert);
 					}
-					switch (vx.StructType)
-					{
-						case GCStructType.Position_XY:
-							subtype += "XY";
-							break;
-						case GCStructType.Normal_NBT:
-							subtype += "NBT";
-							break;
-						case GCStructType.Normal_NBT3:
-							subtype += "NBT3";
-							break;
-						case GCStructType.Position_XYZ:
-						case GCStructType.Normal_XYZ:
-							subtype += "XYZ";
-							break;
-						case GCStructType.Color_RGB:
-							subtype += "RGB";
-							break;
-						case GCStructType.Color_RGBA:
-							subtype += "RGBA";
-							break;
-						case GCStructType.TexCoord_S:
-							subtype += "S";
-							break;
-						case GCStructType.TexCoord_ST:
-							subtype += "ST";
-							break;
-					}
-					newvert.SubItems.Add(subtype);
-					listViewVertices.Items.Add(newvert);
 				}
 				listViewVertices.SelectedIndices.Clear();
 				listViewVertices.SelectedItems.Clear();
 				listViewVertices_SelectedIndexChanged(null, null);
 				listViewVertices.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+			}
+		}
+		private void BuildVertexWeightList()
+		{
+			listViewWeights.Items.Clear();
+			groupBoxWeightList.Enabled = false;
+			if (editedModel is GC.GCAttach gcmodel)
+			{
+				if (gcmodel.vertexSkinData.Count > 0)
+				{
+					groupBoxWeightList.Enabled = true;
+					Dictionary<int, GCSkinVertexSet> vertdata = new Dictionary<int, GCSkinVertexSet>();
+					for (int i = 0; i < gcmodel.vertexSkinData.Count; i++)
+					{
+						vertdata.Add(i, gcmodel.vertexSkinData[i]);
+					}
+					foreach (KeyValuePair<int, GCSkinVertexSet> weights in vertdata)
+					{
+						ListViewItem newvert = new ListViewItem(weights.Key.ToString());
+						GCSkinVertexSet wx = weights.Value;
+						string maintype = "Weight ";
+						switch (wx.elementType)
+						{
+							case GCSkinAttribute.StaticWeight:
+								maintype += "Static";
+								break;
+							case GCSkinAttribute.PartialWeightStart:
+								maintype += "Start";
+								break;
+							case GCSkinAttribute.PartialWeight:
+								maintype += "Middle";
+								break;
+							case GCSkinAttribute.WeightStructEndMarker:
+								maintype += "End";
+								break;
+						}
+						newvert.SubItems.Add(maintype);
+						newvert.SubItems.Add(wx.indexCount.ToString());
+						newvert.SubItems.Add(wx.startingIndex.ToString());
+						listViewWeights.Items.Add(newvert);
+					}
+				}
+				listViewWeights.SelectedIndices.Clear();
+				listViewWeights.SelectedItems.Clear();
+				listViewVertices_SelectedIndexChanged(null, null);
+				listViewWeights.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 			}
 		}
 		private void BuildOpaqueMeshList()
@@ -617,22 +580,23 @@ namespace SAModel.SAEditorCommon.UI
 				{
 					textBoxVertexName.Enabled = true;
 					textBoxVertexName.Text = gatt.VertexName;
+					textBoxWeightName.Enabled = true;
+					textBoxWeightName.Text = gatt.VertexSkinName;
 					textBoxOPolyName.Enabled = true;
 					textBoxOPolyName.Text = gatt.OpaqueMeshName;
 					textBoxTPolyName.Enabled = true;
 					textBoxTPolyName.Text = gatt.TranslucentMeshName;
-					//groupBoxMeshList.Enabled = true;
-					//BuildMeshsetList();
 				}
 			}
 			else
 			{
-				textBoxVertexName.Enabled = textBoxOPolyName.Enabled = textBoxTPolyName.Enabled = textBoxModelName.Enabled = textBoxModelRadius.Enabled = textBoxModelX.Enabled = textBoxModelY.Enabled = textBoxModelZ.Enabled = false;
-				textBoxModelName.Text = textBoxVertexName.Text = textBoxOPolyName.Text = textBoxTPolyName.Text = textBoxModelName.Text = textBoxModelRadius.Text = textBoxModelX.Text = textBoxModelY.Text = textBoxModelZ.Text = "";
+				textBoxVertexName.Enabled = textBoxWeightName.Enabled = textBoxOPolyName.Enabled = textBoxTPolyName.Enabled = textBoxModelName.Enabled = textBoxModelRadius.Enabled = textBoxModelX.Enabled = textBoxModelY.Enabled = textBoxModelZ.Enabled = false;
+				textBoxModelName.Text = textBoxVertexName.Text = textBoxWeightName.Text = textBoxOPolyName.Text = textBoxTPolyName.Text = textBoxModelName.Text = textBoxModelRadius.Text = textBoxModelX.Text = textBoxModelY.Text = textBoxModelZ.Text = "";
 				editedModel = null;
 			}
 			previousNodeIndex = comboBoxNode.SelectedIndex;
 			BuildVertexList();
+			BuildVertexWeightList();
 			BuildOpaqueMeshList();
 			BuildTranslucentMeshList();
 		}
@@ -676,6 +640,37 @@ namespace SAModel.SAEditorCommon.UI
 			toolStripStatusLabelInfo.Text = sb.ToString();
 		}
 
+		private void listViewWeights_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (listViewWeights.SelectedIndices.Count == 0)
+			{
+				return;
+			}
+			viewVertexDataToolStripMenuItem.Enabled = true;
+			GCSkinVertexSet selectedVerts = ((GC.GCAttach)editedModel).vertexSkinData[listViewWeights.SelectedItems[0].Index];
+			string weighttype = selectedVerts.elementType.ToString();
+			string weightsizetotal = selectedVerts.totalVertIndices.ToString();
+			string weightstart = selectedVerts.startingIndex.ToString();
+			string weightcount = selectedVerts.indexCount.ToString();
+			string weightposnrm = selectedVerts.DataNamePos;
+			string weightindex = selectedVerts.DataNameWeight;
+			StringBuilder sb = new StringBuilder();
+			sb.Append("Type: ");
+			sb.Append(weighttype);
+			sb.Append(", Size (Bytes):");
+			sb.Append(weightsizetotal);
+			sb.Append(", Starting Index:");
+			sb.Append(weightstart);
+			sb.Append(", Count:");
+			sb.Append(weightcount);
+			sb.Append(", Point Data:");
+			sb.Append(weightposnrm);
+			if (selectedVerts.elementType > GCSkinAttribute.StaticWeight && selectedVerts.elementType < GCSkinAttribute.WeightStructEndMarker)
+			sb.Append(", Weight Data:");
+			sb.Append(weightindex);
+			toolStripStatusLabelInfo.Text = sb.ToString();
+		}
+
 		private void openOParameterViewerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			GCMesh oMeshData = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
@@ -706,12 +701,34 @@ namespace SAModel.SAEditorCommon.UI
 			}
 		}
 
-		private void MshData_DoubleClick(object sender, EventArgs e)
+		private void OMeshData_DoubleClick(object sender, EventArgs e)
 		{
 			if (listViewOMeshes.SelectedItems.Count > 0)
 			{
-				GCMesh tMeshData = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+				GCMesh oMeshData = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+				using (GCModelParameterDataEditor de = new GCModelParameterDataEditor(oMeshData, textures))
+				{
+					de.ShowDialog(this);
+				}
+			}
+		}
+		private void TMeshData_DoubleClick(object sender, EventArgs e)
+		{
+			if (listViewTMeshes.SelectedItems.Count > 0)
+			{
+				GCMesh tMeshData = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewOMeshes.SelectedIndices[0]];
 				using (GCModelParameterDataEditor de = new GCModelParameterDataEditor(tMeshData, textures))
+				{
+					de.ShowDialog(this);
+				}
+			}
+		}
+		private void WeightData_DoubleClick(object sender, EventArgs e)
+		{
+			if (listViewWeights.SelectedItems.Count > 0)
+			{
+				GCSkinVertexSet weightData = ((GC.GCAttach)editedModel).vertexSkinData[listViewWeights.SelectedIndices[0]];
+				using (GCModelWeightDataEditor de = new GCModelWeightDataEditor(weightData))
 				{
 					de.ShowDialog(this);
 				}

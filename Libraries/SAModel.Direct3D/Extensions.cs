@@ -416,6 +416,10 @@ namespace SAModel.Direct3D
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
 		static VertexData[] VertexBuffer = new VertexData[32768];
 		static List<WeightData>[] WeightBuffer = new List<WeightData>[32768];
+		// Games that use Ginja weights have a larger buffer
+		static VertexData[] GinjaVertexBuffer = new VertexData[131070];
+		static List<WeightData>[] GinjaWeightBuffer = new List<WeightData>[131070];
+
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
 
 		public static List<Mesh> ProcessWeightedModel(this NJS_OBJECT obj)
@@ -603,7 +607,6 @@ namespace SAModel.Direct3D
 							// Store vertex in cache
 							var vertexId = chunk.NinjaFlags[i] & 0x0000FFFF;
 							var vertexCacheId = (int)(chunk.IndexOffset + vertexId);
-
 							if (chunk.WeightStatus == WeightStatus.Start)
 							{
 								// Add new vertex to cache
@@ -725,21 +728,21 @@ namespace SAModel.Direct3D
 							Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
 							for (int k = 0; k < strip.Indexes.Length; k++)
 							{
-									var v = new VertexData(
-										VertexBuffer[strip.Indexes[k]].Position,
-										VertexBuffer[strip.Indexes[k]].Normal,
-										hasVColor ? strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
-										hasUV ? strip.UVs[k] : null);
-									if (verts.Contains(v))
-										str.Indexes[k] = (ushort)verts.IndexOf(v);
-									else
-									{
-										weights.Add(WeightBuffer[strip.Indexes[k]]);
-										str.Indexes[k] = (ushort)verts.Count;
-										verts.Add(v);
-									}
+								var v = new VertexData(
+									VertexBuffer[strip.Indexes[k]].Position,
+									VertexBuffer[strip.Indexes[k]].Normal,
+									hasVColor ? strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
+									hasUV ? strip.UVs[k] : null);
+								if (verts.Contains(v))
+									str.Indexes[k] = (ushort)verts.IndexOf(v);
+								else
+								{
+									weights.Add(WeightBuffer[strip.Indexes[k]]);
+									str.Indexes[k] = (ushort)verts.Count;
+									verts.Add(v);
 								}
-								polys.Add(str);
+							}
+							polys.Add(str);
 						}
 						result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
 						MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
@@ -778,79 +781,69 @@ namespace SAModel.Direct3D
 		// WIP. This is in more of a complete state.
 		private static Mesh ProcessWeightedGinjaAttach(GC.GCAttach attach, MatrixStack transform, int mdlindex)
 		{
-			if (attach.vertexSkinData != null)
+			if (attach.vertexSkinData.Count != 0)
 			{
-				foreach (GC.GCSkinVertexSet chunk in attach.vertexSkinData)
+				for (int c = 0; c < attach.vertexSkinData.Count; c++)
 				{
-					if (VertexBuffer.Length < chunk.startingIndex + chunk.totalVertIndices)
+					GC.GCSkinVertexSet chunk = attach.vertexSkinData[c];
+					if (chunk.elementType != GC.GCSkinAttribute.WeightStructEndMarker)
 					{
-						Array.Resize(ref VertexBuffer, chunk.startingIndex + chunk.totalVertIndices);
-						Array.Resize(ref WeightBuffer, chunk.startingIndex + chunk.totalVertIndices);
-					}
-					if (attach.HasWeight)
-					{
-						for (int i = 0; i < chunk.indexCount; i++)
+						if (GinjaVertexBuffer.Length < chunk.startingIndex + chunk.totalVertIndices)
 						{
-							var weightshort = chunk.weightData[i].weight;
-							var weight = weightshort / (weightshort > 255 ? 65535f : 255f);
-							var origpos = chunk.posNrms[i].pos;
-							var newpos = new Vector3( origpos.X / 255f, origpos.X / 255f, origpos.X / 255f );
-
-							var position = (Vector3.TransformCoordinate(newpos, transform.Top) * weight).ToVertex();
-							var orignor =  chunk.posNrms[i].nrm;
-							var newnor = new Vector3(orignor.X / 255f, orignor.X / 255f, orignor.X / 255f);
-							var	normal = (Vector3.TransformNormal(newnor, transform.Top) * weight).ToVertex();
-
-							// Store vertex in cache
-							var vertexId = chunk.weightData[i].vertIndex;
-							var vertexCacheId = (int)(chunk.startingIndex + vertexId);
-
-							if (chunk.elementType == GC.GCSkinAttribute.PartialWeightStart)
+							Array.Resize(ref GinjaVertexBuffer, chunk.startingIndex + chunk.totalVertIndices);
+							Array.Resize(ref GinjaWeightBuffer, chunk.startingIndex + chunk.totalVertIndices);
+						}
+						if (chunk.elementType > GC.GCSkinAttribute.StaticWeight)
+						{
+							for (int i = 0; i < chunk.indexCount; i++)
 							{
+								var weightshort = chunk.weightData[i].weight;
+								var weight = weightshort / (weightshort > 255 ? 65535f : 255f);
+								var origpos = chunk.posNrms[i].pos;
+								var newpos = new Vector3(origpos.X / 255f, origpos.X / 255f, origpos.X / 255f);
+
+								var position = (Vector3.TransformCoordinate(newpos, transform.Top) * weight).ToVertex();
+								var orignor = chunk.posNrms[i].nrm;
+								var newnor = new Vector3(orignor.X / 255f, orignor.X / 255f, orignor.X / 255f);
+								var normal = (Vector3.TransformNormal(newnor, transform.Top) * weight).ToVertex();
+								// Store vertex in cache
+								var vertexId = chunk.weightData[i].vertIndex;
+								var vertexCacheId = (uint)(chunk.startingIndex + vertexId);
 								// Add new vertex to cache
-								VertexBuffer[vertexCacheId] = new VertexData(position, normal);
-								WeightBuffer[vertexCacheId] = new List<WeightData>
+								GinjaVertexBuffer[vertexId] = new VertexData(position, normal);
+								GinjaWeightBuffer[vertexId] = new List<WeightData>
 								{
 									new WeightData(mdlindex, newpos, newnor, weight)
 								};
 							}
-							else
+						}
+						else
+						{
+							for (int i = 0; i < chunk.indexCount; i++)
 							{
-								// Update cached vertex
-								var cacheVertex = VertexBuffer[vertexCacheId];
-								cacheVertex.Position += position;
-								cacheVertex.Normal += normal;
-								if (chunk.elementType == GC.GCSkinAttribute.WeightStructEndMarker)
-									cacheVertex.Normal = Vector3.Normalize(cacheVertex.Normal.ToVector3()).ToVertex();
-								VertexBuffer[vertexCacheId] = cacheVertex;
-								WeightBuffer[vertexCacheId].Add(new WeightData(mdlindex, newpos, newnor, weight));
+								var origpos = chunk.posNrms[i].pos.ToVector3();
+								var position = Vector3.TransformCoordinate(origpos, transform.Top).ToVertex();
+								var orignor = chunk.posNrms[i].nrm.ToVector3();
+								Vertex normal = Vector3.TransformNormal(orignor, transform.Top).ToVertex();
+								GinjaVertexBuffer[i + chunk.startingIndex] = new VertexData(position, normal);
+								GinjaWeightBuffer[i + chunk.startingIndex] = new List<WeightData>
+								{
+									new WeightData(mdlindex, origpos, orignor, 1)
+								};
 							}
 						}
 					}
-					else
-						for (int i = 0; i < chunk.indexCount; i++)
-						{
-							var origpos = chunk.posNrms[i].pos.ToVector3();
-							var position = Vector3.TransformCoordinate(origpos, transform.Top).ToVertex();
-							var orignor = chunk.posNrms[i].nrm.ToVector3();
-							Vertex normal = Vector3.TransformNormal(orignor, transform.Top).ToVertex();
-							VertexBuffer[i + chunk.startingIndex] = new VertexData(position, normal);
-							WeightBuffer[i + chunk.startingIndex] = new List<WeightData>
-							{
-								new WeightData(mdlindex, origpos, orignor, 1)
-							};
-						}
 				}
 			}
 			List<MeshInfo> result = new List<MeshInfo>();
 			List<List<WeightData>> weights = new List<List<WeightData>>();
-			var positions = attach.VertexData.Find(x => x.Attribute == GC.GCVertexAttribute.Position)?.Data;
+			var positions = attach.VertexData.Find(x => x.Attribute == GC.GCVertexAttribute.Normal)?.Data;
 			var normals = attach.VertexData.Find(x => x.Attribute == GC.GCVertexAttribute.Normal)?.Data;
 			var colors = attach.VertexData.Find(x => x.Attribute == GC.GCVertexAttribute.Color0)?.Data;
 			var uvs = attach.VertexData.Find(x => x.Attribute == GC.GCVertexAttribute.Tex0)?.Data;
-			if (attach.OpaqueMeshes != null)
+			if (attach.OpaqueMeshes.Count > 0)
 				result = ProcessGinjaPolyList(attach.OpaqueMeshes, 0, positions, normals, colors, uvs, 0, weights);
-			if (attach.TranslucentMeshes != null)
+			if (attach.TranslucentMeshes.Count > 0)
 				result.AddRange(ProcessGinjaPolyList(attach.TranslucentMeshes, 0, positions, normals, colors, uvs, 0, weights));
 			attach.MeshInfo = result.ToArray();
 			if (attach.MeshInfo.All(a => a.Vertices.Length == 0))
@@ -954,7 +947,7 @@ namespace SAModel.Direct3D
 
 				// Creating the vertex data
 				var vertData = new List<VertexData>();
-				var hasVerts = positions != null;
+				var hasPoints = positions != null;
 				var hasNormals = normals != null;
 				var hasColors = colors != null;
 				var hasUVs = uvs != null;
@@ -963,18 +956,16 @@ namespace SAModel.Direct3D
 				{
 					var l = corners[j];
 					var v = new VertexData(
-						hasVerts ? (GC.Vector3)positions[l.PositionIndex] : new GC.Vector3(0, 0, 0),
-						hasNormals ? (GC.Vector3)normals[l.NormalIndex] : new GC.Vector3(0, 1, 0),
+						hasPoints ? GinjaVertexBuffer[l.PositionIndex].Position.ToGCVector3() : new GC.Vector3(0, 0, 0),
+						hasNormals ? GinjaVertexBuffer[l.NormalIndex].Normal.ToGCVector3() : new GC.Vector3(0,1,0),
 						hasColors ? (GC.Color)colors[l.Color0Index] : new GC.Color(255, 255, 255, 255),
 						hasUVs ? (GC.UV)uvs[l.UV0Index] : new GC.UV(0, 0),
 						hasUVs ? scale : GC.GCUVScale.Default
 						);
 					if (vertData.Contains(v))
 					{
-						if (hasVerts)
-						l.PositionIndex = (ushort)vertData.IndexOf(v);
-						if (hasNormals)
-						l.NormalIndex = (ushort)vertData.IndexOf(v);
+						//l.PositionIndex = (ushort)vertData.IndexOf(v);
+						//l.NormalIndex = (ushort)vertData.IndexOf(v);
 						if (hasColors)
 						l.Color0Index = (ushort)vertData.IndexOf(v);
 						if (hasUVs)
@@ -982,16 +973,15 @@ namespace SAModel.Direct3D
 					}
 					else
 					{
-						weights.Add(WeightBuffer[l.PositionIndex]);
-						if (hasVerts)
-						l.PositionIndex = (ushort)vertData.Count();
+						//weights.Add(GinjaWeightBuffer[l.PositionIndex]);
+						//l.PositionIndex = (ushort)vertData.Count();
 						vertData.Add(v);
 					}
 				}
 				result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), vertData.ToArray(), hasUVs, hasColors));
 				MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
 			}
-				return result;
+			return result;
 		}
 		public static void UpdateWeightedModel(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes)
 		{

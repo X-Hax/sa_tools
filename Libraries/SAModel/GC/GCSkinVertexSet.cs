@@ -130,12 +130,12 @@ namespace SAModel.GC
 			result.Append(totalVertIndices);
 			result.Append(", ");
 			result.Append(startingIndex);
-			result.Append(" }, {");
+			result.Append(", ");
 			result.Append(indexCount);
 			result.Append(", ");
-			result.Append(posNrms != null? DataNamePos: "NULL");
+			result.Append(posNrms.Count > 0 ? DataNamePos: "NULL");
 			result.Append(", ");
-			result.Append(weightData != null? DataNameWeight : "NULL");
+			result.Append(weightData.Count > 0  ? DataNameWeight : "NULL");
 			result.Append(" }");
 
 			return result.ToString();
