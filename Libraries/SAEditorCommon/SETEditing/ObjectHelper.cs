@@ -43,7 +43,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			if (ModelCache.TryGetValue(file, out NJS_OBJECT value))
 				return value;
 			NJS_OBJECT model = new ModelFile(file).Model;
-			ModelCache.Add(file, model);
+			ModelCache.TryAdd(file, model);
 			return model;
 		}
 
@@ -54,7 +54,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			if (MotionCache.TryGetValue(file, out NJS_MOTION value))
 				return value;
 			NJS_MOTION motion = NJS_MOTION.Load(file);
-			MotionCache.Add(file, motion);
+			MotionCache.TryAdd(file, motion);
 			return motion;
 		}
 
@@ -68,7 +68,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			for (int i = 0; i < models.Length; i++)
 				if (models[i].Attach != null)
 					Meshes[i] = models[i].Attach.CreateD3DMesh();
-			MeshCache.Add(model, Meshes);
+			MeshCache.TryAdd(model, Meshes);
 			return Meshes;
 		}
 
@@ -107,7 +107,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 						}
 					}
 				}
-				PartialTexlistCache.Add(texnames.Name, texlist.ToArray());
+				PartialTexlistCache.TryAdd(texnames.Name, texlist.ToArray());
 				return PartialTexlistCache[texnames.Name];
 			}
 		}
@@ -150,7 +150,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 						}
 					}
 				}
-				PartialTexlistCache.Add(texnames.Name, texlist.ToArray());
+				PartialTexlistCache.TryAdd(texnames.Name, texlist.ToArray());
 				return PartialTexlistCache[texnames.Name];
 			}
 		}
