@@ -731,22 +731,19 @@ namespace SAModel
 
 		public static NJS_MOTION Load(string filename, int nummodels = -1)
 		{
-			bool be = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
-			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
+			ulong magic = BitConverter.ToUInt64(file, 0) & FormatMask;
 			if (magic == SAANIM)
 			{
 				byte version = file[7];
 				if (version > CurrentVersion)
 				{
-					ByteConverter.BigEndian = be;
 					throw new FormatException("Not a valid SAANIM file.");
 				}
 				string description = null;
 				string actionName = null;
 				string objectName = null;
-				int aniaddr = ByteConverter.ToInt32(file, 8);
+				int aniaddr = BitConverter.ToInt32(file, 8);
 				Dictionary<int, string> labels = new Dictionary<int, string>();
 				int tmpaddr = BitConverter.ToInt32(file, 0xC);
 				if (version >= 2)
@@ -756,8 +753,8 @@ namespace SAModel
 						bool finished = false;
 						while (!finished)
 						{
-							ChunkTypes type = (ChunkTypes)ByteConverter.ToUInt32(file, tmpaddr);
-							int chunksz = ByteConverter.ToInt32(file, tmpaddr + 4);
+							ChunkTypes type = (ChunkTypes)BitConverter.ToUInt32(file, tmpaddr);
+							int chunksz = BitConverter.ToInt32(file, tmpaddr + 4);
 							int nextchunk = tmpaddr + 8 + chunksz;
 							tmpaddr += 8;
 							byte[] chunk = new byte[chunksz];
@@ -766,10 +763,10 @@ namespace SAModel
 							switch (type)
 							{
 								case ChunkTypes.Label:
-									while (ByteConverter.ToInt64(chunk, chunkaddr) != -1)
+									while (BitConverter.ToInt64(chunk, chunkaddr) != -1)
 									{
-										labels.Add(ByteConverter.ToInt32(chunk, chunkaddr),
-											chunk.GetCString(ByteConverter.ToInt32(chunk, chunkaddr + 4)));
+										labels.Add(BitConverter.ToInt32(chunk, chunkaddr),
+											chunk.GetCString(BitConverter.ToInt32(chunk, chunkaddr + 4)));
 										chunkaddr += 8;
 									}
 									break;
@@ -799,24 +796,20 @@ namespace SAModel
 					nummodels = BitConverter.ToInt32(file, 0x10);
 				else if (nummodels == -1)
 				{
-					ByteConverter.BigEndian = be;
 					throw new NotImplementedException("Cannot open version 0 animations without a model!");
 				}
+				ByteConverter.SetBigEndian(false);
 				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, nummodels & int.MaxValue, labels, nummodels < 0, shortcheck: false) { Description = description, ActionName = actionName, ObjectName = objectName };
-				ByteConverter.BigEndian = be;
+				ByteConverter.RestoreBigEndian();
 				return anim;
 			}
-			ByteConverter.BigEndian = be;
 			throw new FormatException("Not a valid SAANIM file.");
 		}
 
 		public static bool CheckAnimationFile(string filename)
 		{
-			bool be = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
-			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
-			ByteConverter.BigEndian = be;
+			ulong magic = BitConverter.ToUInt64(file, 0) & FormatMask;
 			if (magic == SAANIM)
 				return file[7] <= CurrentVersion;
 			return false;
@@ -1445,7 +1438,7 @@ namespace SAModel
 				result.Align(4);
 				posoffs[0] = imageBase + (uint)result.Count;
 				posframes[0] = 1;
-				result.AddRange(ByteConverter.GetBytes(0));
+				result.AddRange(BitConverter.GetBytes(0));
 				Vertex temp = new Vertex(0.0f, 0.0f, 0.0f);
 				result.AddRange(temp.GetBytes());
 			}
@@ -2864,20 +2857,20 @@ namespace SAModel
 
 		public void Save(string filename, bool nometa = false)
 		{
-			bool be = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = false;
 			List<byte> file = new List<byte>();
-			file.AddRange(ByteConverter.GetBytes(SAANIMVer));
+			file.AddRange(BitConverter.GetBytes(SAANIMVer));
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
+			ByteConverter.SetBigEndian(false);
 			byte[] anim = GetBytes(0x14, labels, out uint addr);
-			file.AddRange(ByteConverter.GetBytes(addr + 0x14));
+			ByteConverter.RestoreBigEndian();
+			file.AddRange(BitConverter.GetBytes(addr + 0x14));
 			file.Align(0x10);
-			file.AddRange(ByteConverter.GetBytes(ModelParts | (ShortRot ? int.MinValue : 0)));
+			file.AddRange(BitConverter.GetBytes(ModelParts | (ShortRot ? int.MinValue : 0)));
 			file.Align(0x14);
 			file.AddRange(anim);
 			file.Align(4);
 			file.RemoveRange(0xC, 4);
-			file.InsertRange(0xC, ByteConverter.GetBytes(file.Count + 4));
+			file.InsertRange(0xC, BitConverter.GetBytes(file.Count + 4));
 			if (labels.Count > 0 && !nometa)
 			{
 				List<byte> chunk = new List<byte>((labels.Count * 8) + 8);
@@ -2885,16 +2878,16 @@ namespace SAModel
 				List<byte> strbytes = new List<byte>();
 				foreach (KeyValuePair<string, uint> label in labels)
 				{
-					chunk.AddRange(ByteConverter.GetBytes(label.Value));
-					chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
+					chunk.AddRange(BitConverter.GetBytes(label.Value));
+					chunk.AddRange(BitConverter.GetBytes(straddr + strbytes.Count));
 					strbytes.AddRange(Encoding.UTF8.GetBytes(label.Key));
 					strbytes.Add(0);
 					strbytes.Align(4);
 				}
-				chunk.AddRange(ByteConverter.GetBytes(-1L));
+				chunk.AddRange(BitConverter.GetBytes(-1L));
 				chunk.AddRange(strbytes);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Label));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
+				file.AddRange(BitConverter.GetBytes((uint)ChunkTypes.Label));
+				file.AddRange(BitConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
 				if (!string.IsNullOrEmpty(Description))
 				{
@@ -2902,8 +2895,8 @@ namespace SAModel
 					chunkd.AddRange(Encoding.UTF8.GetBytes(Description));
 					chunkd.Add(0);
 					chunkd.Align(4);
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
-					file.AddRange(ByteConverter.GetBytes(chunkd.Count));
+					file.AddRange(BitConverter.GetBytes((uint)ChunkTypes.Description));
+					file.AddRange(BitConverter.GetBytes(chunkd.Count));
 					file.AddRange(chunkd);
 				}
 				if (!string.IsNullOrEmpty(ActionName))
@@ -2912,8 +2905,8 @@ namespace SAModel
 					chunkd.AddRange(Encoding.UTF8.GetBytes(ActionName));
 					chunkd.Add(0);
 					chunkd.Align(4);
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.ActionName));
-					file.AddRange(ByteConverter.GetBytes(chunkd.Count));
+					file.AddRange(BitConverter.GetBytes((uint)ChunkTypes.ActionName));
+					file.AddRange(BitConverter.GetBytes(chunkd.Count));
 					file.AddRange(chunkd);
 				}
 				if (!string.IsNullOrEmpty(ObjectName))
@@ -2922,15 +2915,14 @@ namespace SAModel
 					chunkd.AddRange(Encoding.UTF8.GetBytes(ObjectName));
 					chunkd.Add(0);
 					chunkd.Align(4);
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.ObjectName));
-					file.AddRange(ByteConverter.GetBytes(chunkd.Count));
+					file.AddRange(BitConverter.GetBytes((uint)ChunkTypes.ObjectName));
+					file.AddRange(BitConverter.GetBytes(chunkd.Count));
 					file.AddRange(chunkd);
 				}
 			}
-			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
+			file.AddRange(BitConverter.GetBytes((uint)ChunkTypes.End));
 			file.AddRange(new byte[4]);
 			File.WriteAllBytes(filename, file.ToArray());
-			ByteConverter.BigEndian = be;
 		}
 	}
 
@@ -2967,9 +2959,8 @@ namespace SAModel
 		public string PointName;
 		public string QuaternionName;
 		public int NbKeyframes;
-		public AnimModelData()
-		{
-		}
+
+		public AnimModelData()	{ }
 
 		public Vertex GetPosition(float frame)
 		{

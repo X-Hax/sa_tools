@@ -40,15 +40,11 @@ namespace SAModel
 		private static BigEndianResult CheckPointerBigEndian(byte[] data, int address)
 		{
 			var result = BigEndianResult.CantTell;
-			// Back up Big Endian mode
-			var bk = ByteConverter.BigEndian;
-			// Set Big Endian mode
-			ByteConverter.BigEndian = true;
-			
+		
 			// Get Little Endian version
 			var pntLittle = BitConverter.ToUInt32(data, address);
 			// Get Big Endian version
-			var pngBig = ByteConverter.ToUInt32(data, address);
+			var pngBig = ByteConverter.ToUInt32BE(data, address);
 			
 			if (pntLittle > pngBig)
 			{
@@ -61,8 +57,6 @@ namespace SAModel
 				result = BigEndianResult.LittleEndian;
 			}
 
-			// Restore Big Endian mode
-			ByteConverter.BigEndian = bk;
 			return result;
 		}
 
@@ -79,7 +73,7 @@ namespace SAModel
 			var sizeIsLittleEndian = true; // In Gamecube games, size can be either Big or Little Endian.
 			var chunks = new List<NinjaDataChunk>();
 			// Back up Big Endian mode
-			var bigEndianBk = ByteConverter.BigEndian;
+			ByteConverter.BackupBigEndian();
 			
 			// Read the file until the end
 			while (startOffset < data.Length - 8) // 8 is the size of chunk ID + chunk size
@@ -112,8 +106,7 @@ namespace SAModel
 				{
 					// This check is done because in PSO GC chunk size is in Little Endian despite the rest of the data being Big Endian.
 					// First, determine whether size is Big Endian or not.
-					ByteConverter.BigEndian = true;
-					sizeIsLittleEndian = BitConverter.ToUInt32(data, startOffset + 4) < ByteConverter.ToUInt32(data, startOffset + 4);
+					sizeIsLittleEndian = BitConverter.ToUInt32(data, startOffset + 4) < ByteConverter.ToUInt32BE(data, startOffset + 4);
 					// Then, check if the actual data is Big Endian. Unfortunately this is just guessing so it may not always work.
 					// startoffset + 8 is where the data begins
 					
@@ -138,15 +131,17 @@ namespace SAModel
 						case NinjaBinaryChunkType.Motion: // Number of frames
 						case NinjaBinaryChunkType.SimpleShapeMotion: // Number of frames
 						case NinjaBinaryChunkType.Texlist: // Number of texnames
-							ByteConverter.BigEndian = BitConverter.ToUInt32(data, startOffset + 12) > ByteConverter.ToUInt32(data, startOffset + 12);
+							if (BitConverter.ToUInt32(data, startOffset + 12) != 0)
+								ByteConverter.BigEndian = BitConverter.ToUInt32(data, startOffset + 12) > ByteConverter.ToUInt32BE(data, startOffset + 12);
+							else // Sometimes it's 0!! PSOGC_EP3\bm_obj_lobby_main\lobby_egg_kago.gj
+								goto default;
 							break;
-						default: // Old check
-							ByteConverter.BigEndian = BitConverter.ToUInt32(data, startOffset + 8) > ByteConverter.ToUInt32(data, startOffset + 8);
+						default: // Old check if everything else fails
+							ByteConverter.BigEndian = BitConverter.ToUInt32(data, startOffset + 8) > ByteConverter.ToUInt32BE(data, startOffset + 8);
 							break;							
 					}
 				}
-				
-				var size = sizeIsLittleEndian ? BitConverter.ToInt32(data, startOffset + 4) : ByteConverter.ToInt32(data, startOffset + 4);
+				var size = sizeIsLittleEndian ? BitConverter.ToInt32(data, startOffset + 4) : ByteConverter.ToInt32BE(data, startOffset + 4);
 				// Add the chunk to the list to process
 				chunks.Add(new NinjaDataChunk(idType, new byte[size]));
 				Array.Copy(data, startOffset + 8, chunks[currentChunk].Data, 0, chunks[currentChunk].Data.Length);
@@ -243,9 +238,9 @@ namespace SAModel
 
 				}
 			}
-			
+
 			// Restore Big Endian mode
-			ByteConverter.BigEndian = bigEndianBk;
+			ByteConverter.RestoreBigEndian();
 		}
 
 		private NinjaBinaryChunkType IdentifyChunk(byte[] data, int offset)
@@ -264,7 +259,6 @@ namespace SAModel
 			{
 				// Implemented chunk types
 				case "NJBM":
-				case "GJBM":
 					return NinjaBinaryChunkType.BasicModel;
 				case "NJCM":
 				case "GJCM":

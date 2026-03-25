@@ -39,10 +39,8 @@ namespace SAModel
 
 		public ModelFile(byte[] file, string filename = null)
 		{
-			int tmpaddr;
-			bool be = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = false;
-			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
+			int tmpaddr;			
+			ulong magic = BitConverter.ToUInt64(file, 0) & FormatMask;
 			byte version = file[7];
 			if (version > CurrentVersion)
 				throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
@@ -54,15 +52,15 @@ namespace SAModel
 			{
 				if (version == 1)
 				{
-					tmpaddr = ByteConverter.ToInt32(file, 0x14);
+					tmpaddr = BitConverter.ToInt32(file, 0x14);
 					if (tmpaddr != 0)
 					{
-						int addr = ByteConverter.ToInt32(file, tmpaddr);
+						int addr = BitConverter.ToInt32(file, tmpaddr);
 						while (addr != -1)
 						{
-							labels.Add(addr, file.GetCString(ByteConverter.ToInt32(file, tmpaddr + 4)));
+							labels.Add(addr, file.GetCString(BitConverter.ToInt32(file, tmpaddr + 4)));
 							tmpaddr += 8;
-							addr = ByteConverter.ToInt32(file, tmpaddr);
+							addr = BitConverter.ToInt32(file, tmpaddr);
 						}
 					}
 				}
@@ -77,19 +75,21 @@ namespace SAModel
 					default:
 						throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 				}
-				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels, attaches);
+				ByteConverter.SetBigEndian(false);
+				Model = new NJS_OBJECT(file, BitConverter.ToInt32(file, 8), 0, Format, labels, attaches);
+				ByteConverter.RestoreBigEndian();
 				if (filename != null)
 				{
-					tmpaddr = ByteConverter.ToInt32(file, 0xC);
+					tmpaddr = BitConverter.ToInt32(file, 0xC);
 					if (tmpaddr != 0)
 					{
 						List<string> animfiles = new List<string>();
-						int addr = ByteConverter.ToInt32(file, tmpaddr);
+						int addr = BitConverter.ToInt32(file, tmpaddr);
 						while (addr != -1)
 						{
 							animfiles.Add(file.GetCString(addr));
 							tmpaddr += 4;
-							addr = ByteConverter.ToInt32(file, tmpaddr);
+							addr = BitConverter.ToInt32(file, tmpaddr);
 						}
 						animationFiles = animfiles.ToArray();
 					}
@@ -112,14 +112,14 @@ namespace SAModel
 			else
 			{
 				animationFiles = new string[0];
-				tmpaddr = ByteConverter.ToInt32(file, 0xC);
+				tmpaddr = BitConverter.ToInt32(file, 0xC);
 				if (tmpaddr != 0)
 				{
 					bool finished = false;
 					while (!finished)
 					{
-						ChunkTypes type = (ChunkTypes)ByteConverter.ToUInt32(file, tmpaddr);
-						int chunksz = ByteConverter.ToInt32(file, tmpaddr + 4);
+						ChunkTypes type = (ChunkTypes)BitConverter.ToUInt32(file, tmpaddr);
+						int chunksz = BitConverter.ToInt32(file, tmpaddr + 4);
 						int nextchunk = tmpaddr + 8 + chunksz;
 						tmpaddr += 8;
 						if (version == 2)
@@ -127,17 +127,17 @@ namespace SAModel
 							switch (type)
 							{
 								case ChunkTypes.Label:
-									while (ByteConverter.ToInt64(file, tmpaddr) != -1)
+									while (BitConverter.ToInt64(file, tmpaddr) != -1)
 									{
-										labels.Add(ByteConverter.ToInt32(file, tmpaddr), file.GetCString(ByteConverter.ToInt32(file, tmpaddr + 4)));
+										labels.Add(BitConverter.ToInt32(file, tmpaddr), file.GetCString(BitConverter.ToInt32(file, tmpaddr + 4)));
 										tmpaddr += 8;
 									}
 									break;
 								case ChunkTypes.Animation:
 									List<string> animfiles = new List<string>();
-									while (ByteConverter.ToInt32(file, tmpaddr) != -1)
+									while (BitConverter.ToInt32(file, tmpaddr) != -1)
 									{
-										animfiles.Add(file.GetCString(ByteConverter.ToInt32(file, tmpaddr)));
+										animfiles.Add(file.GetCString(BitConverter.ToInt32(file, tmpaddr)));
 										tmpaddr += 4;
 									}
 									animationFiles = animfiles.ToArray();
@@ -167,18 +167,18 @@ namespace SAModel
 							switch (type)
 							{
 								case ChunkTypes.Label:
-									while (ByteConverter.ToInt64(chunk, chunkaddr) != -1)
+									while (BitConverter.ToInt64(chunk, chunkaddr) != -1)
 									{
-										labels.Add(ByteConverter.ToInt32(chunk, chunkaddr),
-											chunk.GetCString(ByteConverter.ToInt32(chunk, chunkaddr + 4)));
+										labels.Add(BitConverter.ToInt32(chunk, chunkaddr),
+											chunk.GetCString(BitConverter.ToInt32(chunk, chunkaddr + 4)));
 										chunkaddr += 8;
 									}
 									break;
 								case ChunkTypes.Animation:
 									List<string> animchunks = new List<string>();
-									while (ByteConverter.ToInt32(chunk, chunkaddr) != -1)
+									while (BitConverter.ToInt32(chunk, chunkaddr) != -1)
 									{
-										animchunks.Add(chunk.GetCString(ByteConverter.ToInt32(chunk, chunkaddr)));
+										animchunks.Add(chunk.GetCString(BitConverter.ToInt32(chunk, chunkaddr)));
 										chunkaddr += 4;
 									}
 									animationFiles = animchunks.ToArray();
@@ -224,36 +224,38 @@ namespace SAModel
 					default:
 						throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 				}
-				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels, attaches);
+				ByteConverter.SetBigEndian(false);
+				Model = new NJS_OBJECT(file, BitConverter.ToInt32(file, 8), 0, Format, labels, attaches);
+				ByteConverter.RestoreBigEndian();
 				var nodedict = Model.EnumerateObjects().ToDictionary(a => a.Name);
 				if (wght != null)
 				{
-					int addr = ByteConverter.ToInt32(wght, 0);
+					int addr = BitConverter.ToInt32(wght, 0);
 					int off = 4;
 					while (addr != -1)
 					{
 						var mdl = nodedict[labels[addr]].Attach;
-						int vcnt = ByteConverter.ToInt32(wght, off);
+						int vcnt = BitConverter.ToInt32(wght, off);
 						off += 4;
 						mdl.VertexWeights = new Dictionary<int, List<VertexWeight>>(vcnt);
 						for (int vi = 0; vi < vcnt; vi++)
 						{
-							int ind = ByteConverter.ToInt32(wght, off);
+							int ind = BitConverter.ToInt32(wght, off);
 							off += 4;
-							int wcnt = ByteConverter.ToInt32(wght, off);
+							int wcnt = BitConverter.ToInt32(wght, off);
 							off += 4;
 							var weights = new List<VertexWeight>(wcnt);
 							for (int wi = 0; wi < wcnt; wi++)
 							{
 								weights.Add(new VertexWeight(
-									nodedict[labels[ByteConverter.ToInt32(wght, off)]],
-									ByteConverter.ToInt32(wght, off + 4),
-									ByteConverter.ToSingle(wght, off + 8)));
+									nodedict[labels[BitConverter.ToInt32(wght, off)]],
+									BitConverter.ToInt32(wght, off + 4),
+									BitConverter.ToSingle(wght, off + 8)));
 								off += 12;
 							}
 							mdl.VertexWeights.Add(ind, weights);
 						}
-						addr = ByteConverter.ToInt32(wght, off);
+						addr = BitConverter.ToInt32(wght, off);
 						off += 4;
 					}
 				}
@@ -299,7 +301,6 @@ namespace SAModel
 					Animations = anims.AsReadOnly();
 				}
 			}
-			ByteConverter.BigEndian = be;
 		}
 
 		public ModelFile(ModelFormat format, NJS_OBJECT model, string basePath, params string[] animationFiles)
@@ -353,11 +354,10 @@ namespace SAModel
 
 		public static bool CheckModelFile(string filename)
 		{
-			bool be = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
-			ulong format = ByteConverter.ToUInt64(file, 0) & FormatMask;
-			ByteConverter.BigEndian = be;
+			if (file.Length < 8)
+				return false;
+			ulong format = BitConverter.ToUInt64(file, 0) & FormatMask;
 			switch (format)
 			{
 				case SA1MDL:
@@ -374,7 +374,7 @@ namespace SAModel
 		{
 			uint ninjaMagic;
 			uint imageBase = (uint)(useNinjaMetaData ? 0 : 0x10);
-			bool be = ByteConverter.BigEndian;
+			ByteConverter.BackupBigEndian();
 			if (!useNinjaMetaData)
 				ByteConverter.BigEndian = false;
 			List<byte> file = new List<byte>();
@@ -556,7 +556,7 @@ namespace SAModel
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 				file.AddRange(new byte[4]);
 			}
-			ByteConverter.BigEndian = be;
+			ByteConverter.RestoreBigEndian();
 
 			return file.ToArray();
 		}

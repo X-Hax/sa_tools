@@ -158,10 +158,8 @@ namespace SAModel
 
 		public static LandTable LoadFromFile(string filename)
 		{
-			bool be = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
-			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
+			ulong magic = BitConverter.ToUInt64(file, 0) & FormatMask;
 			byte version = file[7];
 			if (version > CurrentVersion)
 				throw new FormatException("Not a valid SA1LVL/SA2LVL file.");
@@ -172,29 +170,29 @@ namespace SAModel
 			{
 				if (version == 1)
 				{
-					int tmpaddr = ByteConverter.ToInt32(file, 0xC);
+					int tmpaddr = BitConverter.ToInt32(file, 0xC);
 					if (tmpaddr != 0)
 					{
-						int addr = ByteConverter.ToInt32(file, tmpaddr);
+						int addr = BitConverter.ToInt32(file, tmpaddr);
 						while (addr != -1)
 						{
-							labels.Add(addr, file.GetCString(ByteConverter.ToInt32(file, tmpaddr + 4)));
+							labels.Add(addr, file.GetCString(BitConverter.ToInt32(file, tmpaddr + 4)));
 							tmpaddr += 8;
-							addr = ByteConverter.ToInt32(file, tmpaddr);
+							addr = BitConverter.ToInt32(file, tmpaddr);
 						}
 					}
 				}
 			}
 			else
 			{
-				int tmpaddr = ByteConverter.ToInt32(file, 0xC);
+				int tmpaddr = BitConverter.ToInt32(file, 0xC);
 				if (tmpaddr != 0)
 				{
 					bool finished = false;
 					while (!finished)
 					{
-						ChunkTypes type = (ChunkTypes)ByteConverter.ToUInt32(file, tmpaddr);
-						int chunksz = ByteConverter.ToInt32(file, tmpaddr + 4);
+						ChunkTypes type = (ChunkTypes)BitConverter.ToUInt32(file, tmpaddr);
+						int chunksz = BitConverter.ToInt32(file, tmpaddr + 4);
 						int nextchunk = tmpaddr + 8 + chunksz;
 						tmpaddr += 8;
 						if (version == 2)
@@ -202,9 +200,9 @@ namespace SAModel
 							switch (type)
 							{
 								case ChunkTypes.Label:
-									while (ByteConverter.ToInt64(file, tmpaddr) != -1)
+									while (BitConverter.ToInt64(file, tmpaddr) != -1)
 									{
-										labels.Add(ByteConverter.ToInt32(file, tmpaddr), file.GetCString(ByteConverter.ToInt32(file, tmpaddr + 4)));
+										labels.Add(BitConverter.ToInt32(file, tmpaddr), file.GetCString(BitConverter.ToInt32(file, tmpaddr + 4)));
 										tmpaddr += 8;
 									}
 									break;
@@ -229,10 +227,10 @@ namespace SAModel
 							switch (type)
 							{
 								case ChunkTypes.Label:
-									while (ByteConverter.ToInt64(chunk, chunkaddr) != -1)
+									while (BitConverter.ToInt64(chunk, chunkaddr) != -1)
 									{
-										labels.Add(ByteConverter.ToInt32(chunk, chunkaddr),
-											chunk.GetCString(ByteConverter.ToInt32(chunk, chunkaddr + 4)));
+										labels.Add(BitConverter.ToInt32(chunk, chunkaddr),
+											chunk.GetCString(BitConverter.ToInt32(chunk, chunkaddr + 4)));
 										chunkaddr += 8;
 									}
 									break;
@@ -256,50 +254,37 @@ namespace SAModel
 					}
 				}
 			}
-			if (magic == SA1LVL)
+			LandTableFormat tableFormat;
+			switch (magic)
 			{
-				LandTable table = new LandTable(file, ByteConverter.ToInt32(file, 8), 0, LandTableFormat.SA1, labels)
-				{
-					Author = author,
-					Description = description,
-					Metadata = meta
-				};
-				ByteConverter.BigEndian = be;
-				return table;
+				case SA1LVL:
+					tableFormat = LandTableFormat.SA1; // LandTableFormat.SADX is not used in .sa1lvl
+					break;
+				case SA2LVL:
+					tableFormat = LandTableFormat.SA2;
+					break;
+				case SA2BLVL:
+					tableFormat = LandTableFormat.SA2B;
+					break;
+				default:
+					throw new FormatException("Not a valid SA1LVL/SA2LVL file.");
+
 			}
-			if (magic == SA2LVL)
+			ByteConverter.SetBigEndian(false);
+			LandTable table = new LandTable(file, BitConverter.ToInt32(file, 8), 0, tableFormat, labels)
 			{
-				LandTable table = new LandTable(file, ByteConverter.ToInt32(file, 8), 0, LandTableFormat.SA2, labels)
-				{
-					Author = author,
-					Description = description,
-					Metadata = meta
-				};
-				ByteConverter.BigEndian = be;
-				return table;
-			}
-			if (magic == SA2BLVL)
-			{
-				LandTable table = new LandTable(file, ByteConverter.ToInt32(file, 8), 0, LandTableFormat.SA2B, labels)
-				{
-					Author = author,
-					Description = description,
-					Metadata = meta
-				};
-				ByteConverter.BigEndian = be;
-				return table;
-			}
-			ByteConverter.BigEndian = be;
-			throw new FormatException("Not a valid SA1LVL/SA2LVL file.");
+				Author = author,
+				Description = description,
+				Metadata = meta
+			};
+			ByteConverter.RestoreBigEndian();
+			return table;
 		}
 
 		public static bool CheckLevelFile(string filename)
 		{
-			bool be = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
-			ulong format = ByteConverter.ToUInt64(file, 0) & FormatMask;
-			ByteConverter.BigEndian = be;
+			ulong format = BitConverter.ToUInt64(file, 0) & FormatMask;
 			switch (format)
 			{
 				case SA1LVL:
@@ -597,8 +582,6 @@ namespace SAModel
 
 		public void SaveToFile(string filename, LandTableFormat format, bool nometa = false)
 		{
-			bool be = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = false;
 			if (format == LandTableFormat.SADX)
 				format = LandTableFormat.SA1;
 			List<byte> file = new List<byte>();
@@ -617,11 +600,13 @@ namespace SAModel
 				default:
 					throw new ArgumentException("Cannot save " + format + " format levels to file!", "format");
 			}
-			file.AddRange(ByteConverter.GetBytes(magic));
+			file.AddRange(BitConverter.GetBytes(magic));
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
+			ByteConverter.SetBigEndian(false);
 			byte[] lvl = GetBytes(0x10, format, labels, out uint addr);
-			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
-			file.AddRange(ByteConverter.GetBytes(lvl.Length + 0x10));
+			ByteConverter.RestoreBigEndian();
+			file.AddRange(BitConverter.GetBytes(addr + 0x10));
+			file.AddRange(BitConverter.GetBytes(lvl.Length + 0x10));
 			file.AddRange(lvl);
 			if (!nometa)
 			{
@@ -632,16 +617,16 @@ namespace SAModel
 					List<byte> strbytes = new List<byte>();
 					foreach (KeyValuePair<string, uint> label in labels)
 					{
-						chunk.AddRange(ByteConverter.GetBytes(label.Value));
-						chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
+						chunk.AddRange(BitConverter.GetBytes(label.Value));
+						chunk.AddRange(BitConverter.GetBytes(straddr + strbytes.Count));
 						strbytes.AddRange(Encoding.UTF8.GetBytes(label.Key));
 						strbytes.Add(0);
 						strbytes.Align(4);
 					}
-					chunk.AddRange(ByteConverter.GetBytes(-1L));
+					chunk.AddRange(BitConverter.GetBytes(-1L));
 					chunk.AddRange(strbytes);
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Label));
-					file.AddRange(ByteConverter.GetBytes(chunk.Count));
+					file.AddRange(BitConverter.GetBytes((uint)ChunkTypes.Label));
+					file.AddRange(BitConverter.GetBytes(chunk.Count));
 					file.AddRange(chunk);
 				}
 				if (!string.IsNullOrEmpty(Author))
@@ -650,8 +635,8 @@ namespace SAModel
 					chunk.AddRange(Encoding.UTF8.GetBytes(Author));
 					chunk.Add(0);
 					chunk.Align(4);
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Author));
-					file.AddRange(ByteConverter.GetBytes(chunk.Count));
+					file.AddRange(BitConverter.GetBytes((uint)ChunkTypes.Author));
+					file.AddRange(BitConverter.GetBytes(chunk.Count));
 					file.AddRange(chunk);
 				}
 				if (!string.IsNullOrEmpty(Description))
@@ -660,21 +645,20 @@ namespace SAModel
 					chunk.AddRange(Encoding.UTF8.GetBytes(Description));
 					chunk.Add(0);
 					chunk.Align(4);
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
-					file.AddRange(ByteConverter.GetBytes(chunk.Count));
+					file.AddRange(BitConverter.GetBytes((uint)ChunkTypes.Description));
+					file.AddRange(BitConverter.GetBytes(chunk.Count));
 					file.AddRange(chunk);
 				}
 				foreach (KeyValuePair<uint, byte[]> item in Metadata)
 				{
-					file.AddRange(ByteConverter.GetBytes(item.Key));
-					file.AddRange(ByteConverter.GetBytes(item.Value.Length));
+					file.AddRange(BitConverter.GetBytes(item.Key));
+					file.AddRange(BitConverter.GetBytes(item.Value.Length));
 					file.AddRange(item.Value);
 				}
 			}
-			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
+			file.AddRange(BitConverter.GetBytes((uint)ChunkTypes.End));
 			file.AddRange(new byte[4]);
 			File.WriteAllBytes(filename, file.ToArray());
-			ByteConverter.BigEndian = be;
 		}
 
 		public enum ChunkTypes : uint
