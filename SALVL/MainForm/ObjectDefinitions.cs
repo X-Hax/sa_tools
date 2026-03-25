@@ -160,8 +160,10 @@ namespace SAModel.SALVL
 						}
 					}
 				}
+				Logger.Add($"Initializing Object Definition:{objlstini[ID].Name}: {defgroup.Name}");
 				def.Init(defgroup, objlstini[ID].Name);
 				def.SetInternalName(objlstini[ID].Name);
+				Logger.Add($"Finished initializing Object Definition:{defgroup.Name}");
 #if DEBUG
 			}
 #else
