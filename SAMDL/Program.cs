@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAModel.SAEditorCommon;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -23,6 +24,7 @@ namespace SAModel.SAMDL
 			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
 			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+			Logger.Initialize();
 			primaryForm = new MainForm();
 			Application.Run(primaryForm);
 		}

@@ -304,7 +304,7 @@ namespace SAModel.SALVL
 				pointHelper.Draw(d3ddevice, cam);
 			}
 
-			osd.ProcessMessages();
+			OnScreenDisplay.ProcessMessages();
 			#endregion
 
 			d3ddevice.Present();

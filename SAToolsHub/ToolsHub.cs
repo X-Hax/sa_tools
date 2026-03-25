@@ -1690,7 +1690,7 @@ namespace SAToolsHub
 			string errDesc = "SA Tools Hub has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
 				 "If you wish to report a bug, please include the following in your report:";
 			SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("SA Tools Hub", errDesc, e.Exception.ToString());
-			DialogResult dgresult = report.ShowDialog();
+			DialogResult dgresult = report.ShowDialog(this);
 			switch (dgresult)
 			{
 				case DialogResult.Abort:

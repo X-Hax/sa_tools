@@ -47,7 +47,7 @@ namespace SAModel.SALVL
                         else
                             cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
                     }
-                    osd.UpdateOSDItem("Camera mode: " + cammode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+                    OnScreenDisplay.UpdateOSDItem("Camera mode: " + cammode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
                     draw = true;
                     break;
 
@@ -66,7 +66,7 @@ namespace SAModel.SALVL
                     {
                         cam.MoveToShowBounds(selectedItems.GetSelection()[0].Bounds);
                     }
-                    osd.UpdateOSDItem("Camera zoomed to target", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+                    OnScreenDisplay.UpdateOSDItem("Camera zoomed to target", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
                     draw = true;
                     break;
 
@@ -83,7 +83,7 @@ namespace SAModel.SALVL
                         if (EditorOptions.RenderFillMode == FillMode.Solid) rendermode = "Solid";
                         else rendermode = "Wireframe";
                     }
-                    osd.UpdateOSDItem("Render mode: " + rendermode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+                    OnScreenDisplay.UpdateOSDItem("Render mode: " + rendermode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
                     draw = true;
                     break;
 
@@ -98,21 +98,21 @@ namespace SAModel.SALVL
                 case ("Increase camera move speed"):
                     cam.MoveSpeed += 0.0625f;
                     UpdateTitlebar();
-                    osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+                    OnScreenDisplay.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
                     draw = true;
                     break;
 
                 case ("Decrease camera move speed"):
                     cam.MoveSpeed = Math.Max(0.0625f, cam.MoveSpeed -= 0.0625f);
                     UpdateTitlebar();
-                    osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+                    OnScreenDisplay.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
                     draw = true;
                     break;
 
                 case ("Reset camera move speed"):
                     cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
                     UpdateTitlebar();
-                    osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+                    OnScreenDisplay.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
                     draw = true;
                     break;
 
@@ -120,7 +120,7 @@ namespace SAModel.SALVL
                     if (cam.mode == 0)
                     {
                         cam.Position = new Vector3();
-                        osd.UpdateOSDItem("Reset camera position", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+                        OnScreenDisplay.UpdateOSDItem("Reset camera position", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
                         draw = true;
                     }
                     break;
@@ -131,7 +131,7 @@ namespace SAModel.SALVL
                         cam.Pitch = 0;
                         cam.Yaw = 0;
                         draw = true;
-                        osd.UpdateOSDItem("Reset camera rotation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+                        OnScreenDisplay.UpdateOSDItem("Reset camera rotation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
                         draw = true;
                     }
                     break;
@@ -146,7 +146,7 @@ namespace SAModel.SALVL
 
                         characterToolStripMenuItem.DropDownItems[LevelData.Character].PerformClick();
                     }
-                    osd.UpdateOSDItem("Current character: " + LevelData.Character.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+                    OnScreenDisplay.UpdateOSDItem("Current character: " + LevelData.Character.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
                     break;
 
                 case ("Previous Character"):
@@ -157,7 +157,7 @@ namespace SAModel.SALVL
                         LevelData.Character = chr;
 
                         characterToolStripMenuItem.DropDownItems[LevelData.Character].PerformClick();
-                        osd.UpdateOSDItem("Current character: " + LevelData.Character.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+                        OnScreenDisplay.UpdateOSDItem("Current character: " + LevelData.Character.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
                     }
                     break;
 
@@ -208,7 +208,7 @@ namespace SAModel.SALVL
             else if (zoomKeyDown) cameraMode = "Zoom";
             else if (lookKeyDown) cameraMode = "Look";
             if (cameraMode != "")
-                osd.UpdateOSDItem("Camera mode: " + cameraMode, RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+                OnScreenDisplay.UpdateOSDItem("Camera mode: " + cameraMode, RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
         }
         private void ActionInputCollector_OnActionStart(ActionInputCollector sender, string actionName)
         {

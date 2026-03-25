@@ -1,4 +1,5 @@
 ﻿using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.UI;
 using SharpDX;
@@ -97,9 +98,9 @@ namespace SAModel.SALVL
 
 			foreach (string s in importFileDialog.FileNames)
 			{
-				List<Item> newItems = LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems, osd, multiple, isVisible, isCol, fmt);
+				List<Item> newItems = LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems, multiple, isVisible, isCol, fmt);
 				if (errorFlag)
-					osd.AddMessage(errorMsg + "\n", 300);
+					OnScreenDisplay.AddMessage(errorMsg + "\n", 300);
 				if (!multiple)
 					selectedItems.Add(newItems);
 				else
@@ -119,9 +120,9 @@ namespace SAModel.SALVL
 					isCol = true;
 					foreach (string s in importFileDialog.FileNames)
 					{
-						List<Item> newItems = LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems, osd, multiple, isVisible, isCol, ModelFormat.Basic);
+						List<Item> newItems = LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems, multiple, isVisible, isCol, ModelFormat.Basic);
 						if (errorFlag)
-							osd.AddMessage(errorMsg + "\n", 300);
+							OnScreenDisplay.AddMessage(errorMsg + "\n", 300);
 						if (!multiple)
 							selectedItems.Add(newItems);
 						else

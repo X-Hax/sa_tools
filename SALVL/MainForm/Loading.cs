@@ -76,7 +76,7 @@ namespace SAModel.SALVL
 			// Delete old object defition DLL files
 			if (File.Exists(Path.Combine(modFolder, "dllcache", "DELETE")))
 			{
-				log.Add("Deleting old object definitions at: " + Path.Combine(modFolder, "dllcache"));
+				Logger.Add("Deleting old object definitions at: " + Path.Combine(modFolder, "dllcache"));
 				try
 				{
 					Directory.Delete(Path.Combine(modFolder, "dllcache"), true);
@@ -84,9 +84,9 @@ namespace SAModel.SALVL
 				catch (Exception ex)
 				{
 					MessageBox.Show("Error deleting old object definitions:\n" + ex.ToString(), "SALVL Error");
-					log.Add("Error deleting old object definitions:\n" + ex.ToString());
+					Logger.Add("Error deleting old object definitions:\n" + ex.ToString());
 				}
-				log.WriteLog();
+				Logger.WriteLog();
 			}
 
 			// Load level names
@@ -123,16 +123,16 @@ namespace SAModel.SALVL
 			if (File.Exists(stageLightPath))
 				stageLightList = SADXStageLightDataList.Load(stageLightPath);
 			else
-				log.Add("Stage Lights file not found: " + stageLightPath);
+				Logger.Add("Stage Lights file not found: " + stageLightPath);
 			// Load character lights
 			characterLightList = null;
 			string charLightPath = Path.Combine(modFolder, "Misc", "Character Lights.ini");
 			if (File.Exists(charLightPath))
 				characterLightList = LSPaletteDataList.Load(charLightPath);
 			else
-				log.Add("Character Lights file not found: " + charLightPath);
+				Logger.Add("Character Lights file not found: " + charLightPath);
 			lightsEditorToolStripMenuItem.Enabled = (stageLightList != null && characterLightList != null);
-			log.WriteLog();
+			Logger.WriteLog();
 		}
 
 		private void LoadTemplate(Templates.ProjectTemplate projFile)
@@ -173,12 +173,12 @@ namespace SAModel.SALVL
 			{
 				UseWaitCursor = true;
 				Enabled = false;
-				if (osd != null) osd.ClearMessageList();
+				OnScreenDisplay.ClearMessageList();
 				levelID = id;
 				string[] itempath = levelID.Split('\\');
 				levelName = itempath[itempath.Length - 1];
 				LevelData.LevelName = levelName;
-				log.Add("----Loading a new level: " + levelName + "----");
+				Logger.Add("----Loading a new level: " + levelName + "----");
 				Text = "SALVL - Loading " + levelName + "...";
 				if (isSA2LVL())
 					InitSA2DefaultParams();
@@ -268,11 +268,11 @@ namespace SAModel.SALVL
 
 					LevelData.TextureBitmaps.Add(pvmName, textureBitmaps);
 					LevelData.Textures.Add(pvmName, d3dTextures);
-					log.Add("Loaded textures: " + ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
+					Logger.Add("Loaded textures: " + ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
 				}
 				else
 				{
-					log.Add("Unable to load texture file: " + ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
+					Logger.Add("Unable to load texture file: " + ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
 				}
 			}
 		}
@@ -353,18 +353,18 @@ namespace SAModel.SALVL
 					EditorOptions.StageLights = currentStageLights;
 				else
 				{
-					osd.AddMessage("No lights were found for this stage. Using default lights instead.", 180);
-					log.Add("No lights were found for this stage. Using default lights.");
+					OnScreenDisplay.AddMessage("No lights were found for this stage. Using default lights instead.", 180);
+					Logger.Add("No lights were found for this stage. Using default lights.");
 					EditorOptions.StageLights = null;
 				}
 			}
 			else
 			{
-				osd.AddMessage("Stage Lights data not found. Using default lights.", 180);
-				log.Add("Stage Lights data not found. Using default lights.");
+				OnScreenDisplay.AddMessage("Stage Lights data not found. Using default lights.", 180);
+				Logger.Add("Stage Lights data not found. Using default lights.");
 				EditorOptions.StageLights = null;
 			}
-			log.WriteLog();
+			Logger.WriteLog();
 		}
 
 		private void LoadCharacterLights(SA1LevelAct levelact)
@@ -438,18 +438,18 @@ namespace SAModel.SALVL
 					EditorOptions.CharacterLights = currentCharacterLights;
 				else
 				{
-					osd.AddMessage("No character lights were found for this stage. Using level lights instead.", 180);
-					log.Add("No character lights were found for this stage. Using level lights.");
+					OnScreenDisplay.AddMessage("No character lights were found for this stage. Using level lights instead.", 180);
+					Logger.Add("No character lights were found for this stage. Using level lights.");
 					EditorOptions.CharacterLights = null;
 				}
 			}
 			else
 			{
-				osd.AddMessage("Character lights data not found. Using level lights instead.", 180);
-				log.Add("Character lights data not found. Using level lights instead.");
+				OnScreenDisplay.AddMessage("Character lights data not found. Using level lights instead.", 180);
+				Logger.Add("Character lights data not found. Using level lights instead.");
 				EditorOptions.CharacterLights = null;
 			}
-			log.WriteLog();
+			Logger.WriteLog();
 		}
 
 		private FogData GetFogData(FogDataTable data, int act)
@@ -483,8 +483,8 @@ namespace SAModel.SALVL
 					}
 					else
 					{
-						osd.AddMessage("Fog data for this level is null. Stage fog is disabled.", 180);
-						log.Add("Fog data for this level is null. Stage fog is disabled.");
+						OnScreenDisplay.AddMessage("Fog data for this level is null. Stage fog is disabled.", 180);
+						Logger.Add("Fog data for this level is null. Stage fog is disabled.");
 						currentStageFog = null;
 					}
 				}
@@ -495,8 +495,8 @@ namespace SAModel.SALVL
 				fogdatanotfound = true;
 			if (fogdatanotfound)
 			{
-				osd.AddMessage("Fog data not found. Stage fog is disabled.", 180);
-				log.Add("Fog data not found. Stage fog is disabled.");
+				OnScreenDisplay.AddMessage("Fog data not found. Stage fog is disabled.", 180);
+				Logger.Add("Fog data not found. Stage fog is disabled.");
 				stageFogList = null;
 				currentStageFog = null;
 			}
@@ -758,7 +758,7 @@ namespace SAModel.SALVL
 				else
 				{
 					// This is only for SA2 right?
-					log.Add("----Secondary Geometry Detected----\n");
+					Logger.Add("----Secondary Geometry Detected----\n");
 					for (int i = 0; i < level.SecondaryGeometry.Count; i++)
 					{
 						LevelData.secondgeos.Add(LandTable.LoadFromFile(level.SecondaryGeometry[i]));
@@ -780,7 +780,7 @@ namespace SAModel.SALVL
 						{
 							LevelData.AddLevelAnim(new LevelAnim(LevelData.secondgeos[i].Anim[j], j, selectedItems));
 						}
-						log.Add("----Secondary Geometry Loaded: " + currentSecondaryLandtableFilename[i] + "----\n");
+						Logger.Add("----Secondary Geometry Loaded: " + currentSecondaryLandtableFilename[i] + "----\n");
 					}
 				}
 
@@ -1467,13 +1467,13 @@ namespace SAModel.SALVL
 					else
 					{
 						LevelData.NullifySETItems();
-						osd.AddMessage("Object definitions not found (0 entries), SET files skipped", 180);
+						OnScreenDisplay.AddMessage("Object definitions not found (0 entries), SET files skipped", 180);
 					}
 				}
 				else
 				{
 					LevelData.NullifySETItems();
-					osd.AddMessage("Object definitions not found (object list file doesn't exist), SET files skipped", 180);
+					OnScreenDisplay.AddMessage("Object definitions not found (object list file doesn't exist), SET files skipped", 180);
 				}
 
 				// Load Mission SET items
@@ -1642,10 +1642,10 @@ namespace SAModel.SALVL
 
 								if (!result.Success)
 								{
-									log.Add("Error loading level background:");
+									Logger.Add("Error loading level background:");
 									foreach (Diagnostic diagnostic in result.Diagnostics)
 									{
-										log.Add(String.Format("\n\n{0}", diagnostic.ToString()));
+										Logger.Add(String.Format("\n\n{0}", diagnostic.ToString()));
 									}
 
 									File.Delete(dllfile);
@@ -1664,7 +1664,7 @@ namespace SAModel.SALVL
 							}
 							catch (Exception e)
 							{
-								log.Add("Error loading level background:" + String.Format("\n\n{0}", e.ToString()));
+								Logger.Add("Error loading level background:" + String.Format("\n\n{0}", e.ToString()));
 
 								File.Delete(dllfile);
 								File.Delete(pdbfile);
@@ -1718,18 +1718,18 @@ namespace SAModel.SALVL
 			}
 			transformGizmo = new TransformGizmo();
 
-			log.Add("----Level load complete: " + levelName + "----\n");
-			log.WriteLog();
+			Logger.Add("----Level load complete: " + levelName + "----\n");
+			Logger.WriteLog();
 #if !DEBUG
 			}
 			catch (Exception ex)
 			{
-				log.Add(ex.ToString() + "\n");
+				Logger.Add(ex.ToString() + "\n");
 				string errDesc = "SALVL could not load the level for the following reason:\n" + ex.GetType().Name + ".\n\n" +
 					"If you wish to report a bug, please include the following in your report:";
-				ErrorDialog report = new ErrorDialog("SALVL", errDesc, log.GetLogString());
-				log.WriteLog();
-				DialogResult dgresult = report.ShowDialog();
+				ErrorDialog report = new ErrorDialog("SALVL", errDesc, Logger.GetLogString());
+				Logger.WriteLog();
+				DialogResult dgresult = report.ShowDialog(this);
 				switch (dgresult)
 				{
 					case DialogResult.Cancel:

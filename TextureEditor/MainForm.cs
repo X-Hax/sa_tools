@@ -107,7 +107,7 @@ namespace TextureEditor
 			string errDesc = "Texture Editor has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
 				"If you wish to report a bug, please include the following in your report:";
 			ErrorDialog report = new ErrorDialog("Texture Editor", errDesc, log);
-			DialogResult dgresult = report.ShowDialog();
+			DialogResult dgresult = report.ShowDialog(this);
 			switch (dgresult)
 			{
 				case DialogResult.OK:

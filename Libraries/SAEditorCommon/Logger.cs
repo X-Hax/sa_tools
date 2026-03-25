@@ -1,98 +1,119 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
 using SharpDX.Direct3D9;
+using SharpDX.Mathematics.Interop;
 using SAModel.Direct3D;
 using Color = System.Drawing.Color;
-using System.Text;
-using SharpDX.Mathematics.Interop;
-using System;
-using System.Windows.Forms;
 
 namespace SAModel.SAEditorCommon
 {
     /// <summary>
     /// Class for creating log files.
     /// </summary>
-    public class Logger
+    public static class Logger
 	{
-		private string file;
-		public List<string> LogQueue { get; set; }
+		/// <summary>Path to the log file.</summary>
+		private static string LogFile;
+
+		/// <summary>List of messages in the log.</summary>
+		public static List<string> LogQueue { get; set; }
+
+		/// <summary>
+		/// Sets the log filename to match the currently running application.
+		/// </summary>
+		private static void GetLogFilename()
+		{
+			LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", Path.GetFileNameWithoutExtension(Application.ExecutablePath) + ".log");
+		}
+
 		/// <summary>
 		/// Initializes a logger that collects log information and writes it out in a file. The filename is EXEName.log.
 		/// </summary>
-		public Logger()
+		public static void Initialize()
 		{
-			file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", Path.GetFileNameWithoutExtension(Application.ExecutablePath) + ".log");
+			GetLogFilename();
 			LogQueue = new List<string>();
 		}
+
 		/// <summary>
 		/// Add a message to the log queue.
 		/// </summary>
 		/// <param name="message">Text to log</param>
-		public void Add(string message)
+		public static void Add(string message)
 		{
 			LogQueue.Add(message);
 		}
+
 		/// <summary>
 		/// Add a list of messages to the log queue.
 		/// </summary>
 		/// <param name="message">Strings list to log</param>
-		public void AddRange(List<string> messages)
+		public static void AddRange(List<string> messages)
 		{
 			LogQueue.AddRange(messages);
 		}
+
 		/// <summary>
 		/// Clears log messages that haven't been written to the file yet.
 		/// </summary>
-		public void ClearLogQueue()
+		public static void ClearLogQueue()
 		{
 			LogQueue.Clear();
 		}
+
 		/// <summary>
 		/// Writes all messages in the log queue to the file and clears the queue.
 		/// </summary>
-		public void WriteLog()
+		public static void WriteLog()
 		{
+			if (string.IsNullOrEmpty(LogFile))
+				GetLogFilename();
 			try
 			{
-				if (!Directory.Exists(Path.GetDirectoryName(file)))
-					Directory.CreateDirectory(Path.GetDirectoryName(file));
-				File.AppendAllLines(file, LogQueue);
+				if (!Directory.Exists(Path.GetDirectoryName(LogFile)))
+					Directory.CreateDirectory(Path.GetDirectoryName(LogFile));
+				File.AppendAllLines(LogFile, LogQueue);
 				LogQueue.Clear();
 			}
 			catch { }
 		}
+
 		/// <summary>
 		/// Clears the log file.
 		/// </summary>
-		public void ClearLogFile()
+		public static void ClearLogFile()
 		{
-			if (!File.Exists(file))
+			if (string.IsNullOrEmpty(LogFile) || !File.Exists(LogFile))
 				return;
 			try
 			{
-				File.WriteAllText(file, "");
+				File.WriteAllText(LogFile, "");
 			}
 			catch { }
 		}
+
 		/// <summary>
 		/// Deletes the log file.
 		/// </summary>
-		public void DeleteLogFile()
+		public static void DeleteLogFile()
 		{
-			if (!File.Exists(file))
+			if (string.IsNullOrEmpty(LogFile) || !File.Exists(LogFile))
 				return;
 			try
 			{
-				File.Delete(file);
+				File.Delete(LogFile);
 			}
 			catch { }
 		}
+
 		/// <summary>
 		/// Returns the log queue as a string.
 		/// </summary>
-		public string GetLogString()
+		public static string GetLogString()
 		{
 			return string.Join(System.Environment.NewLine, LogQueue);
 		}
@@ -100,30 +121,36 @@ namespace SAModel.SAEditorCommon
 		/// <summary>
 		/// Opens the log file. If the log file doesn't exist, opens the SA Tools AppData folder.
 		/// </summary>
-		public void OpenLog()
+		public static void OpenLog()
 		{
-			string logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", Path.GetFileNameWithoutExtension(Application.ExecutablePath) + ".log");
-			if (File.Exists(logPath))
-				System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("notepad", $"\"" + logPath + "\"") { CreateNoWindow = false });
+			if (string.IsNullOrEmpty(LogFile))
+				return;
+			if (File.Exists(LogFile))
+				System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("notepad", $"\"" + LogFile + "\"") { CreateNoWindow = false });
 			else
 				System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer", $"\"" + Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools\"")) { CreateNoWindow = false });
 		}
 	}
 
-	public class OnScreenDisplay
+	/// <summary>
+	/// Class for OSD in 3D Editors.
+	/// </summary>
+	public static class OnScreenDisplay
 	{
-		public Dictionary<string, int> MessageList { get; set; }
-		private List<OSDItem> OSDItems { get; set; }
-		public Sprite textSprite;
-		public Device d3ddevice;
-		public bool timer_freeze;
-		public RawColorBGRA logcolor;
-		public bool show_osd { get; set; }
+		public static Dictionary<string, int> MessageList { get; set; }
+		private static List<OSDItem> OSDItems { get; set; }
+		/// <summary>Sprite used to draw vertex indices in SAMDL.</summary>
+		public static Sprite textSprite;
+		private static Device d3ddevice;
+		private static bool timer_freeze;
+		private static RawColorBGRA logcolor;
+		public static bool show_osd { get; set; }
+
 		/// <summary>
 		/// Initializes an OSD which displays colored text/log on screen.
 		/// </summary>
 		/// <param name="device">Direct3D device to draw on</param>
-		public OnScreenDisplay(Device device, RawColorBGRA color)
+		public static void Initialize(Device device, RawColorBGRA color)
 		{
 			MessageList = new Dictionary<string, int>();
 			OSDItems = new List<OSDItem>();
@@ -136,7 +163,7 @@ namespace SAModel.SAEditorCommon
 		/// <summary>
 		/// Draw pending log and OSD items. Call this before D3DDevice.Present().
 		/// </summary>
-		public void ProcessMessages()
+		public static void ProcessMessages()
 		{
 			StringBuilder MessageString = new StringBuilder();
 			// Update timers on render because the form's timer freezes when stuff is rendered
@@ -173,22 +200,28 @@ namespace SAModel.SAEditorCommon
 			// Refresh messages after drawing
 			MessageString.Clear();
 		}
+
 		/// <summary>
 		/// Adds a message to display on the screen.
 		/// </summary>
 		/// <param name="message">Message text</param>
 		/// <param name="timer">Duration of message in frames</param>
-		public void AddMessage(string message, int timer)
+		public static void AddMessage(string message, int timer)
 		{
 			if (!MessageList.ContainsKey(message)) MessageList.Add(message, timer);
 		}
+
 		/// <summary>
 		/// Clears current OSD message list.
 		/// </summary>
-		public void ClearMessageList()
+		public static void ClearMessageList()
 		{
 			MessageList.Clear();
 		}
+
+		/// <summary>
+		/// Class for individual messages that appear in the OSD.
+		/// </summary>
 		internal class OSDItem
 		{
 			public string text;
@@ -198,6 +231,7 @@ namespace SAModel.SAEditorCommon
 			public int pos_y;
 			public RawColorBGRA color;
 		}
+
 		/// <summary>
 		/// Adds or updates an OSD item.
 		/// </summary>
@@ -207,7 +241,7 @@ namespace SAModel.SAEditorCommon
 		/// <param name="color">Text color</param>
 		/// <param name="identifier">Unique identifier, set to be able to update the item without recreating it</param>
 		/// <param name="timer">Duration in frames, -1 for permanent, don't set to keep the previous value when updating an existing item</param>
-		public void UpdateOSDItem(string text, int pos_x, int pos_y, RawColorBGRA color, string identifier = "", int timer = 0)
+		public static void UpdateOSDItem(string text, int pos_x, int pos_y, RawColorBGRA color, string identifier = "", int timer = 0)
 		{
 			foreach (OSDItem osd in OSDItems)
 			{
@@ -230,10 +264,11 @@ namespace SAModel.SAEditorCommon
 			newosd.color = color;
 			OSDItems.Add(newosd);
 		}
+
 		/// <summary>
 		/// Updates OSD/message timers and deletes old messages. Returns true if 3D view needs to be redrawn.
 		/// </summary>
-		public bool UpdateTimer()
+		public static bool UpdateTimer()
 		{
 			bool removeditems = false;
 			foreach (var key in MessageList.Keys.ToList())

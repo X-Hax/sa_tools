@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAModel.SAEditorCommon;
+using System;
 using System.Windows.Forms;
 
 namespace SA2EventViewer
@@ -17,6 +18,7 @@ namespace SA2EventViewer
 			Application.EnableVisualStyles();
 			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
+			Logger.Initialize();
 			Application.Run(new MainForm());
 		}
 	}

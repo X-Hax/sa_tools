@@ -63,12 +63,12 @@ namespace SAModel.SALVL
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
-			log.Add(e.Exception.ToString());
+			Logger.Add(e.Exception.ToString());
 			string errDesc = "SALVL has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
 				"If you wish to report a bug, please include the following in your report:";
-			ErrorDialog report = new ErrorDialog("SALVL", errDesc, log.GetLogString());
-			log.WriteLog();
-			DialogResult dgresult = report.ShowDialog();
+			ErrorDialog report = new ErrorDialog("SALVL", errDesc, Logger.GetLogString());
+			Logger.WriteLog();
+			DialogResult dgresult = report.ShowDialog(this);
 			switch (dgresult)
 			{
 				case DialogResult.Abort:
@@ -82,8 +82,6 @@ namespace SAModel.SALVL
 
 		#region Editor-Specific Variables
 		IniDataSALVL salvlini;
-		Logger log = new Logger();
-		OnScreenDisplay osd;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorItemSelection selectedItems = new EditorItemSelection();
 		EditorOptionsEditor optionsEditor;
@@ -157,12 +155,12 @@ namespace SAModel.SALVL
 			LevelData.PointOperation += LevelData_PointOperation;
 			RenderPanel.MouseWheel += panel1_MouseWheel;
 			InitDisableInvalidControls();
-			log.DeleteLogFile();
-			log.Add("SALVL: New log entry on " + DateTime.Now.ToString("G") + "\n");
-			log.Add("Build Date: ");
-			log.Add(File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
-			log.Add("OS Version: ");
-			log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
+			Logger.DeleteLogFile();
+			Logger.Add("SALVL: New log entry on " + DateTime.Now.ToString("G") + "\n");
+			Logger.Add("Build Date: ");
+			Logger.Add(File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
+			Logger.Add("OS Version: ");
+			Logger.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
 			AppConfig.Reload();
 			EditorOptions.RenderDrawDistance = settingsfile.DrawDistanceGeneral;
 			EditorOptions.LevelDrawDistance = settingsfile.DrawDistanceGeometry;
@@ -342,7 +340,7 @@ namespace SAModel.SALVL
 						AutoDepthStencilFormat = Format.D24X8
 					});
 
-				osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
+				OnScreenDisplay.Initialize(d3ddevice, Color.Red.ToRawColorBGRA());
 				EditorOptions.Initialize(d3ddevice);
 				Gizmo.InitGizmo(d3ddevice);
 				ObjectHelper.Init(d3ddevice);
@@ -436,7 +434,7 @@ namespace SAModel.SALVL
 				settingsfile.AlternativeCamera = hideCursorDuringCameraMovementToolStripMenuItem.Checked;
 				settingsfile.MouseWrapScreen = wrapAroundScreenEdgesToolStripMenuItem.Checked;
 				settingsfile.Save();
-				if (log != null) log.WriteLog();
+				Logger.WriteLog();
 			}
 			catch { };
 			AppConfig.Save();
@@ -462,7 +460,7 @@ namespace SAModel.SALVL
 
 		private void LevelData_PointOperation()
 		{
-			osd.AddMessage("You have just begun a Point To operation.\nLeft click on the point or item you want the selected item(s) to point to, or right click to cancel.", 300);
+			OnScreenDisplay.AddMessage("You have just begun a Point To operation.\nLeft click on the point or item you want the selected item(s) to point to, or right click to cancel.", 300);
 			isPointOperation = true;
 		}
 
@@ -535,7 +533,7 @@ namespace SAModel.SALVL
 
 			if (obj == null)
 			{
-				osd.AddMessage("Paste operation failed - feature not implemented.", 180);
+				OnScreenDisplay.AddMessage("Paste operation failed - feature not implemented.", 180);
 				return; // todo: finish implementing proper copy/paste
 			}
 
@@ -834,7 +832,7 @@ namespace SAModel.SALVL
 							failReasons.AppendFormat("{0} failed because: {1}", failure.Key, failure.Value);
 						}
 
-						osd.AddMessage(failReasons.ToString(), 300);
+						OnScreenDisplay.AddMessage(failReasons.ToString(), 300);
 					}
 
 					modelLibraryControl1.FullReRender();
@@ -946,8 +944,8 @@ namespace SAModel.SALVL
 		private void reportBugToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			string errDesc = "You can submit a new issue on SA Tools GitHub issue tracker.\n\nPlease make sure the problem is reproducible on the latest version of SA Tools.\n\nIf you wish to report a bug, please include the following in your report:";
-			ErrorDialog report = new ErrorDialog("SALVL", errDesc, log.GetLogString());
-			DialogResult dgresult = report.ShowDialog();
+			ErrorDialog report = new ErrorDialog("SALVL", errDesc, Logger.GetLogString());
+			DialogResult dgresult = report.ShowDialog(this);
 			switch (dgresult)
 			{
 				case DialogResult.Abort:
@@ -1058,7 +1056,7 @@ namespace SAModel.SALVL
 		{
 			LevelData.DuplicateSelection(selectedItems, out bool errorFlag, out string errorMsg);
 			unsaved = true;
-			if (errorFlag) osd.AddMessage(errorMsg, 300);
+			if (errorFlag) OnScreenDisplay.AddMessage(errorMsg, 300);
 		}
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1127,7 +1125,7 @@ namespace SAModel.SALVL
 				selectModeButton.Checked = true;
 				rotateModeButton.Checked = false;
 				scaleModeButton.Checked = false;
-				osd.UpdateOSDItem("Transform mode: Select", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Transform mode: Select", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				NeedRedraw = true; // TODO: possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
 			}
 		}
@@ -1144,7 +1142,7 @@ namespace SAModel.SALVL
 				rotateModeButton.Checked = false;
 				scaleModeButton.Checked = false;
 				SetGizmoPivotAndLocality();
-				osd.UpdateOSDItem("Transform mode: Move", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Transform mode: Move", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				NeedRedraw = true;
 			}
 		}
@@ -1162,7 +1160,7 @@ namespace SAModel.SALVL
 				moveModeButton.Checked = false;
 				scaleModeButton.Checked = false;
 				SetGizmoPivotAndLocality();
-				osd.UpdateOSDItem("Transform mode: Rotate", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Transform mode: Rotate", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				NeedRedraw = true;
 			}
 		}
@@ -1199,7 +1197,7 @@ namespace SAModel.SALVL
 					string globalorlocal = "Global";
 					if (transformGizmo.Pivot == Pivot.CenterOfMass) pivotmode = "Center";
 					if (transformGizmo.LocalTransform == true) globalorlocal = "Local";
-					osd.UpdateOSDItem("Transform: " + globalorlocal + ", " + pivotmode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Transform: " + globalorlocal + ", " + pivotmode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				}
 
 				NeedRedraw = true;
@@ -1219,7 +1217,7 @@ namespace SAModel.SALVL
 				moveModeButton.Checked = false;
 				rotateModeButton.Checked = false;
 				SetGizmoPivotAndLocality();
-				osd.UpdateOSDItem("Transform mode: Scale", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Transform mode: Scale", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				NeedRedraw = true;
 			}
 		}
@@ -1229,7 +1227,7 @@ namespace SAModel.SALVL
 		{
 			if (selectedItems.ItemCount < 1)
 			{
-				osd.AddMessage("To use this feature you must have a selection!", 180);
+				OnScreenDisplay.AddMessage("To use this feature you must have a selection!", 180);
 				return;
 			}
 
@@ -1371,7 +1369,7 @@ namespace SAModel.SALVL
 		{
 			foreach (LevelItem item in LevelData.LevelItems)
 				item.CalculateBounds();
-			osd.UpdateOSDItem("Calculated all bounds", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			OnScreenDisplay.UpdateOSDItem("Calculated all bounds", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 			LevelData.InvalidateRenderState();
 			unsaved = true;
 		}
@@ -1686,7 +1684,7 @@ namespace SAModel.SALVL
 			cam.Yaw = 0;
 			cam.Pitch = 0;
 			DrawLevel();
-			osd.UpdateOSDItem("Jumped to origin", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			OnScreenDisplay.UpdateOSDItem("Jumped to origin", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 			LevelData.InvalidateRenderState();
 		}
 
@@ -1785,7 +1783,7 @@ namespace SAModel.SALVL
 					cam.Yaw = (ushort)(-rot - 0x4000);
 					cam.Pitch = 0;
 					DrawLevel();
-					osd.UpdateOSDItem("Jumped to P1 start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					OnScreenDisplay.UpdateOSDItem("Jumped to P1 start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					LevelData.InvalidateRenderState();
 				}
 				else
@@ -1797,7 +1795,7 @@ namespace SAModel.SALVL
 						cam.Yaw = (ushort)(-rot - 0x4000);
 						cam.Pitch = 0;
 						DrawLevel();
-						osd.UpdateOSDItem("Jumped to start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+						OnScreenDisplay.UpdateOSDItem("Jumped to start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 						LevelData.InvalidateRenderState();
 					}
 				}
@@ -1811,7 +1809,7 @@ namespace SAModel.SALVL
 					cam.Yaw = (ushort)(-rot - 0x4000);
 					cam.Pitch = 0;
 					DrawLevel();
-					osd.UpdateOSDItem("Jumped to start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					OnScreenDisplay.UpdateOSDItem("Jumped to start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					LevelData.InvalidateRenderState();
 				}
 			}
@@ -1829,13 +1827,13 @@ namespace SAModel.SALVL
 
 		private void MessageTimer_Tick(object sender, EventArgs e)
 		{
-			if (d3ddevice != null && osd != null)
-				if (osd.UpdateTimer() == true) NeedRedraw = true;
+			if (d3ddevice != null && OnScreenDisplay.UpdateTimer())
+					NeedRedraw = true;
 		}
 
 		private void showHintsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
-			osd.show_osd = showHintsToolStripMenuItem.Checked;
+			OnScreenDisplay.show_osd = showHintsToolStripMenuItem.Checked;
 			showHintsButton.Checked = showHintsToolStripMenuItem.Checked;
 		}
 
@@ -1884,7 +1882,7 @@ namespace SAModel.SALVL
 			d3ddevice.Reset(pp);
 			DeviceResizing = false;
 			if (isStageLoaded) LevelData.InvalidateRenderState();
-			osd.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			OnScreenDisplay.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 			NeedRedraw = true;
 		}
 
@@ -2389,7 +2387,7 @@ namespace SAModel.SALVL
 				if (geoanim.AnimationFrame >= geoanim.MaxFrame)
 					geoanim.AnimationFrame = 0;
 			}
-			osd.UpdateOSDItem("Next Animation Frame", RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			OnScreenDisplay.UpdateOSDItem("Next Animation Frame", RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
 			NeedUpdateAnimation = true;
 			NeedPropertyRefresh = true;
 		}
@@ -2406,7 +2404,7 @@ namespace SAModel.SALVL
 				if (geoanim.AnimationFrame < 0)
 					geoanim.AnimationFrame = geoanim.MaxFrame;
 			}
-			osd.UpdateOSDItem("Previous Animation Frame", RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			OnScreenDisplay.UpdateOSDItem("Previous Animation Frame", RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
 			NeedUpdateAnimation = true;
 			NeedPropertyRefresh = true;
 		}
@@ -2419,7 +2417,7 @@ namespace SAModel.SALVL
 				return;
 			foreach (GeoAnimData geoanim in LevelData.geo.Anim)
 				geoanim.AnimationFrame = 0;
-			osd.UpdateOSDItem("Reset Animation Frame", RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			OnScreenDisplay.UpdateOSDItem("Reset Animation Frame", RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
 			NeedUpdateAnimation = true;
 			NeedPropertyRefresh = true;
 		}
@@ -2432,7 +2430,7 @@ namespace SAModel.SALVL
 				AnimationTimer.Start();
 			else
 				AnimationTimer.Stop();
-			osd.UpdateOSDItem("Animation " + (playAnimButton.Checked ? "started" : "stopped"), RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			OnScreenDisplay.UpdateOSDItem("Animation " + (playAnimButton.Checked ? "started" : "stopped"), RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
 			NeedUpdateAnimation = true;
 		}
 
@@ -2492,12 +2490,12 @@ namespace SAModel.SALVL
 
 		private void viewLogToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			log.OpenLog();
+			Logger.OpenLog();
 		}
 
 		private void fogButton_Click(object sender, EventArgs e)
 		{
-			osd.UpdateOSDItem("Fog: " + (fogButton.Checked ? "Enabled" : "Disabled"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Fog: " + (fogButton.Checked ? "Enabled" : "Disabled"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -2596,7 +2594,7 @@ namespace SAModel.SALVL
 		private void texturesButton_Click(object sender, EventArgs e)
 		{
 			EditorOptions.DisableTextures = !texturesButton.Checked;
-			osd.UpdateOSDItem("Textures: " + (texturesButton.Checked ? "Enabled" : "Disabled"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Textures: " + (texturesButton.Checked ? "Enabled" : "Disabled"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -2822,7 +2820,7 @@ namespace SAModel.SALVL
 			cam.Yaw = (ushort)(-rot - 0x4000);
 			cam.Pitch = 0;
 			DrawLevel();
-			osd.UpdateOSDItem($"Jumped to {posLocation}", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			OnScreenDisplay.UpdateOSDItem($"Jumped to {posLocation}", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 			LevelData.InvalidateRenderState();
 		}
 		private void SA2MoveToDropDownButton_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -2888,7 +2886,7 @@ namespace SAModel.SALVL
 			cam.Yaw = (ushort)(-rot - 0x4000);
 			cam.Pitch = 0;
 			DrawLevel();
-			osd.UpdateOSDItem($"Jumped to {posLocation}", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			OnScreenDisplay.UpdateOSDItem($"Jumped to {posLocation}", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 			LevelData.InvalidateRenderState();
 		}
 		private void exportOnlyNonCollideableToolStripMenuItem_Click(object sender, EventArgs e)

@@ -154,8 +154,8 @@ namespace SAModel.SALVL
 			{
 				if (!File.Exists(salvlini.Characters[LevelData.Characters[i]].StartPositions))
 				{
-					log.Add("Error saving start positions for character " + i.ToString());
-					osd.AddMessage("Error saving start positions for character " + i.ToString(), 180);
+					Logger.Add("Error saving start positions for character " + i.ToString());
+					OnScreenDisplay.AddMessage("Error saving start positions for character " + i.ToString(), 180);
 					break;
 				}
 
@@ -552,8 +552,8 @@ namespace SAModel.SALVL
 			{
 				if (!File.Exists(salvlini.Characters[LevelData.SA2Characters[i]].StartPositions))
 				{
-					log.Add("Error saving start positions for character " + i.ToString());
-					osd.AddMessage("Error saving start positions for character " + i.ToString(), 180);
+					Logger.Add("Error saving start positions for character " + i.ToString());
+					OnScreenDisplay.AddMessage("Error saving start positions for character " + i.ToString(), 180);
 					break;
 				}
 
@@ -616,8 +616,8 @@ namespace SAModel.SALVL
 			{
 				if (!File.Exists(salvlini.Characters[LevelData.SA2Characters[i]].EndPositions))
 				{
-					log.Add("Error saving end positions for character " + i.ToString());
-					osd.AddMessage("Error saving end positions for character " + i.ToString(), 180);
+					Logger.Add("Error saving end positions for character " + i.ToString());
+					OnScreenDisplay.AddMessage("Error saving end positions for character " + i.ToString(), 180);
 					break;
 				}
 
@@ -680,8 +680,8 @@ namespace SAModel.SALVL
 			{
 				if (!File.Exists(salvlini.Characters[LevelData.SA2Characters[i]].MultiplayerIntroPositions))
 				{
-					log.Add("Error saving 2P intro positions for character " + i.ToString());
-					osd.AddMessage("Error saving 2P intro positions for character " + i.ToString(), 180);
+					Logger.Add("Error saving 2P intro positions for character " + i.ToString());
+					OnScreenDisplay.AddMessage("Error saving 2P intro positions for character " + i.ToString(), 180);
 					break;
 				}
 
@@ -728,8 +728,8 @@ namespace SAModel.SALVL
 			{
 				if (!File.Exists(salvlini.Characters[LevelData.SA2Characters[i]].AltEndPositions))
 				{
-					log.Add("Error saving Mission 2/3 end positions for character " + i.ToString());
-					osd.AddMessage("Error saving Mission 2/3 positions for character " + i.ToString(), 180);
+					Logger.Add("Error saving Mission 2/3 end positions for character " + i.ToString());
+					OnScreenDisplay.AddMessage("Error saving Mission 2/3 positions for character " + i.ToString(), 180);
 					break;
 				}
 

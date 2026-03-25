@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAModel.SAEditorCommon;
+using System;
 using System.IO;
 using System.Windows.Forms;
 
@@ -17,6 +18,7 @@ namespace SAModel.SALVL
 		{
 			Program.args = args;
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+			Logger.Initialize();
 			Application.EnableVisualStyles();
 			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);

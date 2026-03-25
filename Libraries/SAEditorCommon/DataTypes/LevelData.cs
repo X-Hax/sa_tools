@@ -581,7 +581,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			errorMsg = "";
 		}
 
-		internal static List<Item> ImportFromHierarchy(NJS_OBJECT objm, EditorItemSelection selectionManager, OnScreenDisplay osd, bool multiple = false, bool isVisible = true, bool isCol = true)
+		internal static List<Item> ImportFromHierarchy(NJS_OBJECT objm, EditorItemSelection selectionManager, bool multiple = false, bool isVisible = true, bool isCol = true)
 		{
 			List<Item> createdItems = new List<Item>();
 			if (objm.Attach != null)
@@ -614,7 +614,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 				{
 					foreach (NJS_OBJECT child in objm.Children)
 					{
-						createdItems.AddRange(ImportFromHierarchy(child, selectionManager, osd, true, isVisible, isCol));
+						createdItems.AddRange(ImportFromHierarchy(child, selectionManager, true, isVisible, isCol));
 					}
 				}
 			}
@@ -644,7 +644,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		public static List<Item> ImportFromFile(string filePath, EditorCamera camera, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager, OnScreenDisplay osd, bool multiple = false, bool isVisible = true, bool isCol = true, ModelFormat fmt = ModelFormat.BasicDX)
+		public static List<Item> ImportFromFile(string filePath, EditorCamera camera, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager, bool multiple = false, bool isVisible = true, bool isCol = true, ModelFormat fmt = ModelFormat.BasicDX)
 		{
 			LandTableFormat lfmt = geo.Format;
 
@@ -698,11 +698,11 @@ namespace SAModel.SAEditorCommon.DataTypes
 					
 					ModelFile mf = new ModelFile(filePath);
 					NJS_OBJECT objm = mf.Model;
-					osd.ClearMessageList();
-					osd.AddMessage("Importing models, please wait...", 3000);
-					osd.ClearMessageList();
-					createdItems.AddRange(ImportFromHierarchy(objm, selectionManager, osd, multiple, isVisible, isCol));
-					osd.AddMessage("Stage import complete!", 100);
+					OnScreenDisplay.ClearMessageList();
+					OnScreenDisplay.AddMessage("Importing models, please wait...", 3000);
+					OnScreenDisplay.ClearMessageList();
+					createdItems.AddRange(ImportFromHierarchy(objm, selectionManager, multiple, isVisible, isCol));
+					OnScreenDisplay.AddMessage("Stage import complete!", 100);
 					break;
 				case ".txt":
 					NodeTable.ImportFromFile(filePath, out importError, out importErrorMsg, selectionManager, isSA2);
@@ -718,8 +718,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 					Assimp.Scene scene = context.ImportFile(filePath, Assimp.PostProcessSteps.Triangulate);
 					for (int i = 0; i < scene.RootNode.ChildCount; i++)
 					{
-						osd.ClearMessageList();
-						osd.AddMessage("Importing model " + i.ToString() + " of " + scene.RootNode.ChildCount.ToString() + "...", 3000);
+						OnScreenDisplay.ClearMessageList();
+						OnScreenDisplay.AddMessage("Importing model " + i.ToString() + " of " + scene.RootNode.ChildCount.ToString() + "...", 3000);
 						Assimp.Node child = scene.RootNode.Children[i];
 						List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
 						foreach (int j in child.MeshIndices)
@@ -786,8 +786,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 						}
 						
 					}
-					osd.ClearMessageList();
-					osd.AddMessage("Stage import complete!", 100);
+					OnScreenDisplay.ClearMessageList();
+					OnScreenDisplay.AddMessage("Stage import complete!", 100);
 					break;
 
 				default:

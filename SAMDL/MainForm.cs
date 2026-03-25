@@ -26,7 +26,6 @@ namespace SAModel.SAMDL
 		// Editor settings
 		Settings_SAMDL settingsfile; // For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SAMDL.config
-		Logger log = new Logger();
 		string currentProject; // Path to currently loaded project, if it exists
 		string lastProjectModeCategory = ""; // Last selected category in the model list
 
@@ -69,7 +68,6 @@ namespace SAModel.SAMDL
 
 		// UI related
 		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
-		OnScreenDisplay osd;
 		ModelFileDialog modelinfo = new ModelFileDialog();
 		EditorOptionsEditor optionsEditor;
 		System.Drawing.Rectangle mouseBounds;
@@ -245,12 +243,12 @@ namespace SAModel.SAMDL
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
-			log.Add(e.Exception.ToString());
+			Logger.Add(e.Exception.ToString());
 			string errDesc = "SAMDL has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
 				"If you wish to report a bug, please include the following in your report:";
-			ErrorDialog report = new ErrorDialog("SAMDL", errDesc, log.GetLogString());
-			log.WriteLog();
-			DialogResult dgresult = report.ShowDialog();
+			ErrorDialog report = new ErrorDialog("SAMDL", errDesc, Logger.GetLogString());
+			Logger.WriteLog();
+			DialogResult dgresult = report.ShowDialog(this);
 			switch (dgresult)
 			{
 				case DialogResult.OK:
@@ -264,13 +262,13 @@ namespace SAModel.SAMDL
 		{
 			AnimationTimer = new HiResTimer(16.667f);
 			AnimationTimer.Elapsed += new EventHandler<HiResTimerElapsedEventArgs>(AdvanceAnimation);
-			log.DeleteLogFile();
-			log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
-			log.Add("Build Date: ");
-			log.Add(File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
-			log.Add("OS Version: ");
-			log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
-			log.WriteLog();
+			Logger.DeleteLogFile();
+			Logger.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
+			Logger.Add("Build Date: ");
+			Logger.Add(File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
+			Logger.Add("OS Version: ");
+			Logger.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
+			Logger.WriteLog();
 			SharpDX.Direct3D9.Direct3DEx d3d = new SharpDX.Direct3D9.Direct3DEx();
 			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
 			new PresentParameters
@@ -280,7 +278,7 @@ namespace SAModel.SAMDL
 				EnableAutoDepthStencil = true,
 				AutoDepthStencilFormat = Format.D24X8
 			});
-			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
+			OnScreenDisplay.Initialize(d3ddevice, Color.Red.ToRawColorBGRA());
 			AppConfig.Reload();
 			settingsfile = Settings_SAMDL.Load();
 			EditorOptions.FillColor = settingsfile.BackgroundColor;
@@ -421,14 +419,14 @@ namespace SAModel.SAMDL
 #if !DEBUG
 				catch (Exception ex)
 				{
-					log.Add("Loading the model from " + a.FileName + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
+					Logger.Add("Loading the model from " + a.FileName + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
 					string errDesc = "SAMDL could not load the model for the reason(s) below.\n" +
 						"Please check the model's type and address and try again.\n\n" +
 						"If you wish to report a bug, please include the model file and this information\n" +
 						"in your report.";
-					ErrorDialog report = new ErrorDialog("SAMDL", errDesc, log.GetLogString());
-					log.WriteLog();
-					DialogResult dgresult = report.ShowDialog();
+					ErrorDialog report = new ErrorDialog("SAMDL", errDesc, Logger.GetLogString());
+					Logger.WriteLog();
+					DialogResult dgresult = report.ShowDialog(this);
 					switch (dgresult)
 					{
 						case DialogResult.Cancel:
@@ -514,14 +512,14 @@ namespace SAModel.SAMDL
 #if !DEBUG
 				catch (Exception ex)
 				{
-					log.Add("Loading the model from " + filename + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
+					Logger.Add("Loading the model from " + filename + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
 					string errDesc = "SAMDL could not load the model for the reason(s) below.\n" +
 						"Please check the model's type and address and try again.\n\n" +
 						"If you wish to report a bug, please include the model file and this information\n" +
 						"in your report.";
-					ErrorDialog report = new ErrorDialog("SAMDL", errDesc, log.GetLogString());
-					log.WriteLog();
-					report.ShowDialog();
+					ErrorDialog report = new ErrorDialog("SAMDL", errDesc, Logger.GetLogString());
+					Logger.WriteLog();
+					report.ShowDialog(this);
 					return;
 				}
 #endif
@@ -691,15 +689,15 @@ namespace SAModel.SAMDL
 									file = SplitTools.HelperFunctions.DecompressREL(file);
 									SplitTools.HelperFunctions.FixRELPointers(file, 0xC900000);
 								}
-								log.Add("Loading model from binary file " + filename);
-								log.Add("\tKey: " + uint.Parse(modelinfo.numericUpDownKey.Value.ToString()).ToCHex());
-								log.Add("\tAddress: " + uint.Parse(modelinfo.numericUpDownModelAddress.Value.ToString()).ToCHex());
+								Logger.Add("Loading model from binary file " + filename);
+								Logger.Add("\tKey: " + uint.Parse(modelinfo.numericUpDownKey.Value.ToString()).ToCHex());
+								Logger.Add("\tAddress: " + uint.Parse(modelinfo.numericUpDownModelAddress.Value.ToString()).ToCHex());
 								if (modelinfo.numericUpDownStartOffset.Value != 0)
-									log.Add("\tOffset: " + uint.Parse(modelinfo.numericUpDownStartOffset.Value.ToString()).ToCHex());
+									Logger.Add("\tOffset: " + uint.Parse(modelinfo.numericUpDownStartOffset.Value.ToString()).ToCHex());
 								if (modelinfo.numericUpDownMotionAddress.Value != 0)
-									log.Add("\tMotion at: " + uint.Parse(modelinfo.numericUpDownMotionAddress.Value.ToString()).ToCHex());
-								log.Add("\tBig Endian: " + modelinfo.checkBoxBigEndian.Checked.ToString()); ;
-								log.WriteLog();
+									Logger.Add("\tMotion at: " + uint.Parse(modelinfo.numericUpDownMotionAddress.Value.ToString()).ToCHex());
+								Logger.Add("\tBig Endian: " + modelinfo.checkBoxBigEndian.Checked.ToString()); ;
+								Logger.WriteLog();
 								LoadBinFile(file);
 							}
 							else
@@ -1236,7 +1234,7 @@ namespace SAModel.SAMDL
 
 			if (showNodeConnectionsToolStripMenuItem.Checked && model.CountAnimated() > 1)
 				DrawNodeConnections(model, transform);
-			osd.ProcessMessages();
+			OnScreenDisplay.ProcessMessages();
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
 		}
@@ -1350,15 +1348,15 @@ namespace SAModel.SAMDL
 				Matrix view = d3ddevice.GetTransform(TransformState.View);
 				Viewport viewport = d3ddevice.Viewport;
 				Matrix projection = d3ddevice.GetTransform(TransformState.Projection);
-				osd.textSprite.Begin(SpriteFlags.AlphaBlend);
+				OnScreenDisplay.textSprite.Begin(SpriteFlags.AlphaBlend);
 				for (int i = 0; i < basicatt.Vertex.Length; i++)
 				{
 					Vertex vtx = basicatt.Vertex[i];
 					Vector3 v3 = Vector3.TransformCoordinate(vtx.ToVector3(), transform.Top);
 					Vector3 screenCoordinates = viewport.Project(v3, projection, view, Matrix.Identity);
-					EditorOptions.OnscreenFont.DrawText(osd.textSprite, i.ToString(), (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
+					EditorOptions.OnscreenFont.DrawText(OnScreenDisplay.textSprite, i.ToString(), (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
 				}
-				osd.textSprite.End();
+				OnScreenDisplay.textSprite.End();
 			}
 			if (obj.Attach is ChunkAttach)
 			{
@@ -1366,7 +1364,7 @@ namespace SAModel.SAMDL
 				Matrix view = d3ddevice.GetTransform(TransformState.View);
 				Viewport viewport = d3ddevice.Viewport;
 				Matrix projection = d3ddevice.GetTransform(TransformState.Projection);
-				osd.textSprite.Begin(SpriteFlags.AlphaBlend);
+				OnScreenDisplay.textSprite.Begin(SpriteFlags.AlphaBlend);
 				for (int i = 0; i < chunkatt.Vertex.Count; i++)
 				{
 					for (int j = 0; j < chunkatt.Vertex[i].VertexCount; j++)
@@ -1374,10 +1372,10 @@ namespace SAModel.SAMDL
 						Vertex vtx = chunkatt.Vertex[i].Vertices[j];
 						Vector3 v3 = Vector3.TransformCoordinate(vtx.ToVector3(), transform.Top);
 						Vector3 screenCoordinates = viewport.Project(v3, projection, view, Matrix.Identity);
-						EditorOptions.OnscreenFont.DrawText(osd.textSprite, i.ToString() + "(" + j.ToString() + ")", (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
+						EditorOptions.OnscreenFont.DrawText(OnScreenDisplay.textSprite, i.ToString() + "(" + j.ToString() + ")", (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
 					}
 				}
-				osd.textSprite.End();
+				OnScreenDisplay.textSprite.End();
 			}
 		}
 
@@ -1454,7 +1452,7 @@ namespace SAModel.SAMDL
 			if (animationList == null || currentAnimation == null) return;
 			animframe = (float)Math.Floor(animframe + 1);
 			if (animframe == currentAnimation.Frames) animframe = 0;
-			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			AnimationTimer.Stop();
 			AnimationPlaying = false;
 			buttonPlayAnimation.Image = SAMDL.Properties.Resources.playanim;
@@ -1466,7 +1464,7 @@ namespace SAModel.SAMDL
 			if (animationList == null || currentAnimation == null) return;
 			animframe = (float)Math.Floor(animframe - 1);
 			if (animframe < 0) animframe = currentAnimation.Frames - 1;
-			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			AnimationTimer.Stop();
 			AnimationPlaying = false;
 			buttonPlayAnimation.Image = SAMDL.Properties.Resources.playanim;
@@ -1477,7 +1475,7 @@ namespace SAModel.SAMDL
 		{
 			if (animationList == null || currentAnimation == null) return;
 			animframe = 0;
-			osd.UpdateOSDItem("Reset animation frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Reset animation frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			AnimationTimer.Stop();
 			AnimationPlaying = false;
 			buttonPlayAnimation.Image = SAMDL.Properties.Resources.playanim;
@@ -1491,12 +1489,12 @@ namespace SAModel.SAMDL
 			buttonPlayAnimation.Image = AnimationPlaying ? SAMDL.Properties.Resources.stopanim : SAMDL.Properties.Resources.playanim;
 			if (AnimationPlaying)
 			{
-				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				AnimationTimer.Start();
 			}
 			else
 			{
-				osd.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				AnimationTimer.Stop();
 			}
 			NeedRedraw = true;
@@ -1526,7 +1524,7 @@ namespace SAModel.SAMDL
 							cam.FocalPoint = cam.Position += cam.Look * cam.Distance;
 						}
 					}
-					osd.UpdateOSDItem("Camera mode: " + cammode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Camera mode: " + cammode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
@@ -1547,7 +1545,7 @@ namespace SAModel.SAMDL
 						bounds.Center += model.Position;
 						cam.MoveToShowBounds(bounds);
 					}
-					osd.UpdateOSDItem("Camera zoomed to target", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Camera zoomed to target", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
@@ -1564,7 +1562,7 @@ namespace SAModel.SAMDL
 						if (EditorOptions.RenderFillMode == FillMode.Solid) rendermode = "Solid";
 						else rendermode = "Wireframe";
 					}
-					osd.UpdateOSDItem("Render mode: " + rendermode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Render mode: " + rendermode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
@@ -1576,14 +1574,14 @@ namespace SAModel.SAMDL
 				case ("Increase Camera Speed"):
 					cam.MoveSpeed += 0.0625f;
 					UpdateStatusString();
-					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					settingsfile.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
 				case ("Decrease Camera Speed"):
 					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
-					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
 					settingsfile.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
@@ -1591,7 +1589,7 @@ namespace SAModel.SAMDL
 
 				case ("Reset Camera Speed"):
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
-					osd.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
 					settingsfile.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
@@ -1601,7 +1599,7 @@ namespace SAModel.SAMDL
 					if (cam.mode == 0)
 					{
 						cam.Position = new Vector3();
-						osd.UpdateOSDItem("Reset camera position", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+						OnScreenDisplay.UpdateOSDItem("Reset camera position", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 						draw = true;
 					}
 					break;
@@ -1611,7 +1609,7 @@ namespace SAModel.SAMDL
 					{
 						cam.Pitch = 0;
 						cam.Yaw = 0;
-						osd.UpdateOSDItem("Reset camera rotation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+						OnScreenDisplay.UpdateOSDItem("Reset camera rotation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 						draw = true;
 					}
 					break;
@@ -1655,27 +1653,27 @@ namespace SAModel.SAMDL
 				case ("Increase Animation Speed"):
 					animspeed += 0.1f;
 					settingsfile.AnimSpeed = animspeed;
-					osd.UpdateOSDItem("Animation speed: " + animspeed.ToString("0.00"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 60);
+					OnScreenDisplay.UpdateOSDItem("Animation speed: " + animspeed.ToString("0.00"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 60);
 					draw = true;
 					break;
 
 				case ("Decrease Animation Speed"):
 					animspeed -= 0.1f;
 					settingsfile.AnimSpeed = animspeed;
-					osd.UpdateOSDItem("Animation speed: " + animspeed.ToString("0.00"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 60);
+					OnScreenDisplay.UpdateOSDItem("Animation speed: " + animspeed.ToString("0.00"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 60);
 					draw = true;
 					break;
 
 				case ("Reset Animation Speed"):
 					settingsfile.AnimSpeed = animspeed = 1.0f;
-					osd.UpdateOSDItem("Reset animation speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 60);
+					OnScreenDisplay.UpdateOSDItem("Reset animation speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 60);
 					draw = true;
 					break;
 
 				case ("Brighten Ambient"):
 					EditorOptions.AdjustBackLightBrightness(0.1f);
 					EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Default);
-					osd.UpdateOSDItem("Brighten Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					OnScreenDisplay.UpdateOSDItem("Brighten Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					draw = true;
 					break;
 
@@ -1698,16 +1696,16 @@ namespace SAModel.SAMDL
 			{
 				case ("Camera Move"):
 					cameraKeyDown = true;
-					osd.UpdateOSDItem("Camera mode: Move", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					OnScreenDisplay.UpdateOSDItem("Camera mode: Move", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					break;
 
 				case ("Camera Zoom"):
-					osd.UpdateOSDItem("Camera mode: Zoom", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					OnScreenDisplay.UpdateOSDItem("Camera mode: Zoom", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					zoomKeyDown = true;
 					break;
 
 				case ("Camera Look"):
-					osd.UpdateOSDItem("Camera mode: Look", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					OnScreenDisplay.UpdateOSDItem("Camera mode: Look", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					lookKeyDown = true;
 					break;
 
@@ -2348,7 +2346,7 @@ namespace SAModel.SAMDL
 		{
 			string showmodel = "Off";
 			if (showModelToolStripMenuItem.Checked) showmodel = "On";
-			osd.UpdateOSDItem("Show model: " + showmodel, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Show model: " + showmodel, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -2356,7 +2354,7 @@ namespace SAModel.SAMDL
 		{
 			string shownodes = "Off";
 			if (showNodesToolStripMenuItem.Checked) shownodes = "On";
-			osd.UpdateOSDItem("Show nodes: " + shownodes, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Show nodes: " + shownodes, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			buttonShowNodes.Checked = showNodesToolStripMenuItem.Checked;
 			NeedRedraw = true;
 		}
@@ -2808,7 +2806,7 @@ namespace SAModel.SAMDL
 				if (animationList == null || currentAnimation == null) return;
 				AnimationPlaying = false;
 				buttonPlayAnimation.Checked = false;
-				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonPlayAnimation.Enabled = AnimationPlaying = true;
 				buttonPlayAnimation.Image = SAMDL.Properties.Resources.stopanim;
 				AnimationTimer.Start();
@@ -2882,12 +2880,12 @@ namespace SAModel.SAMDL
 					RebuildModelCache();
 					SelectedItemChanged();
 					unsavedChanges = true;
-					osd.UpdateOSDItem("Model deleted", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Model deleted", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					NeedRedraw = true;
 				}
 			}
 			else
-				osd.UpdateOSDItem("Cannot delete root node", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Cannot delete root node", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 		}
 
 		private void RebuildModelCache()
@@ -2952,7 +2950,8 @@ namespace SAModel.SAMDL
 
 		private void MessageTimer_Tick(object sender, EventArgs e)
 		{
-			if (osd != null && osd.UpdateTimer()) NeedRedraw = true;
+			if (OnScreenDisplay.UpdateTimer())
+				NeedRedraw = true;
 		}
 
 		private void buttonNew_Click(object sender, EventArgs e)
@@ -3023,7 +3022,7 @@ namespace SAModel.SAMDL
 			buttonSolid.Checked = true;
 			buttonVertices.Checked = false;
 			buttonWireframe.Checked = false;
-			osd.UpdateOSDItem("Render mode: Solid", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Render mode: Solid", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -3033,7 +3032,7 @@ namespace SAModel.SAMDL
 			buttonSolid.Checked = false;
 			buttonVertices.Checked = true;
 			buttonWireframe.Checked = false;
-			osd.UpdateOSDItem("Render mode: Point", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Render mode: Point", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -3043,7 +3042,7 @@ namespace SAModel.SAMDL
 			buttonSolid.Checked = false;
 			buttonVertices.Checked = false;
 			buttonWireframe.Checked = true;
-			osd.UpdateOSDItem("Render mode: Wireframe", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Render mode: Wireframe", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -3079,7 +3078,7 @@ namespace SAModel.SAMDL
 
 		private void showHintsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
-			osd.show_osd = !osd.show_osd;
+			OnScreenDisplay.show_osd = !OnScreenDisplay.show_osd;
 			buttonShowHints.Checked = showHintsToolStripMenuItem.Checked;
 			NeedRedraw = true;
 		}
@@ -3090,7 +3089,7 @@ namespace SAModel.SAMDL
 			EditorOptions.OverrideLighting = !EditorOptions.OverrideLighting;
 			buttonLighting.Checked = !EditorOptions.OverrideLighting;
 			if (EditorOptions.OverrideLighting) lighting = "Off";
-			osd.UpdateOSDItem("Lighting: " + lighting, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Lighting: " + lighting, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -3201,7 +3200,7 @@ namespace SAModel.SAMDL
 			string showmatcolors = "On";
 			EditorOptions.IgnoreMaterialColors = !buttonMaterialColors.Checked;
 			if (EditorOptions.IgnoreMaterialColors) showmatcolors = "Off";
-			osd.UpdateOSDItem("Material Colors: " + showmatcolors, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Material Colors: " + showmatcolors, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -3287,7 +3286,7 @@ namespace SAModel.SAMDL
 		{
 			string shownodecons = "Off";
 			if (showNodeConnectionsToolStripMenuItem.Checked) shownodecons = "On";
-			osd.UpdateOSDItem("Show node connections: " + shownodecons, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Show node connections: " + shownodecons, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			buttonShowNodeConnections.Checked = showNodeConnectionsToolStripMenuItem.Checked;
 			NeedRedraw = true;
 		}
@@ -3382,7 +3381,7 @@ namespace SAModel.SAMDL
 			};
 			d3ddevice.Reset(pp);
 			DeviceResizing = false;
-			osd.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			OnScreenDisplay.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 			NeedRedraw = true;
 		}
 
@@ -3608,7 +3607,7 @@ namespace SAModel.SAMDL
 
 		private void showVertexIndicesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
-			osd.UpdateOSDItem("Show vertex indices: " + (buttonShowVertexIndices.Checked ? "On" : "Off"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Show vertex indices: " + (buttonShowVertexIndices.Checked ? "On" : "Off"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			buttonShowVertexIndices.Checked = showVertexIndicesToolStripMenuItem.Checked;
 			NeedRedraw = true;
 		}
@@ -4259,7 +4258,7 @@ namespace SAModel.SAMDL
 
 		private void buttonTextures_CheckedChanged(object sender, EventArgs e)
 		{
-			osd.UpdateOSDItem("Show textures: " + (buttonTextures.Checked ? "On" : "Off"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Show textures: " + (buttonTextures.Checked ? "On" : "Off"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -4502,12 +4501,12 @@ namespace SAModel.SAMDL
 		{
 			if (currentAnimation != null)
 			{
-				osd.UpdateOSDItem("Animation: " + animationList[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Animation: " + animationList[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonResetFrame.Enabled = buttonPrevFrame.Enabled = buttonNextFrame.Enabled = buttonPlayAnimation.Enabled = true;
 			}
 			else
 			{
-				osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonResetFrame.Enabled = buttonPrevFrame.Enabled = buttonNextFrame.Enabled = buttonPlayAnimation.Enabled = false;
 			}
 		}

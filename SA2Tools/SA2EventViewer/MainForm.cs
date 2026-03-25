@@ -22,7 +22,6 @@ namespace SA2EventViewer
 	public partial class MainForm : Form
 	{
 		Settings_SA2EventViewer settingsfile; // For user editable settings
-		Logger log = new Logger();
 		bool FormResizing;
 		bool Playing;
 		bool NeedRedraw;
@@ -88,7 +87,6 @@ namespace SA2EventViewer
 		int selectedObjectEntity;
 		byte[] filecontents;
 		bool eventcamera = true;
-		OnScreenDisplay osd;
 
 		#region UI
 		bool lookKeyDown;
@@ -114,7 +112,7 @@ namespace SA2EventViewer
 					EnableAutoDepthStencil = true,
 					AutoDepthStencilFormat = Format.D24X8
 				});
-			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
+			OnScreenDisplay.Initialize(d3ddevice, Color.Red.ToRawColorBGRA());
 			settingsfile = Settings_SA2EventViewer.Load();
 			EditorOptions.FillColor = settingsfile.BackgroundColor;
 			EditorOptions.Initialize(d3ddevice);
@@ -426,7 +424,7 @@ namespace SA2EventViewer
 				}
 			}
 			RenderInfo.Draw(renderList, d3ddevice, cam, true);
-			osd.ProcessMessages();
+			OnScreenDisplay.ProcessMessages();
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
 		}
@@ -633,13 +631,13 @@ namespace SA2EventViewer
 			}
 			if (scenenum == 0)
 			{
-				osd.UpdateOSDItem("Default Scene", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Default Scene", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonNextFrame.Enabled = false;
 				buttonPreviousFrame.Enabled = false;
 			}
 			else
 			{
-				osd.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonNextFrame.Enabled = true;
 				buttonPreviousFrame.Enabled = true;
 			}
@@ -674,13 +672,13 @@ namespace SA2EventViewer
 			if (scenenum == -1 || (Playing && scenenum == 0)) scenenum = @event.Scenes.Count - 1;
 			if (scenenum == 0)
 			{
-				osd.UpdateOSDItem("Default Scene", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Default Scene", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonNextFrame.Enabled = false;
 				buttonPreviousFrame.Enabled = false;
 			}
 			else
 			{
-				osd.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonNextFrame.Enabled = true;
 				buttonPreviousFrame.Enabled = true;
 			}
@@ -713,8 +711,8 @@ namespace SA2EventViewer
 				nextframe = animframe;
 				AnimationTimer.Stop();
 				Playing = false;
-				osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				osd.UpdateOSDItem("Cutscene frame: " + evframe.ToString(), RenderPanel.Width, 28, Color.AliceBlue.ToRawColorBGRA(), "gizmo2", 120);
+				OnScreenDisplay.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Cutscene frame: " + evframe.ToString(), RenderPanel.Width, 28, Color.AliceBlue.ToRawColorBGRA(), "gizmo2", 120);
 				NeedRedraw = true;
 			}
 		}
@@ -739,8 +737,8 @@ namespace SA2EventViewer
 					evframe = (float)Math.Floor(evframe + 1);
 				AnimationTimer.Stop();
 				Playing = false;
-				osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				osd.UpdateOSDItem("Cutscene frame: " + evframe.ToString(), RenderPanel.Width, 28, Color.AliceBlue.ToRawColorBGRA(), "gizmo2", 120);
+				OnScreenDisplay.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Cutscene frame: " + evframe.ToString(), RenderPanel.Width, 28, Color.AliceBlue.ToRawColorBGRA(), "gizmo2", 120);
 				NeedRedraw = true;
 				BuildEventEntityList();
 			}
@@ -760,13 +758,13 @@ namespace SA2EventViewer
 			Playing = !Playing;
 			if (Playing)
 			{
-				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonPlayScene.Checked = true;
 				AnimationTimer.Start();
 			}
 			else
 			{
-				osd.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				OnScreenDisplay.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonPlayScene.Checked = false;
 				AnimationTimer.Stop();
 			}
@@ -786,7 +784,7 @@ namespace SA2EventViewer
 					eventcamera = !eventcamera;
 					string cammode = "Event Cam";
 					if (!eventcamera) cammode = "Free Cam";
-					osd.UpdateOSDItem("Camera mode: " + cammode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Camera mode: " + cammode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
@@ -799,7 +797,7 @@ namespace SA2EventViewer
 						bounds.Center += selectedObject.Position;
 						cam.MoveToShowBounds(bounds);
 					}
-					osd.UpdateOSDItem("Camera zoomed to target", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Camera zoomed to target", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
@@ -816,27 +814,27 @@ namespace SA2EventViewer
 						if (EditorOptions.RenderFillMode == FillMode.Solid) rendermode = "Solid";
 						else rendermode = "Wireframe";
 					}
-					osd.UpdateOSDItem("Render mode: " + rendermode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Render mode: " + rendermode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
 				case ("Increase Camera Speed"):
 					cam.MoveSpeed += 0.0625f;
-					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					//UpdateTitlebar();
 					UpdateStatusString();
 					break;
 
 				case ("Decrease Camera Speed"):
 					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
-					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					//UpdateTitlebar();
 					UpdateStatusString();
 					break;
 
 				case ("Reset Camera Speed"):
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
-					osd.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+					OnScreenDisplay.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					//UpdateTitlebar();
 					UpdateStatusString();
 					break;
@@ -845,7 +843,7 @@ namespace SA2EventViewer
 					if (!eventcamera)
 					{
 						cam.Position = new Vector3();
-						osd.UpdateOSDItem("Reset camera position", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+						OnScreenDisplay.UpdateOSDItem("Reset camera position", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 						draw = true;
 					}
 					break;
@@ -855,7 +853,7 @@ namespace SA2EventViewer
 					{
 						cam.Pitch = 0;
 						cam.Yaw = 0;
-						osd.UpdateOSDItem("Reset camera rotation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+						OnScreenDisplay.UpdateOSDItem("Reset camera rotation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 						draw = true;
 					}
 					break;
@@ -1129,7 +1127,7 @@ namespace SA2EventViewer
 			buttonSolid.Checked = true;
 			buttonVertices.Checked = false;
 			buttonWireframe.Checked = false;
-			osd.UpdateOSDItem("Render mode: Solid", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Render mode: Solid", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -1139,7 +1137,7 @@ namespace SA2EventViewer
 			buttonSolid.Checked = false;
 			buttonVertices.Checked = true;
 			buttonWireframe.Checked = false;
-			osd.UpdateOSDItem("Render mode: Point", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Render mode: Point", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -1149,7 +1147,7 @@ namespace SA2EventViewer
 			buttonSolid.Checked = false;
 			buttonVertices.Checked = false;
 			buttonWireframe.Checked = true;
-			osd.UpdateOSDItem("Render mode: Wireframe", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Render mode: Wireframe", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -1171,7 +1169,7 @@ namespace SA2EventViewer
 			};
 			d3ddevice.Reset(pp);
 			DeviceResizing = false;
-			osd.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			OnScreenDisplay.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 			NeedRedraw = true;
 		}
 
@@ -1205,13 +1203,13 @@ namespace SA2EventViewer
 			string showmatcolors = "On";
 			EditorOptions.IgnoreMaterialColors = !buttonMaterialColors.Checked;
 			if (EditorOptions.IgnoreMaterialColors) showmatcolors = "Off";
-			osd.UpdateOSDItem("Material Colors: " + showmatcolors, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Material Colors: " + showmatcolors, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
 		private void showHintsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
-			osd.show_osd = !osd.show_osd;
+			OnScreenDisplay.show_osd = !OnScreenDisplay.show_osd;
 			buttonShowHints.Checked = showHintsToolStripMenuItem.Checked;
 			NeedRedraw = true;
 		}
@@ -1222,7 +1220,7 @@ namespace SA2EventViewer
 			EditorOptions.OverrideLighting = !EditorOptions.OverrideLighting;
 			buttonLighting.Checked = !EditorOptions.OverrideLighting;
 			if (EditorOptions.OverrideLighting) lighting = "Off";
-			osd.UpdateOSDItem("Lighting: " + lighting, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			OnScreenDisplay.UpdateOSDItem("Lighting: " + lighting, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
 
@@ -1325,7 +1323,8 @@ namespace SA2EventViewer
 
 		private void MessageTimer_Tick(object sender, EventArgs e)
 		{
-			if (osd != null && osd.UpdateTimer()) NeedRedraw = true;
+			if (OnScreenDisplay.UpdateTimer())
+				NeedRedraw = true;
 		}
 
 		private void toolStripStatusLabel1_Click(object sender, EventArgs e)

@@ -1,19 +1,20 @@
-﻿using System.IO;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using SAModel.SAEditorCommon.DataTypes;
-using SAModel.SAEditorCommon.SETEditing;
-using SplitTools;
-using System;
+﻿using System;
 using System.Text;
 using System.Reflection;
-using SAModel.Direct3D;
+using System.IO;
+using System.Collections.Generic;
+using System.Windows.Forms;
+using System.Linq;
 using SharpDX;
 using SharpDX.Direct3D9;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using System.Linq;
+using SplitTools;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.SETEditing;
+using SAModel.SAEditorCommon;
 
 namespace SAModel.SALVL
 {
@@ -96,7 +97,7 @@ namespace SAModel.SALVL
 					{
 						KeyValuePair<string, string> errorValue = new KeyValuePair<string, string>(
 							defgroup.CodeFile, errorText);
-						log.Add(errorValue.Value);
+						Logger.Add(errorValue.Value);
 						compileErrors.Add(errorValue);
 					}
 				}
@@ -200,10 +201,10 @@ namespace SAModel.SALVL
                     errorStrings.Add("\t\tName:\t" + ((texEmpty) ? "(N/A)" : o.Texture));
                     errorStrings.Add("\t\tExists:\t" + texExists);
                 }
-                log.AddRange(errorStrings);
-                osd.AddMessage(levelName + ":\n" + count + (Mission ? " Mission SET" : " SET") + (count == 1 ? " object " : " objects ") + "failed to load their model(s).\n"
+                Logger.AddRange(errorStrings);
+				OnScreenDisplay.AddMessage(levelName + ":\n" + count + (Mission ? " Mission SET" : " SET") + (count == 1 ? " object " : " objects ") + "failed to load their model(s).\n"
                                     + "Please check SET object load errors in the log for details.\n", 300);
-                log.WriteLog();
+                Logger.WriteLog();
             }
 
             LevelData.StateChanged += LevelData_StateChanged;
@@ -308,8 +309,8 @@ namespace SAModel.SALVL
             {
                 error = true;
                 MessageBox.Show("Error copying object definitions:\n" + ex.ToString(), "SALVL Error");
-                log.Add("Error copying object definitions:\n" + ex.ToString());
-                log.WriteLog();
+                Logger.Add("Error copying object definitions:\n" + ex.ToString());
+                Logger.WriteLog();
             }
             return error;
         }
