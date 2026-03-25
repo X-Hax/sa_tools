@@ -160,10 +160,10 @@ namespace SAModel.SALVL
 						}
 					}
 				}
-				Logger.Add($"Initializing Object Definition:{objlstini[ID].Name}: {defgroup.Name}");
+				Logger.Add($"Initializing Object Definition: {objlstini[ID].Name} {(string.IsNullOrEmpty(defgroup.Name) ? "" : "(" + defgroup.Name + ")")}");
 				def.Init(defgroup, objlstini[ID].Name);
 				def.SetInternalName(objlstini[ID].Name);
-				Logger.Add($"Finished initializing Object Definition:{defgroup.Name}");
+				Logger.Add($"Finished initializing Object Definition: {objlstini[ID].Name}");
 #if DEBUG
 			}
 #else
