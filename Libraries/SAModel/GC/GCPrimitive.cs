@@ -77,12 +77,10 @@ namespace SAModel.GC
 		/// <param name="end"></param>
 		public GCPrimitive(byte[] file, int address, GCIndexAttributeFlags indexFlags, out int end)
 		{
+			// All data is always in Big Endian
 			PrimitiveType = (GCPrimitiveType)file[address];
 
-			var wasBigEndian = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = true;
-
-			var vtxCount = ByteConverter.ToUInt16(file, address + 1);
+			var vtxCount = ByteConverter.ToUInt16BE(file, address + 1);
 
 			// Position always exists
 			var hasColor = indexFlags.HasFlag(GCIndexAttributeFlags.HasColor);
@@ -104,7 +102,7 @@ namespace SAModel.GC
 				// Reading position, which should always exist
 				if (pos16Bit)
 				{
-					l.PositionIndex = ByteConverter.ToUInt16(file, tempAddr);
+					l.PositionIndex = ByteConverter.ToUInt16BE(file, tempAddr);
 					tempAddr += 2;
 				}
 				else
@@ -118,7 +116,7 @@ namespace SAModel.GC
 				{
 					if (nrm16Bit)
 					{
-						l.NormalIndex = ByteConverter.ToUInt16(file, tempAddr);
+						l.NormalIndex = ByteConverter.ToUInt16BE(file, tempAddr);
 						tempAddr += 2;
 					}
 					else
@@ -133,7 +131,7 @@ namespace SAModel.GC
 				{
 					if (col16Bit)
 					{
-						l.Color0Index = ByteConverter.ToUInt16(file, tempAddr);
+						l.Color0Index = ByteConverter.ToUInt16BE(file, tempAddr);
 						tempAddr += 2;
 					}
 					else
@@ -148,7 +146,7 @@ namespace SAModel.GC
 				{
 					if (uv16Bit)
 					{
-						l.UV0Index = ByteConverter.ToUInt16(file, tempAddr);
+						l.UV0Index = ByteConverter.ToUInt16BE(file, tempAddr);
 						tempAddr += 2;
 					}
 					else
@@ -162,8 +160,6 @@ namespace SAModel.GC
 			}
 
 			end = tempAddr;
-
-			ByteConverter.BigEndian = wasBigEndian;
 		}
 
 		/// <summary>
