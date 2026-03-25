@@ -666,7 +666,7 @@ namespace SAModel.SAEditorCommon.UI
 			sb.Append(", Point Data:");
 			sb.Append(weightposnrm);
 			if (selectedVerts.elementType > GCSkinAttribute.StaticWeight && selectedVerts.elementType < GCSkinAttribute.WeightStructEndMarker)
-			sb.Append(", Weight Data:");
+				sb.Append(", Weight Data:");
 			sb.Append(weightindex);
 			toolStripStatusLabelInfo.Text = sb.ToString();
 		}
@@ -732,6 +732,16 @@ namespace SAModel.SAEditorCommon.UI
 				{
 					de.ShowDialog(this);
 				}
+			}
+		}
+
+		private void openPrimitiveViewerToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			GCMesh oMeshData = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+
+			using (GCModelPrimitiveDataEditor de = new GCModelPrimitiveDataEditor(oMeshData))
+			{
+				de.ShowDialog(this);
 			}
 		}
 	}

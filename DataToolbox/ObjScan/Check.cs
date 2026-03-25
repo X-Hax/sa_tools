@@ -39,6 +39,7 @@ namespace SAModel.DataToolbox
 			uint meshlists = 0;
 			short mesh_count = 0;
 			short mat_count = 0;
+			uint weightlist = 0;
 			uint opaquepoly = 0;
 			short opaquecount = 0;
 			uint alphapoly = 0;
@@ -188,7 +189,10 @@ namespace SAModel.DataToolbox
 						if (attach > datafile.Length - 51 + ImageBase) return false;
 						vertlist = ByteConverter.ToUInt32(datafile, (int)(attach - ImageBase));
 						if (vertlist > datafile.Length - 51 + ImageBase) return false;
-						if (vertlist < ImageBase) return false;
+						if (vertlist != 0 && vertlist < ImageBase) return false;
+						weightlist = ByteConverter.ToUInt32(datafile, (int)(attach - ImageBase) + 4);
+						if (weightlist != 0 && weightlist < ImageBase) return false;
+						if (weightlist > datafile.Length - 51 + ImageBase) return false;
 						opaquepoly = ByteConverter.ToUInt32(datafile, (int)(attach - ImageBase) + 8);
 						if (opaquepoly != 0 && opaquepoly < ImageBase) return false;
 						if (opaquepoly > datafile.Length - 51 + ImageBase) return false;

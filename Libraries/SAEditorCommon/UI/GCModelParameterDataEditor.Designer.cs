@@ -78,6 +78,7 @@ namespace SAModel.SAEditorCommon.UI
 			diffuseLabel = new Label();
 			groupBoxUVScale = new GroupBox();
 			comboBoxUVScale = new ComboBox();
+			button1 = new Button();
 			statusStrip1.SuspendLayout();
 			contextMenuStripMatEdit.SuspendLayout();
 			groupBoxParamList.SuspendLayout();
@@ -99,10 +100,10 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
 			statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabelInfo });
-			statusStrip1.Location = new System.Drawing.Point(0, 504);
+			statusStrip1.Location = new System.Drawing.Point(0, 335);
 			statusStrip1.Name = "statusStrip1";
-			statusStrip1.Padding = new Padding(2, 0, 15, 0);
-			statusStrip1.Size = new System.Drawing.Size(1348, 32);
+			statusStrip1.Padding = new Padding(1, 0, 10, 0);
+			statusStrip1.Size = new System.Drawing.Size(856, 22);
 			statusStrip1.SizingGrip = false;
 			statusStrip1.TabIndex = 11;
 			statusStrip1.Text = "statusStrip1";
@@ -110,16 +111,17 @@ namespace SAModel.SAEditorCommon.UI
 			// toolStripStatusLabelInfo
 			// 
 			toolStripStatusLabelInfo.Name = "toolStripStatusLabelInfo";
-			toolStripStatusLabelInfo.Size = new System.Drawing.Size(701, 25);
+			toolStripStatusLabelInfo.Size = new System.Drawing.Size(469, 17);
 			toolStripStatusLabelInfo.Text = "Click a parameter to display its information here. Right-click to edit pieces, if applicable.";
 			// 
 			// buttonClose
 			// 
 			buttonClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			buttonClose.DialogResult = DialogResult.OK;
-			buttonClose.Location = new System.Drawing.Point(1216, 459);
+			buttonClose.Location = new System.Drawing.Point(811, 306);
+			buttonClose.Margin = new Padding(2, 2, 2, 2);
 			buttonClose.Name = "buttonClose";
-			buttonClose.Size = new System.Drawing.Size(126, 36);
+			buttonClose.Size = new System.Drawing.Size(84, 24);
 			buttonClose.TabIndex = 17;
 			buttonClose.Text = "Close";
 			buttonClose.UseVisualStyleBackColor = true;
@@ -130,41 +132,45 @@ namespace SAModel.SAEditorCommon.UI
 			contextMenuStripMatEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
 			contextMenuStripMatEdit.Items.AddRange(new ToolStripItem[] { editPCMatToolStripMenuItem, editTextureIDToolStripMenuItem, editStripAlphaToolStripMenuItem });
 			contextMenuStripMatEdit.Name = "contextMenuStripMatEdit";
-			contextMenuStripMatEdit.Size = new System.Drawing.Size(73, 76);
+			contextMenuStripMatEdit.Size = new System.Drawing.Size(68, 70);
 			contextMenuStripMatEdit.Opening += contextMenuStrip2_Opening;
 			// 
 			// editPCMatToolStripMenuItem
 			// 
 			editPCMatToolStripMenuItem.Name = "editPCMatToolStripMenuItem";
-			editPCMatToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
+			editPCMatToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
 			// 
 			// editTextureIDToolStripMenuItem
 			// 
 			editTextureIDToolStripMenuItem.Name = "editTextureIDToolStripMenuItem";
-			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
+			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
 			// 
 			// editStripAlphaToolStripMenuItem
 			// 
 			editStripAlphaToolStripMenuItem.Name = "editStripAlphaToolStripMenuItem";
-			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
+			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
 			// 
 			// groupBoxParamList
 			// 
+			groupBoxParamList.Controls.Add(button1);
 			groupBoxParamList.Controls.Add(buttonResetAll);
 			groupBoxParamList.Controls.Add(buttonResetParameter);
 			groupBoxParamList.Controls.Add(listViewParameters);
-			groupBoxParamList.Location = new System.Drawing.Point(568, 12);
+			groupBoxParamList.Location = new System.Drawing.Point(379, 8);
+			groupBoxParamList.Margin = new Padding(2, 2, 2, 2);
 			groupBoxParamList.Name = "groupBoxParamList";
-			groupBoxParamList.Size = new System.Drawing.Size(744, 443);
+			groupBoxParamList.Padding = new Padding(2, 2, 2, 2);
+			groupBoxParamList.Size = new System.Drawing.Size(496, 295);
 			groupBoxParamList.TabIndex = 29;
 			groupBoxParamList.TabStop = false;
 			groupBoxParamList.Text = "Parameter Data";
 			// 
 			// buttonResetAll
 			// 
-			buttonResetAll.Location = new System.Drawing.Point(608, 392);
+			buttonResetAll.Location = new System.Drawing.Point(405, 261);
+			buttonResetAll.Margin = new Padding(2, 2, 2, 2);
 			buttonResetAll.Name = "buttonResetAll";
-			buttonResetAll.Size = new System.Drawing.Size(119, 34);
+			buttonResetAll.Size = new System.Drawing.Size(79, 23);
 			buttonResetAll.TabIndex = 13;
 			buttonResetAll.Text = "Reset All";
 			buttonResetAll.UseVisualStyleBackColor = true;
@@ -172,9 +178,10 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// buttonResetParameter
 			// 
-			buttonResetParameter.Location = new System.Drawing.Point(369, 392);
+			buttonResetParameter.Location = new System.Drawing.Point(246, 261);
+			buttonResetParameter.Margin = new Padding(2, 2, 2, 2);
 			buttonResetParameter.Name = "buttonResetParameter";
-			buttonResetParameter.Size = new System.Drawing.Size(233, 34);
+			buttonResetParameter.Size = new System.Drawing.Size(155, 23);
 			buttonResetParameter.TabIndex = 12;
 			buttonResetParameter.Text = "Reset Selected Parameter";
 			buttonResetParameter.UseVisualStyleBackColor = true;
@@ -187,11 +194,12 @@ namespace SAModel.SAEditorCommon.UI
 			listViewParameters.FullRowSelect = true;
 			listViewParameters.GridLines = true;
 			listViewParameters.HeaderStyle = ColumnHeaderStyle.Nonclickable;
-			listViewParameters.Location = new System.Drawing.Point(6, 28);
+			listViewParameters.Location = new System.Drawing.Point(4, 19);
+			listViewParameters.Margin = new Padding(2, 2, 2, 2);
 			listViewParameters.MultiSelect = false;
 			listViewParameters.Name = "listViewParameters";
 			listViewParameters.ShowGroups = false;
-			listViewParameters.Size = new System.Drawing.Size(721, 352);
+			listViewParameters.Size = new System.Drawing.Size(482, 236);
 			listViewParameters.TabIndex = 11;
 			listViewParameters.UseCompatibleStateImageBehavior = false;
 			listViewParameters.View = View.Details;
@@ -214,21 +222,22 @@ namespace SAModel.SAEditorCommon.UI
 			contextMenuStripVertCol.ImageScalingSize = new System.Drawing.Size(24, 24);
 			contextMenuStripVertCol.Items.AddRange(new ToolStripItem[] { showVertexCollectionToolStripMenuItem });
 			contextMenuStripVertCol.Name = "contextMenuStripVertCol";
-			contextMenuStripVertCol.Size = new System.Drawing.Size(265, 36);
+			contextMenuStripVertCol.Size = new System.Drawing.Size(195, 26);
 			// 
 			// showVertexCollectionToolStripMenuItem
 			// 
 			showVertexCollectionToolStripMenuItem.Name = "showVertexCollectionToolStripMenuItem";
-			showVertexCollectionToolStripMenuItem.Size = new System.Drawing.Size(264, 32);
+			showVertexCollectionToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
 			showVertexCollectionToolStripMenuItem.Text = "Show Vertex Collection";
 			// 
 			// textureBox
 			// 
 			textureBox.BackgroundImageLayout = ImageLayout.Center;
 			textureBox.BorderStyle = BorderStyle.FixedSingle;
-			textureBox.Location = new System.Drawing.Point(16, 30);
+			textureBox.Location = new System.Drawing.Point(11, 20);
+			textureBox.Margin = new Padding(2, 2, 2, 2);
 			textureBox.Name = "textureBox";
-			textureBox.Size = new System.Drawing.Size(203, 203);
+			textureBox.Size = new System.Drawing.Size(136, 136);
 			textureBox.SizeMode = PictureBoxSizeMode.CenterImage;
 			textureBox.TabIndex = 30;
 			textureBox.TabStop = false;
@@ -244,37 +253,42 @@ namespace SAModel.SAEditorCommon.UI
 			groupBoxTexData.Controls.Add(checkBoxWrapV);
 			groupBoxTexData.Controls.Add(checkBoxWrapU);
 			groupBoxTexData.Controls.Add(textureBox);
-			groupBoxTexData.Location = new System.Drawing.Point(12, 12);
+			groupBoxTexData.Location = new System.Drawing.Point(8, 8);
+			groupBoxTexData.Margin = new Padding(2, 2, 2, 2);
 			groupBoxTexData.Name = "groupBoxTexData";
-			groupBoxTexData.Size = new System.Drawing.Size(364, 292);
+			groupBoxTexData.Padding = new Padding(2, 2, 2, 2);
+			groupBoxTexData.Size = new System.Drawing.Size(243, 195);
 			groupBoxTexData.TabIndex = 31;
 			groupBoxTexData.TabStop = false;
 			groupBoxTexData.Text = "Texture Data";
 			// 
 			// numericUpDownTexID
 			// 
-			numericUpDownTexID.Location = new System.Drawing.Point(106, 250);
+			numericUpDownTexID.Location = new System.Drawing.Point(71, 167);
+			numericUpDownTexID.Margin = new Padding(2, 2, 2, 2);
 			numericUpDownTexID.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			numericUpDownTexID.Name = "numericUpDownTexID";
-			numericUpDownTexID.Size = new System.Drawing.Size(76, 31);
+			numericUpDownTexID.Size = new System.Drawing.Size(51, 23);
 			numericUpDownTexID.TabIndex = 37;
 			numericUpDownTexID.ValueChanged += numericUpDownTexID_ValueChanged;
 			// 
 			// label1
 			// 
 			label1.AutoSize = true;
-			label1.Location = new System.Drawing.Point(6, 252);
+			label1.Location = new System.Drawing.Point(4, 168);
+			label1.Margin = new Padding(2, 0, 2, 0);
 			label1.Name = "label1";
-			label1.Size = new System.Drawing.Size(94, 25);
+			label1.Size = new System.Drawing.Size(62, 15);
 			label1.TabIndex = 36;
 			label1.Text = "Texture ID:";
 			// 
 			// checkBoxUnkTexMode
 			// 
 			checkBoxUnkTexMode.AutoSize = true;
-			checkBoxUnkTexMode.Location = new System.Drawing.Point(239, 185);
+			checkBoxUnkTexMode.Location = new System.Drawing.Point(159, 123);
+			checkBoxUnkTexMode.Margin = new Padding(2, 2, 2, 2);
 			checkBoxUnkTexMode.Name = "checkBoxUnkTexMode";
-			checkBoxUnkTexMode.Size = new System.Drawing.Size(113, 29);
+			checkBoxUnkTexMode.Size = new System.Drawing.Size(77, 19);
 			checkBoxUnkTexMode.TabIndex = 35;
 			checkBoxUnkTexMode.Text = "Unknown";
 			checkBoxUnkTexMode.UseVisualStyleBackColor = true;
@@ -283,9 +297,10 @@ namespace SAModel.SAEditorCommon.UI
 			// checkBoxMirrorV
 			// 
 			checkBoxMirrorV.AutoSize = true;
-			checkBoxMirrorV.Location = new System.Drawing.Point(239, 150);
+			checkBoxMirrorV.Location = new System.Drawing.Point(159, 100);
+			checkBoxMirrorV.Margin = new Padding(2, 2, 2, 2);
 			checkBoxMirrorV.Name = "checkBoxMirrorV";
-			checkBoxMirrorV.Size = new System.Drawing.Size(103, 29);
+			checkBoxMirrorV.Size = new System.Drawing.Size(69, 19);
 			checkBoxMirrorV.TabIndex = 34;
 			checkBoxMirrorV.Text = "Mirror V";
 			checkBoxMirrorV.UseVisualStyleBackColor = true;
@@ -294,9 +309,10 @@ namespace SAModel.SAEditorCommon.UI
 			// checkBoxMirrorU
 			// 
 			checkBoxMirrorU.AutoSize = true;
-			checkBoxMirrorU.Location = new System.Drawing.Point(239, 115);
+			checkBoxMirrorU.Location = new System.Drawing.Point(159, 77);
+			checkBoxMirrorU.Margin = new Padding(2, 2, 2, 2);
 			checkBoxMirrorU.Name = "checkBoxMirrorU";
-			checkBoxMirrorU.Size = new System.Drawing.Size(104, 29);
+			checkBoxMirrorU.Size = new System.Drawing.Size(70, 19);
 			checkBoxMirrorU.TabIndex = 33;
 			checkBoxMirrorU.Text = "Mirror U";
 			checkBoxMirrorU.UseVisualStyleBackColor = true;
@@ -305,9 +321,10 @@ namespace SAModel.SAEditorCommon.UI
 			// checkBoxWrapV
 			// 
 			checkBoxWrapV.AutoSize = true;
-			checkBoxWrapV.Location = new System.Drawing.Point(239, 80);
+			checkBoxWrapV.Location = new System.Drawing.Point(159, 53);
+			checkBoxWrapV.Margin = new Padding(2, 2, 2, 2);
 			checkBoxWrapV.Name = "checkBoxWrapV";
-			checkBoxWrapV.Size = new System.Drawing.Size(97, 29);
+			checkBoxWrapV.Size = new System.Drawing.Size(64, 19);
 			checkBoxWrapV.TabIndex = 32;
 			checkBoxWrapV.Text = "Wrap V";
 			checkBoxWrapV.UseVisualStyleBackColor = true;
@@ -316,9 +333,10 @@ namespace SAModel.SAEditorCommon.UI
 			// checkBoxWrapU
 			// 
 			checkBoxWrapU.AutoSize = true;
-			checkBoxWrapU.Location = new System.Drawing.Point(239, 45);
+			checkBoxWrapU.Location = new System.Drawing.Point(159, 30);
+			checkBoxWrapU.Margin = new Padding(2, 2, 2, 2);
 			checkBoxWrapU.Name = "checkBoxWrapU";
-			checkBoxWrapU.Size = new System.Drawing.Size(98, 29);
+			checkBoxWrapU.Size = new System.Drawing.Size(65, 19);
 			checkBoxWrapU.TabIndex = 31;
 			checkBoxWrapU.Text = "Wrap U";
 			checkBoxWrapU.UseVisualStyleBackColor = true;
@@ -330,9 +348,11 @@ namespace SAModel.SAEditorCommon.UI
 			groupBoxBlendMode.Controls.Add(dstAlphaCombo);
 			groupBoxBlendMode.Controls.Add(label3);
 			groupBoxBlendMode.Controls.Add(label2);
-			groupBoxBlendMode.Location = new System.Drawing.Point(12, 306);
+			groupBoxBlendMode.Location = new System.Drawing.Point(8, 204);
+			groupBoxBlendMode.Margin = new Padding(2, 2, 2, 2);
 			groupBoxBlendMode.Name = "groupBoxBlendMode";
-			groupBoxBlendMode.Size = new System.Drawing.Size(287, 192);
+			groupBoxBlendMode.Padding = new Padding(2, 2, 2, 2);
+			groupBoxBlendMode.Size = new System.Drawing.Size(191, 128);
 			groupBoxBlendMode.TabIndex = 32;
 			groupBoxBlendMode.TabStop = false;
 			groupBoxBlendMode.Text = "Blend Modes";
@@ -343,10 +363,10 @@ namespace SAModel.SAEditorCommon.UI
 			srcAlphaCombo.DropDownStyle = ComboBoxStyle.DropDownList;
 			srcAlphaCombo.FormattingEnabled = true;
 			srcAlphaCombo.Items.AddRange(new object[] { "Zero", "One", "SourceColor", "InverseSourceColor", "SourceAlpha", "InverseSourceAlpha", "DestinationAlpha", "InverseDestinationAlpha" });
-			srcAlphaCombo.Location = new System.Drawing.Point(16, 66);
-			srcAlphaCombo.Margin = new Padding(6, 4, 6, 4);
+			srcAlphaCombo.Location = new System.Drawing.Point(11, 44);
+			srcAlphaCombo.Margin = new Padding(4, 3, 4, 3);
 			srcAlphaCombo.Name = "srcAlphaCombo";
-			srcAlphaCombo.Size = new System.Drawing.Size(244, 33);
+			srcAlphaCombo.Size = new System.Drawing.Size(164, 23);
 			srcAlphaCombo.TabIndex = 35;
 			srcAlphaCombo.SelectedIndexChanged += srcAlphaCombo_SelectedIndexChanged;
 			// 
@@ -355,37 +375,41 @@ namespace SAModel.SAEditorCommon.UI
 			dstAlphaCombo.DropDownStyle = ComboBoxStyle.DropDownList;
 			dstAlphaCombo.FormattingEnabled = true;
 			dstAlphaCombo.Items.AddRange(new object[] { "Zero", "One", "SourceColor", "InverseSourceColor", "SourceAlpha", "InverseSourceAlpha", "DestinationAlpha", "InverseDestinationAlpha" });
-			dstAlphaCombo.Location = new System.Drawing.Point(16, 145);
-			dstAlphaCombo.Margin = new Padding(6, 4, 6, 4);
+			dstAlphaCombo.Location = new System.Drawing.Point(11, 97);
+			dstAlphaCombo.Margin = new Padding(4, 3, 4, 3);
 			dstAlphaCombo.Name = "dstAlphaCombo";
-			dstAlphaCombo.Size = new System.Drawing.Size(244, 33);
+			dstAlphaCombo.Size = new System.Drawing.Size(164, 23);
 			dstAlphaCombo.TabIndex = 36;
 			dstAlphaCombo.SelectedIndexChanged += dstAlphaCombo_SelectedIndexChanged;
 			// 
 			// label3
 			// 
 			label3.AutoSize = true;
-			label3.Location = new System.Drawing.Point(10, 115);
+			label3.Location = new System.Drawing.Point(7, 77);
+			label3.Margin = new Padding(2, 0, 2, 0);
 			label3.Name = "label3";
-			label3.Size = new System.Drawing.Size(157, 25);
+			label3.Size = new System.Drawing.Size(104, 15);
 			label3.TabIndex = 1;
 			label3.Text = "Destination Alpha:";
 			// 
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new System.Drawing.Point(10, 37);
+			label2.Location = new System.Drawing.Point(7, 25);
+			label2.Margin = new Padding(2, 0, 2, 0);
 			label2.Name = "label2";
-			label2.Size = new System.Drawing.Size(121, 25);
+			label2.Size = new System.Drawing.Size(80, 15);
 			label2.TabIndex = 0;
 			label2.Text = "Source Alpha:";
 			// 
 			// groupBoxEnvMap
 			// 
 			groupBoxEnvMap.Controls.Add(checkBoxEnvMap);
-			groupBoxEnvMap.Location = new System.Drawing.Point(305, 306);
+			groupBoxEnvMap.Location = new System.Drawing.Point(203, 204);
+			groupBoxEnvMap.Margin = new Padding(2, 2, 2, 2);
 			groupBoxEnvMap.Name = "groupBoxEnvMap";
-			groupBoxEnvMap.Size = new System.Drawing.Size(257, 94);
+			groupBoxEnvMap.Padding = new Padding(2, 2, 2, 2);
+			groupBoxEnvMap.Size = new System.Drawing.Size(171, 63);
 			groupBoxEnvMap.TabIndex = 33;
 			groupBoxEnvMap.TabStop = false;
 			groupBoxEnvMap.Text = "Environment Map";
@@ -393,9 +417,10 @@ namespace SAModel.SAEditorCommon.UI
 			// checkBoxEnvMap
 			// 
 			checkBoxEnvMap.AutoSize = true;
-			checkBoxEnvMap.Location = new System.Drawing.Point(36, 39);
+			checkBoxEnvMap.Location = new System.Drawing.Point(24, 26);
+			checkBoxEnvMap.Margin = new Padding(2, 2, 2, 2);
 			checkBoxEnvMap.Name = "checkBoxEnvMap";
-			checkBoxEnvMap.Size = new System.Drawing.Size(179, 29);
+			checkBoxEnvMap.Size = new System.Drawing.Size(121, 19);
 			checkBoxEnvMap.TabIndex = 0;
 			checkBoxEnvMap.Text = "Environment Map";
 			checkBoxEnvMap.UseVisualStyleBackColor = true;
@@ -419,99 +444,102 @@ namespace SAModel.SAEditorCommon.UI
 			diffuseSettingBox.Controls.Add(alphaDiffuseNumeric);
 			diffuseSettingBox.Controls.Add(diffuseColorBox);
 			diffuseSettingBox.Controls.Add(diffuseLabel);
-			diffuseSettingBox.Location = new System.Drawing.Point(384, 13);
-			diffuseSettingBox.Margin = new Padding(6, 4, 6, 4);
+			diffuseSettingBox.Location = new System.Drawing.Point(256, 9);
+			diffuseSettingBox.Margin = new Padding(4, 3, 4, 3);
 			diffuseSettingBox.Name = "diffuseSettingBox";
-			diffuseSettingBox.Padding = new Padding(6, 4, 6, 4);
-			diffuseSettingBox.Size = new System.Drawing.Size(178, 291);
+			diffuseSettingBox.Padding = new Padding(4, 3, 4, 3);
+			diffuseSettingBox.Size = new System.Drawing.Size(119, 194);
 			diffuseSettingBox.TabIndex = 34;
 			diffuseSettingBox.TabStop = false;
 			diffuseSettingBox.Text = "Diffuse";
 			// 
 			// diffuseBUpDown
 			// 
-			diffuseBUpDown.Location = new System.Drawing.Point(76, 176);
-			diffuseBUpDown.Margin = new Padding(6, 4, 6, 4);
+			diffuseBUpDown.Location = new System.Drawing.Point(51, 117);
+			diffuseBUpDown.Margin = new Padding(4, 3, 4, 3);
 			diffuseBUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			diffuseBUpDown.Name = "diffuseBUpDown";
-			diffuseBUpDown.Size = new System.Drawing.Size(73, 31);
+			diffuseBUpDown.Size = new System.Drawing.Size(49, 23);
 			diffuseBUpDown.TabIndex = 8;
 			diffuseBUpDown.ValueChanged += diffuseBUpDown_ValueChanged;
 			// 
 			// diffuseGUpDown
 			// 
-			diffuseGUpDown.Location = new System.Drawing.Point(76, 128);
-			diffuseGUpDown.Margin = new Padding(6, 4, 6, 4);
+			diffuseGUpDown.Location = new System.Drawing.Point(51, 85);
+			diffuseGUpDown.Margin = new Padding(4, 3, 4, 3);
 			diffuseGUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			diffuseGUpDown.Name = "diffuseGUpDown";
-			diffuseGUpDown.Size = new System.Drawing.Size(73, 31);
+			diffuseGUpDown.Size = new System.Drawing.Size(49, 23);
 			diffuseGUpDown.TabIndex = 7;
 			diffuseGUpDown.ValueChanged += diffuseGUpDown_ValueChanged;
 			// 
 			// diffuseRUpDown
 			// 
-			diffuseRUpDown.Location = new System.Drawing.Point(76, 80);
-			diffuseRUpDown.Margin = new Padding(6, 4, 6, 4);
+			diffuseRUpDown.Location = new System.Drawing.Point(51, 53);
+			diffuseRUpDown.Margin = new Padding(4, 3, 4, 3);
 			diffuseRUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			diffuseRUpDown.Name = "diffuseRUpDown";
-			diffuseRUpDown.Size = new System.Drawing.Size(73, 31);
+			diffuseRUpDown.Size = new System.Drawing.Size(49, 23);
 			diffuseRUpDown.TabIndex = 6;
 			diffuseRUpDown.ValueChanged += diffuseRUpDown_ValueChanged;
 			// 
 			// label4
 			// 
 			label4.AutoSize = true;
-			label4.Location = new System.Drawing.Point(25, 179);
+			label4.Location = new System.Drawing.Point(17, 119);
+			label4.Margin = new Padding(2, 0, 2, 0);
 			label4.Name = "label4";
-			label4.Size = new System.Drawing.Size(49, 25);
+			label4.Size = new System.Drawing.Size(33, 15);
 			label4.TabIndex = 5;
 			label4.Text = "Blue:";
 			// 
 			// label5
 			// 
 			label5.AutoSize = true;
-			label5.Location = new System.Drawing.Point(12, 131);
+			label5.Location = new System.Drawing.Point(8, 87);
+			label5.Margin = new Padding(2, 0, 2, 0);
 			label5.Name = "label5";
-			label5.Size = new System.Drawing.Size(62, 25);
+			label5.Size = new System.Drawing.Size(41, 15);
 			label5.TabIndex = 4;
 			label5.Text = "Green:";
 			// 
 			// label6
 			// 
 			label6.AutoSize = true;
-			label6.Location = new System.Drawing.Point(28, 83);
+			label6.Location = new System.Drawing.Point(19, 55);
+			label6.Margin = new Padding(2, 0, 2, 0);
 			label6.Name = "label6";
-			label6.Size = new System.Drawing.Size(46, 25);
+			label6.Size = new System.Drawing.Size(30, 15);
 			label6.TabIndex = 3;
 			label6.Text = "Red:";
 			// 
 			// labelAlpha
 			// 
 			labelAlpha.AutoSize = true;
-			labelAlpha.Location = new System.Drawing.Point(12, 227);
-			labelAlpha.Margin = new Padding(6, 0, 6, 0);
+			labelAlpha.Location = new System.Drawing.Point(8, 151);
+			labelAlpha.Margin = new Padding(4, 0, 4, 0);
 			labelAlpha.Name = "labelAlpha";
-			labelAlpha.Size = new System.Drawing.Size(62, 25);
+			labelAlpha.Size = new System.Drawing.Size(41, 15);
 			labelAlpha.TabIndex = 2;
 			labelAlpha.Text = "Alpha:";
 			// 
 			// alphaDiffuseNumeric
 			// 
-			alphaDiffuseNumeric.Location = new System.Drawing.Point(76, 224);
-			alphaDiffuseNumeric.Margin = new Padding(6, 4, 6, 4);
+			alphaDiffuseNumeric.Location = new System.Drawing.Point(51, 149);
+			alphaDiffuseNumeric.Margin = new Padding(4, 3, 4, 3);
 			alphaDiffuseNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			alphaDiffuseNumeric.Name = "alphaDiffuseNumeric";
-			alphaDiffuseNumeric.Size = new System.Drawing.Size(73, 31);
+			alphaDiffuseNumeric.Size = new System.Drawing.Size(49, 23);
 			alphaDiffuseNumeric.TabIndex = 2;
 			alphaDiffuseNumeric.ValueChanged += alphaDiffuseNumeric_ValueChanged;
 			// 
 			// diffuseColorBox
 			// 
 			diffuseColorBox.BorderStyle = BorderStyle.FixedSingle;
-			diffuseColorBox.Location = new System.Drawing.Point(76, 32);
-			diffuseColorBox.Margin = new Padding(6, 4, 6, 4);
+			diffuseColorBox.Location = new System.Drawing.Point(51, 21);
+			diffuseColorBox.Margin = new Padding(4, 3, 4, 3);
 			diffuseColorBox.Name = "diffuseColorBox";
-			diffuseColorBox.Size = new System.Drawing.Size(64, 32);
+			diffuseColorBox.Size = new System.Drawing.Size(43, 22);
 			diffuseColorBox.TabIndex = 1;
 			diffuseColorBox.TabStop = true;
 			diffuseColorBox.Click += diffuseColorBox_Click;
@@ -519,19 +547,21 @@ namespace SAModel.SAEditorCommon.UI
 			// diffuseLabel
 			// 
 			diffuseLabel.AutoSize = true;
-			diffuseLabel.Location = new System.Drawing.Point(15, 35);
-			diffuseLabel.Margin = new Padding(6, 0, 6, 0);
+			diffuseLabel.Location = new System.Drawing.Point(10, 23);
+			diffuseLabel.Margin = new Padding(4, 0, 4, 0);
 			diffuseLabel.Name = "diffuseLabel";
-			diffuseLabel.Size = new System.Drawing.Size(59, 25);
+			diffuseLabel.Size = new System.Drawing.Size(39, 15);
 			diffuseLabel.TabIndex = 0;
 			diffuseLabel.Text = "Color:";
 			// 
 			// groupBoxUVScale
 			// 
 			groupBoxUVScale.Controls.Add(comboBoxUVScale);
-			groupBoxUVScale.Location = new System.Drawing.Point(305, 404);
+			groupBoxUVScale.Location = new System.Drawing.Point(203, 269);
+			groupBoxUVScale.Margin = new Padding(2, 2, 2, 2);
 			groupBoxUVScale.Name = "groupBoxUVScale";
-			groupBoxUVScale.Size = new System.Drawing.Size(257, 91);
+			groupBoxUVScale.Padding = new Padding(2, 2, 2, 2);
+			groupBoxUVScale.Size = new System.Drawing.Size(171, 61);
 			groupBoxUVScale.TabIndex = 35;
 			groupBoxUVScale.TabStop = false;
 			groupBoxUVScale.Text = "UV Scale Data";
@@ -541,18 +571,27 @@ namespace SAModel.SAEditorCommon.UI
 			comboBoxUVScale.DropDownStyle = ComboBoxStyle.DropDownList;
 			comboBoxUVScale.FormattingEnabled = true;
 			comboBoxUVScale.Items.AddRange(new object[] { "Normal Scale (Default)", "No UV 1", "No UV 2", "No UV 3", "No UV 4", "No UV 5", "No UV 6", "No UV 7", "Normal Scale (1/1 Scale)", "1/2 Scale", "1/4 Scale", "1/8 Scale", "1/16 Scale", "1/32 Scale", "1/64 Scale", "1/128 Scale", "No UV (Scale9)" });
-			comboBoxUVScale.Location = new System.Drawing.Point(13, 37);
-			comboBoxUVScale.Margin = new Padding(6, 4, 6, 4);
+			comboBoxUVScale.Location = new System.Drawing.Point(9, 25);
+			comboBoxUVScale.Margin = new Padding(4, 3, 4, 3);
 			comboBoxUVScale.Name = "comboBoxUVScale";
-			comboBoxUVScale.Size = new System.Drawing.Size(227, 33);
+			comboBoxUVScale.Size = new System.Drawing.Size(153, 23);
 			comboBoxUVScale.TabIndex = 37;
 			comboBoxUVScale.SelectedIndexChanged += comboBoxUVScale_SelectedIndexChanged;
 			// 
+			// button1
+			// 
+			button1.Location = new System.Drawing.Point(5, 261);
+			button1.Name = "button1";
+			button1.Size = new System.Drawing.Size(140, 23);
+			button1.TabIndex = 14;
+			button1.Text = "View Primitive Data";
+			button1.UseVisualStyleBackColor = true;
+			// 
 			// GCModelParameterDataEditor
 			// 
-			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+			AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			AutoScaleMode = AutoScaleMode.Dpi;
-			ClientSize = new System.Drawing.Size(1348, 536);
+			ClientSize = new System.Drawing.Size(856, 357);
 			Controls.Add(groupBoxUVScale);
 			Controls.Add(diffuseSettingBox);
 			Controls.Add(groupBoxEnvMap);
@@ -563,7 +602,6 @@ namespace SAModel.SAEditorCommon.UI
 			Controls.Add(statusStrip1);
 			FormBorderStyle = FormBorderStyle.FixedSingle;
 			Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-			Margin = new Padding(4);
 			MaximizeBox = false;
 			MinimizeBox = false;
 			Name = "GCModelParameterDataEditor";
@@ -643,5 +681,6 @@ namespace SAModel.SAEditorCommon.UI
 		private ComboBox dstAlphaCombo;
 		private GroupBox groupBoxUVScale;
 		private ComboBox comboBoxUVScale;
+		private Button button1;
 	}
 }

@@ -57,7 +57,7 @@ namespace SAModel.GC
 					}
 					else
 					{
-						DataNamePos = $"vertexSkin_PosNrm_{positionNormalsOffset:X8}";
+						DataNamePos = $"weightpoint_{positionNormalsOffset:X8}";
 					}
 					for (int i = 0; i < indexCount; i++)
 					{
@@ -76,7 +76,7 @@ namespace SAModel.GC
 					}
 					else
 					{
-						DataNamePos = $"vertexSkin_PosNrm_{positionNormalsOffset:X8}";
+						DataNamePos = $"weightpoint_{positionNormalsOffset:X8}";
 					}
 					if (labels.TryGetValue(weightsOffset, out var wDataName))
 					{
@@ -84,7 +84,7 @@ namespace SAModel.GC
 					}
 					else
 					{
-						DataNameWeight = $"vertexSkin_Weight_{weightsOffset:X8}";
+						DataNameWeight = $"weightdata_{weightsOffset:X8}";
 					}
 					for (int i = 0; i < indexCount; i++)
 					{

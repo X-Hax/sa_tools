@@ -95,6 +95,7 @@
 			columnHeader11 = new System.Windows.Forms.ColumnHeader();
 			contextMenuStripVertData = new System.Windows.Forms.ContextMenuStrip(components);
 			viewVertexDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			openPrimitiveViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			statusStrip1.SuspendLayout();
 			groupBoxLabels.SuspendLayout();
 			groupBoxBounds.SuspendLayout();
@@ -579,9 +580,9 @@
 			// contextMenuStripParamEdit
 			// 
 			contextMenuStripParamEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
-			contextMenuStripParamEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openOParameterViewerToolStripMenuItem, openTParameterViewerToolStripMenuItem });
+			contextMenuStripParamEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openOParameterViewerToolStripMenuItem, openTParameterViewerToolStripMenuItem, openPrimitiveViewerToolStripMenuItem });
 			contextMenuStripParamEdit.Name = "contextMenuStripLabels";
-			contextMenuStripParamEdit.Size = new System.Drawing.Size(263, 48);
+			contextMenuStripParamEdit.Size = new System.Drawing.Size(263, 92);
 			// 
 			// openOParameterViewerToolStripMenuItem
 			// 
@@ -723,6 +724,13 @@
 			viewVertexDataToolStripMenuItem.Text = "View Vertex Data";
 			viewVertexDataToolStripMenuItem.Click += viewVertexDataToolStripMenuItem_Click;
 			// 
+			// openPrimitiveViewerToolStripMenuItem
+			// 
+			openPrimitiveViewerToolStripMenuItem.Name = "openPrimitiveViewerToolStripMenuItem";
+			openPrimitiveViewerToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
+			openPrimitiveViewerToolStripMenuItem.Text = "Open Primitive Viewer";
+			openPrimitiveViewerToolStripMenuItem.Click += openPrimitiveViewerToolStripMenuItem_Click;
+			// 
 			// GCModelDataEditor
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -829,5 +837,6 @@
 		private System.Windows.Forms.GroupBox groupBoxVertices;
 		private System.Windows.Forms.ColumnHeader columnHeader4;
 		private System.Windows.Forms.ColumnHeader columnHeader11;
+		private System.Windows.Forms.ToolStripMenuItem openPrimitiveViewerToolStripMenuItem;
 	}
 }

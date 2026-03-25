@@ -81,6 +81,11 @@ namespace SAModel.GC
 		{
 			writer.WriteLine($"\t{vtype}( {X.ToNJA()}, {Y.ToNJA()}, {Z.ToNJA()} ),");
 		}
+
+		public Vertex ToVertex()
+		{
+			return new Vertex(X, Y, Z);
+		}
 	}
 
 	[Serializable]

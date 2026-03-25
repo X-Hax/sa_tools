@@ -1341,7 +1341,7 @@ namespace SAModel.SAMDL
 
 		private void DrawVertexIndices(NJS_OBJECT obj, MatrixStack transform)
 		{
-			if (obj.Attach == null || obj.Attach is GC.GCAttach) return;
+			if (obj.Attach == null) return;
 			if (obj.Attach is BasicAttach)
 			{
 				BasicAttach basicatt = (BasicAttach)obj.Attach;
@@ -1375,6 +1375,42 @@ namespace SAModel.SAMDL
 						EditorOptions.OnscreenFont.DrawText(OnScreenDisplay.textSprite, i.ToString() + "(" + j.ToString() + ")", (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
 					}
 				}
+				OnScreenDisplay.textSprite.End();
+			}
+			if (obj.Attach is GC.GCAttach)
+			{
+				GC.GCAttach gcatt = (GC.GCAttach)obj.Attach;
+				Matrix view = d3ddevice.GetTransform(TransformState.View);
+				Viewport viewport = d3ddevice.Viewport;
+				Matrix projection = d3ddevice.GetTransform(TransformState.Projection);
+				OnScreenDisplay.textSprite.Begin(SpriteFlags.AlphaBlend);
+				if (gcatt.VertexData.Count > 0)
+				{
+					for (int i = 0; i < gcatt.VertexData.Count; i++)
+					{
+						if (gcatt.VertexData[i].StructType == GC.GCStructType.Position_XYZ)
+						{
+							for (int j = 0; j < gcatt.VertexData[i].Data.Count; j++)
+							{
+								Vertex vtx = ((GC.Vector3)gcatt.VertexData[i].Data[j]).ToVertex();
+								Vector3 v3 = Vector3.TransformCoordinate(vtx.ToVector3(), transform.Top);
+								Vector3 screenCoordinates = viewport.Project(v3, projection, view, Matrix.Identity);
+								EditorOptions.OnscreenFont.DrawText(OnScreenDisplay.textSprite, i.ToString() + "(" + j.ToString() + ")", (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
+							}
+						}
+					}
+				}
+				if (gcatt.vertexSkinData.Count > 0)
+					for (int i = 0; i < gcatt.vertexSkinData.Count; i++)
+					{
+						for (int j = 0; j < gcatt.vertexSkinData[i].posNrms.Count; j++)
+						{
+							Vertex vtx = gcatt.vertexSkinData[i].posNrms[j].pos.ToVertex();
+							Vector3 v3 = Vector3.TransformCoordinate(vtx.ToVector3(), transform.Top);
+							Vector3 screenCoordinates = viewport.Project(v3, projection, view, Matrix.Identity);
+							EditorOptions.OnscreenFont.DrawText(OnScreenDisplay.textSprite, i.ToString() + "(" + j.ToString() + ")", (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
+						}
+					}
 				OnScreenDisplay.textSprite.End();
 			}
 		}
@@ -2084,6 +2120,12 @@ namespace SAModel.SAMDL
 					{
 						m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
 						m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
+					}
+					gatt.VertexSkinName = "vertexskin_" + Extensions.GenerateIdentifier();
+					foreach (GC.GCSkinVertexSet m in gatt.vertexSkinData)
+					{
+						m.DataNamePos = "weightpoint_" + Extensions.GenerateIdentifier();
+						m.DataNameWeight = "weightdata_" + Extensions.GenerateIdentifier();
 					}
 					break;
 			}
@@ -3803,6 +3845,18 @@ namespace SAModel.SAMDL
 								if (!string.IsNullOrEmpty(dup))
 									duplicateLabels.Add(dup);
 							}
+							gcatt.VertexSkinName = FixLabel(gcatt.VertexSkinName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+							foreach (GC.GCSkinVertexSet v in gcatt.vertexSkinData)
+							{
+								v.DataNamePos = FixLabel(v.DataNamePos, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+								v.DataNameWeight = FixLabel(v.DataNameWeight, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+							}
 						}
 						break;
 				}
@@ -3884,6 +3938,15 @@ namespace SAModel.SAMDL
 								{
 									m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
 									m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
+								}
+							}
+							gcatt.VertexSkinName = "vertexskin_" + Extensions.GenerateIdentifier();
+							if (gcatt.TranslucentMeshes.Count != 0)
+							{
+								foreach (GC.GCSkinVertexSet w in gcatt.vertexSkinData)
+								{
+									w.DataNamePos = "weightpoint_" + Extensions.GenerateIdentifier();
+									w.DataNameWeight = "weightdata_" + Extensions.GenerateIdentifier();
 								}
 							}
 							gcatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();

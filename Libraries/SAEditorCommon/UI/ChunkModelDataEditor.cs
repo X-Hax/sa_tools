@@ -651,12 +651,14 @@ namespace SAModel.SAEditorCommon.UI
 						{
 							case PolyChunkBitsCachePolygonList pccp:
 								newmesh.SubItems.Add("Bits_CP");
+								newmesh.SubItems.Add("List " + pccp.List.ToString());
 								break;
 							case PolyChunkNull pcn:
 								newmesh.SubItems.Add(pcn.Type.ToString());
 								break;
 							case PolyChunkBitsDrawPolygonList pcdp:
 								newmesh.SubItems.Add("Bits_DP");
+								newmesh.SubItems.Add("List " + pcdp.List.ToString());
 								break;
 							case PolyChunkBitsMipmapDAdjust pcda:
 								newmesh.SubItems.Add("Bits_DA");

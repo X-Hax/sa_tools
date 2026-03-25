@@ -43,6 +43,10 @@ namespace SAModel.GC
 
 			return result.ToString();
 		}
+		public Vertex ToVertex()
+		{
+			return new Vertex(XF, YF, ZF);
+		}
 
 	}
 	public class GCSkinVertexSetPosNrm
