@@ -25,7 +25,7 @@ namespace SADXObjectDefinitions.Mission
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			result.AddRange(ObjectHelper.RenderQuestionBox(dev, transform, null, item.Position.ToVector3(), item.Selected));
+			result.AddRange(ObjectHelper.RenderQuestionBox(dev, transform, item.Position.ToVector3(), item.Selected));
 			transform.Pop();
 			return result;
 		}

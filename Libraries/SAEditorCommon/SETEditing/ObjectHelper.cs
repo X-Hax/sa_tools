@@ -1,41 +1,60 @@
-﻿using SharpDX;
-using SharpDX.Direct3D9;
-using SAModel.Direct3D;
-using SAModel.SAEditorCommon.DataTypes;
-using SAModel.SAEditorCommon.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SAModel.Direct3D;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.Properties;
 using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
-using SAModel.Direct3D.TextureSystem;
 
 namespace SAModel.SAEditorCommon.SETEditing
 {
+	/// <summary>
+	/// Helper class for object definitions. Contains methods to retrieve and cache textures, meshes etc.
+	/// </summary>
 	public static class ObjectHelper
 	{
-		private static NJS_OBJECT QuestionBoxModel;
+		/// <summary>Flat "sprite" model.</summary>
 		private static NJS_OBJECT FlatSquareModel;
+		/// <summary>Question mark model for the default definition.</summary>
+		private static NJS_OBJECT QuestionBoxModel;
+		/// <summary>Question mark meshes for the default definition.</summary>
 		private static Mesh QuestionBoxMesh;
+		/// <summary>Question mark texture.</summary>
+		internal static Texture QuestionMarkTexture;
+		/// <summary>Cache of loaded models.</summary>
 		private static Dictionary<string, NJS_OBJECT> ModelCache;
+		/// <summary>Cache of loaded meshes.</summary>
 		private static Dictionary<NJS_OBJECT, Mesh[]> MeshCache;
-		private static Dictionary<string, Texture[]> PartialTexlistCache;
+		/// <summary>Cache of loaded textures per texlist (by NJS_TEXLIST name). Same Texture items may be included in both LevelData.Textures and TexlistCache.</summary>
+		private static Dictionary<string, Texture[]> TexlistCache;
+		/// <summary>Cache of loaded motions.</summary>
 		private static Dictionary<string, NJS_MOTION> MotionCache;
 
+		/// <summary>
+		/// Initializes the cache and default meshes and textures for the specified Device.
+		/// </summary>
+		/// <param name="device">Direct3D device.</param>
 		public static void Init(Device device)
 		{		
 			ModelCache = new(StringComparer.OrdinalIgnoreCase);
 			MotionCache = new(StringComparer.OrdinalIgnoreCase);
-			MeshCache = new();
-			PartialTexlistCache = new();
+			TexlistCache = new(StringComparer.OrdinalIgnoreCase);
+			MeshCache = [];
 			QuestionBoxModel = new ModelFile(Resources.questionmark).Model;
 			FlatSquareModel = new ModelFile(Resources.flatSquare).Model;
 			QuestionBoxMesh = GetMeshes(QuestionBoxModel).First();
-			QuestionMark = Resources.questionmark_t.ToTexture(device);
+			QuestionMarkTexture = Resources.questionmark_t.ToTexture(device);
 		}
 
-		internal static Texture QuestionMark;
-
+		/// <summary>
+		/// Loads a model from a file.
+		/// </summary>
+		/// <param name="file">Path to the model file to load.</param>
+		/// <returns>NJS_OBJECT of: a cached entry (if available), a newly loaded model or the question mark box.</returns>
 		public static NJS_OBJECT LoadModel(string file)
 		{
 			if (!System.IO.File.Exists(file))
@@ -47,6 +66,11 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return model;
 		}
 
+		/// <summary>
+		/// Loads a motion from a file.
+		/// </summary>
+		/// <param name="file">Path to the motion file to load.</param>
+		/// <returns>NJS_MOTION of: a cached entry (if available), a newly loaded motion or null.</returns>
 		public static NJS_MOTION LoadMotion(string file)
 		{
 			if (!System.IO.File.Exists(file))
@@ -58,6 +82,11 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return motion;
 		}
 
+		/// <summary>
+		/// Creates SAModel Meshes for the specified NJS_OBJECT.
+		/// </summary>
+		/// <param name="model">Model to generate meshes.</param>
+		/// <returns>An array of Mesh[] for the specified NJS_OBJECT (a cached one if the object has had meshes generated previously).</returns>
 		public static Mesh[] GetMeshes(NJS_OBJECT model)
 		{
 			if (MeshCache.TryGetValue(model, out Mesh[] value))
@@ -72,171 +101,289 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return Meshes;
 		}
 
-		public static Texture[] GetTextures(string name, SplitTools.NJS_TEXLIST texnames = null, Device dev = null)
+		/// <summary>
+		/// Creates an array of SharpDX Textures for the specified list of PVM/GVM names and (optionally) using the specified texture list.
+		/// </summary>
+		/// <param name="pvmNames">List of texture archive names without extensions.</param>
+		/// <param name="texlist">NJS_TEXLIST for objects that load textures from multiple archives. Can be null.</param>
+		/// <param name="dev">Direct3D device. No textures will be generated if this is null.</param>
+		/// <returns>An array of Texture, or null.</returns>
+		public static Texture[] GetTextures(List<string> pvmNames, SplitTools.NJS_TEXLIST texlist = null, Device dev = null)
 		{
-			if (string.IsNullOrEmpty(name))
+			// No PVM names specified
+			if (pvmNames == null || pvmNames.Count == 0)
 				return null;
-			if (LevelData.Textures == null || EditorOptions.DisableTextures)
+			// No textures loaded or textures disabled in the editor
+			if (LevelData.Textures == null || LevelData.TextureBitmaps == null || EditorOptions.DisableTextures)
 				return null;
-			Texture[] result = null;
-			if (LevelData.Textures.TryGetValue(name, out Texture[] value))
-				result = value;
-			if (texnames == null)
-				return result;
-			// Partial texlist
-			else
+			// If a texlist is not specified, check cache for PVMs
+			if (texlist == null)
 			{
-				if (PartialTexlistCache.TryGetValue(texnames.Name, out Texture[] value2))
-					return value2;
-				if (LevelData.TextureBitmaps == null || dev == null)
-					return result;
-				Direct3D.TextureSystem.BMPInfo[] texturebmps = null;
-				if (LevelData.TextureBitmaps.TryGetValue(name, out BMPInfo[] value3))
-					texturebmps = value3;
-				List<Texture> texlist = new List<Texture>();
-				if (texturebmps == null)
-					return result;
-				for (int i = 0; i < texnames.TextureNames.Length; i++)
-				{
-					for (int b = 0; b < texturebmps.Length; b++)
-					{
-						if (string.Equals(texturebmps[b].Name, texnames.TextureNames[i], StringComparison.OrdinalIgnoreCase))
-						{
-							texlist.Add(texturebmps[b].Image.ToTexture(dev));
-							break;
-						}
-					}
-				}
-				PartialTexlistCache.TryAdd(texnames.Name, texlist.ToArray());
-				return PartialTexlistCache[texnames.Name];
+				if (LevelData.Textures.TryGetValue(pvmNames[0], out Texture[] cacheSingle))
+					return cacheSingle;
+				// If that fails, it means the required textures are not loaded.
+				else return null;
 			}
-		}
-		// This is primarily used for SA2 level objects that pull from multiple texture sources.
-		// Copied from pieces of SAMDL's code.
-		public static Texture[] GetTexturesMultiSource(List<string> name, SplitTools.NJS_TEXLIST texnames = null, Device dev = null)
-		{
-			if (PartialTexlistCache.TryGetValue(texnames.Name, out Texture[] value))
-				return value;
-			Texture[] result = null;
-			if (texnames == null)
-				return result;
+			// If a texlist is specified
 			else
 			{
-				List<BMPInfo> texturedata = new List<BMPInfo>();
-				Direct3D.TextureSystem.BMPInfo[] texturebmps = null;
-				if (texturebmps != null && texturebmps.Length > 0)
-					texturedata.AddRange(texturebmps);
-				for (int i = 0; i < name.Count; i++)
-				{
-					if (LevelData.TextureBitmaps.ContainsKey(name[i]))
-						texturedata.AddRange(LevelData.TextureBitmaps[name[i]]);
-				}
-				texturebmps = texturedata.ToArray();
-				if (LevelData.TextureBitmaps == null || dev == null)
-					return result;
-				List<Texture> texlist = new List<Texture>();
-				List<BMPInfo> texinfo = new List<BMPInfo>();
+				// Check cache for texlists first
+				if (TexlistCache.TryGetValue(texlist.Name, out Texture[] cache))
+					return cache;
+				// Retrieve individual textures
+				List<Texture> resultMulti = new List<Texture>();
+				// List of duplicate texture names
 				List<string> dupnames = new List<string>();
-				for (int i = 0; i < texnames.TextureNames.Length; i++)
+				// Loop through the texlist's texture names
+				for (int i = 0; i < texlist.TextureNames.Length; i++)
 				{
-					for (int b = 0; b < texturebmps.Length; b++)
+					string textureName = texlist.TextureNames[i];
+					// If the texture is already found, skip it
+					if (dupnames.Contains(textureName))
+						continue;
+					// If not, try to find it
+					bool found = false;
+					// Loop through PVMs
+					for (int pvmId = 0; pvmId < pvmNames.Count; pvmId++)
 					{
-						if (string.IsNullOrEmpty(texnames.TextureNames[i]) || (texnames.TextureNames[i].ToLowerInvariant() == texturebmps[b].Name.ToLowerInvariant() && !dupnames.Contains(texnames.TextureNames[i].ToLowerInvariant())))
-						{
-							texinfo.Add(texturebmps[b]);
-							texlist.Add(texturebmps[b].Image.ToTexture(dev));
-							dupnames.Add(texturebmps[b].Name.ToLowerInvariant());
+						// Some SA2 stuff is like this?
+						if (string.IsNullOrEmpty(pvmNames[pvmId]))
 							continue;
+						// Loop through the PVM's texture names
+						for (int texId = 0; texId < LevelData.TextureBitmaps[pvmNames[pvmId]].Length; texId++)
+						{
+							// If a match is found, add it to the result
+							if (string.Equals(LevelData.TextureBitmaps[pvmNames[pvmId]][texId].Name, textureName, StringComparison.OrdinalIgnoreCase))
+							{
+								// Add it from LevelData.Textures instead of creating a new Texture from TextureBitmaps
+								resultMulti.Add(LevelData.Textures[pvmNames[pvmId]][texId]);
+								// Mark the texture as found
+								found = true;
+								dupnames.Add(textureName);
+								// Stop looping through this PVM
+								break;
+							}
 						}
+						// If the texture was found in the PVM, stop looping through PVMs and go to the next texture name
+						if (found)
+							break;
 					}
 				}
-				PartialTexlistCache.TryAdd(texnames.Name, texlist.ToArray());
-				return PartialTexlistCache[texnames.Name];
+				return resultMulti.ToArray();
 			}
 		}
 
+		/// <summary>This function is obsolete, you can use GetTextures with the same arguments instead.</summary>
+		[Obsolete]
+		public static Texture[] GetTexturesMultiSource(List<string> name, SplitTools.NJS_TEXLIST texnames = null, Device dev = null)
+		{
+			return GetTextures(name, texnames, dev);
+		}
+
+		/// <summary>
+		/// Creates an array of SharpDX Textures for the specified PVM/GVM and (optionally) using the specified texture list.
+		/// </summary>
+		/// <param name="pvmName">Texture archive name without extension.</param>
+		/// <param name="texlist">NJS_TEXLIST for objects that load textures from multiple archives. Can be null.</param>
+		/// <param name="dev">Direct3D device. No textures will be generated if this is null.</param>
+		/// <returns>An array of Texture, or null.</returns>
+		public static Texture[] GetTextures(string pvmName, SplitTools.NJS_TEXLIST texlist = null, Device dev = null)
+		{
+			return GetTextures([pvmName], texlist, dev);
+		}
+
+		/// <summary>
+		/// Gets texture names and images for the specified texture archives and (optionally) a texlist. Used in model export.
+		/// </summary>
+		/// <param name="names">Texture archive names without extensions.</param>
+		/// <param name="texlist">NJS_TEXLIST for objects that load textures from multiple archives. Can be null.</param>
+		/// <returns>An array of BMPInfo, or null.</returns>
+		public static BMPInfo[] GetTextureBmpInfos(List<string> names, SplitTools.NJS_TEXLIST texlist = null)
+		{
+			// PVM names not specified
+			if (names == null || names.Count == 0)
+				return null;
+			// Textures not loaded or disabled in the editor
+			if (LevelData.Textures == null || EditorOptions.DisableTextures)
+				return null;
+			List<BMPInfo> texInfos = new List<BMPInfo>();
+			// Get BMPInfos for all PVMs and put them into a single List
+			foreach (var name in names)
+			{
+				// Return null on failure
+				if (!LevelData.TextureBitmaps.TryGetValue(name, out BMPInfo[] texturebmps))
+					return null;
+				texInfos.AddRange(texturebmps);
+			}
+			// Return the whole BMPInfo list if not using a texlist
+			if (texlist == null)
+				return texInfos.ToArray();
+			// Process the texlist using one or multiple PVMs
+			List<BMPInfo> result = new List<BMPInfo>();
+			// Keep a list of duplicate texture names
+			List<string> dupNames = new List<string>();
+			// Loop through the list of names in the texlist
+			for (int i = 0; i < texlist.TextureNames.Length; i++)
+			{
+				// Loop through the BMPInfos
+				for (int b = 0; b < texInfos.Count; b++)
+				{
+					// If the BMPInfo's name matches the name in the texlist and hasn't been added already, add it to the result
+					if (string.Equals(texInfos[b].Name, texlist.TextureNames[i], StringComparison.OrdinalIgnoreCase) && !dupNames.Contains(texlist.TextureNames[i]))
+					{
+						result.Add(texInfos[b]);
+						dupNames.Add(texlist.TextureNames[i]);
+						// Since the texture for the specified name has been found, the BMPInfo loop can be stopped
+						break;
+					}
+				}
+			}
+			return result.ToArray();
+		}
+
+		/// <summary>
+		/// Gets texture names and images for the specified texture archive and (optionally) using the specified texlist. Used in model export.
+		/// </summary>
+		/// <param name="name">Texture archive name without extension.</param>
+		/// <param name="texlist">NJS_TEXLIST for objects that load textures from multiple archives. Can be null.</param>
+		/// <returns>An array of BMPInfo, or null.</returns>
+		public static BMPInfo[] GetTextureBmpInfos(string name, SplitTools.NJS_TEXLIST texlist = null)
+		{
+			return GetTextureBmpInfos([name], texlist);
+		}
+
+		/// <summary>
+		/// Checks whether the question mark model has been selected (for default object definition).
+		/// </summary>
+		/// <param name="Near"></param>
+		/// <param name="Far"></param>
+		/// <param name="Viewport"></param>
+		/// <param name="Projection"></param>
+		/// <param name="View"></param>
+		/// <param name="transform"></param>
+		/// <returns>A HitResult.</returns>
 		public static HitResult CheckQuestionBoxHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			return QuestionBoxMesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 		}
 
-		public static RenderInfo[] RenderQuestionBox(Device dev, MatrixStack transform, Texture texture, Vector3 center, bool selected)
+		/// <summary>
+		/// Renders the question mark box (for default object definition).
+		/// </summary>
+		/// <param name="dev">Direct3D Device.</param>
+		/// <param name="transform">Transform matrix.</param>
+		/// <param name="center">Center location of the box (for bounds calculation).</param>
+		/// <param name="selected">Whether to draw an inverted selection mesh or not.</param>
+		/// <returns>Array of RenderInfo.</returns>
+		public static RenderInfo[] RenderQuestionBox(Device dev, MatrixStack transform, Vector3 center, bool selected)
 		{
-			List<RenderInfo> result = new List<RenderInfo>();
-			NJS_MATERIAL mat = new NJS_MATERIAL
-			{
-				DiffuseColor = Color.White
-			};
-			if (texture == null && !EditorOptions.DisableTextures)
-				texture = QuestionMark;
-			result.Add(new RenderInfo(QuestionBoxMesh, 0, transform.Top, mat, texture, dev.GetRenderState<FillMode>(RenderState.FillMode), new BoundingSphere(center.X, center.Y, center.Z, 8)));
+			List<RenderInfo> result = [];
+			NJS_MATERIAL mat = new() { DiffuseColor = Color.White };
+			// Render the box
+			result.Add(new RenderInfo(QuestionBoxMesh, 0, transform.Top, mat, EditorOptions.DisableTextures ? null : QuestionMarkTexture, dev.GetRenderState<FillMode>(RenderState.FillMode), new BoundingSphere(center.X, center.Y, center.Z, 8)));
+			// Render the selection
 			if (selected)
 			{
-				mat = new NJS_MATERIAL
-				{
-					DiffuseColor = Color.Yellow,
-					UseAlpha = false
-				};
+				mat = new NJS_MATERIAL { DiffuseColor = Color.Yellow, UseAlpha = false };
 				result.Add(new RenderInfo(QuestionBoxMesh, 0, transform.Top, mat, null, FillMode.Wireframe, new BoundingSphere(center.X, center.Y, center.Z, 8)));
 			}
 			return result.ToArray();
 		}
 
-		public static BoundingSphere GetQuestionBoxBounds(MatrixStack transform)
+		/// <summary>This function is obsolete, use RenderQuestionBox without the 'texture' argument instead.</summary>
+		[Obsolete]
+		public static RenderInfo[] RenderQuestionBox(Device dev, MatrixStack transform, Texture texture, Vector3 center, bool selected)
 		{
-			return GetQuestionBoxBounds(transform, 1);
+			return RenderQuestionBox(dev, transform, center, selected);
 		}
 
+		/// <summary>
+		/// Gets the bounding sphere of the question mark box (for default object definition).
+		/// </summary>
+		/// <param name="transform">Transform matrix to use.</param>
+		/// <param name="scale">Scale of the box.</param>
+		/// <returns>A Bounding Sphere.</returns>
+		public static BoundingSphere GetQuestionBoxBounds(MatrixStack transform, float scale)
+		{
+			return GetModelBounds(QuestionBoxModel, transform, scale);
+		}
+
+		/// <summary>
+		/// Returns a unique copy of the flat square model for use in object definitions.
+		/// </summary>
+		/// <returns>NJS_OBJECT that is a flat square.</returns>
 		public static NJS_OBJECT GetFlatSquareModel()
 		{
 			return FlatSquareModel.Clone();
 		}
 
-		public static BoundingSphere GetQuestionBoxBounds(MatrixStack transform, float scale)
-		{
-			return GetModelBounds(QuestionBoxModel, transform, scale, new BoundingSphere());
-		}
-
+		/// <summary>Converts BAMS rotation to Radians.</summary>
 		public static float BAMSToRad(int BAMS)
 		{
 			return Direct3D.Extensions.BAMSToRad(BAMS);
 		}
 
+		/// <summary>Converts Radians to BAMS rotation.</summary>
 		public static int RadToBAMS(float rad)
 		{
 			return (int)(rad * (65536 / (2 * Math.PI)));
 		}
 
+		/// <summary>Converts BAMS rotation to Degrees.</summary>
 		public static float BAMSToDeg(int BAMS)
 		{
 			return (float)(BAMS / (65536 / 360.0));
 		}
 
+		/// <summary>Converts Degrees to BAMS rotation.</summary>
 		public static int DegToBAMS(float deg)
 		{
 			return (int)(deg * (65536 / 360.0));
 		}
 
+		/// <summary>Calculates the sine of a BAMS rotation.</summary>
 		public static float NJSin(int BAMS)
 		{
 			return Direct3D.Extensions.NJSin(BAMS);
 		}
 
+		/// <summary>Calculates the cosine of a BAMS rotation.</summary>
 		public static float NJCos(int BAMS)
 		{
 			return Direct3D.Extensions.NJCos(BAMS);
 		}
 
+		/// <summary>
+		/// Gets the bounding sphere of the specified model/transform with the default scale of 1.0.
+		/// </summary>
+		/// <param name="model">Model to use in calculation.</param>
+		/// <param name="transform">Transform matrix to use.</param>
+		/// <returns>A BoundingSphere.</returns>
 		public static BoundingSphere GetModelBounds(NJS_OBJECT model, MatrixStack transform)
 		{
 			return GetModelBounds(model, transform, 1);
 		}
 
+		/// <summary>
+		/// Gets the bounding sphere of the specified model/transform + scale.
+		/// </summary>
+		/// <param name="model">Model to use in calculation.</param>
+		/// <param name="transform">Transform matrix to use.</param>
+		/// <param name="scale">Model scale.</param>
+		/// <returns>A BoundingSphere.</returns>
 		public static BoundingSphere GetModelBounds(NJS_OBJECT model, MatrixStack transform, float scale)
 		{
 			return GetModelBounds(model, transform, scale, new BoundingSphere());
 		}
 
+		/// <summary>
+		/// Gets the bounding sphere of the specified model/transform + scale and merbes it with the specified bounding sphere.
+		/// </summary>
+		/// <param name="model">Model to use in calculation.</param>
+		/// <param name="transform">Transform matrix to use.</param>
+		/// <param name="scale">Model scale.</param>
+		/// <param name="bounds">Bounding sphere to merge.</param>
+		/// <returns>A BoundingSphere.</returns>
 		public static BoundingSphere GetModelBounds(NJS_OBJECT model, MatrixStack transform, float scale, BoundingSphere bounds)
 		{
 			transform.Push();
@@ -250,6 +397,13 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return bounds;
 		}
 
+		/// <summary>
+		/// Applies rotation of the specified object on the specified matrix.
+		/// </summary>
+		/// <param name="transform">Transform matrix to use.</param>
+		/// <param name="item">SET item instance to use.</param>
+		/// <param name="addrot">Additional rotation, if applicable.</param>
+		/// <param name="type">Rotation order such as XYZ, ZYX etc.</param>
 		public static void RotateObject(MatrixStack transform, SETItem item, Rotation addrot, RotationOrder type = RotationOrder.XYZ)
 		{
 			if (addrot.X != 0 || addrot.Y != 0 || addrot.Z != 0)
@@ -322,6 +476,13 @@ namespace SAModel.SAEditorCommon.SETEditing
 			}
 		}
 
+		/// <summary>
+		/// Calculates the scale of the specified object.
+		/// </summary>
+		/// <param name="item">SET Item instance.</param>
+		/// <param name="addscl">Additional scale (XYZ vector), if applicable.</param>
+		/// <param name="type">Scale order type, such as XYZ, X only etc.</param>
+		/// <returns></returns>
 		public static Vector3 GetScale(SETItem item, Vector3 addscl, ScaleOrder type = ScaleOrder.None)
 		{
 			float x = 1;

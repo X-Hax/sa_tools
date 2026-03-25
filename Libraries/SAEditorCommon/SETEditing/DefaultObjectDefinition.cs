@@ -111,7 +111,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			Rotation addrot = new Rotation(addxrot ?? 0, addyrot ?? 0, addzrot ?? 0);
 			ObjectHelper.RotateObject(transform, item, addrot, rottype);
 			if (model == null)
-				result.AddRange(ObjectHelper.RenderQuestionBox(dev, transform, null, item.Position.ToVector3(), item.Selected));
+				result.AddRange(ObjectHelper.RenderQuestionBox(dev, transform, item.Position.ToVector3(), item.Selected));
 			else
 			{
 				// Get textures
@@ -119,7 +119,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 				{
 					// SA2 multi-textured
 					if (texturesmulti.Count > 0)
-						texs = ObjectHelper.GetTexturesMultiSource(texturesmulti, texnames, dev);
+						texs = ObjectHelper.GetTextures(texturesmulti, texnames, dev);
 					// Regular
 					texs = ObjectHelper.GetTextures(texture, texnames, dev);
 				}
@@ -160,7 +160,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			Rotation addrot = new Rotation(addxrot ?? 0, addyrot ?? 0, addzrot ?? 0);
 			ObjectHelper.RotateObject(transform, item, addrot, rottype);
 			if (model == null)
-				return ObjectHelper.GetQuestionBoxBounds(transform);
+				return ObjectHelper.GetQuestionBoxBounds(transform, 1.0f);
 			else
 			{
 				Vector3 addscl = new Vector3(addxscl ?? 0, addyscl ?? 0, addzscl ?? 0);
