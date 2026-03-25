@@ -156,13 +156,14 @@ namespace SAModel
 				else
 				{
 					// Otherwise advance the reading position and pointer image base
-					imgBase += startOffset;
+					//imgBase += startOffset; // Why was it like this? Don't remember...
+					imgBase = startOffset + 8;
 				}
 
 				startOffset += chunks[currentChunk].Data.Length + 8;
 				currentChunk++;
 			}
-			
+
 			// Go over the fixed chunks and add final data
 			foreach (var chunk in chunks)
 			{
@@ -219,7 +220,7 @@ namespace SAModel
 						}
 						catch (Exception ex)
 						{
-							throw new Exception($"Error adding motion at 0x{chunk.ImageBase:X}: {ex.Message}");
+							throw new Exception($"Error adding motion at 0x{chunk.ImageBase:X}: {ex.ToString()}");
 						}
 						break;
 					case NinjaBinaryChunkType.SimpleShapeMotion:
@@ -235,7 +236,9 @@ namespace SAModel
 							throw new Exception($"Error adding shape motion at 0x{chunk.ImageBase:X}: {ex.Message}");
 						}
 						break;
-
+					case NinjaBinaryChunkType.POF0:
+					default:
+						break;
 				}
 			}
 
