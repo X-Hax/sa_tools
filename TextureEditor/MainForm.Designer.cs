@@ -207,7 +207,7 @@
 			label2.Location = new System.Drawing.Point(4, 66);
 			label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label2.Name = "label2";
-			label2.Size = new System.Drawing.Size(75, 15);
+			label2.Size = new System.Drawing.Size(76, 15);
 			label2.TabIndex = 5;
 			label2.Text = "Global Index:";
 			// 
@@ -217,7 +217,7 @@
 			label3.Location = new System.Drawing.Point(4, 7);
 			label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label3.Name = "label3";
-			label3.Size = new System.Drawing.Size(38, 15);
+			label3.Size = new System.Drawing.Size(39, 15);
 			label3.TabIndex = 0;
 			label3.Text = "Index:";
 			// 
@@ -237,7 +237,7 @@
 			labelX.Location = new System.Drawing.Point(159, 96);
 			labelX.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			labelX.Name = "labelX";
-			labelX.Size = new System.Drawing.Size(12, 15);
+			labelX.Size = new System.Drawing.Size(13, 15);
 			labelX.TabIndex = 11;
 			labelX.Text = "x";
 			// 
@@ -264,7 +264,7 @@
 			newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { newPVMToolStripMenuItem, newGVMToolStripMenuItem, newXVMToolStripMenuItem, newPVMXToolStripMenuItem, newPAKToolStripMenuItem });
 			newToolStripMenuItem.Image = Properties.Resources._new;
 			newToolStripMenuItem.Name = "newToolStripMenuItem";
-			newToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			newToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
 			newToolStripMenuItem.Text = "&New";
 			// 
 			// newPVMToolStripMenuItem
@@ -311,7 +311,7 @@
 			openToolStripMenuItem.Image = Properties.Resources.open;
 			openToolStripMenuItem.Name = "openToolStripMenuItem";
 			openToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
-			openToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			openToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
 			openToolStripMenuItem.Text = "&Open...";
 			openToolStripMenuItem.Click += openToolStripMenuItem_Click;
 			// 
@@ -320,7 +320,7 @@
 			saveToolStripMenuItem.Image = Properties.Resources.save;
 			saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			saveToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
-			saveToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			saveToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
 			saveToolStripMenuItem.Text = "&Save";
 			saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
 			// 
@@ -330,7 +330,7 @@
 			saveAsToolStripMenuItem.Image = Properties.Resources.saveas;
 			saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S;
-			saveAsToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			saveAsToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
 			saveAsToolStripMenuItem.Text = "Save &As...";
 			saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
 			// 
@@ -372,14 +372,14 @@
 			// toolStripSeparator3
 			// 
 			toolStripSeparator3.Name = "toolStripSeparator3";
-			toolStripSeparator3.Size = new System.Drawing.Size(258, 6);
+			toolStripSeparator3.Size = new System.Drawing.Size(259, 6);
 			// 
 			// importTexturePackToolStripMenuItem
 			// 
 			importTexturePackToolStripMenuItem.Image = Properties.Resources.import;
 			importTexturePackToolStripMenuItem.Name = "importTexturePackToolStripMenuItem";
 			importTexturePackToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I;
-			importTexturePackToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			importTexturePackToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
 			importTexturePackToolStripMenuItem.Text = "&Import Folder Texture Pack...";
 			importTexturePackToolStripMenuItem.ToolTipText = "Imports a folder texture pack with an index file.";
 			importTexturePackToolStripMenuItem.Click += importTexturePackToolStripMenuItem_Click;
@@ -389,7 +389,7 @@
 			exportTexturePackToolStripMenuItem.Image = Properties.Resources.export;
 			exportTexturePackToolStripMenuItem.Name = "exportTexturePackToolStripMenuItem";
 			exportTexturePackToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
-			exportTexturePackToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			exportTexturePackToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
 			exportTexturePackToolStripMenuItem.Text = "&Export Folder Texture Pack...";
 			exportTexturePackToolStripMenuItem.ToolTipText = "Exports a folder texture pack with an index file.";
 			exportTexturePackToolStripMenuItem.Click += exportTexturePackToolStripMenuItem_Click;
@@ -398,7 +398,7 @@
 			// 
 			exportAllToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllPVRToolStripMenuItem, exportAllGVRToolStripMenuItem, exportAllXVRToolStripMenuItem, exportAllDDSToolStripMenuItem, exportAllPNGToolStripMenuItem });
 			exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
-			exportAllToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			exportAllToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
 			exportAllToolStripMenuItem.Text = "Export All Textures as";
 			// 
 			// exportAllPVRToolStripMenuItem
@@ -445,25 +445,25 @@
 			// toolStripSeparator1
 			// 
 			toolStripSeparator1.Name = "toolStripSeparator1";
-			toolStripSeparator1.Size = new System.Drawing.Size(258, 6);
+			toolStripSeparator1.Size = new System.Drawing.Size(259, 6);
 			// 
 			// recentFilesToolStripMenuItem
 			// 
 			recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
-			recentFilesToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			recentFilesToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
 			recentFilesToolStripMenuItem.Text = "&Recent Files";
 			recentFilesToolStripMenuItem.DropDownItemClicked += recentFilesToolStripMenuItem_DropDownItemClicked;
 			// 
 			// toolStripSeparator2
 			// 
 			toolStripSeparator2.Name = "toolStripSeparator2";
-			toolStripSeparator2.Size = new System.Drawing.Size(258, 6);
+			toolStripSeparator2.Size = new System.Drawing.Size(259, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			exitToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4;
-			exitToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			exitToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
 			exitToolStripMenuItem.Text = "E&xit";
 			exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
 			// 
@@ -586,7 +586,7 @@
 			// 
 			toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { generateNewGbixToolStripMenuItem, mipmapsToolStripMenuItem, alphaSortingToolStripMenuItem });
 			toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-			toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 22);
+			toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 22);
 			toolsToolStripMenuItem.Text = "&Tools";
 			// 
 			// generateNewGbixToolStripMenuItem
@@ -968,7 +968,7 @@
 			checkBoxPAKUseAlpha.Location = new System.Drawing.Point(317, 65);
 			checkBoxPAKUseAlpha.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			checkBoxPAKUseAlpha.Name = "checkBoxPAKUseAlpha";
-			checkBoxPAKUseAlpha.Size = new System.Drawing.Size(100, 19);
+			checkBoxPAKUseAlpha.Size = new System.Drawing.Size(99, 19);
 			checkBoxPAKUseAlpha.TabIndex = 8;
 			checkBoxPAKUseAlpha.Text = "No Alpha Test";
 			toolTip1.SetToolTip(checkBoxPAKUseAlpha, "Disables Alpha Test and Z Write for the selected texture.\r\nThis can make some transparent textures blend better or worse. Use with caution.");
@@ -1007,7 +1007,7 @@
 			hexIndexCheckBox.Location = new System.Drawing.Point(215, 6);
 			hexIndexCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			hexIndexCheckBox.Name = "hexIndexCheckBox";
-			hexIndexCheckBox.Size = new System.Drawing.Size(46, 19);
+			hexIndexCheckBox.Size = new System.Drawing.Size(47, 19);
 			hexIndexCheckBox.TabIndex = 2;
 			hexIndexCheckBox.Text = "Hex";
 			toolTip1.SetToolTip(hexIndexCheckBox, "Check to make texture IDs hexadecimal.");
@@ -1212,7 +1212,7 @@
 			extraFormatLabel.Location = new System.Drawing.Point(0, 45);
 			extraFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
 			extraFormatLabel.Name = "extraFormatLabel";
-			extraFormatLabel.Size = new System.Drawing.Size(129, 15);
+			extraFormatLabel.Size = new System.Drawing.Size(130, 15);
 			extraFormatLabel.TabIndex = 15;
 			extraFormatLabel.Text = "Pixel Format: Unknown";
 			extraFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1225,7 +1225,7 @@
 			pixelFormatLabel.Location = new System.Drawing.Point(0, 24);
 			pixelFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
 			pixelFormatLabel.Name = "pixelFormatLabel";
-			pixelFormatLabel.Size = new System.Drawing.Size(129, 15);
+			pixelFormatLabel.Size = new System.Drawing.Size(130, 15);
 			pixelFormatLabel.TabIndex = 16;
 			pixelFormatLabel.Text = "Pixel Format: Unknown";
 			pixelFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1289,11 +1289,10 @@
 			// buttonResetPalette
 			// 
 			buttonResetPalette.AutoSize = true;
-			buttonResetPalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			buttonResetPalette.Location = new System.Drawing.Point(5, 132);
+			buttonResetPalette.Location = new System.Drawing.Point(4, 132);
 			buttonResetPalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			buttonResetPalette.Name = "buttonResetPalette";
-			buttonResetPalette.Size = new System.Drawing.Size(84, 25);
+			buttonResetPalette.Size = new System.Drawing.Size(91, 25);
 			buttonResetPalette.TabIndex = 35;
 			buttonResetPalette.Text = "Reset Palette";
 			toolTip1.SetToolTip(buttonResetPalette, "Replaces the current palette with the default palette.");
@@ -1304,8 +1303,7 @@
 			// buttonSavePalette
 			// 
 			buttonSavePalette.AutoSize = true;
-			buttonSavePalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			buttonSavePalette.Location = new System.Drawing.Point(103, 101);
+			buttonSavePalette.Location = new System.Drawing.Point(98, 101);
 			buttonSavePalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			buttonSavePalette.Name = "buttonSavePalette";
 			buttonSavePalette.Size = new System.Drawing.Size(89, 25);
@@ -1319,7 +1317,6 @@
 			// buttonLoadPalette
 			// 
 			buttonLoadPalette.AutoSize = true;
-			buttonLoadPalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			buttonLoadPalette.Location = new System.Drawing.Point(4, 101);
 			buttonLoadPalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			buttonLoadPalette.Name = "buttonLoadPalette";
@@ -1457,7 +1454,7 @@
 			// toolStripStatusLabelTextures
 			// 
 			toolStripStatusLabelTextures.Name = "toolStripStatusLabelTextures";
-			toolStripStatusLabelTextures.Size = new System.Drawing.Size(57, 17);
+			toolStripStatusLabelTextures.Size = new System.Drawing.Size(58, 17);
 			toolStripStatusLabelTextures.Text = "0 textures";
 			// 
 			// toolStripStatusLabelPalette

@@ -137,7 +137,7 @@ namespace TextureEditor
 						case ".png":
 						case ".bmp":
 							Bitmap bp = new Bitmap(fd.FileName);
-							currentPalette = new TexturePalette(new Bitmap(bp));
+							currentPalette = new TexturePalette(new Bitmap(bp), currentPalette.GetPalettePixelCodec());
 							toolStripStatusLabelPalette.Text = "Palette: from Bitmap.";
 							bp.Dispose();
 							break;
@@ -157,7 +157,7 @@ namespace TextureEditor
 		/// <summary>Dialog that saves the currently loaded palette as PVP/GVP/PNG.</summary>
 		private void SavePaletteDialog(string defaultFilename)
 		{
-			using (SaveFileDialog fd = new SaveFileDialog() { Title = "Save Palette File", FileName = defaultFilename, Filter = "PVR Palette|*.pvp|GVR Palette|*.gvp|Bitmaps|*.bmp;*.png", DefaultExt = "pvp", FilterIndex = currentFormat == TextureArchiveFormat.PVM ? 1 : 2 })
+			using (SaveFileDialog fd = new SaveFileDialog() { Title = "Save Palette File", FileName = defaultFilename, Filter = "PVR Palette|*.pvp|GVR Palette|*.gvp|Bitmaps|*.png", DefaultExt = "pvp", FilterIndex = currentFormat == TextureArchiveFormat.PVM ? 1 : 2 })
 			{
 				DialogResult dr = fd.ShowDialog(this);
 				if (dr == DialogResult.OK)
