@@ -9,6 +9,7 @@ using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.Properties;
 using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
+using System.Collections.Concurrent;
 
 namespace SAModel.SAEditorCommon.SETEditing
 {
@@ -26,13 +27,13 @@ namespace SAModel.SAEditorCommon.SETEditing
 		/// <summary>Question mark texture.</summary>
 		internal static Texture QuestionMarkTexture;
 		/// <summary>Cache of loaded models.</summary>
-		private static Dictionary<string, NJS_OBJECT> ModelCache;
+		private static ConcurrentDictionary<string, NJS_OBJECT> ModelCache;
 		/// <summary>Cache of loaded meshes.</summary>
-		private static Dictionary<NJS_OBJECT, Mesh[]> MeshCache;
+		private static ConcurrentDictionary<NJS_OBJECT, Mesh[]> MeshCache;
 		/// <summary>Cache of loaded textures per texlist (by NJS_TEXLIST name). Same Texture items may be included in both LevelData.Textures and TexlistCache.</summary>
-		private static Dictionary<string, Texture[]> TexlistCache;
+		private static ConcurrentDictionary<string, Texture[]> TexlistCache;
 		/// <summary>Cache of loaded motions.</summary>
-		private static Dictionary<string, NJS_MOTION> MotionCache;
+		private static ConcurrentDictionary<string, NJS_MOTION> MotionCache;
 
 		/// <summary>
 		/// Initializes the cache and default meshes and textures for the specified Device.
