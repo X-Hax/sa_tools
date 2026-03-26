@@ -544,6 +544,37 @@ namespace SAModel
 			Sibling = null;
 		}
 
+		/// <summary>
+		/// Counts used texture IDs in the object and its children/siblings.
+		/// </summary>
+		/// <returns>A List of all unique texture IDs used in the model.</returns>
+		/// <exception cref="NotImplementedException"></exception>
+		public List<int> GetUsedTextureIDs()
+		{
+			List<int> result = new List<int>();
+			if (Attach != null)
+			{
+				switch (Attach)
+				{
+					case BasicAttach batt:
+						if (batt.Material == null || batt.Material.Count == 0)
+							break;
+						for (int i = 0; i < batt.Material.Count; i++)						
+								result.Add(batt.Material[i].TextureID);
+						break;
+					case ChunkAttach catt:
+					case GCAttach gatt:
+					case SAModel.XJ.XJAttach xatt:
+						// Unimplemented
+						throw new NotImplementedException("Counting used texture IDs is currently not implemented for ChunkAttach, GCAttach and XJAttach.");
+				}
+			}
+			foreach (NJS_OBJECT child in Children)
+				result.AddRange(child.GetUsedTextureIDs());
+			if (Sibling != null && Parent ==  null)
+				result.AddRange(Sibling.GetUsedTextureIDs());
+			return result.Distinct().ToList();
+		}
 
 		public void ProcessVertexData()
 		{
