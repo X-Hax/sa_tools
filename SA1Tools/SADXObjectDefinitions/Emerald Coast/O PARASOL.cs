@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
 using SAModel.SAEditorCommon;
+using SAModel.Direct3D.TextureSystem;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
@@ -97,6 +98,11 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
 
 			return matrix;
+		}
+
+		public override BMPInfo[] ExportTextures(SETItem item)
+		{
+			return ObjectHelper.GetTextureBmpInfos("OBJ_BEACH");
 		}
 	}
 
