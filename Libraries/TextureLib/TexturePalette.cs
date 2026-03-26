@@ -146,6 +146,7 @@ namespace TextureLib
             StartBank = startBank;
             StartColor = startColor;
             paletteCodec = codec != null ? codec : new ARGB8888PixelCodec();
+			DecodedData = new byte[bitmap.Width * bitmap.Height * 4];
             TextureFunctions.BitmapToRaw(bitmap, DecodedData);
             Encode(codec, bigEndian);
         }
@@ -159,7 +160,7 @@ namespace TextureLib
         {
             if (codec != null)
                 paletteCodec = codec;
-			codec.BigEndian = encodeAsBigEndian;
+			paletteCodec.BigEndian = encodeAsBigEndian;
             isBigEndian = encodeAsBigEndian;
             int numColors = GetNumColors();
             RawData = new byte[paletteCodec.BytesPerPixel * numColors];
@@ -460,6 +461,12 @@ namespace TextureLib
 				default:
 					return paletteCodec.Info();
 			}
+		}
+
+		/// <summary>Returns the pixel codec used to encode the data in the palette.</summary>
+		public PixelCodec GetPalettePixelCodec()
+		{
+			return paletteCodec;
 		}
 	}
 }
