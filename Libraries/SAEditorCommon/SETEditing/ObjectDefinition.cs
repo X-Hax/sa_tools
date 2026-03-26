@@ -206,9 +206,11 @@ namespace SAModel.SAEditorCommon.SETEditing
 
 		/// <summary>
 		/// Returns the object's texture names and bitmaps as an array of BMPInfo.
+		/// In an override of this function, for most objects it should export textures of the whole object PVM, such as OBJ_BEACH.
+		/// In multi-archive objects, it should export an array of actually used textures matching the texlist.
 		/// </summary>
-		/// <param name="item"></param>
-		/// <returns></returns>
+		/// <param name="item">The SET item corresponding to the object.</param>
+		/// <returns>An array of BMPInfo.</returns>
 		public virtual BMPInfo[] ExportTextures(SETItem item)
 		{			
 			return null;
