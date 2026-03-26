@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.IO;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon.Import;
+using System.Linq;
 
 namespace SAModel.SAEditorCommon.DataTypes
 {
@@ -109,6 +112,82 @@ namespace SAModel.SAEditorCommon.DataTypes
 		new protected Vertex scale = new Vertex();
 		[Category("Common"), Description("Depending on the object, these values can define how big the item is, adjust its parameters or pick a variation of the object.")]
 		public Vertex Scale { get { return scale; } set { scale = value; GetHandleMatrix(); } }
+
+		[Browsable(true)]
+		[DisplayName("Export Model")]
+		public void ExportModel()
+		{
+			try
+			{
+				// Get texture names
+				string[] textureNames = null;
+				BMPInfo[] textures = objdef.ExportTextures(this);
+				if (textures != null)
+				{
+					textureNames = new string[textures.Length];
+					for (int i = 0; i < textures.Length; i++)
+						textureNames[i] = textures[i].Name;
+				}
+				// Transform
+				SAModel.Direct3D.MatrixStack transform = new SAModel.Direct3D.MatrixStack();
+				List<ModelTransform> objs = objdef.GetModels(this, transform);
+				// No models
+				if (objs == null || objs.Count == 0)
+					return;
+				string filePath = ModelImportExport.ExportModelDialog(objs[0].Model, objdef.InternalName);
+				// Dialog cancelled
+				if (string.IsNullOrEmpty(filePath))
+					return;
+				// Export first model
+				//objs[0].Model.ProcessTransforms(objs[0].Transform);
+				ModelImportExport.ExportModel(objs[0].Model, filePath, objs[0].Transform, textureNames, objdef.Name);
+				// Texture out path
+				string outPath = Path.GetDirectoryName(filePath);
+				// Exporting multiple models
+				if (objs.Count > 1)
+				{
+					for (int i = 1; i < objs.Count; i++)
+					{
+						//objs[i].Model.ProcessTransforms(objs[i].Transform);
+						// Set output path to "path\model_1.samdl" etc.
+						string modelOutPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + "_" + i.ToString() + Path.GetExtension(filePath));
+						ModelImportExport.ExportModel(objs[i].Model, modelOutPath, objs[i].Transform, textureNames, objdef.Name);
+					}
+				}
+				// Save textures for non-SAModel formats
+				// File not saved
+				if (string.IsNullOrEmpty(outPath))
+					return;
+				// No textures
+				if (textures == null)
+					return;
+				// Don't export textures for SAModel formats
+				if (Path.GetExtension(filePath).Contains("mdl", StringComparison.InvariantCultureIgnoreCase))
+					return;
+				// Don't export textures for GJ
+				if (Path.GetExtension(filePath).Equals(".gj", StringComparison.InvariantCultureIgnoreCase))
+					return;
+				// Don't export textures for NJ
+				if (Path.GetExtension(filePath).Equals(".nj", StringComparison.InvariantCultureIgnoreCase))
+					return;
+				// Don't export textures for XJ
+				if (Path.GetExtension(filePath).Equals(".xj", StringComparison.InvariantCultureIgnoreCase))
+					return;
+				// Make a list of used texture IDs
+				List<int> usedTextureIDs = new List<int>();
+				for (int i = 0; i < objs.Count; i++)
+					usedTextureIDs.AddRange(objs[i].Model.GetUsedTextureIDs());
+				usedTextureIDs = usedTextureIDs.Distinct().ToList();
+				// Export used texture bitmaps
+				for (int t = 0; t < textures.Length; t++)
+					if (usedTextureIDs.Contains(t))
+						textures[t].Image.Save(Path.Combine(outPath, textures[t].Name + ".png"));
+			}
+			catch (Exception ex)
+			{
+				Logger.Add("Exporting model failed: " + ex.ToString());
+			}
+		}
 
 		public Vertex GetScale()
 		{

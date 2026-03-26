@@ -6,6 +6,7 @@ using SharpDX.Direct3D9;
 using Mesh = SAModel.Direct3D.Mesh;
 using SharpDX;
 using SplitTools;
+using SAModel.Direct3D.TextureSystem;
 
 namespace SAModel.SAEditorCommon.SETEditing
 {
@@ -179,8 +180,12 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return matrix;
 		}
 
-		public override string Name { get { return name; } }
+		public override BMPInfo[] ExportTextures(SETItem item)
+		{
+			return ObjectHelper.GetTextureBmpInfos(texture);
+		}
 
+		public override string Name { get { return name; } }
 		public override ushort DefaultXRotation { get { return defxrot ?? base.DefaultXRotation; } }
 		public override ushort DefaultYRotation { get { return defyrot ?? base.DefaultYRotation; } }
 		public override ushort DefaultZRotation { get { return defzrot ?? base.DefaultZRotation; } }

@@ -5,6 +5,7 @@ using SharpDX;
 using SharpDX.Direct3D9;
 using SAModel.Direct3D;
 using SAModel.SAEditorCommon.DataTypes;
+using SAModel.Direct3D.TextureSystem;
 
 namespace SAModel.SAEditorCommon.SETEditing
 {
@@ -203,6 +204,15 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return new BoundingSphere(item.Position, 0);
 		}
 
+		/// <summary>
+		/// Returns the object's texture names and bitmaps as an array of BMPInfo.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public virtual BMPInfo[] ExportTextures(SETItem item)
+		{			
+			return null;
+		}
 		#endregion
 	}
 
