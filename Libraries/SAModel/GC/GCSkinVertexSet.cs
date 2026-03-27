@@ -140,7 +140,7 @@ namespace SAModel.GC
 
 			return result.ToString();
 		}
-		public void ToNJA(TextWriter writer)
+		public void ToNJA(TextWriter writer, bool shortweights = false)
 		{
 			switch (elementType)
 			{
@@ -155,12 +155,6 @@ namespace SAModel.GC
 					break;
 				case GCSkinAttribute.PartialWeightStart:
 				case GCSkinAttribute.PartialWeight:
-					var weightmax = 0;
-					foreach (var weights in weightData)
-					{
-						if (weights.weight > 255)
-							weightmax++;
-					}
 					writer.WriteLine($"GJWPOINT      {DataNamePos}[]");
 					writer.WriteLine("START");
 					foreach (var vtx in posNrms)
@@ -172,7 +166,7 @@ namespace SAModel.GC
 					writer.WriteLine("START");
 					foreach (var wght in weightData)
 					{
-						wght.ToNJA(writer, weightmax != 0);
+						wght.ToNJA(writer, shortweights);
 					}
 					writer.WriteLine($"END{Environment.NewLine}");
 					break;

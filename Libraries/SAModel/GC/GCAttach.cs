@@ -975,7 +975,7 @@ namespace SAModel.GC
 		}
 
 		// WIP
-		public void ToNJA(TextWriter writer, List<string> labels, string[] textures)
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures, bool shortweights = false)
 		{
 			if (VertexData.Count != 0 && !labels.Contains(VertexName))
 			{
@@ -1003,10 +1003,9 @@ namespace SAModel.GC
 			{
 				writer.WriteLine($"GJWEIGHTARRAY {VertexSkinName}[]");
 				writer.WriteLine($"START{Environment.NewLine}");
-
 				foreach (var item in vertexSkinData)
 				{
-					item.ToNJA(writer);
+					item.ToNJA(writer, shortweights);
 				}
 				foreach (var item in vertexSkinData)
 				{

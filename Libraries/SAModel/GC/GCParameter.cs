@@ -269,7 +269,27 @@ namespace SAModel.GC
 				_ => $"{compsize}"
 			};
 
-			writer.WriteLine($"GjVtxAttr ( {attr_str}, {comptype_str}, {compsize_str}, {(uint)UVScale} ),");
+			string uvscale_str = UVScale switch
+			{
+				GCUVScale.NoUV1 => "GJ_ST_NONE1",
+				GCUVScale.NoUV2 => "GJ_ST_NONE2",
+				GCUVScale.NoUV3 => "GJ_ST_NONE3",
+				GCUVScale.NoUV4 => "GJ_ST_NONE4",
+				GCUVScale.NoUV5 => "GJ_ST_NONE5",
+				GCUVScale.NoUV6 => "GJ_ST_NONE6",
+				GCUVScale.NoUV7 => "GJ_ST_NONE7",
+				GCUVScale.Scale1 => "GJ_ST_SCL1",
+				GCUVScale.Scale2 => "GJ_ST_SCL2",
+				GCUVScale.Scale3 => "GJ_ST_SCL4",
+				GCUVScale.Scale4 => "GJ_ST_SCL8",
+				GCUVScale.Scale5 => "GJ_ST_SCL16",
+				GCUVScale.Scale6 => "GJ_ST_SCL32",
+				GCUVScale.Scale7 => "GJ_ST_SCL64",
+				GCUVScale.Scale8 => "GJ_ST_SCL128",
+				_ => $"{(uint)UVScale}"
+			};
+
+			writer.WriteLine($"GjVtxAttr ( {attr_str}, {comptype_str}, {compsize_str}, {uvscale_str} ),");
 		}
 	}
 

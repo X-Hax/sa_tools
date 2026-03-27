@@ -641,6 +641,13 @@ namespace SAModel
 
 		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null, bool isDup = false, bool exportDefaults = true, bool isNinja2 = false)
 		{
+			NJS_OBJECT mdl = this;
+			while (mdl.Parent != null)
+				mdl = mdl.Parent;
+			NJS_OBJECT[] mdls = mdl.GetObjects();
+			int weightpower = 0;
+			bool shortweight = false;
+
 			for (int i = 1; i < Children.Count; i++)
 				Children[i - 1].Sibling = Children[i];
 			for (int i = Children.Count - 1; i >= 0; i--)
@@ -673,6 +680,49 @@ namespace SAModel
 				isGinja = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is GCAttach;
 				isXinja = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is XJ.XJAttach;
 			}
+			//Because these two use different calculations for weights if one vertex has a value that's too high
+			if (isChunk || isGinja)
+			{
+				foreach (NJS_OBJECT main in mdls)
+				{
+					if (main.Attach is ChunkAttach catt)
+					{
+						if (catt.Vertex != null)
+						{
+							foreach (VertexChunk item in catt.Vertex)
+							{
+								if (item.Type == ChunkType.Vertex_VertexNormalNinjaFlags || item.Type == ChunkType.Vertex_VertexNinjaFlags)
+								{
+									for (int i = 0; i < item.VertexCount; ++i)
+									{
+										if ((item.NinjaFlags[i] >> 16) > 255)
+											weightpower++;
+									}
+								}
+							}
+						}
+					}
+					if (main.Attach is GCAttach gatt)
+					{
+						if (gatt.vertexSkinData.Count > 0)
+						{
+							foreach (var item in gatt.vertexSkinData)
+							{
+								if (item.elementType == GCSkinAttribute.PartialWeight || item.elementType == GCSkinAttribute.PartialWeightStart)
+									foreach (var weights in item.weightData)
+									{
+										if (weights.weight > 255)
+											weightpower++;
+									}
+							}
+						}
+					}
+				}
+			}
+			if (weightpower > 0)
+				shortweight = true;
+			else
+				shortweight = false;
 
 			if (!Name.StartsWith("DO_NOT_EXPORT"))
 			{
@@ -701,7 +751,7 @@ namespace SAModel
 					ChunkAttach ChunkAttach = Attach as ChunkAttach;
 					if (!labels.Contains(ChunkAttach.Name))
 					{
-						ChunkAttach.ToNJA(writer, labels, textures);
+						ChunkAttach.ToNJA(writer, labels, textures, shortweight);
 						labels.Add(ChunkAttach.Name);
 					}
 				}
@@ -710,7 +760,7 @@ namespace SAModel
 					GCAttach gcattach = Attach as GCAttach;
 					if (!labels.Contains(gcattach.Name))
 					{
-						gcattach.ToNJA(writer, labels, textures);
+						gcattach.ToNJA(writer, labels, textures, shortweight);
 						labels.Add(gcattach.Name);
 					}
 				}
@@ -788,7 +838,7 @@ namespace SAModel
 				writer.WriteLine("Child       " + (Children.Count > 0 ? Children[0].Name.MakeIdentifier() : "NULL") + ",");
 				writer.WriteLine("Sibling     " + (Sibling != null ? Sibling.Name.MakeIdentifier() : "NULL") + ",");
 				if (isNinja2)
-					writer.WriteLine("OQuatRe    ( " + QuaternionScalar.ToString("N6") + " ),");
+					writer.WriteLine("OQuatRe    ( " + QuaternionScalar.ToString("F6") + " ),");
 				writer.WriteLine("END" + Environment.NewLine);
 
 				if (isBasic)

@@ -254,7 +254,7 @@ namespace SAModel
 			writer.WriteLine(";");
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels, string[] textures)
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures, bool shortweights = false)
 		{
 			if (Poly != null && !labels.Contains(PolyName))
 			{
@@ -277,7 +277,7 @@ namespace SAModel
 
 				foreach (VertexChunk item in Vertex)
 				{
-					item.ToNJA(writer);
+					item.ToNJA(writer, shortweights);
 				}
 
 				writer.WriteLine("\tCnkEnd()");
