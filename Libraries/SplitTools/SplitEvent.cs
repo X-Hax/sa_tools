@@ -1,11 +1,12 @@
-﻿using Newtonsoft.Json;
-using PSO.PRS;
-using SAModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
+using PSO.PRS;
+using SAModel;
 
 namespace SplitTools.SAArc
 {
@@ -327,12 +328,14 @@ namespace SplitTools.SAArc
 						// Padding in the event the user wants to convert a DC cutscene to Battle format
 						if (!battle)
 						{
-							UpgradeInfo pad = new();
-							pad.RootNode = "null";
-							pad.AttachNode1 = "null";
-							pad.Model1 = "null";
-							pad.AttachNode2 = "null";
-							pad.Model2 = "null";
+							UpgradeInfo pad = new()
+							{
+								RootNode = "null",
+								AttachNode1 = "null",
+								Model1 = "null",
+								AttachNode2 = "null",
+								Model2 = "null"
+							};
 							ini.Upgrades.Add(pad);
 							ini.Upgrades.Add(pad);
 						}
@@ -359,9 +362,11 @@ namespace SplitTools.SAArc
 								_ => upnam
 							};
 							
-							UpgradeInfo info = new();
-							info.UpgradeName = upnam;
-							info.RootNode = GetModel(fc, ptr, key, $"{chnam} Root.sa2mdl", $"{evname} {chnam} Root");
+							UpgradeInfo info = new()
+							{
+								UpgradeName = upnam,
+								RootNode = GetModel(fc, ptr, key, $"{chnam} Root.sa2mdl", $"{evname} {chnam} Root")
+							};
 							if (info.RootNode != null)
 							{
 								// Populating metadata file
@@ -466,12 +471,14 @@ namespace SplitTools.SAArc
 							ptr += 0x14;
 						}
 						// Padding in the event the user wants to convert a DC Beta cutscene to other formats
-						UpgradeInfo pad = new();
-						pad.RootNode = "null";
-						pad.AttachNode1 = "null";
-						pad.Model1 = "null";
-						pad.AttachNode2 = "null";
-						pad.Model2 = "null";
+						UpgradeInfo pad = new()
+						{
+							RootNode = "null",
+							AttachNode1 = "null",
+							Model1 = "null",
+							AttachNode2 = "null",
+							Model2 = "null"
+						};
 						ini.Upgrades.Add(pad);
 						ini.Upgrades.Add(pad);
 						ini.Upgrades.Add(pad);
@@ -776,8 +783,10 @@ namespace SplitTools.SAArc
 						
 						if (ptr2 != 0)
 						{
-							BigInfo big = new();
-							big.Model = GetModel(fc, ptr2, key, $"Scene {gn}\\Big Model.sa2mdl", $"{evname} Scene {gn} Big Model");
+							BigInfo big = new()
+							{
+								Model = GetModel(fc, ptr2, key, $"Scene {gn}\\Big Model.sa2mdl", $"{evname} Scene {gn} Big Model")
+							};
 							if (big.Model != null)
 							{
 								Console.WriteLine("Scene {0} contains Big the Cat cameo.", gn);
@@ -861,7 +870,7 @@ namespace SplitTools.SAArc
 				ptr = fc.GetPointer(0x1C, key);
 				if (ptr != 0)
 				{
-					ini.TailsTails = GetModel(fc, ptr, key, $"Tails' tails.sa2mdl", $"{evname} Tails' Tails");
+					ini.TailsTails = GetModel(fc, ptr, key, "Tails' tails.sa2mdl", $"{evname} Tails' Tails");
 					var ptr2 = fc.GetPointer(ptr, key);
 					
 					if (ptr2 == 0)
@@ -1027,9 +1036,11 @@ namespace SplitTools.SAArc
 						var ptr3 = fc.GetPointer(ptr + 4, key);
 						for (var i = 0; i < tn; i++)
 						{
-							TexAnimGCIDs tgcids = new();
-							tgcids.TexID = ByteConverter.ToInt32(fc, ptr3);
-							tgcids.TexLoopNumber = ByteConverter.ToInt32(fc, ptr3 + 4);
+							TexAnimGCIDs tgcids = new()
+							{
+								TexID = ByteConverter.ToInt32(fc, ptr3),
+								TexLoopNumber = ByteConverter.ToInt32(fc, ptr3 + 4)
+							};
 							tanim.TexAnimGCIDs.Add(tgcids);
 							ptr3 += 0x8;
 						}
@@ -1101,9 +1112,11 @@ namespace SplitTools.SAArc
 						// This is for DC -> Battle conversions
 						// Dreamcast only has one set of texture looping values
 						tanim.TexAnimGCIDCount = 1;
-						TexAnimGCIDs tgcids = new();
-						tgcids.TexID = ByteConverter.ToInt32(fc, ptr + 4);
-						tgcids.TexLoopNumber = ByteConverter.ToInt32(fc, ptr + 8);
+						TexAnimGCIDs tgcids = new()
+						{
+							TexID = ByteConverter.ToInt32(fc, ptr + 4),
+							TexLoopNumber = ByteConverter.ToInt32(fc, ptr + 8)
+						};
 						tanim.TexAnimGCIDs.Add(tgcids);
 
 						tanim.TexID = ByteConverter.ToInt32(fc, ptr + 4);
@@ -1414,7 +1427,7 @@ namespace SplitTools.SAArc
 				if (battle)
 				{
 					// Done for accuracy to the original files. Whether or not this is necessary is unclear.
-					if (evinfo.GCShadowMaps == true)
+					if (evinfo.GCShadowMaps)
 					{
 						imageBase += 0x40;
 					}
@@ -1605,7 +1618,7 @@ namespace SplitTools.SAArc
 					texaddrs[x] = texaddr;
 				}
 				var texlistaddr = (int)(imageBase + (tex.NumTextures * 0xC));
-				imageBase += (uint)((tex.NumTextures * 0xC) + 8);
+				imageBase += (tex.NumTextures * 0xC) + 8;
 
 				// Texture dimensions (Necessary for debug mode, always exists)
 				var sizeptr = (int)imageBase;
@@ -1708,7 +1721,7 @@ namespace SplitTools.SAArc
 					}
 					// The game adds the matrix data first, followed by the usage information.
 					// Valid reflect data pointers point here.
-					reflectptr += (int)refbytes.Count;
+					reflectptr += refbytes.Count;
 					evmirrref.AddRange(refbytes);
 					evmirrref.AddRange(ByteConverter.GetBytes(refl.Instances));
 					for (var t = 0; t < refl.Instances; t++)
@@ -1717,7 +1730,7 @@ namespace SplitTools.SAArc
 					}
 					if (refl.Instances < 32)
 					{
-						var padding = (32 - (int)refl.Instances) * 4;
+						var padding = (32 - refl.Instances) * 4;
 						evmirrref.AddRange(new byte[padding]);
 					}
 					for (var n = 0; n < refl.Instances; n++)
@@ -1973,10 +1986,10 @@ namespace SplitTools.SAArc
 					for (var q = 0; q < evinfo.TexAnimCount; q++)
 					{
 						var maindata = texmaster.MainData[q];
-						int tinyadjust = 0;
+						var tinyadjust = 0;
 						var originalmataddr = 0;
 						var firstuvdata = EV_TEXANIM.Load(Path.Combine(path, $"Texture Animations\\TexanimInfo {q + 1} Part 1.ini"));
-						if (int.TryParse(firstuvdata.MaterialTexAddress.Substring(7), System.Globalization.NumberStyles.HexNumber, null, out var firsttiny))
+						if (int.TryParse(firstuvdata.MaterialTexAddress.AsSpan(7), NumberStyles.HexNumber, null, out var firsttiny))
 						{
 							originalmataddr = firsttiny;
 						}
@@ -1996,27 +2009,19 @@ namespace SplitTools.SAArc
 							{
 								if (labels.ContainsKeySafe(maindata.PolyAddress))
 								{
-									switch (maindata.PolyType)
+									tinyadjust = maindata.PolyType switch
 									{
-										case "Material_Diffuse":
-										case "Material_Ambient":
-										case "Material_Specular":
-											tinyadjust = 10;
-											break;
-										case "Material_DiffuseAmbient":
-										case "Material_DiffuseSpecular":
-										case "Material_AmbientSpecular":
-											tinyadjust = 14;
-											break;
-										case "Material_DiffuseAmbientSpecular":
-											tinyadjust = 18;
-											break;
-									}
+										"Material_Diffuse" or "Material_Ambient" or "Material_Specular" => 10,
+										"Material_DiffuseAmbient" or "Material_DiffuseSpecular"
+											or "Material_AmbientSpecular" => 14,
+										"Material_DiffuseAmbientSpecular" => 18,
+										_ => tinyadjust
+									};
 								}
-								int uvaddr = 0;
+								var uvaddr = 0;
 								int uvdist;
 								//Get the original addresses to do MATH
-								if (int.TryParse(uvdata.UVEditData[v].UVAddress.Substring(3), System.Globalization.NumberStyles.HexNumber, null, out var uv))
+								if (int.TryParse(uvdata.UVEditData[v].UVAddress.AsSpan(3), NumberStyles.HexNumber, null, out var uv))
 								{
 									uvaddr = uv;
 								}
@@ -2036,7 +2041,7 @@ namespace SplitTools.SAArc
 							// A strange constant is used to prevent cases of data overlap from occurring.
 							uvdataarrayaddrs[(q * 100) + j] = uvstart + (uvdata.UVEditEntries * 0x8);
 							int tinydist;
-							if (int.TryParse(uvdata.MaterialTexAddress.Substring(7), System.Globalization.NumberStyles.HexNumber, null, out var tiny))
+							if (int.TryParse(uvdata.MaterialTexAddress.AsSpan(7), NumberStyles.HexNumber, null, out var tiny))
 							{
 								currentmataddr = tiny;
 							}
@@ -2462,7 +2467,7 @@ namespace SplitTools.SAArc
 				if (battle)
 				{
 					evfile.AddRange(ByteConverter.GetBytes(Convert.ToInt32(evinfo.GCShadowMaps)));
-					if (evinfo.GCShadowMaps == true)
+					if (evinfo.GCShadowMaps)
 					{
 						evfile.AddRange(new byte[0x14]);
 					}
@@ -2530,7 +2535,7 @@ namespace SplitTools.SAArc
 				if (isBigEndian.HasValue)
 				{
 					ByteConverter.BigEndian = isBigEndian.Value;
-					if (isBigEndian.Value == true)
+					if (isBigEndian.Value)
 					{
 						gamekey = 0;
 					}
@@ -2563,7 +2568,7 @@ namespace SplitTools.SAArc
 				}
 				databytes.AddRange(namebytes);
 				var texlistaddr = (int)(imageBase + (tex.NumTextures * 0xC));
-				imageBase += (uint)((tex.NumTextures * 0xC) + 8);
+				imageBase += (tex.NumTextures * 0xC) + 8;
 				evfile.AddRange(ByteConverter.GetBytes(texlistaddr));
 				for (var n = 0; n < tex.NumTextures; n++)
 				{
@@ -2610,7 +2615,7 @@ namespace SplitTools.SAArc
 					{
 						NJS_OBJECT obj = new(fc, ptr3, key, ModelFormat.Chunk, null);
 						name = obj.Name;
-						List<string> names = [..obj.GetObjects().Select((o) => o.Name)];
+						List<string> names = [..obj.GetObjects().Select(o => o.Name)];
 						foreach (var s in names)
 							if (modelFiles.ContainsKey(s))
 							{
@@ -2627,16 +2632,16 @@ namespace SplitTools.SAArc
 		private static string GetPolyType(byte[] fc, int address, uint key)
 		{
 			string type = null;
-			int ptr3 = fc.GetPointer(address, key);
+			var ptr3 = fc.GetPointer(address, key);
 			if (ptr3 != 0)
 			{
 				ChunkAttach mdl;
-				NJS_OBJECT obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk, null);
+				var obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk, null);
 				if (obj.Attach != null)
 					mdl = new ChunkAttach(fc, ptr3 - 0x18, key);
 				else
 					mdl = new ChunkAttach(fc, ptr3 - 0x4C, key);
-				List<PolyChunk> poly = mdl.Poly;
+				var poly = mdl.Poly;
 				type = poly[0].Type.ToString();
 			}
 			return type;
@@ -2644,15 +2649,14 @@ namespace SplitTools.SAArc
 
 		private static bool GetTexanimChild(byte[] fc, int address, uint key)
 		{
-			int ptr3 = fc.GetPointer(address, key);
+			var ptr3 = fc.GetPointer(address, key);
 			if (ptr3 != 0)
 			{
-				string data = ptr3.ToCHex();
-				NJS_OBJECT obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk, null);
+				var data = ptr3.ToCHex();
+				var obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk, null);
 				if (obj.Attach != null)
 					return false;
-				else
-					return true;
+				return true;
 			}
 			return false;
 		}
@@ -2668,7 +2672,7 @@ namespace SplitTools.SAArc
 				{
 					NJS_OBJECT obj = new(fc, ptr3, key, ModelFormat.GC, null);
 					name = obj.Name;
-					List<string> names = [..obj.GetObjects().Select((o) => o.Name)];
+					List<string> names = [..obj.GetObjects().Select(o => o.Name)];
 					foreach (var s in names)
 						if (modelFiles.ContainsKey(s))
 						{
@@ -2694,9 +2698,11 @@ namespace SplitTools.SAArc
 				var ptr3 = fc.GetPointer(address, key);
 				if (ptr3 != 0)
 				{
-					mtn = new(fc, ptr3, key, cnt, shortrot: false, shortcheck: false);
-					mtn.ShortRot = false;
-					mtn.Description = meta;
+					mtn = new(fc, ptr3, key, cnt, shortrot: false, shortcheck: false)
+					{
+						ShortRot = false,
+						Description = meta
+					};
 					mtn.OptimizeShape();
 				}
 			}
@@ -2992,7 +2998,7 @@ namespace SplitTools.SAArc
 		public string GameString
 		{
 			get => Game.ToString();
-			set => Game = (Game)Enum.Parse(typeof(Game), value);
+			set => Game = Enum.Parse<Game>(value);
 		}
 		public bool BigEndian { get; set; }
 		public bool BattleFormat { get; set; }
@@ -3424,7 +3430,7 @@ namespace SplitTools.SAArc
 		public string GameString
 		{
 			get => Game.ToString();
-			set => Game = (Game)Enum.Parse(typeof(Game), value);
+			set => Game = Enum.Parse<Game>(value);
 		}
 		public bool BigEndian { get; set; }
 		public Dictionary<string, string> Files { get; set; } = new();

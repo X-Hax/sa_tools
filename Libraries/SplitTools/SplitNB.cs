@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using SAModel;
 
 namespace SplitTools.Split
@@ -11,7 +12,7 @@ namespace SplitTools.Split
 	{
 
 		[DllImport("shlwapi.dll", SetLastError = true)]
-		private static extern bool PathRelativePathTo(System.Text.StringBuilder pszPath, string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
+		private static extern bool PathRelativePathTo(StringBuilder pszPath, string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 
 		private enum NbVersion
 		{
@@ -44,62 +45,42 @@ namespace SplitTools.Split
 		{
 			if (data.Length < 4)
 				return ".bin";
-			switch (System.Text.Encoding.ASCII.GetString(data, 0, 4))
+			return Encoding.ASCII.GetString(data, 0, 4) switch
 			{
-				case "NJCA":
-					return ".njca";
-				case "CPSM":
-					return ".cpsm";	
-				case "NJIN":
-					return ".njin";
-				case "NJTL":
-					return ".njtl";
-				case "NJBM":
-					return ".njbm";
-				case "NJCM":
-				case "N2CM":
-					return ".nj";
-				case "GJCM":
-					return ".gj";
-				case "NJSL":
-					return ".njsl";
-				case "NSSM":
-					return ".nssm";
-				case "NJLI":
-					return ".njli";
-				case "NMDM":
-					return ".njm";
-				case "NLIM":
-					return ".nlim";
-				case "NJWM":
-					return ".njwm";
-				case "NCAM":
-					return ".ncam";
-				case "GJTL":
-					return ".gj";
-				case "PVMH":
-					return ".pvm";
-				case "GVMH":
-					return ".gvm";
-				case "XVMH":
-					return ".xvm";
-				default:
-					return ".bin";
-			}
+				"NJCA" => ".njca",
+				"CPSM" => ".cpsm",
+				"NJIN" => ".njin",
+				"NJTL" => ".njtl",
+				"NJBM" => ".njbm",
+				"NJCM" or "N2CM" => ".nj",
+				"GJCM" => ".gj",
+				"NJSL" => ".njsl",
+				"NSSM" => ".nssm",
+				"NJLI" => ".njli",
+				"NMDM" => ".njm",
+				"NLIM" => ".nlim",
+				"NJWM" => ".njwm",
+				"NCAM" => ".ncam",
+				"GJTL" => ".gj",
+				"PVMH" => ".pvm",
+				"GVMH" => ".gvm",
+				"XVMH" => ".xvm",
+				_ => ".bin"
+			};
 		}
 
 		public static void BuildNBFile(string filename, string dest, int verbose = 0)
 		{
 			// Only version 4 (SA1)
 			// Needs update to use filenames from an INI file
-			Dictionary<int, string> sectionlist = IniSerializer.Deserialize<Dictionary<int, string>>(filename);
-			List<byte> result = new List<byte>();
+			var sectionlist = IniSerializer.Deserialize<Dictionary<int, string>>(filename);
+			var result = new List<byte>();
 			result.AddRange(BitConverter.GetBytes(0x04424A4E));
-			int numfiles = sectionlist.Count;
+			var numfiles = sectionlist.Count;
 			result.AddRange(BitConverter.GetBytes(numfiles));
 			foreach (var item in sectionlist)
 			{
-				string insidepath = Path.Combine(Path.GetDirectoryName(filename), item.Value.Split("|")[0]);
+				var insidepath = Path.Combine(Path.GetDirectoryName(filename), item.Value.Split("|")[0]);
 				byte[] writeout;
 				// Convert models and motions to BIN
 				if (item.Value != "NULL")
@@ -107,7 +88,7 @@ namespace SplitTools.Split
 					switch (Path.GetExtension(item.Value).ToLowerInvariant())
 					{
 						case ".sa1mdl":
-							ModelFile mdlfile = new ModelFile(insidepath);
+							var mdlfile = new ModelFile(insidepath);
 							writeout = GetSections(mdlfile.Model);
 							result.AddRange(BitConverter.GetBytes((ushort)1));
 							result.AddRange(BitConverter.GetBytes((ushort)0xCDCD));
@@ -116,7 +97,7 @@ namespace SplitTools.Split
 							File.WriteAllBytes(insidepath + ".bin", writeout);
 							break;
 						case ".saanim":
-							NJS_MOTION mot = NJS_MOTION.Load(insidepath);
+							var mot = NJS_MOTION.Load(insidepath);
 							if (verbose > 1) Console.WriteLine("Section {0}", item.Key);
 							writeout = GetSections(mot, verbose);
 							result.AddRange(BitConverter.GetBytes((ushort)3));
@@ -139,10 +120,10 @@ namespace SplitTools.Split
 		}
         public static void SplitNBFile(string filename, bool extractchunks, string outdir, int verbose = 0, string inifilename = null, bool overwrite = true)
         {
-            Dictionary<int, string> sectionlist = new Dictionary<int, string>();
-            Dictionary<int, NJS_OBJECT> modellist = new Dictionary<int, NJS_OBJECT>();
-            Dictionary<int, NJS_MOTION> animlist = new Dictionary<int, NJS_MOTION>();
-            byte[] file = File.ReadAllBytes(filename);
+            var sectionlist = new Dictionary<int, string>();
+            var modellist = new Dictionary<int, NJS_OBJECT>();
+            var animlist = new Dictionary<int, NJS_MOTION>();
+            var file = File.ReadAllBytes(filename);
             if (file.Length == 180920) // Patch in unused rotation for E101R, required for rebuilding with correct pointers
             {
                 file[129896] = 0xE0;
@@ -154,8 +135,8 @@ namespace SplitTools.Split
                 Console.WriteLine("Invalid NB file.");
                 return;
             }
-			NbVersion nbVersion = (NbVersion)file[3];
-			Console.WriteLine("NB file version: " + nbVersion.ToString());
+			var nbVersion = (NbVersion)file[3];
+			Console.WriteLine("NB file version: " + nbVersion);
 			if (!Directory.Exists(outdir))
 				Directory.CreateDirectory(outdir);
 			Environment.CurrentDirectory = outdir;
@@ -164,7 +145,7 @@ namespace SplitTools.Split
 				// Version 4. Number of files at 0x04. Requires proper splitting.
 				case NbVersion.Chunks_4:
 					int numfiles = BitConverter.ToInt16(file, 4);
-					Dictionary<int, string> splitfilenames = new Dictionary<int, string>();
+					var splitfilenames = new Dictionary<int, string>();
 					if (inifilename != null) inifilename = Path.GetFullPath(inifilename);
 					if (File.Exists(inifilename))
 					{
@@ -177,16 +158,16 @@ namespace SplitTools.Split
 						if (verbose > 0)
 							Console.WriteLine("Split INI {0} not found!", inifilename);
 						inifilename = null;
-						for (int i = 0; i < numfiles; i++)
+						for (var i = 0; i < numfiles; i++)
 						{
 							splitfilenames[i] = i.ToString("D2");
 						}
 					}
-					int curaddr = 8;
-					for (int i = 0; i < numfiles; i++)
+					var curaddr = 8;
+					for (var i = 0; i < numfiles; i++)
 					{
-						ushort type = BitConverter.ToUInt16(file, curaddr);
-						byte[] chunk = new byte[BitConverter.ToInt32(file, curaddr + 4)];
+						var type = BitConverter.ToUInt16(file, curaddr);
+						var chunk = new byte[BitConverter.ToInt32(file, curaddr + 4)];
 						Array.Copy(file, curaddr + 8, chunk, 0, chunk.Length);
 						switch (type)
 						{
@@ -197,17 +178,17 @@ namespace SplitTools.Split
 							case 1:
 								if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is a model", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
 								if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
-								NJS_OBJECT mdl = ProcessModel(chunk, verbose, curaddr + 8);
+								var mdl = ProcessModel(chunk, verbose, curaddr + 8);
 								//if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + "_p.bin", GetSections(mdl));
 								// Assume there is no description/texture for SAMDL project mode
-								string[] metadata = new string[0];
-								string outFilename = splitfilenames[i];
+								var metadata = new string[0];
+								var outFilename = splitfilenames[i];
 								if (splitfilenames[i].Contains("|"))
 								{
 									metadata = splitfilenames[i].Split('|'); // Filename|Description|Texture file
 									outFilename = metadata[0];
 								}
-								string outResult = outFilename + ".sa1mdl";
+								var outResult = outFilename + ".sa1mdl";
 								modellist.Add(i, mdl);
 								if (metadata.Length > 1)
 									outResult += ("|" + metadata[1]);
@@ -226,7 +207,7 @@ namespace SplitTools.Split
 									desc = metadata[1];
 								}
 								else outFilename = splitfilenames[i];
-								NJS_MOTION mot = ProcessMotion(chunk, verbose, curaddr + 8);
+								var mot = ProcessMotion(chunk, verbose, curaddr + 8);
 								mot.Description = desc;
 								//if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + "_p.bin", GetSections(mot));
 								animlist.Add(i, mot);
@@ -244,20 +225,20 @@ namespace SplitTools.Split
 					foreach (var modelitem in modellist)
 					{
 						// If the filename field contains description/texture, split it
-						string filenameString = splitfilenames[modelitem.Key];
+						var filenameString = splitfilenames[modelitem.Key];
 						if (splitfilenames[modelitem.Key].Contains("|"))
 						{
-							string[] filenameSplit = filenameString.Split('|');
+							var filenameSplit = filenameString.Split('|');
 							filenameString = filenameSplit[0];
 						}
 
-						List<string> anims = new List<string>();
+						var anims = new List<string>();
 						foreach (var animitem in animlist)
 						{
-							string filenameStringAnim = splitfilenames[animitem.Key];
+							var filenameStringAnim = splitfilenames[animitem.Key];
 							if (splitfilenames[animitem.Key].Contains("|"))
 							{
-								string[] filenameSplitAnim = filenameStringAnim.Split('|');
+								var filenameSplitAnim = filenameStringAnim.Split('|');
 								filenameStringAnim = filenameSplitAnim[0];
 							}
 							if (modelitem.Value.CountAnimated() == animitem.Value.ModelParts)
@@ -267,7 +248,7 @@ namespace SplitTools.Split
 								if (!Directory.Exists(Path.GetDirectoryName(filenameStringAnim + ".saanim")) && Path.GetDirectoryName(filenameStringAnim + ".saanim") != "")
 									Directory.CreateDirectory(Path.GetDirectoryName(filenameStringAnim + ".saanim"));
 								animitem.Value.Save(filenameStringAnim + ".saanim");
-								System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
+								var sb = new StringBuilder(1024);
 								PathRelativePathTo(sb, Path.GetFullPath(Path.Combine(outdir, filenameStringAnim + ".saanim")), 0, Path.GetFullPath(filenameStringAnim + ".saanim"), 0);
 								anims.Add(sb.ToString());
 							}
@@ -278,7 +259,7 @@ namespace SplitTools.Split
 							Directory.CreateDirectory(Path.GetDirectoryName(filenameString + ".sa1mdl"));
 						ModelFile.CreateFile(filenameString + ".sa1mdl", modelitem.Value, anims.ToArray(), null, null, null, ModelFormat.Basic);
 					}
-					string sectionListFilename = Path.GetFileNameWithoutExtension(filename) + ".ini";
+					var sectionListFilename = Path.GetFileNameWithoutExtension(filename) + ".ini";
 					if (inifilename != null)
 					{
 						sectionListFilename = Path.GetFileNameWithoutExtension(inifilename) + "_data.ini";
@@ -287,12 +268,12 @@ namespace SplitTools.Split
 					break;
 				// Version 5. First file starts at 0x8.
 				case NbVersion.NjHeaders_5:
-					int itemcount = 0;
-					int startoff = 0x8;
+					var itemcount = 0;
+					var startoff = 0x8;
 					do
 					{
-						int size = BitConverter.ToInt32(file, startoff + 4);
-						byte[] item = new byte[size + 8];
+						var size = BitConverter.ToInt32(file, startoff + 4);
+						var item = new byte[size + 8];
 						Array.Copy(file, startoff, item, 0, size);
 						File.WriteAllBytes(itemcount.ToString("D3") + GetEntryExtension(item), item);
 						Console.WriteLine("Extracting {0}{1}", itemcount.ToString("D3"), GetEntryExtension(item));
@@ -304,48 +285,46 @@ namespace SplitTools.Split
 				// Number of entries at 0x8.
 				// Entries start at 0x10. Each entry is 16 bytes, first 4 bytes are the pointer to entry data.
 				case NbVersion.NjHeadersPointers_6:
-					int startoff6 = 0x10;
-					int itemcount6 = BitConverter.ToInt32(file, 0x08);
-					for (int i = 0; i < itemcount6; i++)
+					var startoff6 = 0x10;
+					var itemcount6 = BitConverter.ToInt32(file, 0x08);
+					for (var i = 0; i < itemcount6; i++)
 					{
-						int pointer = BitConverter.ToInt32(file, startoff6 + i * 16) - 8;
-						int size = BitConverter.ToInt32(file, pointer + 4);
-						byte[] item = new byte[size + 8];
+						var pointer = BitConverter.ToInt32(file, startoff6 + i * 16) - 8;
+						var size = BitConverter.ToInt32(file, pointer + 4);
+						var item = new byte[size + 8];
 						Array.Copy(file, pointer, item, 0, size);
 						File.WriteAllBytes(i.ToString("D3") + GetEntryExtension(item), item);
 						Console.WriteLine("Extracting {0}{1}", i.ToString("D3"), GetEntryExtension(item));
 					}
 					break;
 			}
-			return;
-           
         }
 		static byte[] GetSections(NJS_OBJECT mdl)
 		{
-			List<byte> result = new List<byte>();
-			NJS_OBJECT[] objs = mdl.GetObjects();
-			int[] modeladdr = new int[objs.Length];
-			int[] objaddr = new int[objs.Length];
-			int[] mataddr = new int[objs.Length];
-			int[] meshaddr = new int[objs.Length];
-			List<int>[] polyaddr = new List<int>[objs.Length];
-			List<int>[] uvaddr = new List<int>[objs.Length];
-			int[] vertaddr = new int[objs.Length];
-			int[] normaddr = new int[objs.Length];
-			int currentaddr = 0;
+			var result = new List<byte>();
+			var objs = mdl.GetObjects();
+			var modeladdr = new int[objs.Length];
+			var objaddr = new int[objs.Length];
+			var mataddr = new int[objs.Length];
+			var meshaddr = new int[objs.Length];
+			var polyaddr = new List<int>[objs.Length];
+			var uvaddr = new List<int>[objs.Length];
+			var vertaddr = new int[objs.Length];
+			var normaddr = new int[objs.Length];
+			var currentaddr = 0;
 			// Write all polys
-			int polysection = currentaddr;
+			var polysection = currentaddr;
 			currentaddr += 8;
 			short polycount = 0;
-			for (int m = objs.Length - 1; m > -1; m--)
+			for (var m = objs.Length - 1; m > -1; m--)
 			{
 				polyaddr[m] = new List<int>();
 				if (objs[m].Attach != null)
 				{
-					BasicAttach att = (BasicAttach)objs[m].Attach;
+					var att = (BasicAttach)objs[m].Attach;
 					if (att.Mesh != null)
 					{
-						foreach (NJS_MESHSET mesh in att.Mesh)
+						foreach (var mesh in att.Mesh)
 						{
 							polyaddr[m].Add(result.Count);
 							//Console.WriteLine("Polyaddr in model {0} : {1}", m, currentaddr.ToString("X"));
@@ -356,7 +335,7 @@ namespace SplitTools.Split
 								else
 									result.AddRange(BitConverter.GetBytes((short)(poly.Indexes.Length & 0x7FFF)));
 								polycount++;
-								for (int ind = 0; ind < poly.Indexes.Length; ind++)
+								for (var ind = 0; ind < poly.Indexes.Length; ind++)
 								{
 									result.AddRange(BitConverter.GetBytes(poly.Indexes[ind]));
 									polycount++;
@@ -369,7 +348,7 @@ namespace SplitTools.Split
 			}
 			if ((polycount * 2) % 4 != 0)
 			{
-				int res = polycount * 2;
+				var res = polycount * 2;
 				do
 				{
 					result.Add(0xCD);
@@ -381,18 +360,18 @@ namespace SplitTools.Split
 			result.InsertRange(polysection, BitConverter.GetBytes((uint)0));
 			result.InsertRange(polysection + 4, BitConverter.GetBytes((uint)polycount * 2));
 			// Write all vertices
-			int vertsection = currentaddr;
+			var vertsection = currentaddr;
 			currentaddr += 8;
 			short vertexcount = 0;
-			for (int m = objs.Length - 1; m > -1; m--)
+			for (var m = objs.Length - 1; m > -1; m--)
 			{
 				if (objs[m].Attach != null)
 				{
-					BasicAttach att = (BasicAttach)objs[m].Attach;
+					var att = (BasicAttach)objs[m].Attach;
 					vertaddr[m] = currentaddr;
 					if (att.Vertex != null)
 					{
-						for (int v = 0; v < att.Vertex.Length; v++)
+						for (var v = 0; v < att.Vertex.Length; v++)
 						{
 							result.AddRange(BitConverter.GetBytes(att.Vertex[v].X));
 							result.AddRange(BitConverter.GetBytes(att.Vertex[v].Y));
@@ -406,18 +385,18 @@ namespace SplitTools.Split
 			result.InsertRange(vertsection + 8, BitConverter.GetBytes((uint)1));
 			result.InsertRange(vertsection + 4 + 8, BitConverter.GetBytes((uint)vertexcount * 12));
 			// Write all normals
-			int normsection = currentaddr;
+			var normsection = currentaddr;
 			currentaddr += 8;
 			short normalcount = 0;
-			for (int m = objs.Length - 1; m > -1; m--)
+			for (var m = objs.Length - 1; m > -1; m--)
 			{
 				if (objs[m].Attach != null)
 				{
-					BasicAttach att = (BasicAttach)objs[m].Attach;
+					var att = (BasicAttach)objs[m].Attach;
 					normaddr[m] = currentaddr;
 					if (att.Vertex != null)
 					{
-						for (int v = 0; v < att.Vertex.Length; v++)
+						for (var v = 0; v < att.Vertex.Length; v++)
 						{
 							result.AddRange(BitConverter.GetBytes(att.Normal[v].X));
 							result.AddRange(BitConverter.GetBytes(att.Normal[v].Y));
@@ -431,21 +410,21 @@ namespace SplitTools.Split
 			result.InsertRange(normsection + 8, BitConverter.GetBytes((uint)2));
 			result.InsertRange(normsection + 4 + 8, BitConverter.GetBytes((uint)normalcount * 12));
 			// Write all UVs
-			int uvsection = currentaddr;
+			var uvsection = currentaddr;
 			currentaddr += 8;
 			short uvcount = 0;
-			for (int m = objs.Length - 1; m > -1; m--)
+			for (var m = objs.Length - 1; m > -1; m--)
 			{
 				uvaddr[m] = new List<int>();
 				if (objs[m].Attach != null)
 				{
-					BasicAttach att = (BasicAttach)objs[m].Attach;
-					foreach (NJS_MESHSET mesh in att.Mesh)
+					var att = (BasicAttach)objs[m].Attach;
+					foreach (var mesh in att.Mesh)
 					{
 						uvaddr[m].Add(currentaddr);
 						if (mesh.UV != null)
 						{
-							for (int uv = 0; uv < mesh.UV.Length; uv++)
+							for (var uv = 0; uv < mesh.UV.Length; uv++)
 							{
 								result.AddRange(BitConverter.GetBytes((short)(mesh.UV[uv].U * 255.0)));
 								result.AddRange(BitConverter.GetBytes((short)(mesh.UV[uv].V * 255.0)));
@@ -459,18 +438,18 @@ namespace SplitTools.Split
 			result.InsertRange(uvsection + 8, BitConverter.GetBytes((uint)3));
 			result.InsertRange(uvsection + 4 + 8, BitConverter.GetBytes((uint)uvcount * 4));
 			// Write materials
-			int matsection = currentaddr;
+			var matsection = currentaddr;
 			currentaddr += 8;
 			short matcount = 0;
-			for (int m = objs.Length - 1; m > -1; m--)
+			for (var m = objs.Length - 1; m > -1; m--)
 			{
 				if (objs[m].Attach != null)
 				{
-					BasicAttach att = (BasicAttach)objs[m].Attach;
+					var att = (BasicAttach)objs[m].Attach;
 					if (att.Material != null && att.Material.Count > 0)
 					{
 						mataddr[m] = result.Count;
-						foreach (NJS_MATERIAL mat in att.Material)
+						foreach (var mat in att.Material)
 						{
 							result.AddRange(BitConverter.GetBytes(mat.DiffuseColor.ToArgb()));
 							result.AddRange(BitConverter.GetBytes(mat.SpecularColor.ToArgb()));
@@ -488,20 +467,20 @@ namespace SplitTools.Split
 			result.InsertRange(matsection + 4 + 8, BitConverter.GetBytes((uint)matcount * 20));
 			// Write meshsets
 			short meshcount = 0;
-			int meshsection = currentaddr;
+			var meshsection = currentaddr;
 			currentaddr += 8;
-			for (int m = objs.Length - 1; m > -1; m--)
+			for (var m = objs.Length - 1; m > -1; m--)
 			{
 				if (objs[m].Attach != null)
 				{
-					BasicAttach att = (BasicAttach)objs[m].Attach;
+					var att = (BasicAttach)objs[m].Attach;
 					if (att.Material != null && att.Material.Count > 0)
 					{
-						int[] polys = polyaddr[m].ToArray();
-						int[] uvs = uvaddr[m].ToArray();
+						var polys = polyaddr[m].ToArray();
+						var uvs = uvaddr[m].ToArray();
 						meshaddr[m] = result.Count;
-						NJS_MESHSET[] meshes = att.Mesh.ToArray();
-						for (int mesh = 0; mesh < meshes.Length; mesh++)
+						var meshes = att.Mesh.ToArray();
+						for (var mesh = 0; mesh < meshes.Length; mesh++)
 						{
 							result.AddRange(BitConverter.GetBytes((ushort)((meshes[mesh].MaterialID & 0x3FFF) | ((int)meshes[mesh].PolyType << 0xE))));
 							result.AddRange(BitConverter.GetBytes((ushort)meshes[mesh].Poly.Count));
@@ -522,14 +501,14 @@ namespace SplitTools.Split
 			result.InsertRange(meshsection + 4 + 8, BitConverter.GetBytes((uint)meshcount * 24));
 			// Write models
 			short modelcount = 0;
-			int modelsection = currentaddr;
+			var modelsection = currentaddr;
 			currentaddr += 8;
-			for (int m = objs.Length - 1; m > -1; m--)
+			for (var m = objs.Length - 1; m > -1; m--)
 			{
 				if (objs[m].Attach != null)
 				{
 					modeladdr[m] = currentaddr;
-					BasicAttach att = (BasicAttach)objs[m].Attach;
+					var att = (BasicAttach)objs[m].Attach;
 					result.AddRange(BitConverter.GetBytes((uint)vertaddr[m] + 8));
 					result.AddRange(BitConverter.GetBytes((uint)normaddr[m] + 8));
 					result.AddRange(BitConverter.GetBytes((uint)att.Vertex.Length));
@@ -549,9 +528,9 @@ namespace SplitTools.Split
 			result.InsertRange(modelsection + 2 + 8, BitConverter.GetBytes((ushort)modelcount));
 			result.InsertRange(modelsection + 4 + 8, BitConverter.GetBytes((uint)(40 * modelcount)));
 			// Write objects
-			int objectsection = currentaddr;
+			var objectsection = currentaddr;
 			currentaddr += 8;
-			for (int m = objs.Length - 1; m > -1; m--)
+			for (var m = objs.Length - 1; m > -1; m--)
 			{
 				objaddr[m] = currentaddr;
 				result.AddRange(BitConverter.GetBytes((int)objs[m].GetFlags()));
@@ -585,15 +564,15 @@ namespace SplitTools.Split
 		}
 		static byte[] GetSections(NJS_MOTION motion, int verbose = 0)
 		{
-			List<byte> result = new List<byte>();
-			int[] mkey_f_addr = new int[motion.ModelParts];
-			int[] mkey_a_addr = new int[motion.ModelParts];
-			int mkey_f_section = 0;
-			int mkey_f_count = 0;
+			var result = new List<byte>();
+			var mkey_f_addr = new int[motion.ModelParts];
+			var mkey_a_addr = new int[motion.ModelParts];
+			var mkey_f_section = 0;
+			var mkey_f_count = 0;
 			// Get MKEY_F
 			foreach (var anim in motion.Models)
 			{
-				AnimModelData model = anim.Value;
+				var model = anim.Value;
 				if (model.Position != null && model.Position.Count > 0)
 				{
 					mkey_f_addr[anim.Key] = result.Count;
@@ -614,11 +593,11 @@ namespace SplitTools.Split
 				result.InsertRange(mkey_f_section + 4, BitConverter.GetBytes((uint)mkey_f_count * 16));
 			}
 			// Get MKEY_A
-			int mkey_a_section = result.Count;
-			int mkey_a_count = 0;
+			var mkey_a_section = result.Count;
+			var mkey_a_count = 0;
 			foreach (var anim in motion.Models)
 			{
-				AnimModelData model = anim.Value;
+				var model = anim.Value;
 				if (model.Rotation != null && model.Rotation.Count > 0)
 				{
 					mkey_a_addr[anim.Key] = result.Count;
@@ -639,12 +618,12 @@ namespace SplitTools.Split
 				result.InsertRange(mkey_a_section + 4, BitConverter.GetBytes((uint)mkey_a_count * 16));
 			}
 			// Get MDATA2 header
-			int mdata_section = result.Count;
-			for (int m = 0; m < motion.ModelParts; m++)
+			var mdata_section = result.Count;
+			for (var m = 0; m < motion.ModelParts; m++)
 			{
 				if (motion.Models.ContainsKey(m))
 				{
-					AnimModelData model = motion.Models[m];
+					var model = motion.Models[m];
 					if (model.Position != null && model.Position.Count > 0)
 						result.AddRange(BitConverter.GetBytes((uint)(mkey_f_addr[m] + 8)));
 					else
@@ -692,23 +671,23 @@ namespace SplitTools.Split
 			int frames;
 			InterpolationMode intmode;
 			AnimFlags animtype;
-			int curaddr = 0;
+			var curaddr = 0;
 			do
 			{
-				AnimSections section_type = (AnimSections)BitConverter.ToInt16(file, curaddr);
-				int section_size = BitConverter.ToInt32(file, curaddr + 4);
-				int section_addr = curaddr + 8;
+				var section_type = (AnimSections)BitConverter.ToInt16(file, curaddr);
+				var section_size = BitConverter.ToInt32(file, curaddr + 4);
+				var section_addr = curaddr + 8;
 				if (verbose > 1) Console.Write("Subsection type {0}, size {1}, data begins at {2}\n", section_type.ToString(), section_size, section_addr.ToString("X"));
 				switch (section_type)
 				{
 					case AnimSections.MKEY_F:
-						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 16.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", section_size / 16.0f);
 						break;
 					case AnimSections.MKEY_A:
-						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 16.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", section_size / 16.0f);
 						break;
 					case AnimSections.UNKNOWN:
-						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 16.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", section_size / 16.0f);
 						break;
 					case AnimSections.MDATA2_HEADER:
 						if (verbose > 1) Console.Write(", number of MDATA entries: {0}\n", BitConverter.ToInt32(file, section_addr) >> BitConverter.ToInt32(file, section_addr + 4));
@@ -719,50 +698,52 @@ namespace SplitTools.Split
 						frames = BitConverter.ToInt32(file, section_addr + 4);
 						intmode = (InterpolationMode)BitConverter.ToInt16(file, section_addr + 10);
 						animtype = (AnimFlags)BitConverter.ToInt16(file, section_addr + 8);
-						int mdataaddr = BitConverter.ToInt32(file, section_addr);
+						var mdataaddr = BitConverter.ToInt32(file, section_addr);
 						if (verbose > 1) Console.Write("\nMDATA header at: {0}, frames: {1}, flags: {2}, interpolation: {3}", mdataaddr.ToString("X"), frames, animtype.ToString(), intmode.ToString());
 						// Create motion stub
-						NJS_MOTION mot = new NJS_MOTION();
-						mot.Name = "animation_" + section_addr.ToString("X8");
+						var mot = new NJS_MOTION
+						{
+							Name = "animation_" + section_addr.ToString("X8")
+						};
 						mot.MdataName = mot.Name + "_mdat";
 						mot.Frames = frames;
 						mot.InterpolationMode = intmode;
 						// Read the MDATA header and get the number of MDATA entries
 						mot.ModelParts = BitConverter.ToInt32(file, mdataaddr) >> BitConverter.ToInt32(file, mdataaddr + 4);
 						if (verbose > 1) Console.WriteLine(", model parts: {0}", mot.ModelParts);
-						int tmpaddr = mdataaddr + 8; //Start of actual MDATA array
-						for (int u = 0; u < mot.ModelParts; u++)
+						var tmpaddr = mdataaddr + 8; //Start of actual MDATA array
+						for (var u = 0; u < mot.ModelParts; u++)
 						{
 							//Console.Write("\nMotion data {0}", u.ToString());
-							AnimModelData data = new AnimModelData();
+							var data = new AnimModelData();
 							if (animtype.HasFlag(AnimFlags.Position))
 							{
-								uint posoff = ByteConverter.ToUInt32(file, tmpaddr + u * 16);
-								data.PositionName = mot.Name + "_mkey_" + u.ToString() + "_pos_" + posoff.ToString("X8");
-								int pos_count = ByteConverter.ToInt32(file, tmpaddr + u * 16 + 8);
+								var posoff = ByteConverter.ToUInt32(file, tmpaddr + u * 16);
+								data.PositionName = mot.Name + "_mkey_" + u + "_pos_" + posoff.ToString("X8");
+								var pos_count = ByteConverter.ToInt32(file, tmpaddr + u * 16 + 8);
 								//Console.Write(", position at: {0} ({1} entries)", posoff.ToString("X"), pos_count);
-								for (int p = 0; p < pos_count; p++)
+								for (var p = 0; p < pos_count; p++)
 								{
-									int index = ByteConverter.ToInt32(file, (int)posoff + p * 16);
-									float pos_x = ByteConverter.ToSingle(file, (int)posoff + p * 16 + 4);
-									float pos_y = ByteConverter.ToSingle(file, (int)posoff + p * 16 + 8);
-									float pos_z = ByteConverter.ToSingle(file, (int)posoff + p * 16 + 12);
+									var index = ByteConverter.ToInt32(file, (int)posoff + p * 16);
+									var pos_x = ByteConverter.ToSingle(file, (int)posoff + p * 16 + 4);
+									var pos_y = ByteConverter.ToSingle(file, (int)posoff + p * 16 + 8);
+									var pos_z = ByteConverter.ToSingle(file, (int)posoff + p * 16 + 12);
 									//Console.WriteLine("\nAdded position index {3}: X: {0} Y: {1} Z: {2}", pos_x, pos_y, pos_z, index);
 									data.Position.Add(index, new Vertex(pos_x, pos_y, pos_z));
 								}
 							}
 							if (animtype.HasFlag(AnimFlags.Rotation))
 							{
-								uint rotoff = ByteConverter.ToUInt32(file, tmpaddr + u * 16 + 4);
-								data.RotationName = mot.Name + "_mkey_" + u.ToString() + "_rot_" + rotoff.ToString("X8");
-								int rot_count = ByteConverter.ToInt32(file, tmpaddr + u * 16 + 12);
+								var rotoff = ByteConverter.ToUInt32(file, tmpaddr + u * 16 + 4);
+								data.RotationName = mot.Name + "_mkey_" + u + "_rot_" + rotoff.ToString("X8");
+								var rot_count = ByteConverter.ToInt32(file, tmpaddr + u * 16 + 12);
 								//Console.Write(", rotation at: {0} ({1} entries)", rotoff.ToString("X"), rot_count);
-								for (int p = 0; p < rot_count; p++)
+								for (var p = 0; p < rot_count; p++)
 								{
-									int index = ByteConverter.ToInt32(file, (int)rotoff + p * 16);
-									int rot_x = ByteConverter.ToInt32(file, (int)rotoff + p * 16 + 4);
-									int rot_y = ByteConverter.ToInt32(file, (int)rotoff + p * 16 + 8);
-									int rot_z = ByteConverter.ToInt32(file, (int)rotoff + p * 16 + 12);
+									var index = ByteConverter.ToInt32(file, (int)rotoff + p * 16);
+									var rot_x = ByteConverter.ToInt32(file, (int)rotoff + p * 16 + 4);
+									var rot_y = ByteConverter.ToInt32(file, (int)rotoff + p * 16 + 8);
+									var rot_z = ByteConverter.ToInt32(file, (int)rotoff + p * 16 + 12);
 									//Console.WriteLine("\nAdded rotation index {3}: X: {0} Y: {1} Z: {2}", rot_x, rot_y, rot_z, index);
 									data.Rotation.Add(index, new Rotation(rot_x, rot_y, rot_z));
 								}
@@ -778,7 +759,7 @@ namespace SplitTools.Split
 		}
 		static NJS_OBJECT ProcessModel(byte[] file, int verbose = 0, int startaddress = 0)
 		{
-			int curaddr = 0;
+			var curaddr = 0;
 			do
 			{
 				int temp = BitConverter.ToInt16(file, curaddr);
@@ -787,36 +768,36 @@ namespace SplitTools.Split
 					if (verbose > 1) Console.WriteLine("Skipping two padding bytes at {0}", curaddr.ToString("X"));
 					curaddr += 2;
 				}
-				ModelSections section_type = (ModelSections)BitConverter.ToInt16(file, curaddr);
+				var section_type = (ModelSections)BitConverter.ToInt16(file, curaddr);
 				int itemnum = BitConverter.ToInt16(file, curaddr + 2);
-				int section_size = BitConverter.ToInt32(file, curaddr + 4);
-				int section_addr = curaddr + 8;
+				var section_size = BitConverter.ToInt32(file, curaddr + 4);
+				var section_addr = curaddr + 8;
 				if (verbose > 1) Console.Write("Subsection type {0}, size {1}, data begins at {2}", section_type.ToString(), section_size, section_addr.ToString("X"));
 				switch (section_type)
 				{
 					case ModelSections.POLY:
-						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 2.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", section_size / 2.0f);
 						break;
 					case ModelSections.VERTEX:
-						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 12.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", section_size / 12.0f);
 						break;
 					case ModelSections.NORMAL:
-						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 12.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", section_size / 12.0f);
 						break;
 					case ModelSections.UV:
-						if (verbose > 1) Console.Write(", calculated item count: {0}\n", (float)section_size / 4.0f);
+						if (verbose > 1) Console.Write(", calculated item count: {0}\n", section_size / 4.0f);
 						break;
 					case ModelSections.MATERIAL:
-						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 20.0f);
+						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, section_size / 20.0f);
 						break;
 					case ModelSections.MESHSET:
-						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 24.0f);
+						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, section_size / 24.0f);
 						break;
 					case ModelSections.MODEL:
-						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 40.0f);
+						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, section_size / 40.0f);
 						break;
 					case ModelSections.OBJECT:
-						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, (float)section_size / 52.0f);
+						if (verbose > 1) Console.Write(", item count: {0} (calculated {1})\n", itemnum, section_size / 52.0f);
 						break;
 				}
 				curaddr += 8 + section_size;
@@ -828,7 +809,7 @@ namespace SplitTools.Split
 		}
 		static int FindModelIndex(NJS_OBJECT mdl, NJS_OBJECT[] array)
 		{
-			for (int u = 0; u < array.Length; u++)
+			for (var u = 0; u < array.Length; u++)
 			{
 				if (mdl == array[u]) return u;
 			}

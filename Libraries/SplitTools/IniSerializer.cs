@@ -5,8 +5,6 @@ using System.ComponentModel;
 using System.Reflection;
 using IniDictionary = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>;
 using IniGroup = System.Collections.Generic.Dictionary<string, string>;
-using IniNameGroup = System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.Dictionary<string, string>>;
-using IniNameValue = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace SplitTools
 {
@@ -52,14 +50,14 @@ namespace SplitTools
 
 		public static IniDictionary Serialize(object Object, IniCollectionSettings CollectionSettings, TypeConverter Converter)
 		{
-			IniDictionary ini = new IniDictionary() { { string.Empty, new IniGroup() } };
+			var ini = new IniDictionary { { string.Empty, new IniGroup() } };
 			SerializeInternal("value", Object, ini, string.Empty, true, CollectionSettings, Converter);
 			return ini;
 		}
 
 		private static void SerializeInternal(string name, object value, IniDictionary ini, string groupName, bool rootObject, IniCollectionSettings collectionSettings, TypeConverter converter)
 		{
-			IniGroup group = ini[groupName];
+			var group = ini[groupName];
 			if (value == null || value == DBNull.Value) return;
 			if (!value.GetType().IsComplexType(converter))
 			{
@@ -68,24 +66,24 @@ namespace SplitTools
 			}
 			if (value is IList)
 			{
-				int i = collectionSettings.StartIndex;
+				var i = collectionSettings.StartIndex;
 				switch (collectionSettings.Mode)
 				{
 					case IniCollectionMode.Normal:
-						foreach (object item in (IList)value)
+						foreach (var item in (IList)value)
 							SerializeInternal(name + "[" + (i++).ConvertToString(collectionSettings.KeyConverter) + "]", item, ini, groupName, false, defaultCollectionSettings, collectionSettings.ValueConverter);
 						return;
 					case IniCollectionMode.IndexOnly:
-						foreach (object item in (IList)value)
+						foreach (var item in (IList)value)
 							SerializeInternal((i++).ConvertToString(collectionSettings.KeyConverter), item, ini, groupName, false, defaultCollectionSettings, collectionSettings.ValueConverter);
 						return;
 					case IniCollectionMode.NoSquareBrackets:
-						foreach (object item in (IList)value)
+						foreach (var item in (IList)value)
 							SerializeInternal(name + (i++).ConvertToString(collectionSettings.KeyConverter), item, ini, groupName, false, defaultCollectionSettings, collectionSettings.ValueConverter);
 						return;
 					case IniCollectionMode.SingleLine:
-						List<string> line = new List<string>();
-						foreach (object item in (IList)value)
+						var line = new List<string>();
+						foreach (var item in (IList)value)
 							line.Add(item.ConvertToString(collectionSettings.ValueConverter));
 						group.Add(name, string.Join(collectionSettings.Format, line.ToArray()));
 						return;
@@ -111,7 +109,7 @@ namespace SplitTools
 						throw new InvalidOperationException("Cannot serialize IDictionary with IniCollectionMode.SingleLine!");
 				}
 			}
-			string newgroup = groupName;
+			var newgroup = groupName;
 			if (!rootObject)
 			{
 				if (!string.IsNullOrEmpty(newgroup))
@@ -119,11 +117,11 @@ namespace SplitTools
 				newgroup += name;
 				ini.Add(newgroup, new Dictionary<string, string>());
 			}
-			foreach (MemberInfo member in value.GetType().GetMembers(BindingFlags.Public | BindingFlags.Instance))
+			foreach (var member in value.GetType().GetMembers(BindingFlags.Public | BindingFlags.Instance))
 			{
 				if (Attribute.GetCustomAttribute(member, typeof(IniIgnoreAttribute), true) != null)
 					continue;
-				string membername = member.Name;
+				var membername = member.Name;
 				if (Attribute.GetCustomAttribute(member, typeof(IniNameAttribute), true) != null)
 					membername = ((IniNameAttribute)Attribute.GetCustomAttribute(member, typeof(IniNameAttribute), true)).Name;
 				object item;
@@ -131,32 +129,32 @@ namespace SplitTools
 				switch (member.MemberType)
 				{
 					case MemberTypes.Field:
-						FieldInfo field = (FieldInfo)member;
+						var field = (FieldInfo)member;
 						item = field.GetValue(value);
 						defval = field.FieldType.GetDefaultValue();
 						break;
 					case MemberTypes.Property:
-						PropertyInfo property = (PropertyInfo)member;
+						var property = (PropertyInfo)member;
 						defval = property.PropertyType.GetDefaultValue();
 						if (property.GetIndexParameters().Length > 0) continue;
-						MethodInfo getmethod = property.GetGetMethod();
+						var getmethod = property.GetGetMethod();
 						if (getmethod == null) continue;
 						item = getmethod.Invoke(value, null);
 						break;
 					default:
 						continue;
 				}
-				DefaultValueAttribute defattr = (DefaultValueAttribute)Attribute.GetCustomAttribute(member, typeof(DefaultValueAttribute), true);
+				var defattr = (DefaultValueAttribute)Attribute.GetCustomAttribute(member, typeof(DefaultValueAttribute), true);
 				if (defattr != null)
 					defval = defattr.Value;
-				if (Attribute.GetCustomAttribute(member, typeof(IniAlwaysIncludeAttribute), true) != null || !object.Equals(item, defval))
+				if (Attribute.GetCustomAttribute(member, typeof(IniAlwaysIncludeAttribute), true) != null || !Equals(item, defval))
 				{
-					IniCollectionSettings settings = defaultCollectionSettings;
-					IniCollectionAttribute collattr = (IniCollectionAttribute)Attribute.GetCustomAttribute(member, typeof(IniCollectionAttribute));
+					var settings = defaultCollectionSettings;
+					var collattr = (IniCollectionAttribute)Attribute.GetCustomAttribute(member, typeof(IniCollectionAttribute));
 					if (collattr != null)
 						settings = collattr.Settings;
 					TypeConverter conv = null;
-					TypeConverterAttribute convattr = (TypeConverterAttribute)Attribute.GetCustomAttribute(member, typeof(TypeConverterAttribute));
+					var convattr = (TypeConverterAttribute)Attribute.GetCustomAttribute(member, typeof(TypeConverterAttribute));
 					if (convattr != null)
 						conv = (TypeConverter)Activator.CreateInstance(Type.GetType(convattr.ConverterTypeName));
 					SerializeInternal(membername, item, ini, newgroup, false, settings, conv);
@@ -242,7 +240,7 @@ namespace SplitTools
 		public static object Deserialize(Type Type, IniDictionary INI, IniCollectionSettings CollectionSettings, TypeConverter Converter)
 		{
 			object Object;
-			IniDictionary ini = new IniDictionary();
+			var ini = new IniDictionary();
 			ini = IniFile.Combine(ini, INI);
 			Object = DeserializeInternal("value", Type, Type.GetDefaultValue(), ini, string.Empty, true, CollectionSettings, Converter);
 			return Object;
@@ -250,7 +248,7 @@ namespace SplitTools
 
 		private static object DeserializeInternal(string name, Type type, object defaultvalue, IniDictionary ini, string groupName, bool rootObject, IniCollectionSettings collectionSettings, TypeConverter converter)
 		{
-			string fullname = groupName;
+			var fullname = groupName;
 			if (!rootObject)
 			{
 				if (!string.IsNullOrEmpty(fullname))
@@ -258,12 +256,12 @@ namespace SplitTools
 				fullname += name;
 			}
 			if (!ini.ContainsKey(groupName)) return defaultvalue;
-			Dictionary<string, string> group = ini[groupName];
+			var group = ini[groupName];
 			if (!type.IsComplexType(converter))
 			{
 				if (group.ContainsKey(name))
 				{
-					object converted = type.ConvertFromString(group[name], converter);
+					var converted = type.ConvertFromString(group[name], converter);
 					group.Remove(name);
 					if (converted != null)
 						return converted;
@@ -272,23 +270,23 @@ namespace SplitTools
 			}
 			if (type.IsArray)
 			{
-				Type valuetype = type.GetElementType();
-				int maxind = int.MinValue;
-				TypeConverter keyconverter = collectionSettings.KeyConverter ?? new Int32Converter();
-				if (!IsComplexType(valuetype, collectionSettings.ValueConverter))
+				var valuetype = type.GetElementType();
+				var maxind = int.MinValue;
+				var keyconverter = collectionSettings.KeyConverter ?? new Int32Converter();
+				if (!valuetype.IsComplexType(collectionSettings.ValueConverter))
 				{
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							foreach (IniNameValue item in group)
+							foreach (var item in group)
 								if (item.Key.StartsWith(name + "["))
 								{
-									int key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
+									var key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
 									maxind = Math.Max(key, maxind);
 								}
 							break;
 						case IniCollectionMode.IndexOnly:
-							foreach (IniNameValue item in group)
+							foreach (var item in group)
 								try
 								{
 									maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key), maxind);
@@ -296,7 +294,7 @@ namespace SplitTools
 								catch { }
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							foreach (IniNameValue item in group)
+							foreach (var item in group)
 								if (item.Key.StartsWith(name))
 									try
 									{
@@ -312,14 +310,14 @@ namespace SplitTools
 									items = new string[0];
 								else
 									items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
-								Array _obj = Array.CreateInstance(valuetype, items.Length);
-								for (int i = 0; i < items.Length; i++)
+								var _obj = Array.CreateInstance(valuetype, items.Length);
+								for (var i = 0; i < items.Length; i++)
 									_obj.SetValue(valuetype.ConvertFromString(items[i], collectionSettings.ValueConverter), i);
 								group.Remove(name);
 								return _obj;
 							}
-							else
-								return null;
+
+							return null;
 					}
 				}
 				else
@@ -327,15 +325,15 @@ namespace SplitTools
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							foreach (IniNameGroup item in ini)
+							foreach (var item in ini)
 								if (item.Key.StartsWith(fullname + "["))
 								{
-									int key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));
+									var key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));
 									maxind = Math.Max(key, maxind);
 								}
 							break;
 						case IniCollectionMode.IndexOnly:
-							foreach (IniNameGroup item in ini)
+							foreach (var item in ini)
 								if (!string.IsNullOrEmpty(item.Key))
 									try
 									{
@@ -344,7 +342,7 @@ namespace SplitTools
 									catch { }
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							foreach (IniNameGroup item in ini)
+							foreach (var item in ini)
 								if (item.Key.StartsWith(fullname))
 									try
 									{
@@ -357,15 +355,15 @@ namespace SplitTools
 					}
 				}
 				if (maxind == int.MinValue) return Array.CreateInstance(valuetype, 0);
-				int length = maxind + 1 - (collectionSettings.Mode == IniCollectionMode.SingleLine ? 0 : collectionSettings.StartIndex);
-				Array obj = Array.CreateInstance(valuetype, length);
-				if (!IsComplexType(valuetype, collectionSettings.ValueConverter))
+				var length = maxind + 1 - (collectionSettings.Mode == IniCollectionMode.SingleLine ? 0 : collectionSettings.StartIndex);
+				var obj = Array.CreateInstance(valuetype, length);
+				if (!valuetype.IsComplexType(collectionSettings.ValueConverter))
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 							{
-								string keyname = name + "[" + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex) + "]";
+								var keyname = name + "[" + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex) + "]";
 								if (group.ContainsKey(keyname))
 								{
 									obj.SetValue(valuetype.ConvertFromString(group[keyname], collectionSettings.ValueConverter), i);
@@ -376,9 +374,9 @@ namespace SplitTools
 							}
 							break;
 						case IniCollectionMode.IndexOnly:
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 							{
-								string keyname = keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex);
+								var keyname = keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex);
 								if (group.ContainsKey(keyname))
 								{
 									obj.SetValue(valuetype.ConvertFromString(group[keyname], collectionSettings.ValueConverter), i);
@@ -389,9 +387,9 @@ namespace SplitTools
 							}
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 							{
-								string keyname = name + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex);
+								var keyname = name + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex);
 								if (group.ContainsKey(keyname))
 								{
 									obj.SetValue(valuetype.ConvertFromString(group[keyname], collectionSettings.ValueConverter), i);
@@ -406,73 +404,73 @@ namespace SplitTools
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 								obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, fullname + "[" + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex) + "]", true, defaultCollectionSettings, collectionSettings.ValueConverter), i);
 							break;
 						case IniCollectionMode.IndexOnly:
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 								obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex), true, defaultCollectionSettings, collectionSettings.ValueConverter), i);
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 								obj.SetValue(DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, fullname + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex), true, defaultCollectionSettings, collectionSettings.ValueConverter), i);
 							break;
 					}
 				return obj;
 			}
-			if (ImplementsGenericDefinition(type, typeof(IList<>), out Type generictype))
+			if (type.ImplementsGenericDefinition(typeof(IList<>), out var generictype))
 			{
-				object obj = Activator.CreateInstance(type);
-				Type valuetype = generictype.GetGenericArguments()[0];
-				CollectionDeserializer deserializer = (CollectionDeserializer)Activator.CreateInstance(typeof(ListDeserializer<>).MakeGenericType(valuetype));
+				var obj = Activator.CreateInstance(type);
+				var valuetype = generictype.GetGenericArguments()[0];
+				var deserializer = (CollectionDeserializer)Activator.CreateInstance(typeof(ListDeserializer<>).MakeGenericType(valuetype));
 				deserializer.Deserialize(obj, group, groupName, collectionSettings, name, ini, fullname);
 				return obj;
 			}
 			if (type.ImplementsGenericDefinition(typeof(IDictionary<,>), out generictype))
 			{
-				object obj = Activator.CreateInstance(type);
-				Type keytype = generictype.GetGenericArguments()[0];
-				Type valuetype = generictype.GetGenericArguments()[1];
+				var obj = Activator.CreateInstance(type);
+				var keytype = generictype.GetGenericArguments()[0];
+				var valuetype = generictype.GetGenericArguments()[1];
 				if (keytype.IsComplexType(collectionSettings.KeyConverter)) return obj;
-				CollectionDeserializer deserializer = (CollectionDeserializer)Activator.CreateInstance(typeof(DictionaryDeserializer<,>).MakeGenericType(keytype, valuetype));
+				var deserializer = (CollectionDeserializer)Activator.CreateInstance(typeof(DictionaryDeserializer<,>).MakeGenericType(keytype, valuetype));
 				deserializer.Deserialize(obj, group, groupName, collectionSettings, name, ini, fullname);
 				return obj;
 			}
-			object result = Activator.CreateInstance(type);
+			var result = Activator.CreateInstance(type);
 			MemberInfo collection = null;
-			foreach (MemberInfo member in type.GetMembers(BindingFlags.Public | BindingFlags.Instance))
+			foreach (var member in type.GetMembers(BindingFlags.Public | BindingFlags.Instance))
 			{
 				if (Attribute.GetCustomAttribute(member, typeof(IniIgnoreAttribute), true) != null)
 					continue;
-				string membername = member.Name;
+				var membername = member.Name;
 				if (Attribute.GetCustomAttribute(member, typeof(IniNameAttribute), true) != null)
 					membername = ((IniNameAttribute)Attribute.GetCustomAttribute(member, typeof(IniNameAttribute), true)).Name;
-				IniCollectionSettings colset = defaultCollectionSettings;
-				IniCollectionAttribute colattr = (IniCollectionAttribute)Attribute.GetCustomAttribute(member, typeof(IniCollectionAttribute), true);
+				var colset = defaultCollectionSettings;
+				var colattr = (IniCollectionAttribute)Attribute.GetCustomAttribute(member, typeof(IniCollectionAttribute), true);
 				if (colattr != null)
 					colset = colattr.Settings;
 				TypeConverter conv = null;
-				TypeConverterAttribute convattr = (TypeConverterAttribute)Attribute.GetCustomAttribute(member, typeof(TypeConverterAttribute), true);
+				var convattr = (TypeConverterAttribute)Attribute.GetCustomAttribute(member, typeof(TypeConverterAttribute), true);
 				if (convattr != null)
 					conv = (TypeConverter)Activator.CreateInstance(Type.GetType(convattr.ConverterTypeName));
 				switch (member.MemberType)
 				{
 					case MemberTypes.Field:
-						FieldInfo field = (FieldInfo)member;
+						var field = (FieldInfo)member;
 						if (colset.Mode == IniCollectionMode.IndexOnly && typeof(ICollection).IsAssignableFrom(field.FieldType))
 						{
 							if (collection != null) throw new Exception("IniCollectionMode.IndexOnly cannot be used on multiple members of a Type.");
 							collection = member;
 							continue;
 						}
-						object defval = field.FieldType.GetDefaultValue();
-						DefaultValueAttribute defattr = (DefaultValueAttribute)Attribute.GetCustomAttribute(member, typeof(DefaultValueAttribute), true);
+						var defval = field.FieldType.GetDefaultValue();
+						var defattr = (DefaultValueAttribute)Attribute.GetCustomAttribute(member, typeof(DefaultValueAttribute), true);
 						if (defattr != null)
 							defval = defattr.Value;
 						field.SetValue(result, DeserializeInternal(membername, field.FieldType, defval, ini, fullname, false, colset, conv));
 						break;
 					case MemberTypes.Property:
-						PropertyInfo property = (PropertyInfo)member;
+						var property = (PropertyInfo)member;
 						if (property.GetIndexParameters().Length > 0) continue;
 						if (colset.Mode == IniCollectionMode.IndexOnly && typeof(ICollection).IsAssignableFrom(property.PropertyType))
 						{
@@ -484,10 +482,10 @@ namespace SplitTools
 						defattr = (DefaultValueAttribute)Attribute.GetCustomAttribute(member, typeof(DefaultValueAttribute), true);
 						if (defattr != null)
 							defval = defattr.Value;
-						object propval = DeserializeInternal(membername, property.PropertyType, defval, ini, fullname, false, colset, conv);
-						MethodInfo setmethod = property.GetSetMethod();
+						var propval = DeserializeInternal(membername, property.PropertyType, defval, ini, fullname, false, colset, conv);
+						var setmethod = property.GetSetMethod();
 						if (setmethod == null) continue;
-						setmethod.Invoke(result, new object[] { propval });
+						setmethod.Invoke(result, new[] { propval });
 						break;
 				}
 			}
@@ -495,15 +493,15 @@ namespace SplitTools
 				switch (collection.MemberType)
 				{
 					case MemberTypes.Field:
-						FieldInfo field = (FieldInfo)collection;
+						var field = (FieldInfo)collection;
 						field.SetValue(result, DeserializeInternal(collection.Name, field.FieldType, field.FieldType.GetDefaultValue(), ini, fullname, false, ((IniCollectionAttribute)Attribute.GetCustomAttribute(collection, typeof(IniCollectionAttribute), true)).Settings, null));
 						break;
 					case MemberTypes.Property:
-						PropertyInfo property = (PropertyInfo)collection;
-						object propval = DeserializeInternal(collection.Name, property.PropertyType, property.PropertyType.GetDefaultValue(), ini, fullname, false, ((IniCollectionAttribute)Attribute.GetCustomAttribute(collection, typeof(IniCollectionAttribute), true)).Settings, null);
-						MethodInfo setmethod = property.GetSetMethod();
+						var property = (PropertyInfo)collection;
+						var propval = DeserializeInternal(collection.Name, property.PropertyType, property.PropertyType.GetDefaultValue(), ini, fullname, false, ((IniCollectionAttribute)Attribute.GetCustomAttribute(collection, typeof(IniCollectionAttribute), true)).Settings, null);
+						var setmethod = property.GetSetMethod();
 						if (setmethod == null) break;
-						setmethod.Invoke(result, new object[] { propval });
+						setmethod.Invoke(result, new[] { propval });
 						break;
 				}
 			ini.Remove(fullname);
@@ -607,7 +605,7 @@ namespace SplitTools
 			{
 				if (type.IsGenericType)
 				{
-					Type interfaceDefinition = type.GetGenericTypeDefinition();
+					var interfaceDefinition = type.GetGenericTypeDefinition();
 					if (genericInterfaceDefinition == interfaceDefinition)
 					{
 						implementingType = type;
@@ -615,11 +613,11 @@ namespace SplitTools
 					}
 				}
 			}
-			foreach (Type i in type.GetInterfaces())
+			foreach (var i in type.GetInterfaces())
 			{
 				if (i.IsGenericType)
 				{
-					Type interfaceDefinition = i.GetGenericTypeDefinition();
+					var interfaceDefinition = i.GetGenericTypeDefinition();
 
 					if (genericInterfaceDefinition == interfaceDefinition)
 					{
@@ -641,24 +639,24 @@ namespace SplitTools
 		{
 			public override void Deserialize(object listObj, IniGroup group, string groupName, IniCollectionSettings collectionSettings, string name, IniDictionary ini, string fullname)
 			{
-				Type valuetype = typeof(T);
-				IList<T> list = (IList<T>)listObj;
-				int maxind = int.MinValue;
-				TypeConverter keyconverter = collectionSettings.KeyConverter ?? new Int32Converter();
-				if (!IsComplexType(valuetype, collectionSettings.ValueConverter))
+				var valuetype = typeof(T);
+				var list = (IList<T>)listObj;
+				var maxind = int.MinValue;
+				var keyconverter = collectionSettings.KeyConverter ?? new Int32Converter();
+				if (!valuetype.IsComplexType(collectionSettings.ValueConverter))
 				{
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							foreach (IniNameValue item in group)
+							foreach (var item in group)
 								if (item.Key.StartsWith(name + "["))
 								{
-									int key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
+									var key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
 									maxind = Math.Max(key, maxind);
 								}
 							break;
 						case IniCollectionMode.IndexOnly:
-							foreach (IniNameValue item in group)
+							foreach (var item in group)
 								try
 								{
 									maxind = Math.Max((int)keyconverter.ConvertFromInvariantString(item.Key), maxind);
@@ -666,7 +664,7 @@ namespace SplitTools
 								catch { }
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							foreach (IniNameValue item in group)
+							foreach (var item in group)
 								if (item.Key.StartsWith(name))
 									try
 									{
@@ -679,8 +677,8 @@ namespace SplitTools
 							{
 								if (!string.IsNullOrEmpty(group[name]))
 								{
-									string[] items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
-									for (int i = 0; i < items.Length; i++)
+									var items = group[name].Split(new[] { collectionSettings.Format }, StringSplitOptions.None);
+									for (var i = 0; i < items.Length; i++)
 										list.Add((T)valuetype.ConvertFromString(items[i], collectionSettings.ValueConverter));
 								}
 								group.Remove(name);
@@ -693,15 +691,15 @@ namespace SplitTools
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							foreach (IniNameGroup item in ini)
+							foreach (var item in ini)
 								if (item.Key.StartsWith(fullname + "["))
 								{
-									int key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));
+									var key = (int)keyconverter.ConvertFromInvariantString(item.Key.Substring(fullname.Length + 1, item.Key.Length - (fullname.Length + 2)));
 									maxind = Math.Max(key, maxind);
 								}
 							break;
 						case IniCollectionMode.IndexOnly:
-							foreach (IniNameGroup item in ini)
+							foreach (var item in ini)
 								if (!string.IsNullOrEmpty(item.Key))
 									try
 									{
@@ -710,7 +708,7 @@ namespace SplitTools
 									catch { }
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							foreach (IniNameGroup item in ini)
+							foreach (var item in ini)
 								if (item.Key.StartsWith(fullname))
 									try
 									{
@@ -723,14 +721,14 @@ namespace SplitTools
 					}
 				}
 				if (maxind == int.MinValue) return;
-				int length = maxind + 1 - (collectionSettings.Mode == IniCollectionMode.SingleLine ? 0 : collectionSettings.StartIndex);
-				if (!IsComplexType(valuetype, collectionSettings.ValueConverter))
+				var length = maxind + 1 - (collectionSettings.Mode == IniCollectionMode.SingleLine ? 0 : collectionSettings.StartIndex);
+				if (!valuetype.IsComplexType(collectionSettings.ValueConverter))
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 							{
-								string keyname = name + "[" + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex) + "]";
+								var keyname = name + "[" + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex) + "]";
 								if (group.ContainsKey(keyname))
 								{
 									list.Add((T)valuetype.ConvertFromString(group[keyname], collectionSettings.ValueConverter));
@@ -741,9 +739,9 @@ namespace SplitTools
 							}
 							break;
 						case IniCollectionMode.IndexOnly:
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 							{
-								string keyname = keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex);
+								var keyname = keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex);
 								if (group.ContainsKey(keyname))
 								{
 									list.Add((T)valuetype.ConvertFromString(group[keyname], collectionSettings.ValueConverter));
@@ -754,9 +752,9 @@ namespace SplitTools
 							}
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 							{
-								string keyname = name + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex);
+								var keyname = name + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex);
 								if (group.ContainsKey(keyname))
 								{
 									list.Add((T)valuetype.ConvertFromString(group[keyname], collectionSettings.ValueConverter));
@@ -771,16 +769,16 @@ namespace SplitTools
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 								list.Add((T)DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, fullname + "[" + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex) + "]", true, defaultCollectionSettings, collectionSettings.ValueConverter));
 							break;
 						case IniCollectionMode.IndexOnly:
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 								list.Add((T)DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex), true, defaultCollectionSettings, collectionSettings.ValueConverter));
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							for (int i = 0; i < length; i++)
-								list.Add((T)DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, fullname + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex).ToString(), true, defaultCollectionSettings, collectionSettings.ValueConverter));
+							for (var i = 0; i < length; i++)
+								list.Add((T)DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, fullname + keyconverter.ConvertToInvariantString(i + collectionSettings.StartIndex), true, defaultCollectionSettings, collectionSettings.ValueConverter));
 							break;
 					}
 			}
@@ -790,25 +788,25 @@ namespace SplitTools
 		{
 			public override void Deserialize(object listObj, IniGroup group, string groupName, IniCollectionSettings collectionSettings, string name, IniDictionary ini, string fullname)
 			{
-				Type keytype = typeof(TKey);
-				Type valuetype = typeof(TValue);
-				IDictionary<TKey, TValue> list = (IDictionary<TKey, TValue>)listObj;
+				var keytype = typeof(TKey);
+				var valuetype = typeof(TValue);
+				var list = (IDictionary<TKey, TValue>)listObj;
 				if (!valuetype.IsComplexType(collectionSettings.ValueConverter))
 				{
-					List<string> items = new List<string>();
+					var items = new List<string>();
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							foreach (IniNameValue item in group)
+							foreach (var item in group)
 								if (item.Key.StartsWith(name + "["))
 									items.Add(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
 							break;
 						case IniCollectionMode.IndexOnly:
-							foreach (IniNameValue item in group)
+							foreach (var item in group)
 								items.Add(item.Key);
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							foreach (IniNameValue item in group)
+							foreach (var item in group)
 								if (item.Key.StartsWith(name))
 									items.Add(item.Key.Substring(name.Length));
 							break;
@@ -818,21 +816,21 @@ namespace SplitTools
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							foreach (string item in items)
+							foreach (var item in items)
 							{
 								list.Add((TKey)keytype.ConvertFromString(item, collectionSettings.KeyConverter), (TValue)valuetype.ConvertFromString(group[name + "[" + item + "]"], collectionSettings.ValueConverter));
 								group.Remove(name + "[" + item + "]");
 							}
 							break;
 						case IniCollectionMode.IndexOnly:
-							foreach (string item in items)
+							foreach (var item in items)
 							{
 								list.Add((TKey)keytype.ConvertFromString(item, collectionSettings.KeyConverter), (TValue)valuetype.ConvertFromString(group[item], collectionSettings.ValueConverter));
 								group.Remove(item);
 							}
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							foreach (string item in items)
+							foreach (var item in items)
 							{
 								list.Add((TKey)keytype.ConvertFromString(item, collectionSettings.KeyConverter), (TValue)valuetype.ConvertFromString(group[name + item], collectionSettings.ValueConverter));
 								group.Remove(name + item);
@@ -842,21 +840,21 @@ namespace SplitTools
 				}
 				else
 				{
-					List<string> items = new List<string>();
+					var items = new List<string>();
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							foreach (IniNameGroup item in ini)
+							foreach (var item in ini)
 								if (item.Key.StartsWith(name + "["))
 									items.Add(item.Key.Substring(name.Length + 1, item.Key.Length - (name.Length + 2)));
 							break;
 						case IniCollectionMode.IndexOnly:
-							foreach (IniNameGroup item in ini)
+							foreach (var item in ini)
 								if (item.Key != groupName)
 									items.Add(item.Key);
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							foreach (IniNameGroup item in ini)
+							foreach (var item in ini)
 								if (item.Key.StartsWith(name))
 									items.Add(item.Key.Substring(name.Length));
 							break;
@@ -866,15 +864,15 @@ namespace SplitTools
 					switch (collectionSettings.Mode)
 					{
 						case IniCollectionMode.Normal:
-							foreach (string item in items)
+							foreach (var item in items)
 								list.Add((TKey)keytype.ConvertFromString(item, collectionSettings.KeyConverter), (TValue)DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, name + "[" + item + "]", true, defaultCollectionSettings, collectionSettings.ValueConverter));
 							break;
 						case IniCollectionMode.IndexOnly:
-							foreach (string item in items)
+							foreach (var item in items)
 								list.Add((TKey)keytype.ConvertFromString(item, collectionSettings.KeyConverter), (TValue)DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, item, true, defaultCollectionSettings, collectionSettings.ValueConverter));
 							break;
 						case IniCollectionMode.NoSquareBrackets:
-							foreach (string item in items)
+							foreach (var item in items)
 								list.Add((TKey)keytype.ConvertFromString(item, collectionSettings.KeyConverter), (TValue)DeserializeInternal("value", valuetype, valuetype.GetDefaultValue(), ini, name + item, true, defaultCollectionSettings, collectionSettings.ValueConverter));
 							break;
 					}
@@ -883,7 +881,7 @@ namespace SplitTools
 		}
 	}
 
-	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 	public sealed class IniIgnoreAttribute : Attribute { }
 
 	public class IniCollectionSettings
@@ -933,7 +931,7 @@ namespace SplitTools
 		SingleLine
 	}
 
-	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 	public sealed class IniCollectionAttribute : Attribute
 	{
 		public IniCollectionAttribute(IniCollectionMode mode)
@@ -943,8 +941,8 @@ namespace SplitTools
 
 		public string Format
 		{
-			get { return Settings.Format; }
-			set { Settings.Format = value; }
+			get => Settings.Format;
+			set => Settings.Format = value;
 		}
 
 		/// <summary>
@@ -952,8 +950,8 @@ namespace SplitTools
 		/// </summary>
 		public int StartIndex
 		{
-			get { return Settings.StartIndex; }
-			set { Settings.StartIndex = value; }
+			get => Settings.StartIndex;
+			set => Settings.StartIndex = value;
 		}
 
 		/// <summary>
@@ -961,8 +959,8 @@ namespace SplitTools
 		/// </summary>
 		public Type KeyConverter
 		{
-			get { return Settings.KeyConverter?.GetType(); }
-			set { Settings.KeyConverter = (TypeConverter)Activator.CreateInstance(value); }
+			get => Settings.KeyConverter?.GetType();
+			set => Settings.KeyConverter = (TypeConverter)Activator.CreateInstance(value);
 		}
 
 		/// <summary>
@@ -970,14 +968,14 @@ namespace SplitTools
 		/// </summary>
 		public Type ValueConverter
 		{
-			get { return Settings.ValueConverter?.GetType(); }
-			set { Settings.ValueConverter = (TypeConverter)Activator.CreateInstance(value); }
+			get => Settings.ValueConverter?.GetType();
+			set => Settings.ValueConverter = (TypeConverter)Activator.CreateInstance(value);
 		}
 
 		public IniCollectionSettings Settings { get; private set; }
 	}
 
-	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 	public sealed class IniNameAttribute : Attribute
 	{
 		public IniNameAttribute(string name)
@@ -988,6 +986,6 @@ namespace SplitTools
 		public string Name { get; private set; }
 	}
 
-	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 	public sealed class IniAlwaysIncludeAttribute : Attribute { }
 }

@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
-using SAModel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using Newtonsoft.Json;
+using SAModel;
 
 namespace SplitTools
 {
@@ -23,8 +24,8 @@ namespace SplitTools
 		/// <param name="basicDX">Use the SADX2004 format for Basic models.</param>
 		public static void ConvertFileToText(string source, TextType type, string destination = "", bool basicDX = true, bool overwrite = true, bool isNinja2 = false, bool includetls = false)
 		{
-			string outext = ".c";
-			string extension = Path.GetExtension(source);
+			var outext = ".c";
+			var extension = Path.GetExtension(source);
 			switch (extension.ToLowerInvariant())
 			{
 				case ".sa2lvl":
@@ -42,10 +43,10 @@ namespace SplitTools
 								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
-						LandTable land = LandTable.LoadFromFile(source);
-						List<string> labels = new List<string>() { land.Name };
-						LandTableFormat fmt = land.Format;
-						using (StreamWriter sw = File.CreateText(destination))
+						var land = LandTable.LoadFromFile(source);
+						var labels = new List<string> { land.Name };
+						var fmt = land.Format;
+						using (var sw = File.CreateText(destination))
 						{
 							if (type == TextType.CStructs)
 							{
@@ -102,9 +103,9 @@ namespace SplitTools
 				case ".sa1mdl":
 				case ".sa2mdl":
 				case ".sa2bmdl":
-					ModelFile modelFile = new ModelFile(source);
-					NJS_OBJECT model = modelFile.Model;
-					List<NJS_MOTION> animations = new List<NJS_MOTION>(modelFile.Animations);
+					var modelFile = new ModelFile(source);
+					var model = modelFile.Model;
+					var animations = new List<NJS_MOTION>(modelFile.Animations);
 					if (type == TextType.CStructs)
 					{
 						outext = ".c";
@@ -119,7 +120,7 @@ namespace SplitTools
 								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
-						using (StreamWriter sw = File.CreateText(destination))
+						using (var sw = File.CreateText(destination))
 						{
 							sw.Write("/* NINJA ");
 							switch (modelFile.Format)
@@ -163,9 +164,9 @@ namespace SplitTools
 							}
 							sw.WriteLine(" */");
 							sw.WriteLine();
-							List<string> labels_m = new List<string>() { model.Name };
-							model.ToStructVariables(sw, basicDX, labels_m, null);
-							foreach (NJS_MOTION anim in animations)
+							var labels_m = new List<string> { model.Name };
+							model.ToStructVariables(sw, basicDX, labels_m);
+							foreach (var anim in animations)
 							{
 								anim.ToStructVariables(sw);
 							}
@@ -176,7 +177,7 @@ namespace SplitTools
 					else if (type == TextType.NJA)
 					{
 						outext = ".nja";
-						bool isDup = destination.ToLowerInvariant().Contains(".dup");
+						var isDup = destination.ToLowerInvariant().Contains(".dup");
 						if (destination == "")
 						{
 							destination = Path.Combine(Path.GetDirectoryName(source), Path.GetFileNameWithoutExtension(source) + outext);
@@ -188,14 +189,14 @@ namespace SplitTools
 								destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
-						using (StreamWriter sw2 = File.CreateText(destination))
+						using (var sw2 = File.CreateText(destination))
 						{
 							//if (includetls)
 							//{
 							//	SplitTools.NJS_TEXLIST mdltexlist = SplitTools.NJS_TEXLIST.Load();
 							//	mdltexlist.ToNJA(sw2);
 							//}
-							List<string> labels_nj = new List<string>() { model.Name };
+							var labels_nj = new List<string> { model.Name };
 							model.ToNJA(sw2, labels_nj, null, isDup, isNinja2: isNinja2);
 							sw2.Flush();
 							sw2.Close();
@@ -203,7 +204,7 @@ namespace SplitTools
 					}
 					break;
 				case ".saanim":
-					NJS_MOTION animation = NJS_MOTION.Load(source);
+					var animation = NJS_MOTION.Load(source);
 					if (type == TextType.CStructs)
 					{
 						outext = ".c";
@@ -218,7 +219,7 @@ namespace SplitTools
 								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
-						using (StreamWriter sw = File.CreateText(destination))
+						using (var sw = File.CreateText(destination))
 						{
 							sw.WriteLine("/* NINJA Motion");
 							sw.WriteLine(" * ");
@@ -245,15 +246,15 @@ namespace SplitTools
 								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
-						JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
+						var js = new JsonSerializer { Culture = CultureInfo.InvariantCulture };
 						using (TextWriter tw = File.CreateText(destination))
-						using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+						using (var jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
 							js.Serialize(jtw, animation);
 					}
 					else if (type == TextType.NJA)
 					{
 						outext = animation.IsShapeMotion() ? ".nas" : ".nam";
-						bool isDum = destination.ToLowerInvariant().Contains(".dum");
+						var isDum = destination.ToLowerInvariant().Contains(".dum");
 						if (destination == "")
 						{
 							destination = Path.Combine(Path.GetDirectoryName(source), Path.GetFileNameWithoutExtension(source) + outext);
@@ -265,7 +266,7 @@ namespace SplitTools
 								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
-						using (StreamWriter sw2 = File.CreateText(destination))
+						using (var sw2 = File.CreateText(destination))
 						{
 							animation.ToNJA(sw2, null, isDum);
 							sw2.Flush();
@@ -274,7 +275,7 @@ namespace SplitTools
 					}
 					break;
 				case ".satex":
-					SplitTools.NJS_TEXLIST texlist = SplitTools.NJS_TEXLIST.Load(source);
+					var texlist = NJS_TEXLIST.Load(source);
 					if (type == TextType.CStructs)
 					{
 						outext = ".c";
@@ -289,7 +290,7 @@ namespace SplitTools
 								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
-						using (StreamWriter sw = File.CreateText(destination))
+						using (var sw = File.CreateText(destination))
 						{
 							sw.WriteLine("/* NINJA Texlist");
 							sw.WriteLine(" * ");
@@ -316,7 +317,7 @@ namespace SplitTools
 								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
-						using (StreamWriter sw2 = File.CreateText(destination))
+						using (var sw2 = File.CreateText(destination))
 						{
 							texlist.ToNJA(sw2);
 							sw2.Flush();

@@ -1,11 +1,11 @@
-﻿using SAModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SAModel;
 using ByteConverter = SAModel.ByteConverter;
 
 namespace SplitTools
@@ -94,31 +94,31 @@ namespace SplitTools
 		{
 			if (levelact.Contains(" "))
 			{
-				Level = (SA1LevelIDs)Enum.Parse(typeof(SA1LevelIDs), levelact.Split(' ')[0]);
+				Level = Enum.Parse<SA1LevelIDs>(levelact.Split(' ')[0]);
 				Act = byte.Parse(levelact.Split(' ')[1], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 			}
 			else
 			{
-				Level = (SA1LevelIDs)byte.Parse(levelact.Substring(0, 2), NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-				Act = byte.Parse(levelact.Substring(2, 2), NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+				Level = (SA1LevelIDs)byte.Parse(levelact.AsSpan(0, 2), NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+				Act = byte.Parse(levelact.AsSpan(2, 2), NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 			}
 		}
 
 		public SA1LevelIDs Level;
 		public byte Act;
-		public ushort LevelAndAct { get { return (ushort)((byte)Level << 8 | Act); } set { Level = (SA1LevelIDs)(value >> 8); Act = (byte)(value & 0xFF); } }
+		public ushort LevelAndAct { get => (ushort)((byte)Level << 8 | Act);
+			set { Level = (SA1LevelIDs)(value >> 8); Act = (byte)(value & 0xFF); } }
 
 		public override string ToString()
 		{
-			return Level.ToString() + " " + Act.ToString(NumberFormatInfo.InvariantInfo);
+			return Level + " " + Act.ToString(NumberFormatInfo.InvariantInfo);
 		}
 
 		public int CompareTo(object obj)
 		{
 			if (obj is SA1LevelAct)
 				return CompareTo((SA1LevelAct)obj);
-			else
-				return LevelAndAct.CompareTo(obj);
+			return LevelAndAct.CompareTo(obj);
 		}
 
 		public int CompareTo(SA1LevelAct other)
@@ -200,8 +200,7 @@ namespace SplitTools
 		{
 			if (SA2)
 				return IniSerializer.Deserialize<SA2ObjectListEntry[]>(filename);
-			else
-				return IniSerializer.Deserialize<SA1ObjectListEntry[]>(filename);
+			return IniSerializer.Deserialize<SA1ObjectListEntry[]>(filename);
 		}
 
 		public static ObjectListEntry[] Load(byte[] file, int address, uint imageBase, bool SA2)
@@ -210,8 +209,8 @@ namespace SplitTools
 			address = file.GetPointer(address + 4, imageBase);
 			if (SA2)
 			{
-				List<SA2ObjectListEntry> objini = new List<SA2ObjectListEntry>(numobjs);
-				for (int i = 0; i < numobjs; i++)
+				var objini = new List<SA2ObjectListEntry>(numobjs);
+				for (var i = 0; i < numobjs; i++)
 				{
 					objini.Add(new SA2ObjectListEntry(file, address, imageBase));
 					address += SA2ObjectListEntry.Size;
@@ -220,8 +219,8 @@ namespace SplitTools
 			}
 			else
 			{
-				List<SA1ObjectListEntry> objini = new List<SA1ObjectListEntry>(numobjs);
-				for (int i = 0; i < numobjs; i++)
+				var objini = new List<SA1ObjectListEntry>(numobjs);
+				for (var i = 0; i < numobjs; i++)
 				{
 					objini.Add(new SA1ObjectListEntry(file, address, imageBase));
 					address += SA1ObjectListEntry.Size;
@@ -237,16 +236,16 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this ObjectListEntry[] objlist, uint imageBase, Dictionary<string, uint> labels, out uint dataaddr)
 		{
-			List<byte> datasection = new List<byte>();
-			List<byte> objents = new List<byte>();
-			for (int i = 0; i < objlist.Length; i++)
+			var datasection = new List<byte>();
+			var objents = new List<byte>();
+			for (var i = 0; i < objlist.Length; i++)
 			{
 				objents.AddRange(objlist[i].GetBytes(labels, imageBase + (uint)datasection.Count));
 				datasection.AddRange(HelperFunctions.GetEncoding().GetBytes(objlist[i].Name));
 				datasection.Add(0);
 				datasection.Align(4);
 			}
-			uint objentaddr = imageBase + (uint)datasection.Count;
+			var objentaddr = imageBase + (uint)datasection.Count;
 			datasection.AddRange(objents.ToArray());
 			datasection.Align(4);
 			dataaddr = imageBase + (uint)datasection.Count;
@@ -267,7 +266,12 @@ namespace SplitTools
 		public ushort Flags { get; set; }
 		public float Distance { get; set; }
 		[IniIgnore]
-		public uint Code { get { if (uint.TryParse(CodeString, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out uint code)) return code; else return uint.MaxValue; } set { CodeString = value.ToString("X8"); } }
+		public uint Code { get
+			{
+				if (uint.TryParse(CodeString, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out var code)) return code;
+				return uint.MaxValue;
+			} set => CodeString = value.ToString("X8");
+		}
 		[IniName("Code")]
 		public string CodeString { get; set; }
 		public string Name { get; set; }
@@ -299,11 +303,11 @@ namespace SplitTools
 
 		public int Unknown { get; set; }
 
-		public static int Size { get { return 0x14; } }
+		public static int Size => 0x14;
 
 		public override byte[] GetBytes(Dictionary<string, uint> labels, uint nameAddress)
 		{
-			List<byte> result = new List<byte>(Size)
+			var result = new List<byte>(Size)
 			{
 				Arg1,
 				Arg2
@@ -320,7 +324,7 @@ namespace SplitTools
 
 		public override string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Arg1);
 			result.Append(", ");
 			result.Append(Arg2);
@@ -357,11 +361,11 @@ namespace SplitTools
 			Name = file.GetCString(file.GetPointer(address, imageBase));
 		}
 
-		public static int Size { get { return 0x10; } }
+		public static int Size => 0x10;
 
 		public override byte[] GetBytes(Dictionary<string, uint> labels, uint nameAddress)
 		{
-			List<byte> result = new List<byte>(Size)
+			var result = new List<byte>(Size)
 			{
 				Arg1,
 				Arg2
@@ -377,7 +381,7 @@ namespace SplitTools
 
 		public override string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Arg1);
 			result.Append(", ");
 			result.Append(Arg2);
@@ -416,7 +420,7 @@ namespace SplitTools
 			Flags = obj.Flags;
 			Distance = obj.Distance;
 			Name = obj.Name;
-			Names = new List<string>() { obj.Name };
+			Names = new List<string> { obj.Name };
 		}
 
 		public void AddName(string name)
@@ -428,7 +432,7 @@ namespace SplitTools
 
 	public static class SA1StartPosList
 	{
-		public static int Size { get { return SA1StartPosInfo.Size + 4; } }
+		public static int Size => SA1StartPosInfo.Size + 4;
 
 		public static Dictionary<SA1LevelAct, SA1StartPosInfo> Load(string filename)
 		{
@@ -437,15 +441,15 @@ namespace SplitTools
 
 		public static Dictionary<SA1LevelAct, SA1StartPosInfo> Load(byte[] file, int address, int count = 255)
 		{
-			Dictionary<SA1LevelAct, SA1StartPosInfo> result = new Dictionary<SA1LevelAct, SA1StartPosInfo>();
-			for (int i = 0; i < count; i++)
+			var result = new Dictionary<SA1LevelAct, SA1StartPosInfo>();
+			for (var i = 0; i < count; i++)
 			{
 				if (ByteConverter.ToUInt16(file, address) >= (ushort)SA1LevelIDs.Invalid)
 					break;
-				SA1StartPosInfo objgrp = new SA1StartPosInfo(file, address + 4);
-				SA1LevelAct levelAct = new SA1LevelAct(ByteConverter.ToUInt16(file, address), ByteConverter.ToUInt16(file, address + 2));
+				var objgrp = new SA1StartPosInfo(file, address + 4);
+				var levelAct = new SA1LevelAct(ByteConverter.ToUInt16(file, address), ByteConverter.ToUInt16(file, address + 2));
 				if (result.ContainsKey(levelAct))
-					Console.WriteLine(levelAct.ToString() + " start position is already added, duplicate at " + address.ToString("X"));
+					Console.WriteLine(levelAct + " start position is already added, duplicate at " + address.ToString("X"));
 				else
 				{
 					//Console.WriteLine(levelAct.ToString() + " start position at " + address.ToString("X") + ": " + objgrp.Position.ToString());
@@ -463,8 +467,8 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this Dictionary<SA1LevelAct, SA1StartPosInfo> startpos)
 		{
-			List<byte> result = new List<byte>(Size * (startpos.Count + 1));
-			foreach (KeyValuePair<SA1LevelAct, SA1StartPosInfo> item in startpos)
+			var result = new List<byte>(Size * (startpos.Count + 1));
+			foreach (var item in startpos)
 			{
 				result.AddRange(ByteConverter.GetBytes((ushort)item.Key.Level));
 				result.AddRange(ByteConverter.GetBytes((ushort)item.Key.Act));
@@ -477,7 +481,7 @@ namespace SplitTools
 
 		public static string ToStruct(this KeyValuePair<SA1LevelAct, SA1StartPosInfo> startpos)
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(startpos.Key.Level.ToC("LevelIDs"));
 			result.Append(", ");
 			result.Append(startpos.Key.Act);
@@ -505,11 +509,11 @@ namespace SplitTools
 		[TypeConverter(typeof(Int32HexConverter))]
 		public int YRotation { get; set; }
 
-		public static int Size { get { return Vertex.Size + 4; } }
+		public static int Size => Vertex.Size + 4;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(Position.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(YRotation));
 			return result.ToArray();
@@ -518,7 +522,7 @@ namespace SplitTools
 
 	public static class SA2StartPosList
 	{
-		public static int Size { get { return SA2StartPosInfo.Size + 2; } }
+		public static int Size => SA2StartPosInfo.Size + 2;
 
 		public static Dictionary<SA2LevelIDs, SA2StartPosInfo> Load(string filename)
 		{
@@ -527,10 +531,10 @@ namespace SplitTools
 
 		public static Dictionary<SA2LevelIDs, SA2StartPosInfo> Load(byte[] file, int address)
 		{
-			Dictionary<SA2LevelIDs, SA2StartPosInfo> result = new Dictionary<SA2LevelIDs, SA2StartPosInfo>();
+			var result = new Dictionary<SA2LevelIDs, SA2StartPosInfo>();
 			while (ByteConverter.ToUInt16(file, address) != (ushort)SA2LevelIDs.Invalid)
 			{
-				SA2StartPosInfo objgrp = new SA2StartPosInfo(file, address + 2);
+				var objgrp = new SA2StartPosInfo(file, address + 2);
 				result.Add((SA2LevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
 				address += Size;
 			}
@@ -544,8 +548,8 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this Dictionary<SA2LevelIDs, SA2StartPosInfo> startpos)
 		{
-			List<byte> result = new List<byte>(Size * (startpos.Count + 1));
-			foreach (KeyValuePair<SA2LevelIDs, SA2StartPosInfo> item in startpos)
+			var result = new List<byte>(Size * (startpos.Count + 1));
+			foreach (var item in startpos)
 			{
 				result.AddRange(ByteConverter.GetBytes((ushort)item.Key));
 				result.AddRange(item.Value.GetBytes());
@@ -557,7 +561,7 @@ namespace SplitTools
 
 		public static string ToStruct(this KeyValuePair<SA2LevelIDs, SA2StartPosInfo> startpos)
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(startpos.Key.ToC("LevelIDs"));
 			result.Append(", ");
 			result.Append(startpos.Value.YRotation.ToCHex());
@@ -612,11 +616,11 @@ namespace SplitTools
 		public Vertex P1Position { get; set; }
 		public Vertex P2Position { get; set; }
 
-		public static int Size { get { return (Vertex.Size + sizeof(ushort)) * 3; } }
+		public static int Size => (Vertex.Size + sizeof(ushort)) * 3;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(YRotation));
 			result.AddRange(ByteConverter.GetBytes(P1YRotation));
 			result.AddRange(ByteConverter.GetBytes(P2YRotation));
@@ -629,7 +633,7 @@ namespace SplitTools
 
 	public static class SA2DCStartPosList
 	{
-		public static int Size { get { return SA2DCStartPosInfo.Size + 2; } }
+		public static int Size => SA2DCStartPosInfo.Size + 2;
 
 		public static Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> Load(string filename)
 		{
@@ -638,10 +642,10 @@ namespace SplitTools
 
 		public static Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> Load(byte[] file, int address)
 		{
-			Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> result = new Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo>();
+			var result = new Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo>();
 			while (ByteConverter.ToUInt16(file, address) != (ushort)SA2DCLevelIDs.Invalid)
 			{
-				SA2DCStartPosInfo objgrp = new SA2DCStartPosInfo(file, address + 2);
+				var objgrp = new SA2DCStartPosInfo(file, address + 2);
 				result.Add((SA2DCLevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
 				address += Size;
 			}
@@ -655,8 +659,8 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> startpos)
 		{
-			List<byte> result = new List<byte>(Size * (startpos.Count + 1));
-			foreach (KeyValuePair<SA2DCLevelIDs, SA2DCStartPosInfo> item in startpos)
+			var result = new List<byte>(Size * (startpos.Count + 1));
+			foreach (var item in startpos)
 			{
 				result.AddRange(ByteConverter.GetBytes((ushort)item.Key));
 				result.AddRange(item.Value.GetBytes());
@@ -668,7 +672,7 @@ namespace SplitTools
 
 		public static string ToStruct(this KeyValuePair<SA2DCLevelIDs, SA2DCStartPosInfo> startpos)
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(startpos.Key.ToC("LevelIDs"));
 			result.Append(", ");
 			result.Append(startpos.Value.YRotation.ToCHex());
@@ -723,11 +727,11 @@ namespace SplitTools
 		public Vertex P1Position { get; set; }
 		public Vertex P2Position { get; set; }
 
-		public static int Size { get { return (Vertex.Size + sizeof(ushort)) * 3; } }
+		public static int Size => (Vertex.Size + sizeof(ushort)) * 3;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(YRotation));
 			result.AddRange(ByteConverter.GetBytes(P1YRotation));
 			result.AddRange(ByteConverter.GetBytes(P2YRotation));
@@ -757,8 +761,8 @@ namespace SplitTools
 				Name = labels[address];
 			else
 				Name = "texlist_" + address.ToString("X8");
-			uint TexnameArrayOffset = ByteConverter.ToUInt32(file, address);
-			int TexnameArrayAddr = (int)(TexnameArrayOffset - imageBase);
+			var TexnameArrayOffset = ByteConverter.ToUInt32(file, address);
+			var TexnameArrayAddr = (int)(TexnameArrayOffset - imageBase);
 			NumTextures = ByteConverter.ToUInt32(file, address + 4);
 			if (labels != null && labels.ContainsKey(TexnameArrayAddr))
 				TexnameArrayName = labels[TexnameArrayAddr];
@@ -770,7 +774,7 @@ namespace SplitTools
 			if (NumTextures <= 300 && NumTextures > 0)
 			{
 				TextureNames = new string[NumTextures];
-				for (int u = 0; u < NumTextures; u++)
+				for (var u = 0; u < NumTextures; u++)
 				{
 					// Hack for uninitialized data
 					if (TexnameArrayAddr > file.Length - offset)
@@ -778,10 +782,10 @@ namespace SplitTools
 						TextureNames[u] = null;
 						continue;
 					}
-					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayOffset + u * 12 - imageBase));
+					var TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayOffset + u * 12 - imageBase));
 					if (TexnamePointer != 0)
 					{
-						int TexnameAddress = (int)(TexnamePointer - imageBase);
+						var TexnameAddress = (int)(TexnamePointer - imageBase);
 						TextureNames[u] = file.GetCString(TexnameAddress + (int)offset).TrimEnd();
 					}
 					else
@@ -801,47 +805,46 @@ namespace SplitTools
 			// Old SA2 projects fallback: Load the .tls file
 			if (!File.Exists(textFile))
 				return Load(Path.ChangeExtension(textFile, ".tls"));
-			string extension = "pvr";
-			string[] texnames_raw = File.ReadAllLines(textFile);
+			var extension = "pvr";
+			var texnames_raw = File.ReadAllLines(textFile);
 			// If this is an INI file, deserialize it
 			if (texnames_raw.Length > 0 && texnames_raw[0].Contains("="))
 				return IniSerializer.Deserialize<NJS_TEXLIST>(textFile);
 			// Otherwise load it as a list of texture filenames
-			else
+			if (texnames_raw.Length > 0)
 			{
-				if (texnames_raw.Length > 0)
+				switch (Path.GetExtension(texnames_raw[0]))
 				{
-					switch (Path.GetExtension(texnames_raw[0]))
-					{
-						case ".gvr":
-							extension = "gvr";
-							break;
-						case ".dds":
-							extension = "dds";
-							break;
-						case ".pvr":
-						default:
-							break;
-					}
-				}
-				string[] textureNames = new string[texnames_raw.Length];
-				for (int i = 0; i < texnames_raw.Length; i++)
-				{
-					if (texnames_raw[i] == "")
+					case ".gvr":
+						extension = "gvr";
 						break;
-					textureNames[i] = texnames_raw[i].Replace("." + extension, "");
+					case ".dds":
+						extension = "dds";
+						break;
+					case ".pvr":
+					default:
+						break;
 				}
-				return new NJS_TEXLIST { TextureNames = textureNames };
 			}
+			var textureNames = new string[texnames_raw.Length];
+			for (var i = 0; i < texnames_raw.Length; i++)
+			{
+				if (texnames_raw[i] == "")
+					break;
+				textureNames[i] = texnames_raw[i].Replace("." + extension, "");
+			}
+			return new NJS_TEXLIST { TextureNames = textureNames };
 		}
 
 		public static NJS_TEXLIST Load(byte[] file, int address, int imageBase)
 		{
-			NJS_TEXLIST texlist = new();
+			NJS_TEXLIST texlist = new()
+			{
+				Name = "texlist_" + address.ToString("X8")
+			};
 
-			texlist.Name = "texlist_" + address.ToString("X8");
-			uint TexnameArrayOffset = ByteConverter.ToUInt32(file, address);
-			int TexnameArrayAddr = (int)(TexnameArrayOffset - imageBase);
+			var TexnameArrayOffset = ByteConverter.ToUInt32(file, address);
+			var TexnameArrayAddr = (int)(TexnameArrayOffset - imageBase);
 			texlist.NumTextures = ByteConverter.ToUInt32(file, address + 4);
 			texlist.TexnameArrayName = "textures_" + TexnameArrayAddr.ToString("X8");
 			texlist.TextureNames = new string[texlist.NumTextures];
@@ -850,7 +853,7 @@ namespace SplitTools
 			if (texlist.NumTextures <= 300 && texlist.NumTextures > 0)
 			{
 				texlist.TextureNames = new string[texlist.NumTextures];
-				for (int u = 0; u < texlist.NumTextures; u++)
+				for (var u = 0; u < texlist.NumTextures; u++)
 				{
 					// Hack for uninitialized data
 					if (TexnameArrayAddr > file.Length)
@@ -858,10 +861,10 @@ namespace SplitTools
 						texlist.TextureNames[u] = null;
 						continue;
 					}
-					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayOffset + u * 12 - imageBase));
+					var TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayOffset + u * 12 - imageBase));
 					if (TexnamePointer != 0)
 					{
-						int TexnameAddress = (int)(TexnamePointer - imageBase);
+						var TexnameAddress = (int)(TexnamePointer - imageBase);
 						texlist.TextureNames[u] = file.GetCString(TexnameAddress, Encoding.UTF8).TrimEnd();
 					}
 					else
@@ -874,8 +877,8 @@ namespace SplitTools
 
 		public void SaveAsList(string fileOutputPath, string extension = "pvr")
 		{
-			StreamWriter sw = File.CreateText(fileOutputPath);
-			for (int u = 0; u < TextureNames.Length; u++)
+			var sw = File.CreateText(fileOutputPath);
+			for (var u = 0; u < TextureNames.Length; u++)
 			{
 				sw.WriteLine(TextureNames[u] != null ? TextureNames[u] : "empty" + "." + extension);
 			}
@@ -896,10 +899,10 @@ namespace SplitTools
 			{
 				tw.WriteLine("NJS_TEXNAME {0}[] =", TexnameArrayName);
 				tw.WriteLine("{");
-				List<string> texs = new List<string>();
-				for (int u = 0; u < NumTextures; u++)
+				var texs = new List<string>();
+				for (var u = 0; u < NumTextures; u++)
 				{
-					string tname = (u < TextureNames.Length && TextureNames[u] != null) ? "\t{ \"" + TextureNames[u] + "\" }" : "\tNULL";
+					var tname = (u < TextureNames.Length && TextureNames[u] != null) ? "\t{ \"" + TextureNames[u] + "\" }" : "\tNULL";
 					texs.Add(tname);
 				}
 				tw.WriteLine(string.Join(",\n", texs));
@@ -928,9 +931,9 @@ namespace SplitTools
 				{
 					tw.WriteLine("TEXTURENAME {0}[]", TexnameArrayName);
 					tw.WriteLine("START");
-					for (int u = 0; u < NumTextures; u++)
+					for (var u = 0; u < NumTextures; u++)
 					{
-						string tname = (u < TextureNames.Length && TextureNames[u] != null) ? "\"" + TextureNames[u] + "\"" : "NULL";
+						var tname = (u < TextureNames.Length && TextureNames[u] != null) ? "\"" + TextureNames[u] + "\"" : "NULL";
 						tw.WriteLine("\tTEXN ( {0} ),", tname);
 					}
 					tw.WriteLine("END");
@@ -958,7 +961,7 @@ namespace SplitTools
 
 		public static TextureListEntry[] Load(byte[] file, int address, uint imageBase)
 		{
-			List<TextureListEntry> objini = new List<TextureListEntry>();
+			var objini = new List<TextureListEntry>();
 			while (ByteConverter.ToUInt64(file, address) != 0)
 			{
 				objini.Add(new TextureListEntry(file, address, imageBase));
@@ -974,9 +977,9 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this TextureListEntry[] texlist, uint imageBase, Dictionary<string, uint> labels, out uint dataaddr)
 		{
-			List<byte> datasection = new List<byte>();
-			List<byte> objents = new List<byte>();
-			for (int i = 0; i < texlist.Length; i++)
+			var datasection = new List<byte>();
+			var objents = new List<byte>();
+			for (var i = 0; i < texlist.Length; i++)
 			{
 				if (string.IsNullOrEmpty(texlist[i].Name))
 					objents.AddRange(new byte[4]);
@@ -1002,10 +1005,10 @@ namespace SplitTools
 		public LevelTextureList(byte[] file, int address, uint imageBase)
 		{
 			Level = new SA1LevelAct(ByteConverter.ToUInt16(file, address));
-			ushort numobjs = ByteConverter.ToUInt16(file, address + 2);
+			var numobjs = ByteConverter.ToUInt16(file, address + 2);
 			address = file.GetPointer(address + 4, imageBase);
 			TextureList = new TextureListEntry[numobjs];
-			for (int i = 0; i < numobjs; i++)
+			for (var i = 0; i < numobjs; i++)
 			{
 				TextureList[i] = new TextureListEntry(file, address, imageBase);
 				address += TextureListEntry.Size;
@@ -1028,9 +1031,9 @@ namespace SplitTools
 
 		public byte[] GetBytes(uint imageBase, out uint dataaddr)
 		{
-			List<byte> datasection = new List<byte>();
-			List<byte> objents = new List<byte>();
-			for (int i = 0; i < TextureList.Length; i++)
+			var datasection = new List<byte>();
+			var objents = new List<byte>();
+			for (var i = 0; i < TextureList.Length; i++)
 			{
 				if (string.IsNullOrEmpty(TextureList[i].Name))
 					objents.AddRange(new byte[4]);
@@ -1042,7 +1045,7 @@ namespace SplitTools
 					datasection.Align(4);
 				}
 			}
-			uint objentaddr = imageBase + (uint)datasection.Count;
+			var objentaddr = imageBase + (uint)datasection.Count;
 			datasection.AddRange(objents.ToArray());
 			datasection.Align(4);
 			dataaddr = imageBase + (uint)datasection.Count;
@@ -1059,7 +1062,7 @@ namespace SplitTools
 		public TextureListEntry() { Name = string.Empty; }
 		public TextureListEntry(byte[] file, int address, uint imageBase)
 		{
-			uint nameAddress = ByteConverter.ToUInt32(file, address);
+			var nameAddress = ByteConverter.ToUInt32(file, address);
 			if (nameAddress == 0)
 				Name = string.Empty;
 			else
@@ -1071,11 +1074,11 @@ namespace SplitTools
 		[TypeConverter(typeof(UInt32HexConverter))]
 		public uint Textures { get; set; }
 
-		public static int Size { get { return 8; } }
+		public static int Size => 8;
 
 		public byte[] GetBytes(uint nameAddress)
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(nameAddress));
 			result.AddRange(ByteConverter.GetBytes(Textures));
 			return result.ToArray();
@@ -1083,7 +1086,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			if (!string.IsNullOrEmpty(Name))
 				result.Append(Name.ToC());
 			else
@@ -1105,9 +1108,9 @@ namespace SplitTools
 	{
 		public static SA1LevelAct[] Load(string filename)
 		{
-			string[] data = File.ReadAllLines(filename);
-			List<SA1LevelAct> result = new List<SA1LevelAct>(data.Length);
-			foreach (string item in data)
+			var data = File.ReadAllLines(filename);
+			var result = new List<SA1LevelAct>(data.Length);
+			foreach (var item in data)
 				if (!string.IsNullOrEmpty(item))
 					result.Add(new SA1LevelAct(item));
 			return result.ToArray();
@@ -1115,10 +1118,10 @@ namespace SplitTools
 
 		public static SA1LevelAct[] Load(byte[] file, int address, uint imageBase)
 		{
-			uint lvlcnt = ByteConverter.ToUInt32(file, address + 4);
+			var lvlcnt = ByteConverter.ToUInt32(file, address + 4);
 			address = file.GetPointer(address, imageBase);
-			SA1LevelAct[] result = new SA1LevelAct[lvlcnt];
-			for (int i = 0; i < lvlcnt; i++)
+			var result = new SA1LevelAct[lvlcnt];
+			for (var i = 0; i < lvlcnt; i++)
 			{
 				result[i] = new SA1LevelAct(file[address], file[address + 1]);
 				address += 2;
@@ -1128,8 +1131,8 @@ namespace SplitTools
 
 		public static void Save(SA1LevelAct[] levellist, string filename)
 		{
-			List<string> result = new List<string>(levellist.Length);
-			foreach (SA1LevelAct item in levellist)
+			var result = new List<string>(levellist.Length);
+			foreach (var item in levellist)
 				result.Add(item.ToString());
 			File.WriteAllLines(filename, result.ToArray());
 		}
@@ -1139,9 +1142,9 @@ namespace SplitTools
 	{
 		public static SA1LevelAct[] Load(string filename)
 		{
-			string[] data = File.ReadAllLines(filename);
-			List<SA1LevelAct> result = new List<SA1LevelAct>(data.Length);
-			foreach (string item in data)
+			var data = File.ReadAllLines(filename);
+			var result = new List<SA1LevelAct>(data.Length);
+			foreach (var item in data)
 				if (!string.IsNullOrEmpty(item))
 					result.Add(new SA1LevelAct(item));
 			return result.ToArray();
@@ -1149,7 +1152,7 @@ namespace SplitTools
 
 		public static SA1LevelAct[] Load(byte[] file, int address)
 		{
-			List<SA1LevelAct> result = new List<SA1LevelAct>();
+			var result = new List<SA1LevelAct>();
 			while (ByteConverter.ToUInt16(file, address) != (ushort)SA1LevelIDs.Invalid)
 			{
 				result.Add(new SA1LevelAct(ByteConverter.ToUInt16(file, address), ByteConverter.ToUInt16(file, address + 2)));
@@ -1160,16 +1163,16 @@ namespace SplitTools
 
 		public static void Save(SA1LevelAct[] levellist, string filename)
 		{
-			List<string> result = new List<string>(levellist.Length);
-			foreach (SA1LevelAct item in levellist)
+			var result = new List<string>(levellist.Length);
+			foreach (var item in levellist)
 				result.Add(item.ToString());
 			File.WriteAllLines(filename, result.ToArray());
 		}
 
 		public static byte[] GetBytes(SA1LevelAct[] levellist)
 		{
-			List<byte> result = new List<byte>(4 * (levellist.Length + 1));
-			foreach (SA1LevelAct item in levellist)
+			var result = new List<byte>(4 * (levellist.Length + 1));
+			foreach (var item in levellist)
 			{
 				result.AddRange(ByteConverter.GetBytes((ushort)item.Level));
 				result.AddRange(ByteConverter.GetBytes((ushort)item.Act));
@@ -1182,7 +1185,7 @@ namespace SplitTools
 
 	public static class FieldStartPosList
 	{
-		public static int Size { get { return FieldStartPosInfo.Size + 2; } }
+		public static int Size => FieldStartPosInfo.Size + 2;
 
 		public static Dictionary<SA1LevelIDs, FieldStartPosInfo> Load(string filename)
 		{
@@ -1191,10 +1194,10 @@ namespace SplitTools
 
 		public static Dictionary<SA1LevelIDs, FieldStartPosInfo> Load(byte[] file, int address)
 		{
-			Dictionary<SA1LevelIDs, FieldStartPosInfo> result = new Dictionary<SA1LevelIDs, FieldStartPosInfo>();
+			var result = new Dictionary<SA1LevelIDs, FieldStartPosInfo>();
 			while ((SA1LevelIDs)file[address] != SA1LevelIDs.Invalid)
 			{
-				FieldStartPosInfo objgrp = new FieldStartPosInfo(file, address + 2);
+				var objgrp = new FieldStartPosInfo(file, address + 2);
 				result.Add((SA1LevelIDs)file[address], objgrp);
 				address += Size;
 			}
@@ -1208,8 +1211,8 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this Dictionary<SA1LevelIDs, FieldStartPosInfo> FieldStartPos)
 		{
-			List<byte> result = new List<byte>(Size * (FieldStartPos.Count + 1));
-			foreach (KeyValuePair<SA1LevelIDs, FieldStartPosInfo> item in FieldStartPos)
+			var result = new List<byte>(Size * (FieldStartPos.Count + 1));
+			foreach (var item in FieldStartPos)
 			{
 				result.Add((byte)item.Key);
 				result.Add(0);
@@ -1222,7 +1225,7 @@ namespace SplitTools
 
 		public static string ToStruct(this KeyValuePair<SA1LevelIDs, FieldStartPosInfo> startpos)
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(startpos.Key.ToC("LevelIDs"));
 			result.Append(", ");
 			result.Append(startpos.Value.Field.ToC("LevelIDs"));
@@ -1255,11 +1258,11 @@ namespace SplitTools
 		[TypeConverter(typeof(Int32HexConverter))]
 		public int YRotation { get; set; }
 
-		public static int Size { get { return 0x12; } }
+		public static int Size => 0x12;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size)
+			var result = new List<byte>(Size)
 			{
 				(byte)Field,
 				0
@@ -1279,10 +1282,10 @@ namespace SplitTools
 
 		public static SoundTestListEntry[] Load(byte[] file, int address, uint imageBase)
 		{
-			int numobjs = ByteConverter.ToInt32(file, address + 4);
+			var numobjs = ByteConverter.ToInt32(file, address + 4);
 			address = file.GetPointer(address, imageBase);
-			List<SoundTestListEntry> objini = new List<SoundTestListEntry>(numobjs);
-			for (int i = 0; i < numobjs; i++)
+			var objini = new List<SoundTestListEntry>(numobjs);
+			for (var i = 0; i < numobjs; i++)
 			{
 				objini.Add(new SoundTestListEntry(file, address, imageBase));
 				address += SoundTestListEntry.Size;
@@ -1310,11 +1313,11 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public int Track { get; set; }
 
-		public static int Size { get { return 8; } }
+		public static int Size => 8;
 
 		public byte[] GetBytes(uint titleAddress)
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(titleAddress));
 			result.AddRange(ByteConverter.GetBytes(Track));
 			return result.ToArray();
@@ -1322,7 +1325,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Title.ToC());
 			result.Append(", ");
 			result.Append(Track);
@@ -1340,8 +1343,8 @@ namespace SplitTools
 
 		public static MusicListEntry[] Load(byte[] file, int address, uint imageBase, int numsongs)
 		{
-			List<MusicListEntry> objini = new List<MusicListEntry>(numsongs);
-			for (int i = 0; i < numsongs; i++)
+			var objini = new List<MusicListEntry>(numsongs);
+			for (var i = 0; i < numsongs; i++)
 			{
 				objini.Add(new MusicListEntry(file, address, imageBase));
 				address += MusicListEntry.Size;
@@ -1368,11 +1371,11 @@ namespace SplitTools
 		public string Filename { get; set; }
 		public bool Loop { get; set; }
 
-		public static int Size { get { return 8; } }
+		public static int Size => 8;
 
 		public byte[] GetBytes(uint titleAddress)
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(titleAddress));
 			result.AddRange(ByteConverter.GetBytes(Convert.ToInt32(Loop)));
 			return result.ToArray();
@@ -1380,7 +1383,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Filename.ToC());
 			result.Append(", ");
 			result.Append(Loop ? 1 : 0);
@@ -1398,10 +1401,10 @@ namespace SplitTools
 
 		public static SoundListEntry[] Load(byte[] file, int address, uint imageBase)
 		{
-			int numobjs = ByteConverter.ToInt32(file, address);
+			var numobjs = ByteConverter.ToInt32(file, address);
 			address = file.GetPointer(address + 4, imageBase);
-			List<SoundListEntry> objini = new List<SoundListEntry>(numobjs);
-			for (int i = 0; i < numobjs; i++)
+			var objini = new List<SoundListEntry>(numobjs);
+			for (var i = 0; i < numobjs; i++)
 			{
 				objini.Add(new SoundListEntry(file, address, imageBase));
 				address += SoundListEntry.Size;
@@ -1429,11 +1432,11 @@ namespace SplitTools
 		public int Bank { get; set; }
 		public string Filename { get; set; }
 
-		public static int Size { get { return 8; } }
+		public static int Size => 8;
 
 		public byte[] GetBytes(uint filenameAddress)
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(Bank));
 			result.AddRange(ByteConverter.GetBytes(filenameAddress));
 			return result.ToArray();
@@ -1441,7 +1444,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Bank);
 			result.Append(", ");
 			result.Append(Filename.ToC());
@@ -1459,10 +1462,10 @@ namespace SplitTools
 
 		public static SA2SoundListEntry[] Load(byte[] file, int address, uint imageBase)
 		{
-			byte numobjs = file[address];
+			var numobjs = file[address];
 			address = file.GetPointer(address + 4, imageBase);
-			List<SA2SoundListEntry> objini = new List<SA2SoundListEntry>(numobjs);
-			for (int i = 0; i < numobjs; i++)
+			var objini = new List<SA2SoundListEntry>(numobjs);
+			for (var i = 0; i < numobjs; i++)
 			{
 				objini.Add(new SA2SoundListEntry(file, address, imageBase));
 				address += SA2SoundListEntry.Size;
@@ -1489,7 +1492,7 @@ namespace SplitTools
 		public uint Unknown { get; set; }
 		public int DefaultDistance { get; set; }
 
-		public static int Size { get { return 8; } }
+		public static int Size => 8;
 
 		public SA2SoundListEntry() { }
 
@@ -1512,7 +1515,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Bank);
 			result.Append(", ");
 			result.Append(ID);
@@ -1538,8 +1541,8 @@ namespace SplitTools
 
 		public static CharaSoundArrayEntry[] Load(byte[] file, int address, uint imageBase, int count)
 		{
-			CharaSoundArrayEntry[] result = new CharaSoundArrayEntry[count];
-			for (int i = 0; i < count; i++)
+			var result = new CharaSoundArrayEntry[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new CharaSoundArrayEntry(file, address, imageBase);
 				address += CharaSoundArrayEntry.Size;
@@ -1561,14 +1564,14 @@ namespace SplitTools
 		public string Filename { get; set; }
 		public string SoundList { get; set; }
 
-		public static int Size { get { return 0xC; } }
+		public static int Size => 0xC;
 
 		public CharaSoundArrayEntry() { }
 
 		public CharaSoundArrayEntry(byte[] file, int address, uint imageBase)
 		{
 			Character = (SA2Characters)file[address++];
-			int ptr = ByteConverter.ToInt32(file, address + 3);
+			var ptr = ByteConverter.ToInt32(file, address + 3);
 			if (ptr != 0)
 				Filename = file.GetCString(file.GetPointer(address + 3, imageBase));
 			address += sizeof(int);
@@ -1585,7 +1588,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(Character);
 			sb.Append(", ");
 			if (!string.IsNullOrEmpty(Filename))
@@ -1615,8 +1618,8 @@ namespace SplitTools
 
 		public static CharaVoiceArrayEntry[] Load(byte[] file, int address, uint imageBase, int count)
 		{
-			CharaVoiceArrayEntry[] result = new CharaVoiceArrayEntry[count];
-			for (int i = 0; i < count; i++)
+			var result = new CharaVoiceArrayEntry[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new CharaVoiceArrayEntry(file, address, imageBase);
 				address += CharaVoiceArrayEntry.Size;
@@ -1641,7 +1644,7 @@ namespace SplitTools
 		public string ENFilename { get; set; }
 		public string SoundList { get; set; }
 
-		public static int Size { get { return 0x10; } }
+		public static int Size => 0x10;
 
 		public CharaVoiceArrayEntry() { }
 
@@ -1649,7 +1652,7 @@ namespace SplitTools
 		{
 			Mode = file[address++];
 			Character = (SA2Characters)file[address++];
-			int ptr = ByteConverter.ToInt32(file, address + 2);
+			var ptr = ByteConverter.ToInt32(file, address + 2);
 			if (ptr != 0)
 				JPFilename = file.GetCString(file.GetPointer(address + 2, imageBase));
 			address += sizeof(int);
@@ -1669,7 +1672,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(Mode);
 			sb.AppendFormat(", ");
 			sb.Append(Character);
@@ -1708,8 +1711,8 @@ namespace SplitTools
 
 		public static MiniEventArrayEntry[] Load(byte[] file, int address, int count)
 		{
-			MiniEventArrayEntry[] result = new MiniEventArrayEntry[count];
-			for (int i = 0; i < count; i++)
+			var result = new MiniEventArrayEntry[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new MiniEventArrayEntry(file, address);
 				address += MiniEventArrayEntry.Size;
@@ -1731,7 +1734,7 @@ namespace SplitTools
 		public SA2Characters Character { get; set; }
 		public int CutsceneID { get; set; }
 
-		public static int Size { get { return 0x6; } }
+		public static int Size => 0x6;
 
 		public MiniEventArrayEntry() { }
 
@@ -1751,7 +1754,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(Level);
 			sb.Append(", ");
 			sb.Append(Character);
@@ -1771,8 +1774,8 @@ namespace SplitTools
 
 		public static DCMiniEventArrayEntry[] Load(byte[] file, int address, int count)
 		{
-			DCMiniEventArrayEntry[] result = new DCMiniEventArrayEntry[count];
-			for (int i = 0; i < count; i++)
+			var result = new DCMiniEventArrayEntry[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new DCMiniEventArrayEntry(file, address);
 				address += DCMiniEventArrayEntry.Size;
@@ -1794,7 +1797,7 @@ namespace SplitTools
 		public SA2Characters Character { get; set; }
 		public int CutsceneID { get; set; }
 
-		public static int Size { get { return 0x6; } }
+		public static int Size => 0x6;
 
 		public DCMiniEventArrayEntry() { }
 
@@ -1814,7 +1817,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(Level);
 			sb.Append(", ");
 			sb.Append(Character);
@@ -1829,8 +1832,8 @@ namespace SplitTools
 	{
 		public static string[] Load(string filename)
 		{
-			string[] result = File.ReadAllLines(filename);
-			for (int i = 0; i < result.Length; i++)
+			var result = File.ReadAllLines(filename);
+			for (var i = 0; i < result.Length; i++)
 				result[i] = result[i].UnescapeNewlines();
 			return result;
 		}
@@ -1847,10 +1850,10 @@ namespace SplitTools
 
 		public static string[] Load(byte[] file, int address, uint imageBase, int length, Encoding encoding)
 		{
-			string[] result = new string[length];
-			for (int i = 0; i < length; i++)
+			var result = new string[length];
+			for (var i = 0; i < length; i++)
 			{
-				uint straddr = ByteConverter.ToUInt32(file, address);
+				var straddr = ByteConverter.ToUInt32(file, address);
 				if (straddr == 0)
 					result[i] = string.Empty;
 				else
@@ -1862,8 +1865,8 @@ namespace SplitTools
 
 		public static void Save(this string[] strings, string filename)
 		{
-			string[] result = (string[])strings.Clone();
-			for (int i = 0; i < result.Length; i++)
+			var result = (string[])strings.Clone();
+			for (var i = 0; i < result.Length; i++)
 				result[i] = result[i].EscapeNewlines();
 			File.WriteAllLines(filename, result);
 		}
@@ -1878,7 +1881,7 @@ namespace SplitTools
 
 		public static NextLevelListEntry[] Load(byte[] file, int address)
 		{
-			List<NextLevelListEntry> result = new List<NextLevelListEntry>();
+			var result = new List<NextLevelListEntry>();
 			while (file[address + 1] != byte.MaxValue)
 			{
 				result.Add(new NextLevelListEntry(file, address));
@@ -1894,10 +1897,10 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this NextLevelListEntry[] levellist)
 		{
-			List<byte> result = new List<byte>();
-			for (int i = 0; i < levellist.Length; i++)
+			var result = new List<byte>();
+			for (var i = 0; i < levellist.Length; i++)
 				result.AddRange(levellist[i].GetBytes());
-			result.AddRange(new NextLevelListEntry() { Level = (SA1LevelIDs)byte.MaxValue }.GetBytes());
+			result.AddRange(new NextLevelListEntry { Level = (SA1LevelIDs)byte.MaxValue }.GetBytes());
 			return result.ToArray();
 		}
 	}
@@ -1935,16 +1938,16 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public byte AltStartPos { get; set; }
 
-		public static int Size { get { return 8; } }
+		public static int Size => 8;
 
 		public byte[] GetBytes()
 		{
-			return new byte[] { CGMovie, (byte)Level, (byte)NextLevel, NextAct, StartPos, (byte)AltNextLevel, AltNextAct, AltStartPos };
+			return new[] { CGMovie, (byte)Level, (byte)NextLevel, NextAct, StartPos, (byte)AltNextLevel, AltNextAct, AltStartPos };
 		}
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(CGMovie);
 			result.Append(", ");
 			result.Append(Level.ToC("LevelIDs"));
@@ -1973,14 +1976,14 @@ namespace SplitTools
 		public CutsceneText(string directory)
 			: this()
 		{
-			for (int i = 0; i < 5; i++)
-				Text[i] = StringArray.Load(Path.Combine(directory, ((Languages)i).ToString() + ".txt"));
+			for (var i = 0; i < 5; i++)
+				Text[i] = StringArray.Load(Path.Combine(directory, ((Languages)i) + ".txt"));
 		}
 
 		public CutsceneText(byte[] file, int address, uint imageBase, int length)
 			: this()
 		{
-			for (int i = 0; i < 5; i++)
+			for (var i = 0; i < 5; i++)
 			{
 				Text[i] = StringArray.Load(file, file.GetPointer(address, imageBase), imageBase, length,
 					(Languages)i);
@@ -1992,16 +1995,16 @@ namespace SplitTools
 
 		public void Save(string directory)
 		{
-			Save(directory, out string[] hashes);
+			Save(directory, out var hashes);
 		}
 
 		public void Save(string directory, out string[] hashes)
 		{
 			hashes = new string[5];
 			Directory.CreateDirectory(directory);
-			for (int i = 0; i < 5; i++)
+			for (var i = 0; i < 5; i++)
 			{
-				string textname = Path.Combine(directory, ((Languages)i).ToString() + ".txt");
+				var textname = Path.Combine(directory, ((Languages)i) + ".txt");
 				Text[i].Save(textname);
 				hashes[i] = HelperFunctions.FileHash(textname);
 			}
@@ -2021,25 +2024,25 @@ namespace SplitTools
 	{
 		public static RecapScreen[][] Load(string directory, int length)
 		{
-			RecapScreen[][] screens = new RecapScreen[length][];
-			for (int i = 0; i < length; i++)
+			var screens = new RecapScreen[length][];
+			for (var i = 0; i < length; i++)
 			{
 				screens[i] = new RecapScreen[5];
-				for (int l = 0; l < 5; l++)
-					screens[i][l] = IniSerializer.Deserialize<RecapScreen>(Path.Combine(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l).ToString() + ".ini"));
+				for (var l = 0; l < 5; l++)
+					screens[i][l] = IniSerializer.Deserialize<RecapScreen>(Path.Combine(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l) + ".ini"));
 			}
 			return screens;
 		}
 
 		public static RecapScreen[][] Load(byte[] file, int address, uint imageBase, int length)
 		{
-			RecapScreen[][] screens = new RecapScreen[length][];
-			for (int i = 0; i < length; i++)
+			var screens = new RecapScreen[length][];
+			for (var i = 0; i < length; i++)
 			{
 				screens[i] = new RecapScreen[5];
-				for (int l = 0; l < 5; l++)
+				for (var l = 0; l < 5; l++)
 				{
-					int tmpaddr = file.GetPointer(address + (l * 4), imageBase);
+					var tmpaddr = file.GetPointer(address + (l * 4), imageBase);
 					tmpaddr += i * 0xC;
 					screens[i][l] = new RecapScreen(file, tmpaddr, imageBase, (Languages)l);
 				}
@@ -2049,21 +2052,21 @@ namespace SplitTools
 
 		public static void Save(this RecapScreen[][] list, string directory)
 		{
-			Save(list, directory, out string[][] hashes);
+			list.Save(directory, out var hashes);
 		}
 
 		public static void Save(this RecapScreen[][] list, string directory, out string[][] hashes)
 		{
 			hashes = new string[list.Length][];
 			Directory.CreateDirectory(directory);
-			for (int i = 0; i < list.Length; i++)
+			for (var i = 0; i < list.Length; i++)
 			{
-				string scrname = Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo));
+				var scrname = Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo));
 				Directory.CreateDirectory(scrname);
 				hashes[i] = new string[5];
-				for (int l = 0; l < 5; l++)
+				for (var l = 0; l < 5; l++)
 				{
-					string textname = Path.Combine(scrname, ((Languages)l).ToString() + ".ini");
+					var textname = Path.Combine(scrname, ((Languages)l) + ".ini");
 					IniSerializer.Serialize(list[i][l], textname);
 					hashes[i][l] = HelperFunctions.FileHash(textname);
 				}
@@ -2098,8 +2101,8 @@ namespace SplitTools
 
 		public static List<SA2RecapScreen> Load(byte[] file, int address, uint imageBase, bool PC)
 		{
-			List<SA2RecapScreen> result = new List<SA2RecapScreen>();
-			int storytype = ByteConverter.ToInt32(file, address);
+			var result = new List<SA2RecapScreen>();
+			var storytype = ByteConverter.ToInt32(file, address);
 			while (storytype != -1)
 			{
 				result.Add(new SA2RecapScreen(file, address, imageBase, PC));
@@ -2130,21 +2133,21 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public int SummaryCount { get; set; }
 
-		public static int Size { get { return 0x14; } }
+		public static int Size => 0x14;
 
 		public SA2RecapScreen(byte[] file, int address, uint imageBase, bool PC)
 		{
 			StoryType = ByteConverter.ToInt32(file, address);
 			StorySequenceID = ByteConverter.ToInt32(file, address + 4);
 			CharBGID = ByteConverter.ToInt32(file, address + 8);
-			int ptr = ByteConverter.ToInt32(file, address + 0xC);
+			var ptr = ByteConverter.ToInt32(file, address + 0xC);
 			if (ptr != 0)
 			{
 				ptr = (int)(ptr - imageBase);
-				int cnt = ByteConverter.ToInt32(file, address + 0x10);
+				var cnt = ByteConverter.ToInt32(file, address + 0x10);
 				SummaryData = new List<SA2SummaryData>(cnt);
 
-				for (int j = 0; j < cnt; j++)
+				for (var j = 0; j < cnt; j++)
 				{
 					//if (PC)
 					//{
@@ -2166,7 +2169,7 @@ namespace SplitTools
 
 		public string ToStruct(string label)
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(StoryType);
 			sb.Append(", ");
 			sb.Append(StorySequenceID);
@@ -2213,7 +2216,8 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public int ITAFrameStart { get; set; }
 		public SA2SummaryData() { }
-		public static int Size { get { return 0x20; } }
+		public static int Size => 0x20;
+
 		public SA2SummaryData(byte[] file, int address, bool PC)
 		{
 			StringID = ByteConverter.ToInt32(file, address);
@@ -2231,7 +2235,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(StringID);
 			sb.Append(", ");
 			sb.Append(VoiceID);
@@ -2307,8 +2311,8 @@ namespace SplitTools
 
 		public static List<SA2BetaRecapScreen> Load(byte[] file, int address, uint imageBase)
 		{
-			List<SA2BetaRecapScreen> result = new List<SA2BetaRecapScreen>();
-			int sumdata = ByteConverter.ToInt32(file, address);
+			var result = new List<SA2BetaRecapScreen>();
+			var sumdata = ByteConverter.ToInt32(file, address);
 			while (sumdata != 255)
 			{
 				result.Add(new SA2BetaRecapScreen(file, address, imageBase));
@@ -2332,21 +2336,21 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public int SummaryCount { get; set; }
 
-		public static int Size { get { return 0x8; } }
+		public static int Size => 0x8;
 
 		public SA2BetaRecapScreen(byte[] file, int address, uint imageBase)
 		{
-			int ptr = ByteConverter.ToInt32(file, address);
+			var ptr = ByteConverter.ToInt32(file, address);
 			if (ptr != 0)
 			{
 				ptr = (int)(ptr - imageBase);
-				int cnt = ByteConverter.ToInt32(file, address + 4);
+				var cnt = ByteConverter.ToInt32(file, address + 4);
 				SummaryData = new List<SA2BetaSummaryData>(cnt);
 
-				for (int j = 0; j < cnt; j++)
+				for (var j = 0; j < cnt; j++)
 				{
-					SummaryData.Add(new SA2BetaSummaryData()
-					{
+					SummaryData.Add(new SA2BetaSummaryData
+						{
 						StringID = ByteConverter.ToInt32(file, ptr),
 						VoiceID = ByteConverter.ToInt32(file, ptr + 4),
 						FrameStart = ByteConverter.ToInt32(file, ptr + 8),
@@ -2360,7 +2364,7 @@ namespace SplitTools
 
 		public string ToStruct(string label)
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			if (SummaryData?.Count > 0)
 			{
 				sb.AppendFormat("{0}, ", label);
@@ -2387,28 +2391,28 @@ namespace SplitTools
 	{
 		public static NPCText[][] Load(string directory, int length)
 		{
-			NPCText[][] screens = new NPCText[5][];
-			for (int l = 0; l < 5; l++)
+			var screens = new NPCText[5][];
+			for (var l = 0; l < 5; l++)
 			{
 				screens[l] = new NPCText[length];
-				for (int i = 0; i < length; i++)
-					screens[l][i] = IniSerializer.Deserialize<NPCText>(Path.Combine(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l).ToString() + ".ini"));
+				for (var i = 0; i < length; i++)
+					screens[l][i] = IniSerializer.Deserialize<NPCText>(Path.Combine(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l) + ".ini"));
 			}
 			return screens;
 		}
 
 		public static NPCText[][] Load(byte[] file, int address, uint imageBase, int length)
 		{
-			NPCText[][] screens = new NPCText[5][];
-			for (int l = 0; l < 5; l++)
+			var screens = new NPCText[5][];
+			for (var l = 0; l < 5; l++)
 				screens[l] = Load(file, file.GetPointer(address + (l * 4), imageBase), imageBase, length, (Languages)l, true);
 			return screens;
 		}
 
 		public static NPCText[] Load(byte[] file, int address, uint imageBase, int length, Languages language, bool includeTime)
 		{
-			NPCText[] screen = new NPCText[length];
-			for (int i = 0; i < length; i++)
+			var screen = new NPCText[length];
+			for (var i = 0; i < length; i++)
 			{
 				screen[i] = new NPCText(file, address, imageBase, language, includeTime);
 				address += 8;
@@ -2418,21 +2422,21 @@ namespace SplitTools
 
 		public static void Save(this NPCText[][] list, string directory)
 		{
-			Save(list, directory, out string[][] hashes);
+			list.Save(directory, out var hashes);
 		}
 
 		public static void Save(this NPCText[][] list, string directory, out string[][] hashes)
 		{
 			hashes = new string[5][];
 			Directory.CreateDirectory(directory);
-			for (int l = 0; l < 5; l++)
+			for (var l = 0; l < 5; l++)
 			{
 				hashes[l] = new string[list[l].Length];
-				for (int i = 0; i < list[l].Length; i++)
+				for (var i = 0; i < list[l].Length; i++)
 				{
-					string scrname = Path.GetFullPath(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)));
+					var scrname = Path.GetFullPath(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)));
 					Directory.CreateDirectory(scrname);
-					string textname = Path.GetFullPath(Path.Combine(scrname, ((Languages)l).ToString() + ".ini"));
+					var textname = Path.GetFullPath(Path.Combine(scrname, ((Languages)l) + ".ini"));
 					IniSerializer.Serialize(list[l][i], textname);
 					hashes[l][i] = HelperFunctions.FileHash(textname);
 				}
@@ -2450,10 +2454,10 @@ namespace SplitTools
 		public NPCText(byte[] file, int address, uint imageBase, Languages language, bool includeTime)
 			: this()
 		{
-			NPCTextGroup group = new NPCTextGroup();
-			int add = includeTime ? 8 : 4;
-			bool hasText = ByteConverter.ToUInt32(file, address + 4) != 0;
-			int textaddr = 0;
+			var group = new NPCTextGroup();
+			var add = includeTime ? 8 : 4;
+			var hasText = ByteConverter.ToUInt32(file, address + 4) != 0;
+			var textaddr = 0;
 			if (hasText)
 				textaddr = file.GetPointer(address + 4, imageBase);
 			if (ByteConverter.ToUInt32(file, address) == 0)
@@ -2468,7 +2472,7 @@ namespace SplitTools
 				Groups.Add(group);
 				return;
 			}
-			int controladdr = file.GetPointer(address, imageBase);
+			var controladdr = file.GetPointer(address, imageBase);
 		newgroup:
 			if (hasText)
 			{
@@ -2481,7 +2485,7 @@ namespace SplitTools
 			}
 			while (true)
 			{
-				NPCTextControl code = (NPCTextControl)ByteConverter.ToInt16(file, controladdr);
+				var code = (NPCTextControl)ByteConverter.ToInt16(file, controladdr);
 				controladdr += sizeof(short);
 				switch (code)
 				{
@@ -2525,7 +2529,7 @@ namespace SplitTools
 			get
 			{
 				if (Groups.Count > 1) return true;
-				foreach (NPCTextGroup item in Groups)
+				foreach (var item in Groups)
 					if (item.HasControl) return true;
 				return false;
 			}
@@ -2536,7 +2540,7 @@ namespace SplitTools
 		{
 			get
 			{
-				foreach (NPCTextGroup item in Groups)
+				foreach (var item in Groups)
 					if (item.HasText)
 						return true;
 				return false;
@@ -2579,18 +2583,13 @@ namespace SplitTools
 		public List<NPCTextLine> Lines { get; set; }
 
 		[IniIgnore]
-		public bool HasControl
-		{
-			get
-			{
-				return EventFlags.Count > 0 || NPCFlags.Count > 0
-					|| Character != (SA1CharacterFlags)0xFF
-					|| Voice.HasValue || SetEventFlag.HasValue;
-			}
-		}
+		public bool HasControl =>
+			EventFlags.Count > 0 || NPCFlags.Count > 0
+			                     || Character != (SA1CharacterFlags)0xFF
+			                     || Voice.HasValue || SetEventFlag.HasValue;
 
 		[IniIgnore]
-		public bool HasText { get { return Lines.Count > 0; } }
+		public bool HasText => Lines.Count > 0;
 	}
 
 	public class NPCTextLine
@@ -2622,9 +2621,9 @@ namespace SplitTools
 	{
 		public static LevelClearFlag[] Load(string filename)
 		{
-			string[] tmp = File.ReadAllLines(filename);
-			List<LevelClearFlag> result = new List<LevelClearFlag>(tmp.Length);
-			foreach (string line in tmp)
+			var tmp = File.ReadAllLines(filename);
+			var result = new List<LevelClearFlag>(tmp.Length);
+			foreach (var line in tmp)
 			{
 				if (string.IsNullOrEmpty(line)) continue;
 				result.Add(new LevelClearFlag(line));
@@ -2634,7 +2633,7 @@ namespace SplitTools
 
 		public static LevelClearFlag[] Load(byte[] file, int address)
 		{
-			List<LevelClearFlag> result = new List<LevelClearFlag>();
+			var result = new List<LevelClearFlag>();
 			while (ByteConverter.ToUInt16(file, address) != ushort.MaxValue)
 			{
 				result.Add(new LevelClearFlag(file, address));
@@ -2645,16 +2644,16 @@ namespace SplitTools
 
 		public static void Save(this LevelClearFlag[] levellist, string filename)
 		{
-			List<string> result = new List<string>(levellist.Length);
-			foreach (LevelClearFlag item in levellist)
+			var result = new List<string>(levellist.Length);
+			foreach (var item in levellist)
 				result.Add(item.ToString());
 			File.WriteAllLines(filename, result.ToArray());
 		}
 
 		public static byte[] GetBytes(this LevelClearFlag[] levellist)
 		{
-			List<byte> result = new List<byte>((levellist.Length + 1) * 4);
-			foreach (LevelClearFlag item in levellist)
+			var result = new List<byte>((levellist.Length + 1) * 4);
+			foreach (var item in levellist)
 				result.AddRange(item.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(uint.MaxValue));
 			return result.ToArray();
@@ -2673,8 +2672,8 @@ namespace SplitTools
 
 		public LevelClearFlag(string data)
 		{
-			string[] splitline = data.Split(' ');
-			Level = (SA1LevelIDs)Enum.Parse(typeof(SA1LevelIDs), splitline[0]);
+			var splitline = data.Split(' ');
+			Level = Enum.Parse<SA1LevelIDs>(splitline[0]);
 			Flag = ushort.Parse(splitline[1], NumberStyles.HexNumber);
 		}
 
@@ -2683,11 +2682,11 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public ushort Flag { get; set; }
 
-		public static int Size { get { return 4; } }
+		public static int Size => 4;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes((ushort)Level));
 			result.AddRange(ByteConverter.GetBytes(Flag));
 			return result.ToArray();
@@ -2695,7 +2694,7 @@ namespace SplitTools
 
 		public override string ToString()
 		{
-			return Level.ToString() + " " + Flag.ToString("X4");
+			return Level + " " + Flag.ToString("X4");
 		}
 
 		public string ToStruct()
@@ -2736,7 +2735,7 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public SA1CharacterFlags Flags { get; set; }
 		public string Filename { get; set; }
-		public static int Size { get { return 4; } }
+		public static int Size => 4;
 
 		public byte[] GetBytes()
 		{
@@ -2764,7 +2763,7 @@ namespace SplitTools
 
 		public SA2BDeathZoneFlags(byte[] file, int address)
 		{
-			int dzdata = ByteConverter.ToInt32(file, address);
+			var dzdata = ByteConverter.ToInt32(file, address);
 			Flags = (SA2CharacterFlags)((byte)dzdata);
 			Constant1 = (byte)(dzdata >> 8);
 			Constant2 = (byte)(dzdata >> 16);
@@ -2773,7 +2772,7 @@ namespace SplitTools
 
 		public SA2BDeathZoneFlags(byte[] file, int address, string filename)
 		{
-			int dzdata = ByteConverter.ToInt32(file, address);
+			var dzdata = ByteConverter.ToInt32(file, address);
 			Flags = (SA2CharacterFlags)((byte)dzdata);
 			Constant1 = (byte)(dzdata >> 8);
 			Constant2 = (byte)(dzdata >> 16);
@@ -2789,11 +2788,11 @@ namespace SplitTools
 		public byte DeathFlag { get; set; }
 		public string Filename { get; set; }
 
-		public static int Size { get { return 4; } }
+		public static int Size => 4;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size)
+			var result = new List<byte>(Size)
 		{
 				(byte)Flags,
 				Constant1,
@@ -2840,11 +2839,11 @@ namespace SplitTools
 		public byte DeathFlag { get; set; }
 		public string Filename { get; set; }
 
-		public static int Size { get { return 4; } }
+		public static int Size => 4;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size)
+			var result = new List<byte>(Size)
 				{
 					(byte)Flags,
 					DeathFlag
@@ -2859,21 +2858,18 @@ namespace SplitTools
 		{
 			if (File.Exists(filename))
 				return IniSerializer.Deserialize<SkyboxScale[]>(filename);
-			else
+			var defaultScaleList = new List<SkyboxScale>();
+			for (var act = 0; act < 6; act++)
 			{
-				List<SkyboxScale> defaultScaleList = new List<SkyboxScale>();
-				for (int act = 0; act < 6; act++)
-				{
-					defaultScaleList.Add(new SkyboxScale { Far = new Vertex(1.0f, 1.0f, 1.0f), Near = new Vertex(1.0f, 1.0f, 1.0f), Normal = new Vertex(1.0f, 1.0f, 1.0f) });
-				}
-				return defaultScaleList.ToArray();
+				defaultScaleList.Add(new SkyboxScale { Far = new Vertex(1.0f, 1.0f, 1.0f), Near = new Vertex(1.0f, 1.0f, 1.0f), Normal = new Vertex(1.0f, 1.0f, 1.0f) });
 			}
+			return defaultScaleList.ToArray();
 		}
 
 		public static SkyboxScale[] Load(byte[] file, int address, uint imageBase, int count)
 		{
-			List<SkyboxScale> result = new List<SkyboxScale>(count);
-			for (int i = 0; i < count; i++)
+			var result = new List<SkyboxScale>(count);
+			for (var i = 0; i < count; i++)
 			{
 				if (ByteConverter.ToUInt32(file, address) != 0)
 					result.Add(new SkyboxScale(file, file.GetPointer(address, imageBase)));
@@ -2908,11 +2904,11 @@ namespace SplitTools
 		public Vertex Normal { get; set; }
 		public Vertex Near { get; set; }
 
-		public static int Size { get { return Vertex.Size * 3; } }
+		public static int Size => Vertex.Size * 3;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(Far.GetBytes());
 			result.AddRange(Normal.GetBytes());
 			result.AddRange(Near.GetBytes());
@@ -2934,8 +2930,8 @@ namespace SplitTools
 
 		public static StageSelectLevel[] Load(byte[] file, int address, int count)
 		{
-			StageSelectLevel[] result = new StageSelectLevel[count];
-			for (int i = 0; i < count; i++)
+			var result = new StageSelectLevel[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new StageSelectLevel(file, address);
 				address += StageSelectLevel.Size;
@@ -2961,7 +2957,7 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public int Row { get; set; }
 
-		public static int Size { get { return 16; } }
+		public static int Size => 16;
 
 		public StageSelectLevel() { }
 
@@ -2975,7 +2971,7 @@ namespace SplitTools
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes((int)Level));
 			result.AddRange(ByteConverter.GetBytes((int)Character));
 			result.AddRange(ByteConverter.GetBytes(Column));
@@ -2991,7 +2987,7 @@ namespace SplitTools
 
 	public static class LevelRankScoresList
 	{
-		public static int Size { get { return LevelRankScores.Size + 2; } }
+		public static int Size => LevelRankScores.Size + 2;
 
 		public static Dictionary<SA2LevelIDs, LevelRankScores> Load(string filename)
 		{
@@ -3000,10 +2996,10 @@ namespace SplitTools
 
 		public static Dictionary<SA2LevelIDs, LevelRankScores> Load(byte[] file, int address)
 		{
-			Dictionary<SA2LevelIDs, LevelRankScores> result = new Dictionary<SA2LevelIDs, LevelRankScores>();
+			var result = new Dictionary<SA2LevelIDs, LevelRankScores>();
 			while (ByteConverter.ToUInt16(file, address) < (ushort)SA2LevelIDs.Invalid)
 			{
-				LevelRankScores objgrp = new LevelRankScores(file, address + 2);
+				var objgrp = new LevelRankScores(file, address + 2);
 				result.Add((SA2LevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
 				address += Size;
 			}
@@ -3017,8 +3013,8 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this Dictionary<SA2LevelIDs, LevelRankScores> startpos)
 		{
-			List<byte> result = new List<byte>(Size * startpos.Count + 2);
-			foreach (KeyValuePair<SA2LevelIDs, LevelRankScores> item in startpos)
+			var result = new List<byte>(Size * startpos.Count + 2);
+			foreach (var item in startpos)
 			{
 				result.AddRange(ByteConverter.GetBytes((ushort)item.Key));
 				result.AddRange(item.Value.GetBytes());
@@ -3055,11 +3051,11 @@ namespace SplitTools
 		public ushort BRank { get; set; }
 		public ushort ARank { get; set; }
 
-		public static int Size { get { return sizeof(ushort) * 4; } }
+		public static int Size => sizeof(ushort) * 4;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(DRank));
 			result.AddRange(ByteConverter.GetBytes(CRank));
 			result.AddRange(ByteConverter.GetBytes(BRank));
@@ -3070,7 +3066,7 @@ namespace SplitTools
 
 	public static class LevelRankTimesList
 	{
-		public static int Size { get { return LevelRankTimes.Size + 1; } }
+		public static int Size => LevelRankTimes.Size + 1;
 
 		public static Dictionary<SA2LevelIDs, LevelRankTimes> Load(string filename)
 		{
@@ -3079,10 +3075,10 @@ namespace SplitTools
 
 		public static Dictionary<SA2LevelIDs, LevelRankTimes> Load(byte[] file, int address)
 		{
-			Dictionary<SA2LevelIDs, LevelRankTimes> result = new Dictionary<SA2LevelIDs, LevelRankTimes>();
+			var result = new Dictionary<SA2LevelIDs, LevelRankTimes>();
 			while (file[address] != (byte)SA2LevelIDs.Invalid)
 			{
-				LevelRankTimes objgrp = new LevelRankTimes(file, address + 1);
+				var objgrp = new LevelRankTimes(file, address + 1);
 				result.Add((SA2LevelIDs)file[address], objgrp);
 				address += Size;
 			}
@@ -3096,8 +3092,8 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this Dictionary<SA2LevelIDs, LevelRankTimes> startpos)
 		{
-			List<byte> result = new List<byte>(Size * startpos.Count + 1);
-			foreach (KeyValuePair<SA2LevelIDs, LevelRankTimes> item in startpos)
+			var result = new List<byte>(Size * startpos.Count + 1);
+			foreach (var item in startpos)
 			{
 				result.Add((byte)item.Key);
 				result.AddRange(item.Value.GetBytes());
@@ -3134,7 +3130,7 @@ namespace SplitTools
 		public MinSec(string minsec)
 			: this()
 		{
-			string[] split = minsec.Split(':');
+			var split = minsec.Split(':');
 			Minute = byte.Parse(split[0], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
 			Second = byte.Parse(split[1], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
 		}
@@ -3142,9 +3138,9 @@ namespace SplitTools
 		public byte Minute { get; set; }
 		public byte Second { get; set; }
 
-		public static int Size { get { return 2; } }
+		public static int Size => 2;
 
-		public byte[] GetBytes() { return new byte[] { Minute, Second }; }
+		public byte[] GetBytes() { return new[] { Minute, Second }; }
 
 		public override string ToString()
 		{
@@ -3178,11 +3174,11 @@ namespace SplitTools
 		public MinSec BRank { get; set; }
 		public MinSec ARank { get; set; }
 
-		public static int Size { get { return MinSec.Size * 4; } }
+		public static int Size => MinSec.Size * 4;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(DRank.GetBytes());
 			result.AddRange(CRank.GetBytes());
 			result.AddRange(BRank.GetBytes());
@@ -3200,8 +3196,8 @@ namespace SplitTools
 
 		public static KartRankTimes[] Load(byte[] file, int address, int count)
 		{
-			KartRankTimes[] result = new KartRankTimes[count];
-			for (int i = 0; i < count; i++)
+			var result = new KartRankTimes[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new KartRankTimes(file, address);
 				address += KartRankTimes.Size;
@@ -3223,10 +3219,7 @@ namespace SplitTools
 		public MinSec BRank { get; set; }
 		public MinSec ARank { get; set; }
 
-		public static int Size
-		{
-			get { return 0x9; }
-		}
+		public static int Size => 0x9;
 		public KartRankTimes() { }
 
 		public KartRankTimes(byte[] file, int address)
@@ -3248,7 +3241,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(Level.ToC("LevelIDs"));
 			sb.Append(", ");
 			sb.Append(DRank.ToStruct());
@@ -3265,7 +3258,7 @@ namespace SplitTools
 
 	public static class SA2EndPosList
 	{
-		public static int Size { get { return SA2EndPosInfo.Size + 2; } }
+		public static int Size => SA2EndPosInfo.Size + 2;
 
 		public static Dictionary<SA2LevelIDs, SA2EndPosInfo> Load(string filename)
 		{
@@ -3274,10 +3267,10 @@ namespace SplitTools
 
 		public static Dictionary<SA2LevelIDs, SA2EndPosInfo> Load(byte[] file, int address)
 		{
-			Dictionary<SA2LevelIDs, SA2EndPosInfo> result = new Dictionary<SA2LevelIDs, SA2EndPosInfo>();
+			var result = new Dictionary<SA2LevelIDs, SA2EndPosInfo>();
 			while (ByteConverter.ToUInt16(file, address) != (ushort)SA2LevelIDs.Invalid)
 			{
-				SA2EndPosInfo objgrp = new SA2EndPosInfo(file, address + 2);
+				var objgrp = new SA2EndPosInfo(file, address + 2);
 				result.Add((SA2LevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
 				address += Size;
 			}
@@ -3291,8 +3284,8 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this Dictionary<SA2LevelIDs, SA2EndPosInfo> EndPos)
 		{
-			List<byte> result = new List<byte>(Size * (EndPos.Count + 1));
-			foreach (KeyValuePair<SA2LevelIDs, SA2EndPosInfo> item in EndPos)
+			var result = new List<byte>(Size * (EndPos.Count + 1));
+			foreach (var item in EndPos)
 			{
 				result.AddRange(ByteConverter.GetBytes((ushort)item.Key));
 				result.AddRange(item.Value.GetBytes());
@@ -3342,11 +3335,11 @@ namespace SplitTools
 		public Vertex Mission2Position { get; set; }
 		public Vertex Mission3Position { get; set; }
 
-		public static int Size { get { return (sizeof(ushort) * 3) + (Vertex.Size * 2); } }
+		public static int Size => (sizeof(ushort) * 3) + (Vertex.Size * 2);
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(Mission2YRotation));
 			result.AddRange(ByteConverter.GetBytes(Mission3YRotation));
 			result.AddRange(ByteConverter.GetBytes(Unknown));
@@ -3365,8 +3358,8 @@ namespace SplitTools
 
 		public static SA2AnimationInfo[] Load(byte[] file, int address, int count)
 		{
-			SA2AnimationInfo[] result = new SA2AnimationInfo[count];
-			for (int i = 0; i < count; i++)
+			var result = new SA2AnimationInfo[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new SA2AnimationInfo(file, address);
 				address += SA2AnimationInfo.Size;
@@ -3381,8 +3374,8 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this SA2AnimationInfo[] levellist)
 		{
-			List<byte> result = new List<byte>(SA2AnimationInfo.Size * levellist.Length);
-			foreach (SA2AnimationInfo item in levellist)
+			var result = new List<byte>(SA2AnimationInfo.Size * levellist.Length);
+			foreach (var item in levellist)
 				result.AddRange(item.GetBytes());
 			return result.ToArray();
 		}
@@ -3395,10 +3388,12 @@ namespace SplitTools
 		public ushort Animation { get; set; }
 		[IniAlwaysInclude]
 		public ushort Model { get; set; }
-		public ushort? Unknown1 { get { return null; } set { if (value.HasValue) Model = value.Value; } }
+		public ushort? Unknown1 { get => null;
+			set { if (value.HasValue) Model = value.Value; } }
 		[IniAlwaysInclude]
 		public ushort Property { get; set; }
-		public ushort? Unknown2 { get { return null; } set { if (value.HasValue) Property = value.Value; } }
+		public ushort? Unknown2 { get => null;
+			set { if (value.HasValue) Property = value.Value; } }
 		[IniAlwaysInclude]
 		public ushort NextAnimation { get; set; }
 		[IniAlwaysInclude]
@@ -3406,7 +3401,7 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public float AnimationSpeed { get; set; }
 
-		public static int Size { get { return 16; } }
+		public static int Size => 16;
 
 		public SA2AnimationInfo() { }
 
@@ -3428,7 +3423,7 @@ namespace SplitTools
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(Animation));
 			result.AddRange(ByteConverter.GetBytes(Model));
 			result.AddRange(ByteConverter.GetBytes(Property));
@@ -3454,8 +3449,8 @@ namespace SplitTools
 
 		public static SA1ActionInfo[] Load(byte[] file, int address, uint imageBase, int count)
 		{
-			SA1ActionInfo[] result = new SA1ActionInfo[count];
-			for (int i = 0; i < count; i++)
+			var result = new SA1ActionInfo[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new SA1ActionInfo(file, address, imageBase);
 				address += SA1ActionInfo.Size;
@@ -3484,13 +3479,13 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public float AnimationSpeed { get; set; }
 
-		public static int Size { get { return 16; } }
+		public static int Size => 16;
 
 		public SA1ActionInfo() { }
 
 		public SA1ActionInfo(byte[] file, int address, uint imageBase)
 		{
-			int ptr = ByteConverter.ToInt32(file, address);
+			var ptr = ByteConverter.ToInt32(file, address);
 			address += sizeof(int);
 			if (ptr != 0)
 				if ((uint)ptr >= imageBase && ((uint)ptr < file.Length + imageBase))
@@ -3514,7 +3509,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(Action);
 			sb.Append(", ");
 			sb.Append(NodeCount);
@@ -3540,8 +3535,8 @@ namespace SplitTools
 
 		public static SA2EnemyAnimInfo[] Load(byte[] file, int address, uint imageBase, int count)
 		{
-			SA2EnemyAnimInfo[] result = new SA2EnemyAnimInfo[count];
-			for (int i = 0; i < count; i++)
+			var result = new SA2EnemyAnimInfo[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new SA2EnemyAnimInfo(file, address, imageBase);
 				address += SA2EnemyAnimInfo.Size;
@@ -3569,13 +3564,13 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public float AnimationSpeed { get; set; }
 
-		public static int Size { get { return 16; } }
+		public static int Size => 16;
 
 		public SA2EnemyAnimInfo() { }
 
 		public SA2EnemyAnimInfo(byte[] file, int address, uint imageBase)
 		{
-			int ptr = ByteConverter.ToInt32(file, address);
+			var ptr = ByteConverter.ToInt32(file, address);
 			address += sizeof(int);
 			if (ptr != 0)
 				if ((uint)ptr >= imageBase && ((uint)ptr < file.Length + imageBase))
@@ -3599,7 +3594,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(Animation);
 			sb.Append(", ");
 			sb.Append(Property);
@@ -3618,9 +3613,9 @@ namespace SplitTools
 	{
 		public static List<PathData> Load(string directory)
 		{
-			List<PathData> result = new List<PathData>();
-			int i = 0;
-			string filename = Path.Combine(directory, string.Format("{0}.ini", i++));
+			var result = new List<PathData>();
+			var i = 0;
+			var filename = Path.Combine(directory, string.Format("{0}.ini", i++));
 			while (File.Exists(filename))
 			{
 				result.Add(PathData.Load(filename));
@@ -3631,8 +3626,8 @@ namespace SplitTools
 
 		public static List<PathData> Load(byte[] file, int address, uint imageBase)
 		{
-			List<PathData> result = new List<PathData>();
-			int ptr = ByteConverter.ToInt32(file, address);
+			var result = new List<PathData>();
+			var ptr = ByteConverter.ToInt32(file, address);
 			address += 4;
 			while (ptr != 0)
 			{
@@ -3648,9 +3643,9 @@ namespace SplitTools
 		{
 			Directory.CreateDirectory(directory);
 			hashes = new string[paths.Count];
-			for (int i = 0; i < paths.Count; i++)
+			for (var i = 0; i < paths.Count; i++)
 			{
-				string filename = Path.Combine(directory, string.Format("{0}.ini", i));
+				var filename = Path.Combine(directory, string.Format("{0}.ini", i));
 				IniSerializer.Serialize(paths[i], filename);
 				hashes[i] = HelperFunctions.FileHash(filename);
 			}
@@ -3658,15 +3653,15 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this List<PathData> paths, uint imageBase, out uint dataaddr)
 		{
-			List<byte> result = new List<byte>();
-			List<uint> pointers = new List<uint>();
-			foreach (PathData path in paths)
+			var result = new List<byte>();
+			var pointers = new List<uint>();
+			foreach (var path in paths)
 			{
-				result.AddRange(path.GetBytes(imageBase, out uint ptr));
+				result.AddRange(path.GetBytes(imageBase, out var ptr));
 				pointers.Add(ptr);
 			}
 			dataaddr = imageBase + (uint)result.Count;
-			foreach (uint item in pointers)
+			foreach (var item in pointers)
 				result.AddRange(ByteConverter.GetBytes(item));
 			result.AddRange(new byte[4]);
 			return result.ToArray();
@@ -3694,17 +3689,17 @@ namespace SplitTools
 		{
 			Unknown = ByteConverter.ToInt16(file, address);
 			address += sizeof(short);
-			ushort count = ByteConverter.ToUInt16(file, address);
+			var count = ByteConverter.ToUInt16(file, address);
 			address += sizeof(ushort);
 			TotalDistance = ByteConverter.ToSingle(file, address);
 			address += sizeof(float);
 			Path = new List<PathDataEntry>();
-			int ptr = ByteConverter.ToInt32(file, address);
+			var ptr = ByteConverter.ToInt32(file, address);
 			address += sizeof(int);
 			if (ptr != 0)
 			{
 				ptr = (int)((uint)ptr - imageBase);
-				for (int i = 0; i < count; i++)
+				for (var i = 0; i < count; i++)
 				{
 					Path.Add(new PathDataEntry(file, ptr));
 					ptr += PathDataEntry.Size;
@@ -3720,8 +3715,8 @@ namespace SplitTools
 
 		public byte[] GetBytes(uint imageBase, out uint dataaddr)
 		{
-			List<byte> result = new List<byte>(PathDataEntry.Size * Path.Count);
-			foreach (PathDataEntry entry in Path)
+			var result = new List<byte>(PathDataEntry.Size * Path.Count);
+			foreach (var entry in Path)
 				result.AddRange(entry.GetBytes());
 			dataaddr = imageBase + (uint)result.Count;
 			result.AddRange(ByteConverter.GetBytes(Unknown));
@@ -3741,11 +3736,12 @@ namespace SplitTools
 		[TypeConverter(typeof(UInt16HexConverter))]
 		public ushort ZRotation { get; set; }
 		[TypeConverter(typeof(UInt16HexConverter))]
-		public ushort? YRotation { get { return null; } set { if (value.HasValue) ZRotation = value.Value; } }
+		public ushort? YRotation { get => null;
+			set { if (value.HasValue) ZRotation = value.Value; } }
 		public float Distance { get; set; }
 		public Vertex Position { get; set; }
 
-		public static int Size { get { return (sizeof(ushort) * 2) + sizeof(float) + Vertex.Size; } }
+		public static int Size => (sizeof(ushort) * 2) + sizeof(float) + Vertex.Size;
 
 		public PathDataEntry() { Position = new Vertex(); }
 
@@ -3767,7 +3763,7 @@ namespace SplitTools
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>();
+			var result = new List<byte>();
 			result.AddRange(ByteConverter.GetBytes(XRotation));
 			result.AddRange(ByteConverter.GetBytes(ZRotation));
 			result.AddRange(ByteConverter.GetBytes(Distance));
@@ -3791,7 +3787,7 @@ namespace SplitTools
 
 		public static List<SADXStageLightData> Load(byte[] file, int address)
 		{
-			List<SADXStageLightData> result = new List<SADXStageLightData>();
+			var result = new List<SADXStageLightData>();
 			while (file[address] != 0xFF)
 			{
 				result.Add(new SADXStageLightData(file, address));
@@ -3807,8 +3803,8 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this List<SADXStageLightData> startpos)
 		{
-			List<byte> result = new List<byte>(SADXStageLightData.Size * (startpos.Count + 1));
-			foreach (SADXStageLightData item in startpos)
+			var result = new List<byte>(SADXStageLightData.Size * (startpos.Count + 1));
+			foreach (var item in startpos)
 				result.AddRange(item.GetBytes());
 			result.Add(0xFF);
 			result.AddRange(new byte[SADXStageLightData.Size - 1]);
@@ -3854,11 +3850,11 @@ namespace SplitTools
 		public Vertex RGB { get; set; }
 		public Vertex AmbientRGB { get; set; }
 
-		public static int Size { get { return 0x30; } }
+		public static int Size => 0x30;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size)
+			var result = new List<byte>(Size)
 			{
 				(byte)Level,
 				Act,
@@ -3875,7 +3871,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Level.ToC("LevelIDs"));
 			result.Append(", ");
 			result.Append(Act);
@@ -3907,8 +3903,8 @@ namespace SplitTools
 
 		public static SA2DefaultObjectLightData[] Load(byte[] file, int address, int count)
 		{
-			SA2DefaultObjectLightData[] result = new SA2DefaultObjectLightData[count];
-			for (int i = 0; i < count; i++)
+			var result = new SA2DefaultObjectLightData[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new SA2DefaultObjectLightData(file, address);
 				address += SA2DefaultObjectLightData.Size;
@@ -3948,11 +3944,11 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public Vertex RGB { get; set; }
 
-		public static int Size { get { return 0x20; } }
+		public static int Size => 0x20;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(Direction.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(Intensity));
 			result.AddRange(ByteConverter.GetBytes(Ambient));
@@ -3966,7 +3962,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Direction.ToStruct());
 			result.Append(", ");
 			result.Append(Intensity.ToC());
@@ -3988,8 +3984,8 @@ namespace SplitTools
 
 		public static List<WeldInfo> Load(byte[] file, int address, uint imageBase)
 		{
-			List<WeldInfo> result = new List<WeldInfo>();
-			int ptr = ByteConverter.ToInt32(file, address);
+			var result = new List<WeldInfo>();
+			var ptr = ByteConverter.ToInt32(file, address);
 			while (ptr != 0)
 			{
 				result.Add(new WeldInfo(file, address, imageBase));
@@ -4020,13 +4016,13 @@ namespace SplitTools
 		public string VertIndexName { get; set; }
 		public WeldDirection? Direction { get; set; }
 
-		public static int Size { get { return 0x18; } }
+		public static int Size => 0x18;
 
 		public WeldInfo() { }
 
 		public WeldInfo(byte[] file, int address, uint imageBase)
 		{
-			int ptr = ByteConverter.ToInt32(file, address);
+			var ptr = ByteConverter.ToInt32(file, address);
 			address += sizeof(int);
 			if (ptr != 0)
 				if ((uint)ptr >= imageBase && ((uint)ptr < file.Length + imageBase))
@@ -4063,7 +4059,7 @@ namespace SplitTools
 					ptr = (int)((uint)ptr - imageBase);
 					VertIndexName = "vi_" + ptr.ToString("X8");
 					VertIndexes = new List<ushort>(cnt);
-					for (int i = 0; i < cnt; i++)
+					for (var i = 0; i < cnt; i++)
 					{
 						VertIndexes.Add(ByteConverter.ToUInt16(file, ptr));
 						ptr += sizeof(ushort);
@@ -4079,7 +4075,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(BaseModel ?? "nullptr");
 			sb.Append(", ");
 			sb.Append(ModelA ?? "nullptr");
@@ -4136,18 +4132,18 @@ namespace SplitTools
 			Type = ByteConverter.ToInt32(file, address);
 			//This would have been an all-purpose variable, but the game never uses
 			//the other types that would alter its usage.
-			int animspeed = ByteConverter.ToInt32(file, address + 4);
+			var animspeed = ByteConverter.ToInt32(file, address + 4);
 			PositionSpeed = (short)animspeed;
 			RotationSpeed = (short)(animspeed >> 16);
 			SpeedDivider = ByteConverter.ToInt32(file, address + 8);
 			Unk1 = ByteConverter.ToInt32(file, address + 0xC);
-			uint uvptr = ByteConverter.ToUInt32(file, address + 0x10);
+			var uvptr = ByteConverter.ToUInt32(file, address + 0x10);
 			if (uvptr != 0)
 			{
-				int ptr = (int)(uvptr - imageBase);
+				var ptr = (int)(uvptr - imageBase);
 				UVEditDataName = "uvdata_" + ptr.ToString("X8");
 				UVEditData = new List<short>(count);
-				for (int i = 0; i < count; i++)
+				for (var i = 0; i < count; i++)
 				{
 					UVEditData.Add(ByteConverter.ToInt16(file, ptr));
 					ptr += sizeof(short);
@@ -4182,7 +4178,7 @@ namespace SplitTools
 		public int Unk5 { get; set; }
 
 
-		public static int Size { get { return 0x24; } }
+		public static int Size => 0x24;
 
 		public static SA2ModelTexanimInfo Load(string filename)
 		{
@@ -4195,7 +4191,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Type);
 			result.Append(", ");
 			result.Append(PositionSpeed);
@@ -4227,16 +4223,16 @@ namespace SplitTools
 
 		public SA2ModelTexanimArrayA(byte[] file, int address, uint imageBase, int count)
 		{
-			uint modelptr = ByteConverter.ToUInt32(file, address);
+			var modelptr = ByteConverter.ToUInt32(file, address);
 			if (modelptr != 0)
 			{
-				int ptr = (int)(modelptr - imageBase);
+				var ptr = (int)(modelptr - imageBase);
 				Model = "object_" + ptr.ToString("X8");
 			}
-			uint uvptr = ByteConverter.ToUInt32(file, address + 4);
+			var uvptr = ByteConverter.ToUInt32(file, address + 4);
 			if (uvptr != 0)
 			{
-				int ptr = (int)(uvptr - imageBase);
+				var ptr = (int)(uvptr - imageBase);
 				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
 				TexanimName = "texdata_" + ptr.ToString("X8");
 			}
@@ -4252,7 +4248,7 @@ namespace SplitTools
 		public int Unk { get; set; }
 		public string CountModule { get; set; }
 
-		public static int Size { get { return 0xC; } }
+		public static int Size => 0xC;
 
 		public static SA2ModelTexanimArrayA Load(string filename)
 		{
@@ -4265,7 +4261,7 @@ namespace SplitTools
 
 		public string ToStruct(string label)
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Model);
 			result.Append(", ");
 			if (!string.IsNullOrEmpty(TexanimName))
@@ -4288,16 +4284,16 @@ namespace SplitTools
 		public SA2ModelTexanimArrayB(byte[] file, int address, uint imageBase, int count)
 		{
 			Type = ByteConverter.ToInt32(file, address);
-			uint modelptr = ByteConverter.ToUInt32(file, address + 4);
+			var modelptr = ByteConverter.ToUInt32(file, address + 4);
 			if (modelptr != 0)
 			{
-				int ptr = (int)(modelptr - imageBase);
+				var ptr = (int)(modelptr - imageBase);
 				Model = "object_" + ptr.ToString("X8");
 			}
-			uint uvptr = ByteConverter.ToUInt32(file, address + 8);
+			var uvptr = ByteConverter.ToUInt32(file, address + 8);
 			if (uvptr != 0)
 			{
-				int ptr = (int)(uvptr - imageBase);
+				var ptr = (int)(uvptr - imageBase);
 				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
 				TexanimName = "texdata_" + ptr.ToString("X8");
 			}
@@ -4318,7 +4314,7 @@ namespace SplitTools
 		public int Unk2 { get; set; }
 		public string CountModule { get; set; }
 
-		public static int Size { get { return 0x14; } }
+		public static int Size => 0x14;
 
 		public static SA2ModelTexanimArrayB Load(string filename)
 		{
@@ -4331,7 +4327,7 @@ namespace SplitTools
 
 		public string ToStruct(string label)
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Type);
 			result.Append(", ");
 			result.Append(Model);
@@ -4357,16 +4353,16 @@ namespace SplitTools
 
 		public SA2ModelTexanimArrayC(byte[] file, int address, uint imageBase, int count)
 		{
-			uint modelptr = ByteConverter.ToUInt32(file, address);
+			var modelptr = ByteConverter.ToUInt32(file, address);
 			if (modelptr != 0)
 			{
-				int ptr = (int)(modelptr - imageBase);
+				var ptr = (int)(modelptr - imageBase);
 				Model = "object_" + ptr.ToString("X8");
 			}
-			uint uvptr = ByteConverter.ToUInt32(file, address + 4);
+			var uvptr = ByteConverter.ToUInt32(file, address + 4);
 			if (uvptr != 0)
 			{
-				int ptr = (int)(uvptr - imageBase);
+				var ptr = (int)(uvptr - imageBase);
 				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
 				TexanimName = "texdata_" + ptr.ToString("X8");
 			}
@@ -4385,7 +4381,7 @@ namespace SplitTools
 		public int Unk2 { get; set; }
 		public string CountModule { get; set; }
 
-		public static int Size { get { return 0x10; } }
+		public static int Size => 0x10;
 
 		public static SA2ModelTexanimArrayC Load(string filename)
 		{
@@ -4398,7 +4394,7 @@ namespace SplitTools
 
 		public string ToStruct(string label)
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Model);
 			result.Append(", ");
 			if (!string.IsNullOrEmpty(TexanimName))
@@ -4424,17 +4420,17 @@ namespace SplitTools
 
 		public static Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>> Load(byte[] file, int address, uint imageBase)
 		{
-			Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>> result = new Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>>();
-			for (int i = 0; i < 11; i++)
+			var result = new Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>>();
+			for (var i = 0; i < 11; i++)
 			{
-				int ptr = ByteConverter.ToInt32(file, address);
+				var ptr = ByteConverter.ToInt32(file, address);
 				address += sizeof(int);
 				if (ptr != 0)
 				{
 					ptr = (int)(ptr - imageBase);
-					int cnt = ByteConverter.ToInt32(file, address);
-					List<BlackMarketItemAttributes> attrs = new List<BlackMarketItemAttributes>();
-					for (int j = 0; j < cnt; j++)
+					var cnt = ByteConverter.ToInt32(file, address);
+					var attrs = new List<BlackMarketItemAttributes>();
+					for (var j = 0; j < cnt; j++)
 					{
 						attrs.Add(new BlackMarketItemAttributes(file, ptr));
 						ptr += BlackMarketItemAttributes.Size;
@@ -4463,7 +4459,7 @@ namespace SplitTools
 		public short DescriptionID;
 		public short Unknown;
 
-		public static int Size { get { return 0x10; } }
+		public static int Size => 0x10;
 
 		public BlackMarketItemAttributes() { }
 
@@ -4502,10 +4498,10 @@ namespace SplitTools
 
 		public static CreditsTextListEntry[] Load(byte[] file, int address, uint imageBase)
 		{
-			int numobjs = ByteConverter.ToInt32(file, address + 4);
+			var numobjs = ByteConverter.ToInt32(file, address + 4);
 			address = file.GetPointer(address, imageBase);
-			List<CreditsTextListEntry> objini = new List<CreditsTextListEntry>(numobjs);
-			for (int i = 0; i < numobjs; i++)
+			var objini = new List<CreditsTextListEntry>(numobjs);
+			for (var i = 0; i < numobjs; i++)
 			{
 				objini.Add(new CreditsTextListEntry(file, address, imageBase));
 				address += CreditsTextListEntry.Size;
@@ -4540,7 +4536,7 @@ namespace SplitTools
 		public byte Unknown2 { get; set; }
 		public string Text { get; set; }
 
-		public static int Size { get { return 8; } }
+		public static int Size => 8;
 
 		public string ToStruct()
 		{
@@ -4557,8 +4553,8 @@ namespace SplitTools
 
 		public static SA2CreditsTextListEntry[] Load(byte[] file, int address, uint imageBase, int count)
 		{
-			SA2CreditsTextListEntry[] result = new SA2CreditsTextListEntry[count];
-			for (int i = 0; i < count; i++)
+			var result = new SA2CreditsTextListEntry[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new SA2CreditsTextListEntry(file, address, imageBase);
 				address += SA2CreditsTextListEntry.Size;
@@ -4588,7 +4584,7 @@ namespace SplitTools
 			address += sizeof(float);
 			TextColorB = ByteConverter.ToSingle(file, address);
 			address += sizeof(float);
-			int ptr = ByteConverter.ToInt32(file, address);
+			var ptr = ByteConverter.ToInt32(file, address);
 			if (ptr != 0)
 				Text = file.GetCString(file.GetPointer(address, imageBase));
 		}
@@ -4605,11 +4601,11 @@ namespace SplitTools
 		public float TextColorB { get; set; }
 		public string Text { get; set; }
 
-		public static int Size { get { return 0x18; } }
+		public static int Size => 0x18;
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(Type);
 			sb.AppendFormat(", ");
 			sb.Append(TextColorA);
@@ -4640,7 +4636,7 @@ namespace SplitTools
 
 		public static List<SA2StoryEntry> Load(byte[] file, int address)
 		{
-			List<SA2StoryEntry> result = new List<SA2StoryEntry>();
+			var result = new List<SA2StoryEntry>();
 			while (file[address] != 2)
 			{
 				result.Add(new SA2StoryEntry(file, address));
@@ -4656,8 +4652,8 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this List<SA2StoryEntry> startpos)
 		{
-			List<byte> result = new List<byte>(SA2StoryEntry.Size * (startpos.Count + 1));
-			foreach (SA2StoryEntry item in startpos)
+			var result = new List<byte>(SA2StoryEntry.Size * (startpos.Count + 1));
+			foreach (var item in startpos)
 				result.AddRange(item.GetBytes());
 			result.Add(2);
 			result.AddRange(new byte[SA2StoryEntry.Size - 1]);
@@ -4677,7 +4673,7 @@ namespace SplitTools
 			Level = (SA2LevelIDs)ByteConverter.ToInt16(file, address);
 			address += sizeof(short);
 			Events = new List<int>();
-			for (int i = 0; i < 4; i++)
+			for (var i = 0; i < 4; i++)
 			{
 				int tmp = ByteConverter.ToInt16(file, address);
 				address += sizeof(short);
@@ -4697,34 +4693,34 @@ namespace SplitTools
 		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
 		public List<int> Events { get; set; }
 
-		public static int Size { get { return 0xC; } }
+		public static int Size => 0xC;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size)
+			var result = new List<byte>(Size)
 			{
 				(byte)Type,
 				(byte)Character
 			};
 			result.AddRange(ByteConverter.GetBytes((short)Level));
 			if (Events != null)
-				for (int i = 0; i < 4; i++)
+				for (var i = 0; i < 4; i++)
 					result.AddRange(ByteConverter.GetBytes((short)(i < Events.Count ? Events[i] : -1)));
 			else
-				result.AddRange(System.Linq.Enumerable.Repeat((byte)0xFF, 8));
+				result.AddRange(Enumerable.Repeat((byte)0xFF, 8));
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Type.ToC("StoryEntryType"));
 			result.Append(", ");
 			result.Append(Character.ToC("Characters"));
 			result.Append(", ");
 			result.Append(Level.ToC("LevelIDs"));
 			if (Events != null)
-				for (int i = 0; i < 4; i++)
+				for (var i = 0; i < 4; i++)
 				{
 					result.Append(", ");
 					result.Append(i < Events.Count ? Events[i] : -1);
@@ -4745,7 +4741,7 @@ namespace SplitTools
 
 		public static List<SA2DCStoryEntry> Load(byte[] file, int address)
 		{
-			List<SA2DCStoryEntry> result = new List<SA2DCStoryEntry>();
+			var result = new List<SA2DCStoryEntry>();
 			while (file[address] != 2)
 			{
 				result.Add(new SA2DCStoryEntry(file, address));
@@ -4761,8 +4757,8 @@ namespace SplitTools
 
 		public static byte[] GetBytes(this List<SA2DCStoryEntry> startpos)
 		{
-			List<byte> result = new List<byte>(SA2DCStoryEntry.Size * (startpos.Count + 1));
-			foreach (SA2DCStoryEntry item in startpos)
+			var result = new List<byte>(SA2DCStoryEntry.Size * (startpos.Count + 1));
+			foreach (var item in startpos)
 				result.AddRange(item.GetBytes());
 			result.Add(2);
 			result.AddRange(new byte[SA2DCStoryEntry.Size - 1]);
@@ -4782,7 +4778,7 @@ namespace SplitTools
 			Level = (SA2DCLevelIDs)ByteConverter.ToInt16(file, address);
 			address += sizeof(short);
 			Events = new List<int>();
-			for (int i = 0; i < 4; i++)
+			for (var i = 0; i < 4; i++)
 			{
 				int tmp = ByteConverter.ToInt16(file, address);
 				address += sizeof(short);
@@ -4802,34 +4798,34 @@ namespace SplitTools
 		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
 		public List<int> Events { get; set; }
 
-		public static int Size { get { return 0xC; } }
+		public static int Size => 0xC;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size)
+			var result = new List<byte>(Size)
 			{
 				(byte)Type,
 				(byte)Character
 			};
 			result.AddRange(ByteConverter.GetBytes((short)Level));
 			if (Events != null)
-				for (int i = 0; i < 4; i++)
+				for (var i = 0; i < 4; i++)
 					result.AddRange(ByteConverter.GetBytes((short)(i < Events.Count ? Events[i] : -1)));
 			else
-				result.AddRange(System.Linq.Enumerable.Repeat((byte)0xFF, 8));
+				result.AddRange(Enumerable.Repeat((byte)0xFF, 8));
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(Type.ToC("StoryEntryType"));
 			result.Append(", ");
 			result.Append(Character.ToC("Characters"));
 			result.Append(", ");
 			result.Append(Level.ToC("LevelIDs"));
 			if (Events != null)
-				for (int i = 0; i < 4; i++)
+				for (var i = 0; i < 4; i++)
 				{
 					result.Append(", ");
 					result.Append(i < Events.Count ? Events[i] : -1);
@@ -4858,8 +4854,8 @@ namespace SplitTools
 
 		public static List<SA2CutsceneVoiceInfo> Load(byte[] file, int address)
 		{
-			List<SA2CutsceneVoiceInfo> result = new List<SA2CutsceneVoiceInfo>();
-			uint ptr = ByteConverter.ToUInt32(file, address);
+			var result = new List<SA2CutsceneVoiceInfo>();
+			var ptr = ByteConverter.ToUInt32(file, address);
 			while (ptr != 0xFFFFFFFF)
 			{
 				result.Add(new SA2CutsceneVoiceInfo(file, address));
@@ -4888,7 +4884,7 @@ namespace SplitTools
 		public int EventVoiceID { get; set; }
 		[IniAlwaysInclude]
 		public int VoiceFileID { get; set; }
-		public static int Size { get { return 0x8; } }
+		public static int Size => 0x8;
 
 		public SA2CutsceneVoiceInfo() { }
 
@@ -4896,30 +4892,12 @@ namespace SplitTools
 		{
 			RealValue = ByteConverter.ToUInt32(file, address);
 			EventIDConstant = (int)Math.Floor(decimal.Divide(RealValue, 1000));
-			switch (EventIDConstant)
+			EventID = EventIDConstant switch
 			{
-				case 1:
-				case 7:
-				case 8:
-				case 10:
-				case 12:
-				case 13:
-				case 18:
-				case 23:
-				case 104:
-				case 108:
-				case 110:
-				case 114:
-				case 115:
-				case 117:
-				case 121:
-				case 125:
-					EventID = "ME" + EventIDConstant.ToString("D4");
-					break;
-				default:
-					EventID = "E" + EventIDConstant.ToString("D4");
-					break;
-			}
+				1 or 7 or 8 or 10 or 12 or 13 or 18 or 23 or 104 or 108 or 110 or 114 or 115 or 117 or 121 or 125 =>
+					"ME" + EventIDConstant.ToString("D4"),
+				_ => "E" + EventIDConstant.ToString("D4")
+			};
 			EventVoiceID = (int)(RealValue % 1000);
 			address += sizeof(int);
 			VoiceFileID = ByteConverter.ToInt32(file, address);
@@ -4932,7 +4910,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(RealValue);
 			sb.Append(", ");
 			sb.Append(VoiceFileID);
@@ -4950,8 +4928,8 @@ namespace SplitTools
 
 		public static List<SA2BetaCutsceneVoiceInfo> Load(byte[] file, int address)
 		{
-			List<SA2BetaCutsceneVoiceInfo> result = new List<SA2BetaCutsceneVoiceInfo>();
-			uint ptr = ByteConverter.ToUInt32(file, address);
+			var result = new List<SA2BetaCutsceneVoiceInfo>();
+			var ptr = ByteConverter.ToUInt32(file, address);
 			while (ptr != 0xFFFFFFFF)
 			{
 				result.Add(new SA2BetaCutsceneVoiceInfo(file, address));
@@ -4986,7 +4964,7 @@ namespace SplitTools
 		public int VoiceFileENID { get; set; }
 		[IniAlwaysInclude]
 		public int EventVoiceENID { get; set; }
-		public static int Size { get { return 0x10; } }
+		public static int Size => 0x10;
 
 		public SA2BetaCutsceneVoiceInfo() { }
 
@@ -4996,30 +4974,12 @@ namespace SplitTools
 			address += sizeof(int);
 			RealValueJP = ByteConverter.ToUInt32(file, address);
 			EventIDConstant = (int)Math.Floor(decimal.Divide(RealValueJP, 1000));
-			switch (EventIDConstant)
+			EventID = EventIDConstant switch
 			{
-				case 1:
-				case 7:
-				case 8:
-				case 10:
-				case 12:
-				case 13:
-				case 18:
-				case 23:
-				case 104:
-				case 108:
-				case 110:
-				case 114:
-				case 115:
-				case 117:
-				case 121:
-				case 125:
-					EventID = "ME" + EventIDConstant.ToString("D4");
-					break;
-				default:
-					EventID = "E" + EventIDConstant.ToString("D4");
-					break;
-			}
+				1 or 7 or 8 or 10 or 12 or 13 or 18 or 23 or 104 or 108 or 110 or 114 or 115 or 117 or 121 or 125 =>
+					"ME" + EventIDConstant.ToString("D4"),
+				_ => "E" + EventIDConstant.ToString("D4")
+			};
 			EventVoiceJPID = (int)(RealValueJP % 1000);
 			address += sizeof(int);
 			VoiceFileENID = ByteConverter.ToInt32(file, address);
@@ -5036,7 +4996,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(VoiceFileJPID);
 			sb.Append(", ");
 			sb.Append(RealValueJP);
@@ -5058,8 +5018,8 @@ namespace SplitTools
 
 		public static ChaoItemStatsEntry[] Load(byte[] file, int address, int count)
 		{
-			ChaoItemStatsEntry[] result = new ChaoItemStatsEntry[count];
-			for (int i = 0; i < count; i++)
+			var result = new ChaoItemStatsEntry[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new ChaoItemStatsEntry(file, address);
 				address += ChaoItemStatsEntry.Size;
@@ -5120,11 +5080,11 @@ namespace SplitTools
 		public short Intelligence { get; set; }
 		public short Unknown { get; set; }
 
-		public static int Size { get { return 0x14; } }
+		public static int Size => 0x14;
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(Mood);
 			sb.AppendFormat(", ");
 			sb.Append(Belly);
@@ -5158,8 +5118,8 @@ namespace SplitTools
 
 		public static DCChaoItemStatsEntry[] Load(byte[] file, int address, int count)
 		{
-			DCChaoItemStatsEntry[] result = new DCChaoItemStatsEntry[count];
-			for (int i = 0; i < count; i++)
+			var result = new DCChaoItemStatsEntry[count];
+			for (var i = 0; i < count; i++)
 			{
 				result[i] = new DCChaoItemStatsEntry(file, address);
 				address += DCChaoItemStatsEntry.Size;
@@ -5197,11 +5157,11 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public short Power { get; set; }
 
-		public static int Size { get { return 0x8; } }
+		public static int Size => 0x8;
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.Append(Swim);
 			sb.AppendFormat(", ");
 			sb.Append(Fly);
@@ -5231,12 +5191,13 @@ namespace SplitTools
 		public int DescriptionID { get; set; }
 		public int TextBackTexture { get; set; }
 		public float SelectionSize { get; set; }
-		public float? Unknown5 { get { return null; } set { if (value.HasValue) SelectionSize = value.Value; } }
+		public float? Unknown5 { get => null;
+			set { if (value.HasValue) SelectionSize = value.Value; } }
 
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", MainModel);
 			sb.AppendFormat("{0}, ", Animation1);
 			sb.AppendFormat("{0}, ", Animation2);
@@ -5281,7 +5242,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", ID);
 			sb.AppendFormat("{0}, ", Model);
 			if (!string.IsNullOrEmpty(LowModel))
@@ -5313,7 +5274,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", ID);
 			sb.AppendFormat("{0}, ", Model);
 			if (!string.IsNullOrEmpty(LowModel))
@@ -5341,7 +5302,7 @@ namespace SplitTools
 
 		public string ToStruct(string label)
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			if (!string.IsNullOrEmpty(Model))
 			{
 				sb.AppendFormat("{0}, ", Model);
@@ -5377,8 +5338,8 @@ namespace SplitTools
 	{
 		public static List<byte> ReadBinary(byte[] file, int address, uint imageBase)
 		{
-			int ptr = (int)(ByteConverter.ToInt32(file, address) - imageBase);
-			int cnt = ByteConverter.ToInt32(file, address + 4);
+			var ptr = (int)(ByteConverter.ToInt32(file, address) - imageBase);
+			var cnt = ByteConverter.ToInt32(file, address + 4);
 			var course = new List<byte>(cnt);
 			for (; cnt > 0; cnt--)
 				course.Add(file[ptr++]);
@@ -5398,7 +5359,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", Model);
 			sb.AppendFormat("{0}, ", ID.ToCHex());
 			sb.Append(" }");
@@ -5414,7 +5375,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", Model);
 			sb.AppendFormat("{0}, ", Property.ToString());
 			sb.AppendFormat("{0}, ", Unknown1);
@@ -5436,7 +5397,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", CharacterID.ToC());
 			sb.AppendFormat("{0}, ", PortraitID.ToCHex());
 			sb.AppendFormat("{0}, ", KartModel);
@@ -5461,7 +5422,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", EngineSFXID.ToCHex());
 			sb.AppendFormat("{0}, ", BrakeSFXID.ToCHex());
 			if (FinishVoice != 0xFFFFFFFF)
@@ -5483,20 +5444,23 @@ namespace SplitTools
 		public string Motion { get; set; }
 		[TypeConverter(typeof(UInt16HexConverter))]
 		public ushort LoopProperty { get; set; }
-		public ushort? Flag1 { get { return null; } set { if (value.HasValue) LoopProperty = value.Value; } }
+		public ushort? Flag1 { get => null;
+			set { if (value.HasValue) LoopProperty = value.Value; } }
 		public ushort Pose { get; set; }
 		public int NextAnimation { get; set; }
-		public int? TransitionID { get { return null; } set { if (value.HasValue) NextAnimation = value.Value; } }
+		public int? TransitionID { get => null;
+			set { if (value.HasValue) NextAnimation = value.Value; } }
 		[TypeConverter(typeof(UInt32HexConverter))]
 		public uint TransitionSpeed { get; set; }
-		public uint? Flag2 { get { return null; } set { if (value.HasValue) TransitionSpeed = value.Value; } }
+		public uint? Flag2 { get => null;
+			set { if (value.HasValue) TransitionSpeed = value.Value; } }
 		public float StartFrame { get; set; }
 		public float EndFrame { get; set; }
 		public float PlaySpeed { get; set; }
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			if (!string.IsNullOrEmpty(Motion))
 			{
 				sb.AppendFormat("{0}, ", Motion);
@@ -5538,7 +5502,7 @@ namespace SplitTools
 		{
 			hashes = new string[1];
 			Directory.CreateDirectory(directory);
-			string textname = Path.Combine(directory, Language.ToString() + ".txt");
+			var textname = Path.Combine(directory, Language + ".txt");
 			Text[0].Save(textname);
 			hashes[0] = HelperFunctions.FileHash(textname);
 		}
@@ -5555,9 +5519,9 @@ namespace SplitTools
 		public FixedStringArray(byte[] file, int address, uint imageBase, int itemLength, int count, Languages lang) : this()
 		{
 			List<string> text = new();
-			for (int i = 0; i < count; i++)
+			for (var i = 0; i < count; i++)
 			{ 
-				text.Add(file.GetCString((int)(address + itemLength * i), HelperFunctions.GetEncoding(lang)));
+				text.Add(file.GetCString(address + itemLength * i, HelperFunctions.GetEncoding(lang)));
 			}
 			Text = text.ToArray();
 		}
@@ -5565,8 +5529,8 @@ namespace SplitTools
 		public void Save(string outputPath)
 		{
 			Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
-			string[] result = (string[])Text.Clone();
-			for (int i = 0; i < result.Length; i++)
+			var result = (string[])Text.Clone();
+			for (var i = 0; i < result.Length; i++)
 				result[i] = result[i].EscapeNewlines();
 			File.WriteAllLines(outputPath, result);
 		}
@@ -5581,10 +5545,10 @@ namespace SplitTools
 
 		public MultilingualString(byte[] file, int address, uint imageBase, int count, bool doublePointer = false) : this()
 		{
-			for (int i = 0; i < 5; i++)
+			for (var i = 0; i < 5; i++)
 			{
 				Text[i] = new string[count];
-				for (int c = 0; c < count; c++)
+				for (var c = 0; c < count; c++)
 				{
 					if (doublePointer)
 						Text[i][c] = StringArray.Load(file, file.GetPointer(address, imageBase) + 4 * c, imageBase, 1, (Languages)i)[0];
@@ -5597,16 +5561,16 @@ namespace SplitTools
 
 		public void Save(string directory)
 		{
-			Save(directory, out string[] hashes);
+			Save(directory, out var hashes);
 		}
 
 		public void Save(string directory, out string[] hashes)
 		{
 			hashes = new string[5];
 			Directory.CreateDirectory(directory);
-			for (int i = 0; i < 5; i++)
+			for (var i = 0; i < 5; i++)
 			{
-				string textname = Path.Combine(directory, ((Languages)i).ToString() + ".txt");
+				var textname = Path.Combine(directory, ((Languages)i) + ".txt");
 				Text[i].Save(textname);
 				hashes[i] = HelperFunctions.FileHash(textname);
 			}
@@ -5661,33 +5625,75 @@ namespace SplitTools
 		[IniIgnore]
 		public FogData Low;
 		// Fog Toggle
-		public int FogEnabledHigh { get { return High.FogEnabled; } set { High.FogEnabled = value; } }
-		public int FogEnabledMedium { get { return Medium.FogEnabled; } set { Medium.FogEnabled = value; } }
-		public int FogEnabledLow { get { return Low.FogEnabled; } set { Low.FogEnabled = value; } }
+		public int FogEnabledHigh { get => High.FogEnabled;
+			set => High.FogEnabled = value;
+		}
+		public int FogEnabledMedium { get => Medium.FogEnabled;
+			set => Medium.FogEnabled = value;
+		}
+		public int FogEnabledLow { get => Low.FogEnabled;
+			set => Low.FogEnabled = value;
+		}
 		// Fog Start
-		public float FogStartHigh { get { return High.FogStart; } set { High.FogStart = value; } }
-		public float FogStartMedium { get { return Medium.FogStart; } set { Medium.FogStart = value; } }
-		public float FogStartLow { get { return Low.FogStart; } set { Low.FogStart = value; } }
+		public float FogStartHigh { get => High.FogStart;
+			set => High.FogStart = value;
+		}
+		public float FogStartMedium { get => Medium.FogStart;
+			set => Medium.FogStart = value;
+		}
+		public float FogStartLow { get => Low.FogStart;
+			set => Low.FogStart = value;
+		}
 		// Fog End
-		public float FogEndHigh { get { return High.FogEnd; } set { High.FogEnd = value; } }
-		public float FogEndMedium { get { return Medium.FogEnd; } set { Medium.FogEnd = value; } }
-		public float FogEndLow { get { return Low.FogEnd; } set { Low.FogEnd = value; } }
+		public float FogEndHigh { get => High.FogEnd;
+			set => High.FogEnd = value;
+		}
+		public float FogEndMedium { get => Medium.FogEnd;
+			set => Medium.FogEnd = value;
+		}
+		public float FogEndLow { get => Low.FogEnd;
+			set => Low.FogEnd = value;
+		}
 		// Fog Color A
-		public byte ColorA_High { get { return High.A; } set { High.A = value; } }
-		public byte ColorA_Medium { get { return Medium.A; } set { Medium.A = value; } }
-		public byte ColorA_Low { get { return Low.A; } set { Low.A = value; } }
+		public byte ColorA_High { get => High.A;
+			set => High.A = value;
+		}
+		public byte ColorA_Medium { get => Medium.A;
+			set => Medium.A = value;
+		}
+		public byte ColorA_Low { get => Low.A;
+			set => Low.A = value;
+		}
 		// Fog Color R
-		public byte ColorR_High { get { return High.R; } set { High.R = value; } }
-		public byte ColorR_Medium { get { return Medium.R; } set { Medium.R = value; } }
-		public byte ColorR_Low { get { return Low.R; } set { Low.R = value; } }
+		public byte ColorR_High { get => High.R;
+			set => High.R = value;
+		}
+		public byte ColorR_Medium { get => Medium.R;
+			set => Medium.R = value;
+		}
+		public byte ColorR_Low { get => Low.R;
+			set => Low.R = value;
+		}
 		// Fog Color G
-		public byte ColorG_High { get { return High.G; } set { High.G = value; } }
-		public byte ColorG_Medium { get { return Medium.G; } set { Medium.G = value; } }
-		public byte ColorG_Low { get { return Low.G; } set { Low.G = value; } }
+		public byte ColorG_High { get => High.G;
+			set => High.G = value;
+		}
+		public byte ColorG_Medium { get => Medium.G;
+			set => Medium.G = value;
+		}
+		public byte ColorG_Low { get => Low.G;
+			set => Low.G = value;
+		}
 		// Fog Color B
-		public byte ColorB_High { get { return High.B; } set { High.B = value; } }
-		public byte ColorB_Medium { get { return Medium.B; } set { Medium.B = value; } }
-		public byte ColorB_Low { get { return Low.B; } set { Low.B = value; } }
+		public byte ColorB_High { get => High.B;
+			set => High.B = value;
+		}
+		public byte ColorB_Medium { get => Medium.B;
+			set => Medium.B = value;
+		}
+		public byte ColorB_Low { get => Low.B;
+			set => Low.B = value;
+		}
 
 		public FogDataArray(byte[] datafile, int address)
 		{
@@ -5716,13 +5722,13 @@ namespace SplitTools
 
 		public FogDataTable(byte[] datafile, int address, uint imageBase, int count = 3)
 		{
-			List<FogDataArray> foglist = new List<FogDataArray>();
-			for (int i = 0; i < count; i++)
+			var foglist = new List<FogDataArray>();
+			for (var i = 0; i < count; i++)
 			{
-				uint ptr = BitConverter.ToUInt32(datafile, address + i * 4);
+				var ptr = BitConverter.ToUInt32(datafile, address + i * 4);
 				if (ptr != 0)
 				{
-					FogDataArray arr = new FogDataArray(datafile, (int)(ptr - imageBase));
+					var arr = new FogDataArray(datafile, (int)(ptr - imageBase));
 					foglist.Add(arr);
 				}
 			}
@@ -5817,8 +5823,8 @@ namespace SplitTools
 
 		public LSPaletteDataList(byte[] file, int address, int count)
 		{
-			List<LSPaletteData> lightlist = new List<LSPaletteData>();
-			for (int i = 0; i < count; i++)
+			var lightlist = new List<LSPaletteData>();
+			for (var i = 0; i < count; i++)
 			{
 				lightlist.Add(new LSPaletteData(file, address + i * 96));
 			}
@@ -5832,8 +5838,8 @@ namespace SplitTools
 
 		public static List<LSPaletteData> Load(string filename)
 		{
-			LSPaletteDataList origlist = IniSerializer.Deserialize<LSPaletteDataList>(filename);
-			List<LSPaletteData> lights = new List<LSPaletteData>(origlist.Lights.Length);
+			var origlist = IniSerializer.Deserialize<LSPaletteDataList>(filename);
+			var lights = new List<LSPaletteData>(origlist.Lights.Length);
 			lights.AddRange(origlist.Lights);
 			return lights;
 		}
@@ -5921,7 +5927,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", jump2_timer);
 			sb.AppendFormat("{0}, ", pos_error.ToC());
 			sb.AppendFormat("{0}, ", lim_h_spd.ToC());
@@ -5996,7 +6002,7 @@ namespace SplitTools
 
 		public string ToStruct()
 		{
-			StringBuilder sb = new StringBuilder("{ ");
+			var sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", Acceleration.ToC());
 			sb.AppendFormat("{0}, ", BrakePower.ToC());
 			sb.AppendFormat("{0}, ", Deceleration.ToC());
@@ -6024,11 +6030,11 @@ namespace SplitTools
 		public MissionTutorialPage(byte[] file, int address, uint imageBase, Languages language)
 		{
 			NumLines = ByteConverter.ToInt32(file, address);
-			int StringsPointer = ByteConverter.ToInt32(file, address + 4) - (int)imageBase;
+			var StringsPointer = ByteConverter.ToInt32(file, address + 4) - (int)imageBase;
 			List<string> linesList = new();
-			for (int i = 0; i < NumLines; i++)
+			for (var i = 0; i < NumLines; i++)
 			{
-				int LinePointer = ByteConverter.ToInt32(file, StringsPointer) - (int)imageBase;
+				var LinePointer = ByteConverter.ToInt32(file, StringsPointer) - (int)imageBase;
 				linesList.Add(file.GetCString(LinePointer, HelperFunctions.GetEncoding(language)));
 				StringsPointer += 4;
 			}
@@ -6048,9 +6054,9 @@ namespace SplitTools
 		public MissionTutorialMessage(byte[] file, int address, uint imageBase, Languages language)
 		{
 			NumPages = ByteConverter.ToInt32(file, address);
-			int PagesPointer = ByteConverter.ToInt32(file, address + 4) - (int)imageBase;
+			var PagesPointer = ByteConverter.ToInt32(file, address + 4) - (int)imageBase;
 			List<MissionTutorialPage> pagesList = new();
-			for (int i = 0; i < NumPages; i++)
+			for (var i = 0; i < NumPages; i++)
 			{
 				pagesList.Add(new MissionTutorialPage(file, PagesPointer, imageBase, language));
 				PagesPointer += 8;
@@ -6071,11 +6077,11 @@ namespace SplitTools
 
 		public MissionDescriptionList(byte[] file, int address, Languages language)
 		{
-			int maxlength = language == Languages.Japanese ? 104 : 208;
+			var maxlength = language == Languages.Japanese ? 104 : 208;
 			List<string> strings = new();
-			for (int i = 0; i < 70; i++)
+			for (var i = 0; i < 70; i++)
 			{
-				string desc = file.GetCString(address, HelperFunctions.GetEncoding(language));
+				var desc = file.GetCString(address, HelperFunctions.GetEncoding(language));
 				if (desc.Length > maxlength)
 					desc = desc.Substring(0, maxlength);
 				strings.Add(desc);
@@ -6096,13 +6102,13 @@ namespace SplitTools
 
 		public TikalHintMultiLanguage(byte[] file, int address, uint imageBase, int length, bool doublePointer)
 		{
-			int startaddr = address;
+			var startaddr = address;
 			List<NPCTextLine[]> list = new();
-			for (int l = 0; l < 5; l++)
+			for (var l = 0; l < 5; l++)
 			{
 				List<NPCTextLine> lines = new();
-				int pointer = ByteConverter.ToInt32(file, startaddr);
-				for (int i = 0; i < length; i++)
+				var pointer = ByteConverter.ToInt32(file, startaddr);
+				for (var i = 0; i < length; i++)
 				{
 					if (doublePointer)
 					{
@@ -6125,11 +6131,11 @@ namespace SplitTools
 			hashes = new string[5];
 			if (!Directory.Exists(fileOutputPath))
 				Directory.CreateDirectory(fileOutputPath);
-			for (int id = 0; id < Lines.Length; id++)
+			for (var id = 0; id < Lines.Length; id++)
 			{
-				for (int lang = 0; lang < 5; lang++)
+				for (var lang = 0; lang < 5; lang++)
 				{
-					string textname = Path.Combine(fileOutputPath, ((Languages)lang).ToString() + ".ini");
+					var textname = Path.Combine(fileOutputPath, ((Languages)lang) + ".ini");
 					IniSerializer.Serialize(Lines[lang], textname);
 					hashes[lang] = HelperFunctions.FileHash(textname);
 				}
@@ -6145,7 +6151,7 @@ namespace SplitTools
 		public TikalHintSingleLanguage(byte[] file, int address, uint imageBase, int length, Languages lang)
 		{
 			List<NPCTextLine> lines = new();
-			for (int i = 0; i < length; i++)
+			for (var i = 0; i < length; i++)
 			{
 				address += i * 8;
 				lines.Add(new NPCTextLine(file, address, imageBase, lang, true));
@@ -6227,7 +6233,7 @@ namespace SplitTools
 			if (value is uint)
 				return true;
 			if (value is string)
-				return uint.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out uint i);
+				return uint.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out var i);
 			return base.IsValid(context, value);
 		}
 	}
@@ -6267,7 +6273,7 @@ namespace SplitTools
 			if (value is int)
 				return true;
 			if (value is string)
-				return int.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out int i);
+				return int.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out var i);
 			return base.IsValid(context, value);
 		}
 	}
@@ -6307,7 +6313,7 @@ namespace SplitTools
 			if (value is ushort)
 				return true;
 			if (value is string)
-				return ushort.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out ushort i);
+				return ushort.TryParse((string)value, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out var i);
 			return base.IsValid(context, value);
 		}
 
