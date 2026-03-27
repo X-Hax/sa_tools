@@ -1,9 +1,9 @@
-﻿using PSO.PRS;
-using SAModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using PSO.PRS;
+using SAModel;
 
 namespace SplitTools.SAArc
 {
@@ -112,7 +112,7 @@ namespace SplitTools.SAArc
 				
 				foreach (var item in mtnInfo.Indexes)
 				{
-					if (!animParts.TryGetValue(item.Value, out short animPart))
+					if (!animParts.TryGetValue(item.Value, out var animPart))
 					{
 						throw new ArgumentOutOfRangeException(nameof(mtnFilename), $"The animation {item.Value} is missing. Please check your .ini file and make sure the animation name matches.");
 					}

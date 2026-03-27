@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Text;
 
 namespace SplitTools.SplitDLL
@@ -95,14 +97,8 @@ namespace SplitTools.SplitDLL
 
 		public T this[string key]
 		{
-			get
-			{
-				return Items[key];
-			}
-			set
-			{
-				Items[key] = value;
-			}
+			get => Items[key];
+			set => Items[key] = value;
 		}
 
 		public void Clear()
@@ -111,17 +107,14 @@ namespace SplitTools.SplitDLL
 		}
 
 		[IniIgnore]
-		public int Count
-		{
-			get { return Items.Count; }
-		}
+		public int Count => Items.Count;
 
 		public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
 		{
 			return Items.GetEnumerator();
 		}
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
 		}
@@ -144,7 +137,7 @@ namespace SplitTools.SplitDLL
 
 		public FileTypeHash(string data)
 		{
-			string[] split = data.Split('|');
+			var split = data.Split('|');
 			Type = split[0];
 			Hash = split[1];
 			Name = split[2];
@@ -176,16 +169,16 @@ namespace SplitTools.SplitDLL
 
         public SAMDLMetadata(string data)
         {
-            string[] split = data.Split('|');
+            var split = data.Split('|');
             ModelName = split[0];
             if (split.Length > 1)
                 TextureArchives = split[1].Split(',');
             if (split.Length > 2)
             {
-                string[] texids_s = split[2].Split(',');
-                List<int> texid_list = new List<int>();
-                for (int i = 0; i < texids_s.Length; i++)
-                    texid_list.Add(int.Parse(texids_s[i], System.Globalization.NumberStyles.Integer));
+                var texids_s = split[2].Split(',');
+                var texid_list = new List<int>();
+                for (var i = 0; i < texids_s.Length; i++)
+                    texid_list.Add(int.Parse(texids_s[i], NumberStyles.Integer));
                 TextureIDs = texid_list.ToArray();
             }
             if (split.Length > 3)
@@ -204,11 +197,11 @@ namespace SplitTools.SplitDLL
 
         public override string ToString()
         {
-            string result = ModelName;
+            var result = ModelName;
             if (TextureArchives != null)
             {
                 result += "|";
-                for (int t = 0; t < TextureArchives.Length; t++)
+                for (var t = 0; t < TextureArchives.Length; t++)
                 {
                     result += TextureArchives[t];
                     if (t < TextureArchives.Length - 1)
@@ -217,18 +210,18 @@ namespace SplitTools.SplitDLL
             }
 			if (TexturePalette != null)
 				result += "|0|null|" + TexturePalette;
-			else if (TextureNameFile != null && TextureNameFile != "")
+			else if (!string.IsNullOrEmpty(TextureNameFile))
 				result += "|0|" + TextureNameFile;
 			else if (TextureIDs != null)
 			{
-				StringBuilder sb = new StringBuilder();
-				for (int t = 0; t < TextureIDs.Length; t++)
+				var sb = new StringBuilder();
+				for (var t = 0; t < TextureIDs.Length; t++)
 				{
 					sb.Append(TextureIDs[t].ToString());
 					if (t < TextureIDs.Length - 1)
 						sb.Append(",");
 				}
-				result += "|" + sb.ToString();
+				result += "|" + sb;
 			}
 			return result;
         }
@@ -266,14 +259,8 @@ namespace SplitTools.SplitDLL
 
 		public DllTexListInfo this[uint key]
 		{
-			get
-			{
-				return Items[key];
-			}
-			set
-			{
-				Items[key] = value;
-			}
+			get => Items[key];
+			set => Items[key] = value;
 		}
 
 		public void Clear()
@@ -282,17 +269,14 @@ namespace SplitTools.SplitDLL
 		}
 
 		[IniIgnore]
-		public int Count
-		{
-			get { return Items.Count; }
-		}
+		public int Count => Items.Count;
 
 		public IEnumerator<KeyValuePair<uint, DllTexListInfo>> GetEnumerator()
 		{
 			return Items.GetEnumerator();
 		}
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
 		}
@@ -306,7 +290,7 @@ namespace SplitTools.SplitDLL
 
 		public DllTexListInfo(string data)
 		{
-			string[] split = data.Split(',');
+			var split = data.Split(',');
 			Export = split[0];
 			if (split.Length > 1)
 				Index = int.Parse(split[1]);
@@ -322,8 +306,7 @@ namespace SplitTools.SplitDLL
 		{
 			if (Index.HasValue)
 				return $"{Export},{Index}";
-			else
-				return Export;
+			return Export;
 		}
 	}
 
@@ -336,7 +319,7 @@ namespace SplitTools.SplitDLL
 
 		public override string ToString()
 		{
-			StringBuilder sb = new StringBuilder(Export);
+			var sb = new StringBuilder(Export);
 			if (Index.HasValue)
 				sb.AppendFormat("[{0}]", Index.Value);
 			if (!string.IsNullOrEmpty(Field))

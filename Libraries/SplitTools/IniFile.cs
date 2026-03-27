@@ -5,8 +5,6 @@ using System.Linq;
 using System.Text;
 using IniDictionary = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>;
 using IniGroup = System.Collections.Generic.Dictionary<string, string>;
-using IniNameGroup = System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.Dictionary<string, string>>;
-using IniNameValue = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace SplitTools
 {
@@ -14,18 +12,18 @@ namespace SplitTools
 	{
 		public static IniDictionary Load(params string[] data)
 		{
-			IniDictionary result = new IniDictionary();
-			IniGroup curent = new IniGroup();
+			var result = new IniDictionary();
+			var curent = new IniGroup();
 			result.Add(string.Empty, curent);
-			string curgroup = string.Empty;
-			for (int i = 0; i < data.Length; i++)
+			var curgroup = string.Empty;
+			for (var i = 0; i < data.Length; i++)
 			{
-				string line = data[i];
-				StringBuilder sb = new StringBuilder(line.Length);
-				bool startswithbracket = false;
-				int firstequals = -1;
-				int endbracket = -1;
-				for (int c = 0; c < line.Length; c++)
+				var line = data[i];
+				var sb = new StringBuilder(line.Length);
+				var startswithbracket = false;
+				var firstequals = -1;
+				var endbracket = -1;
+				for (var c = 0; c < line.Length; c++)
 					switch (line[c])
 					{
 						case '\\': // escape character
@@ -79,7 +77,7 @@ namespace SplitTools
 				else if (!IsNullOrWhiteSpace(line))
 				{
 					string key;
-					string value = string.Empty;
+					var value = string.Empty;
 					if (firstequals > -1)
 					{
 						key = line.Substring(0, firstequals);
@@ -106,8 +104,8 @@ namespace SplitTools
 
 		public static IniDictionary Load(Stream stream)
 		{
-			List<string> data = new List<string>();
-			StreamReader reader = new StreamReader(stream);
+			var data = new List<string>();
+			var reader = new StreamReader(stream);
 			string line;
 			while ((line = reader.ReadLine()) != null)
 				data.Add(line);
@@ -116,13 +114,13 @@ namespace SplitTools
 
 		public static string[] Save(IniDictionary INI)
 		{
-			bool first = true;
-			List<string> result = new List<string>();
-			foreach (IniNameGroup group in INI)
+			var first = true;
+			var result = new List<string>();
+			foreach (var group in INI)
 			{
-				string add = "";
+				var add = "";
 				if (!first) 
-					add += System.Environment.NewLine;
+					add += Environment.NewLine;
 				else 
 					first = false;
 				if (!string.IsNullOrEmpty(group.Key))
@@ -130,9 +128,9 @@ namespace SplitTools
 					add += "[" + group.Key.Replace(@"\", @"\\").Replace("\n", @"\n").Replace("\r", @"\r").Replace(";", @"\;") + "]";
 					result.Add(add);
 				}
-				foreach (IniNameValue value in group.Value)
+				foreach (var value in group.Value)
 				{
-					string escapedkey = value.Key.Replace(@"\", @"\\").Replace("=", @"\=").Replace("\n", @"\n").Replace("\r", @"\r").Replace(";", @"\;");
+					var escapedkey = value.Key.Replace(@"\", @"\\").Replace("=", @"\=").Replace("\n", @"\n").Replace("\r", @"\r").Replace(";", @"\;");
 					if (escapedkey.StartsWith("["))
 						escapedkey = escapedkey.Insert(0, @"\");
 					result.Add(escapedkey + "=" + value.Value.Replace(@"\", @"\\").Replace("\n", @"\n").Replace("\r", @"\r").Replace(";", @"\;"));
@@ -145,19 +143,19 @@ namespace SplitTools
 
 		public static void Save(IniDictionary INI, Stream stream)
 		{
-			StreamWriter writer = new StreamWriter(stream);
-			foreach (string line in Save(INI))
+			var writer = new StreamWriter(stream);
+			foreach (var line in Save(INI))
 				writer.WriteLine(line);
 		}
 
 		public static IniDictionary Combine(IniDictionary dictA, IniDictionary dictB)
 		{
-			IniDictionary result = new IniDictionary();
-			foreach (IniNameGroup group in dictA)
+			var result = new IniDictionary();
+			foreach (var group in dictA)
 				result.Add(group.Key, new IniGroup(group.Value));
-			foreach (IniNameGroup group in dictB)
+			foreach (var group in dictB)
 				if (result.ContainsKey(group.Key))
-					foreach (IniNameValue item in group.Value)
+					foreach (var item in group.Value)
 						result[group.Key][item.Key] = item.Value;
 				else
 					result.Add(group.Key, new IniGroup(group.Value));
@@ -168,7 +166,7 @@ namespace SplitTools
 		{
 			if (string.IsNullOrEmpty(value))
 				return true;
-			for (int i = 0; i < value.Length; i++)
+			for (var i = 0; i < value.Length; i++)
 				if (!char.IsWhiteSpace(value[i]))
 					return false;
 			return true;

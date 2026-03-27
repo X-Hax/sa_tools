@@ -1,10 +1,10 @@
-﻿using PSO.PRS;
-using SAModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using PSO.PRS;
+using SAModel;
 
 namespace SplitTools.SAArc
 {
@@ -151,7 +151,7 @@ namespace SplitTools.SAArc
 					
 					if (!partnames.Contains(obj.Name))
 					{
-						var names = new List<string>(obj.GetObjects().Select((o) => o.Name));
+						var names = new List<string>(obj.GetObjects().Select(o => o.Name));
 						foreach (var idx in modelnames.Where(a => names.Contains(a.Value)).Select(a => a.Key))
 						{
 							models.Remove(idx);
@@ -179,7 +179,7 @@ namespace SplitTools.SAArc
 						if (mtnLabelFile != null)
 						{
 							mtnmetadata = mtnsplitfilenames[i].Split('|'); // Filename|Description|Descriptive Filename
-							string outFilename = mtnmetadata[0];
+							var outFilename = mtnmetadata[0];
 							if (!mtnmetadata[0].StartsWith("NO FILE"))
 							{
 								animmeta = mtnmetadata[1];
@@ -244,10 +244,10 @@ namespace SplitTools.SAArc
 					if (mdlLabelFile != null)
 					{
 						mdlmetadata = mdlsplitfilenames[model.Key].Split('|'); // Filename|Description|Texture file|Descriptive Filename
-						string outFilename = mdlmetadata[0];
+						var outFilename = mdlmetadata[0];
 						if (mdlsplitfilenames[model.Key] == "NULL")
 							mdlsectionlist.Add(model.Key, "NULL");
-						string outResult = outFilename;
+						var outResult = outFilename;
 						if (mdlmetadata.Length > 1)
 							outResult += ("|" + mdlmetadata[1]);
 						if (mdlmetadata.Length > 2)
@@ -280,13 +280,13 @@ namespace SplitTools.SAArc
 				// labels for SAMDL Project Mode
 				if (mdlLabelFile != null)
 				{
-					string mdlsectionListFilename = Path.GetFileNameWithoutExtension(mdlLabelFile) + "_data.ini";
+					var mdlsectionListFilename = Path.GetFileNameWithoutExtension(mdlLabelFile) + "_data.ini";
 					IniSerializer.Serialize(mdlsplitfilenames, Path.Combine(outputFolder, mdlsectionListFilename));
 				}
 
 				if (mtnLabelFile != null)
 				{
-					string mtnsectionListFilename = Path.GetFileNameWithoutExtension(mtnLabelFile) + "_data.ini";
+					var mtnsectionListFilename = Path.GetFileNameWithoutExtension(mtnLabelFile) + "_data.ini";
 					IniSerializer.Serialize(mtnsplitfilenames, Path.Combine(outputFolder, mtnsectionListFilename));
 				}
 
@@ -314,12 +314,12 @@ namespace SplitTools.SAArc
 				Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
 				var mdlInfo = IniSerializer.Deserialize<MDLInfo>(Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename), Path.GetFileNameWithoutExtension(mdlfilename) + ".ini"));
 				var models = new SortedDictionary<int, NJS_OBJECT>();
-				List<string> mdlindexes = new List<string>();
+				var mdlindexes = new List<string>();
 				if (!string.IsNullOrEmpty(mdlInfo.ModelNames))
 				{
 					if (mdlInfo.ModelNames.Contains("|"))
 					{
-						string[] itemMeta = mdlInfo.ModelNames.Split('|');
+						var itemMeta = mdlInfo.ModelNames.Split('|');
 						var j = 600;
 						foreach (var file in itemMeta)
 						{

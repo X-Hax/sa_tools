@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using PSO.PRS;
-using SAModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
+using PSO.PRS;
+using SAModel;
 
 namespace SplitTools.SAArc
 {
@@ -12,7 +12,7 @@ namespace SplitTools.SAArc
 	{
 		public static void Split(string filename, string outputPath)
 		{
-			string dir = Environment.CurrentDirectory;
+			var dir = Environment.CurrentDirectory;
 			try
 			{
 				if (outputPath[outputPath.Length - 1] != '/')
@@ -21,7 +21,7 @@ namespace SplitTools.SAArc
 				}
 
 				// get file name, read it from the console if nothing
-				string evfilename = filename;
+				var evfilename = filename;
 
 				evfilename = Path.GetFullPath(evfilename);
 				Console.WriteLine("Splitting file {0}...", filename);
@@ -35,7 +35,7 @@ namespace SplitTools.SAArc
 					fc = File.ReadAllBytes(filename);
 				}
 
-				EventExtraIniData ini = new EventExtraIniData() { Name = Path.GetFileNameWithoutExtension(filename) };
+				var ini = new EventExtraIniData { Name = Path.GetFileNameWithoutExtension(filename) };
 				if (outputPath.Length != 0)
 				{
 					if (!Directory.Exists(outputPath))
@@ -102,14 +102,16 @@ namespace SplitTools.SAArc
 					Console.WriteLine("File only contains audio/subtitle timings.");
 				}
 
-				int address = 0;
-				int subcount = 0;
-				int timestamps = 0;
-				for (int i = 0; i < 256; i++)
+				var address = 0;
+				var subcount = 0;
+				var timestamps = 0;
+				for (var i = 0; i < 256; i++)
 				{
 					address = 0x8 * i;
-					SubtitleInfo subs = new SubtitleInfo();
-					subs.FrameStart = ByteConverter.ToInt32(fc, address);
+					var subs = new SubtitleInfo
+					{
+						FrameStart = ByteConverter.ToInt32(fc, address)
+					};
 					if (subs.FrameStart != 0)
 					{
 						subcount++;
@@ -141,12 +143,14 @@ namespace SplitTools.SAArc
 					Console.WriteLine("Event does not have an opening text screen.");
 				}
 
-				int audiocount = 0;
-				for (int i = 0; i < 512; i++)
+				var audiocount = 0;
+				for (var i = 0; i < 512; i++)
 				{
 					address = 0x800 + (0x48 * i);
-					AudioInfo audio = new AudioInfo();
-					audio.FrameStart = ByteConverter.ToInt32(fc, address);
+					var audio = new AudioInfo
+					{
+						FrameStart = ByteConverter.ToInt32(fc, address)
+					};
 					if (audio.FrameStart != 0)
 					{
 						audiocount++;
@@ -181,12 +185,14 @@ namespace SplitTools.SAArc
 
 				if (fc.Length > 0x9900)
 				{
-					int screencount = 0;
-					for (int i = 0; i < 64; i++)
+					var screencount = 0;
+					for (var i = 0; i < 64; i++)
 					{
 						address = 0x9800 + (0x40 * i);
-						ScreenEffects screen = new ScreenEffects();
-						screen.FrameStart = ByteConverter.ToInt32(fc, address);
+						var screen = new ScreenEffects
+						{
+							FrameStart = ByteConverter.ToInt32(fc, address)
+						};
 						if (screen.FrameStart != 0)
 						{
 							screencount++;
@@ -225,12 +231,14 @@ namespace SplitTools.SAArc
 						Console.WriteLine("Event does not use screen effects.");
 					}
 
-					int particlecount = 0;
-					for (int i = 0; i < 2048; i++)
+					var particlecount = 0;
+					for (var i = 0; i < 2048; i++)
 					{
 						address = 0xA800 + (0x38 * i);
-						ParticleEffects particle = new ParticleEffects();
-						particle.FrameStart = ByteConverter.ToInt32(fc, address);
+						var particle = new ParticleEffects
+						{
+							FrameStart = ByteConverter.ToInt32(fc, address)
+						};
 						if (particle.FrameStart != 0)
 						{
 							particlecount++;
@@ -253,22 +261,24 @@ namespace SplitTools.SAArc
 						Console.WriteLine("Event does not use standard particle effects.");
 					}
 
-					int lightcount1 = 0;
-					int lightcount2 = 0;
-					int lightcount3 = 0;
-					int lightcount4 = 0;
+					var lightcount1 = 0;
+					var lightcount2 = 0;
+					var lightcount3 = 0;
+					var lightcount4 = 0;
 					if (beta)
 					{
-						for (int i = 0; i < 256; i++)
+						for (var i = 0; i < 256; i++)
 						{
 							address = 0x26800 + (0x44 * i);
-							LightingInfo light = new LightingInfo();
-							light.FrameStart = ByteConverter.ToInt32(fc, address);
-							light.FadeType = ByteConverter.ToInt32(fc, address + 4);
-							light.LightDirection = new Vertex(fc, address + 8);
-							light.Color = new Vertex(fc, address + 0x14);
-							light.Intensity = ByteConverter.ToSingle(fc, address + 0x20);
-							light.AmbientColor = new Vertex(fc, address + 0x24);
+							var light = new LightingInfo
+							{
+								FrameStart = ByteConverter.ToInt32(fc, address),
+								FadeType = ByteConverter.ToInt32(fc, address + 4),
+								LightDirection = new Vertex(fc, address + 8),
+								Color = new Vertex(fc, address + 0x14),
+								Intensity = ByteConverter.ToSingle(fc, address + 0x20),
+								AmbientColor = new Vertex(fc, address + 0x24)
+							};
 							if (i < 64)
 							{
 								light.LightSet = "Light1";
@@ -306,15 +316,17 @@ namespace SplitTools.SAArc
 								ini.Lighting4.Add(light);
 							}
 						}
-						List<LightingInfo> bufferlist = new List<LightingInfo>();
-						LightingInfo buffer = new LightingInfo();
-						buffer.FrameStart = 0;
-						buffer.LightSet = "Buffer!";
-						buffer.Color = new Vertex();
-						buffer.LightDirection = new Vertex();
-						buffer.Intensity = 0.0f;
-						buffer.AmbientColor = new Vertex();
-						for (int i = 0; i < 192; i++)
+						var bufferlist = new List<LightingInfo>();
+						var buffer = new LightingInfo
+						{
+							FrameStart = 0,
+							LightSet = "Buffer!",
+							Color = new Vertex(),
+							LightDirection = new Vertex(),
+							Intensity = 0.0f,
+							AmbientColor = new Vertex()
+						};
+						for (var i = 0; i < 192; i++)
 						{
 							bufferlist.Add(buffer);
 						}
@@ -356,12 +368,14 @@ namespace SplitTools.SAArc
 							Console.WriteLine("Event does not use lighting data from the fourth light array.");
 						}
 
-						int blurcount = 0;
-						for (int i = 0; i < 64; i++)
+						var blurcount = 0;
+						for (var i = 0; i < 64; i++)
 						{
 							address = 0x2AC00 + (0x40 * i);
-							BlurInfo blur = new BlurInfo();
-							blur.FrameStart = ByteConverter.ToInt32(fc, address);
+							var blur = new BlurInfo
+							{
+								FrameStart = ByteConverter.ToInt32(fc, address)
+							};
 							if (blur.FrameStart != 0)
 							{
 								blurcount++;
@@ -386,18 +400,20 @@ namespace SplitTools.SAArc
 							Console.WriteLine("Event does not use blur effects.");
 						}
 
-						int particle2count = 0;
-						for (int i = 0; i < 64; i++)
+						var particle2count = 0;
+						for (var i = 0; i < 64; i++)
 						{
 							address = 0x2BC00 + (0x40 * i);
-							ParticleEffects2 particle2 = new ParticleEffects2();
-							particle2.Position = new Vertex(fc, address);
-							particle2.Unk2 = new Vertex(fc, address + 0xC);
-							particle2.Unk3 = ByteConverter.ToInt16(fc, address + 0x18);
-							particle2.Unk4 = ByteConverter.ToInt16(fc, address + 0x1A);
-							particle2.Unk5 = ByteConverter.ToInt16(fc, address + 0x1C);
-							particle2.Unk6 = ByteConverter.ToInt16(fc, address + 0x1E);
-							particle2.FrameStart = ByteConverter.ToInt32(fc, address + 0x20);
+							var particle2 = new ParticleEffects2
+							{
+								Position = new Vertex(fc, address),
+								Unk2 = new Vertex(fc, address + 0xC),
+								Unk3 = ByteConverter.ToInt16(fc, address + 0x18),
+								Unk4 = ByteConverter.ToInt16(fc, address + 0x1A),
+								Unk5 = ByteConverter.ToInt16(fc, address + 0x1C),
+								Unk6 = ByteConverter.ToInt16(fc, address + 0x1E),
+								FrameStart = ByteConverter.ToInt32(fc, address + 0x20)
+							};
 							if (particle2.FrameStart != 0)
 							{
 								particle2count++;
@@ -419,12 +435,14 @@ namespace SplitTools.SAArc
 							Console.WriteLine("Event does not use particle generators.");
 						}
 
-						int videocount = 0;
-						for (int i = 0; i < 64; i++)
+						var videocount = 0;
+						for (var i = 0; i < 64; i++)
 						{
 							address = 0x2CC00 + (0x40 * i);
-							VideoInfo video = new VideoInfo();
-							video.FrameStart = ByteConverter.ToInt32(fc, address);
+							var video = new VideoInfo
+							{
+								FrameStart = ByteConverter.ToInt32(fc, address)
+							};
 							if (video.FrameStart != 0)
 							{
 								videocount++;
@@ -449,16 +467,18 @@ namespace SplitTools.SAArc
 					}
 					else
 					{
-						for (int i = 0; i < 1024; i++)
+						for (var i = 0; i < 1024; i++)
 						{
 							address = 0x26800 + (0x44 * i);
-							LightingInfo light = new LightingInfo();
-							light.FrameStart = ByteConverter.ToInt32(fc, address);
-							light.FadeType = ByteConverter.ToInt32(fc, address + 4);
-							light.LightDirection = new Vertex(fc, address + 8);
-							light.Color = new Vertex(fc, address + 0x14);
-							light.Intensity = ByteConverter.ToSingle(fc, address + 0x20);
-							light.AmbientColor = new Vertex(fc, address + 0x24);
+							var light = new LightingInfo
+							{
+								FrameStart = ByteConverter.ToInt32(fc, address),
+								FadeType = ByteConverter.ToInt32(fc, address + 4),
+								LightDirection = new Vertex(fc, address + 8),
+								Color = new Vertex(fc, address + 0x14),
+								Intensity = ByteConverter.ToSingle(fc, address + 0x20),
+								AmbientColor = new Vertex(fc, address + 0x24)
+							};
 							if (i < 256)
 							{
 								light.LightSet = "Light1";
@@ -529,12 +549,14 @@ namespace SplitTools.SAArc
 							Console.WriteLine("Event does not use lighting data from the fourth light array.");
 						}
 
-						int blurcount = 0;
-						for (int i = 0; i < 64; i++)
+						var blurcount = 0;
+						for (var i = 0; i < 64; i++)
 						{
 							address = 0x37800 + (0x40 * i);
-							BlurInfo blur = new BlurInfo();
-							blur.FrameStart = ByteConverter.ToInt32(fc, address);
+							var blur = new BlurInfo
+							{
+								FrameStart = ByteConverter.ToInt32(fc, address)
+							};
 							if (blur.FrameStart != 0)
 							{
 								blurcount++;
@@ -559,18 +581,20 @@ namespace SplitTools.SAArc
 							Console.WriteLine("Event does not use blur effects.");
 						}
 
-						int particle2count = 0;
-						for (int i = 0; i < 64; i++)
+						var particle2count = 0;
+						for (var i = 0; i < 64; i++)
 						{
 							address = 0x38800 + (0x40 * i);
-							ParticleEffects2 particle2 = new ParticleEffects2();
-							particle2.Position = new Vertex(fc, address);
-							particle2.Unk2 = new Vertex(fc, address + 0xC);
-							particle2.Unk3 = ByteConverter.ToInt16(fc, address + 0x18);
-							particle2.Unk4 = ByteConverter.ToInt16(fc, address + 0x1A);
-							particle2.Unk5 = ByteConverter.ToInt16(fc, address + 0x1C);
-							particle2.Unk6 = ByteConverter.ToInt16(fc, address + 0x1E);
-							particle2.FrameStart = ByteConverter.ToInt32(fc, address + 0x20);
+							var particle2 = new ParticleEffects2
+							{
+								Position = new Vertex(fc, address),
+								Unk2 = new Vertex(fc, address + 0xC),
+								Unk3 = ByteConverter.ToInt16(fc, address + 0x18),
+								Unk4 = ByteConverter.ToInt16(fc, address + 0x1A),
+								Unk5 = ByteConverter.ToInt16(fc, address + 0x1C),
+								Unk6 = ByteConverter.ToInt16(fc, address + 0x1E),
+								FrameStart = ByteConverter.ToInt32(fc, address + 0x20)
+							};
 							if (particle2.FrameStart != 0)
 							{
 								particle2count++;
@@ -592,12 +616,14 @@ namespace SplitTools.SAArc
 							Console.WriteLine("Event does not use particle generators.");
 						}
 
-						int videocount = 0;
-						for (int i = 0; i < 64; i++)
+						var videocount = 0;
+						for (var i = 0; i < 64; i++)
 						{
 							address = 0x39800 + (0x40 * i);
-							VideoInfo video = new VideoInfo();
-							video.FrameStart = ByteConverter.ToInt32(fc, address);
+							var video = new VideoInfo
+							{
+								FrameStart = ByteConverter.ToInt32(fc, address)
+							};
 							if (video.FrameStart != 0)
 							{
 								videocount++;
@@ -621,7 +647,7 @@ namespace SplitTools.SAArc
 						}
 					}
 				}
-				JsonSerializer js = new JsonSerializer
+				var js = new JsonSerializer
 				{
 					Formatting = Formatting.Indented,
 					NullValueHandling = NullValueHandling.Ignore
@@ -637,7 +663,7 @@ namespace SplitTools.SAArc
 
 		public static void SplitMini(string filename, string outputPath)
 		{
-			string dir = Environment.CurrentDirectory;
+			var dir = Environment.CurrentDirectory;
 			try
 			{
 				if (outputPath[outputPath.Length - 1] != '/')
@@ -646,7 +672,7 @@ namespace SplitTools.SAArc
 				}
 
 				// get file name, read it from the console if nothing
-				string evfilename = filename;
+				var evfilename = filename;
 
 				evfilename = Path.GetFullPath(evfilename);
 				Console.WriteLine("Splitting file {0}...", filename);
@@ -660,7 +686,7 @@ namespace SplitTools.SAArc
 					fc = File.ReadAllBytes(filename);
 				}
 
-				MiniEventExtraIniData ini = new MiniEventExtraIniData() { Name = Path.GetFileNameWithoutExtension(filename) };
+				var ini = new MiniEventExtraIniData { Name = Path.GetFileNameWithoutExtension(filename) };
 				if (outputPath.Length != 0)
 				{
 					if (!Directory.Exists(outputPath))
@@ -690,13 +716,15 @@ namespace SplitTools.SAArc
 					ini.Game = Game.SA2B;
 					ini.BigEndian = true;
 				}
-				int addr = 0;
-				int subcount = 0;
-				for (int i = 0; i < 32; i++)
+				var addr = 0;
+				var subcount = 0;
+				for (var i = 0; i < 32; i++)
 				{
 					addr = 0x8 * i;
-					SubtitleInfo subs = new SubtitleInfo();
-					subs.FrameStart = ByteConverter.ToInt32(fc, addr);
+					var subs = new SubtitleInfo
+					{
+						FrameStart = ByteConverter.ToInt32(fc, addr)
+					};
 					if (subs.FrameStart != 0)
 					{
 						subcount++;
@@ -714,12 +742,12 @@ namespace SplitTools.SAArc
 					Console.WriteLine("Mini-Event does not use subtitles.");
 				}
 
-				int effectcount = 0;
-				for (int i = 0; i < 64; i++)
+				var effectcount = 0;
+				for (var i = 0; i < 64; i++)
 				{
 					addr = 0x100 + (0x4C * i);
-					EffectInfo fx = new EffectInfo();
-					int frame = fc.GetPointer(addr, 0);
+					var fx = new EffectInfo();
+					var frame = fc.GetPointer(addr, 0);
 					fx.FrameStart = ByteConverter.ToUInt32(fc, addr);
 					if (frame != 0)
 					{
@@ -744,15 +772,15 @@ namespace SplitTools.SAArc
 					Console.WriteLine("Mini-Event does not use additional effects.");
 				}
 
-				int misccount = 0;
-				for (int i = 0; i < 1; i++)
+				var misccount = 0;
+				for (var i = 0; i < 1; i++)
 				{
 					addr = 0x1400;
-					MiscMiniEffect misc = new MiscMiniEffect();
-					int unkdata1 = fc.GetPointer(addr, 0);
+					var misc = new MiscMiniEffect();
+					var unkdata1 = fc.GetPointer(addr, 0);
 					misc.Unk1 = new Vertex(fc, addr);
 					misc.Unk2 = ByteConverter.ToSingle(fc, addr + 0xC);
-					int unkdata2 = fc.GetPointer(addr + 0x10, 0);
+					var unkdata2 = fc.GetPointer(addr + 0x10, 0);
 					misc.Unk3 = new Vertex(fc, addr + 0x10);
 					if (unkdata1 != 0 || unkdata2 != 0)
 					{
@@ -770,7 +798,7 @@ namespace SplitTools.SAArc
 					Console.WriteLine("Mini-Event does not use unknown effects.");
 				}
 
-				JsonSerializer js = new JsonSerializer
+				var js = new JsonSerializer
 				{
 					Formatting = Formatting.Indented,
 					NullValueHandling = NullValueHandling.Ignore
@@ -785,7 +813,7 @@ namespace SplitTools.SAArc
 		}
 		public static void Build(bool? isBigEndian, bool? isLanguageFile, bool? isDCBeta, string filename, string fileOutputPath)
 		{
-			string dir = Environment.CurrentDirectory;
+			var dir = Environment.CurrentDirectory;
 			try
 			{
 				if (fileOutputPath[fileOutputPath.Length - 1] != '/')
@@ -793,15 +821,15 @@ namespace SplitTools.SAArc
 					fileOutputPath = string.Concat(fileOutputPath, "/");
 				}
 
-				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
-				JsonSerializer js = new JsonSerializer();
+				var path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
+				var js = new JsonSerializer();
 				EventExtraIniData ini;
 				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
-				using (JsonTextReader jtr = new JsonTextReader(tr))
+				using (var jtr = new JsonTextReader(tr))
 					ini = js.Deserialize<EventExtraIniData>(jtr);
-				bool battle = ini.BattleFormat;
-				bool dcbeta = ini.DCBeta;
-				bool language = ini.LanguageOnly;
+				var battle = ini.BattleFormat;
+				var dcbeta = ini.DCBeta;
+				var language = ini.LanguageOnly;
 				if (!isBigEndian.HasValue)
 				{
 					ByteConverter.BigEndian = ini.BigEndian;
@@ -810,7 +838,7 @@ namespace SplitTools.SAArc
 				else
 				{
 					ByteConverter.BigEndian = isBigEndian.Value;
-					if (ByteConverter.BigEndian == true)
+					if (ByteConverter.BigEndian)
 					{
 						battle = true;
 					}
@@ -837,8 +865,8 @@ namespace SplitTools.SAArc
 					dcbeta = isDCBeta.Value;
 				}
 
-				List<byte> extradata = new List<byte>();
-				foreach (SubtitleInfo subs in ini.Subtitles)
+				var extradata = new List<byte>();
+				foreach (var subs in ini.Subtitles)
 				{
 					if (subs.FrameStart != -1)
 					{
@@ -851,13 +879,13 @@ namespace SplitTools.SAArc
 
 					extradata.AddRange(ByteConverter.GetBytes(subs.VisibleTime));
 				}
-				foreach (AudioInfo audio in ini.AudioInfo)
+				foreach (var audio in ini.AudioInfo)
 				{
 					extradata.AddRange(audio.GetBytes());
 				}
 				if (!language)
 				{
-					foreach (ScreenEffects screen in ini.ScreenEffects)
+					foreach (var screen in ini.ScreenEffects)
 					{
 						if (battle)
 						{
@@ -869,57 +897,57 @@ namespace SplitTools.SAArc
 						}
 					}
 
-					foreach (ParticleEffects particle in ini.ParticleEffects)
+					foreach (var particle in ini.ParticleEffects)
 					{
 						extradata.AddRange(particle.GetBytes());
 					}
 					if (dcbeta)
 					{
-						for (int i = 0; i < 64; i++)
+						for (var i = 0; i < 64; i++)
 						{
 							extradata.AddRange(ini.Lighting1[i].GetBytes());
 						}
-						for (int i = 0; i < 64; i++)
+						for (var i = 0; i < 64; i++)
 						{
 							extradata.AddRange(ini.Lighting2[i].GetBytes());
 						}
-						for (int i = 0; i < 64; i++)
+						for (var i = 0; i < 64; i++)
 						{
 							extradata.AddRange(ini.Lighting3[i].GetBytes());
 						}
-						for (int i = 0; i < 64; i++)
+						for (var i = 0; i < 64; i++)
 						{
 							extradata.AddRange(ini.Lighting4[i].GetBytes());
 						}
 					}
 					else
 					{
-						foreach (LightingInfo light1 in ini.Lighting1)
+						foreach (var light1 in ini.Lighting1)
 						{
 							extradata.AddRange(light1.GetBytes());
 						}
-						foreach (LightingInfo light2 in ini.Lighting2)
+						foreach (var light2 in ini.Lighting2)
 						{
 							extradata.AddRange(light2.GetBytes());
 						}
-						foreach (LightingInfo light3 in ini.Lighting3)
+						foreach (var light3 in ini.Lighting3)
 						{
 							extradata.AddRange(light3.GetBytes());
 						}
-						foreach (LightingInfo light4 in ini.Lighting4)
+						foreach (var light4 in ini.Lighting4)
 						{
 							extradata.AddRange(light4.GetBytes());
 						}
 					}
-					foreach (BlurInfo blur in ini.BlurInfo)
+					foreach (var blur in ini.BlurInfo)
 					{
 						extradata.AddRange(blur.GetBytes());
 					}
-					foreach (ParticleEffects2 particle2 in ini.ParticleGenerators)
+					foreach (var particle2 in ini.ParticleGenerators)
 					{
 						extradata.AddRange(particle2.GetBytes());
 					}
-					foreach (VideoInfo video in ini.VideoInfo)
+					foreach (var video in ini.VideoInfo)
 					{
 						extradata.AddRange(video.GetBytes());
 					}
@@ -949,7 +977,7 @@ namespace SplitTools.SAArc
 		}
 		public static void BuildMini(bool? isBigEndian, string filename, string fileOutputPath)
 		{
-			string dir = Environment.CurrentDirectory;
+			var dir = Environment.CurrentDirectory;
 			try
 			{
 				if (fileOutputPath[fileOutputPath.Length - 1] != '/')
@@ -957,11 +985,11 @@ namespace SplitTools.SAArc
 					fileOutputPath = string.Concat(fileOutputPath, "/");
 				}
 
-				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
-				JsonSerializer js = new JsonSerializer();
+				var path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
+				var js = new JsonSerializer();
 				MiniEventExtraIniData ini;
 				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
-				using (JsonTextReader jtr = new JsonTextReader(tr))
+				using (var jtr = new JsonTextReader(tr))
 					ini = js.Deserialize<MiniEventExtraIniData>(jtr);
 				if (!isBigEndian.HasValue)
 				{
@@ -972,17 +1000,17 @@ namespace SplitTools.SAArc
 					ByteConverter.BigEndian = isBigEndian.Value;
 				}
 
-				List<byte> extradata = new List<byte>();
-				foreach (SubtitleInfo subs in ini.Subtitles)
+				var extradata = new List<byte>();
+				foreach (var subs in ini.Subtitles)
 				{
 					extradata.AddRange(ByteConverter.GetBytes(subs.FrameStart));
 					extradata.AddRange(ByteConverter.GetBytes(subs.VisibleTime));
 				}
-				foreach (EffectInfo effect in ini.Effects)
+				foreach (var effect in ini.Effects)
 				{
 					extradata.AddRange(effect.GetBytes());
 				}
-				foreach (MiscMiniEffect misc in ini.Unknown)
+				foreach (var misc in ini.Unknown)
 				{
 					extradata.AddRange(misc.GetBytes());
 				}
@@ -1018,8 +1046,8 @@ namespace SplitTools.SAArc
 		[JsonProperty(PropertyName = "Game")]
 		public string GameString
 		{
-			get { return Game.ToString(); }
-			set { Game = (Game)Enum.Parse(typeof(Game), value); }
+			get => Game.ToString();
+			set => Game = Enum.Parse<Game>(value);
 		}
 		public bool BigEndian { get; set; }
 		public bool BattleFormat { get; set; }
@@ -1055,11 +1083,11 @@ namespace SplitTools.SAArc
 		public string JingleEntry { get; set; }
 		public int VsyncWaitCount { get; set; }
 
-		public static int Size { get { return 0x48; } }
+		public static int Size => 0x48;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
 			result.Add(SFXInit);
 			result.Add(CreditsControl);
@@ -1091,11 +1119,11 @@ namespace SplitTools.SAArc
 		public float Width { get; set; }
 		public float Height { get; set; }
 
-		public static int Size { get { return 0x40; } }
+		public static int Size => 0x40;
 
 		public byte[] GetBytesGC()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
 			result.Add(Type);
 			result.AddRange(new byte[3]);
@@ -1117,7 +1145,7 @@ namespace SplitTools.SAArc
 
 		public byte[] GetBytesDC()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
 			result.Add(Type);
 			result.AddRange(new byte[3]);
@@ -1148,11 +1176,11 @@ namespace SplitTools.SAArc
 		public float PulseType { get; set; }
 		public float Unknown { get; set; }
 		public float ParticleSize { get; set; }
-		public static int Size { get { return 0x38; } }
+		public static int Size => 0x38;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
 			result.Add(ParticleID);
 			result.Add(MotionID);
@@ -1175,11 +1203,11 @@ namespace SplitTools.SAArc
 		public Vertex Color { get; set; }
 		public float Intensity { get; set; }
 		public Vertex AmbientColor { get; set; }
-		public static int Size { get { return 0x44; } }
+		public static int Size => 0x44;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
 			result.AddRange(ByteConverter.GetBytes(FadeType));
 			result.AddRange(LightDirection.GetBytes());
@@ -1202,11 +1230,11 @@ namespace SplitTools.SAArc
 		public byte BlurModelID5 { get; set; }
 		public byte BlurModelID6 { get; set; }
 		public int BlurInstances { get; set; }
-		public static int Size { get { return 0x40; } }
+		public static int Size => 0x40;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
 			result.Add(BlurModelID1);
 			result.Add(BlurModelID2);
@@ -1237,11 +1265,11 @@ namespace SplitTools.SAArc
 		public int Type { get; set; }
 		public int Unk11 { get; set; }
 
-		public static int Size { get { return 0x40; } }
+		public static int Size => 0x40;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(Position.GetBytes());
 			result.AddRange(Unk2.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(Unk3));
@@ -1268,11 +1296,11 @@ namespace SplitTools.SAArc
 		public byte OverlayType { get; set; }
 		public byte OverlayTexID { get; set; }
 		public string VideoName { get; set; }
-		public static int Size { get { return 0x40; } }
+		public static int Size => 0x40;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
 			result.AddRange(ByteConverter.GetBytes(PosX));
 			result.AddRange(ByteConverter.GetBytes(PosY));
@@ -1302,8 +1330,8 @@ namespace SplitTools.SAArc
 		[JsonProperty(PropertyName = "Game")]
 		public string GameString
 		{
-			get { return Game.ToString(); }
-			set { Game = (Game)Enum.Parse(typeof(Game), value); }
+			get => Game.ToString();
+			set => Game = Enum.Parse<Game>(value);
 		}
 		public bool BigEndian { get; set; }
 		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
@@ -1323,11 +1351,11 @@ namespace SplitTools.SAArc
 		public string JingleEntry { get; set; }
 		public float RumblePower { get; set; }
 
-		public static int Size { get { return 0x4C; } }
+		public static int Size => 0x4C;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
 			result.Add(FadeType);
 			result.Add(SFXEntry1);
@@ -1351,11 +1379,11 @@ namespace SplitTools.SAArc
 		public float Unk2 { get; set; }
 		public Vertex Unk3 { get; set; }
 
-		public static int Size { get { return 0x1C; } }
+		public static int Size => 0x1C;
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(Size);
+			var result = new List<byte>(Size);
 			result.AddRange(Unk1.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(Unk2));
 			result.AddRange(Unk3.GetBytes());

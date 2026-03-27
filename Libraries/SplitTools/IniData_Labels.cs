@@ -1,8 +1,10 @@
-﻿using SAModel;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using SAModel;
 
 namespace SplitTools
 {
@@ -72,7 +74,7 @@ namespace SplitTools
 					{
 						MeshsetName = batt.MeshName;
 						MeshsetItems = new List<LabelMESHSET>();
-						foreach (NJS_MESHSET mesh in batt.Mesh)
+						foreach (var mesh in batt.Mesh)
 							MeshsetItems.Add(new LabelMESHSET(mesh));
 					}
 				}
@@ -88,54 +90,52 @@ namespace SplitTools
 
 		public static List<LabelOBJECT> Load(string filename)
 		{
-			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			var js = new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, Culture = CultureInfo.InvariantCulture };
 			using TextReader tr = File.OpenText(filename);
-			using JsonTextReader jtr = new JsonTextReader(tr);
-			List<LabelOBJECT> result = js.Deserialize<List<LabelOBJECT>>(jtr);
+			using var jtr = new JsonTextReader(tr);
+			var result = js.Deserialize<List<LabelOBJECT>>(jtr);
 			jtr.Close();
 			return result;
 		}
 
 		public static void ImportLabels(NJS_OBJECT obj, List<LabelOBJECT> labels)
 		{
-			NJS_OBJECT[] objs = obj.GetObjects();
-			for (int i = 0; i < objs.Length; i++)
+			var objs = obj.GetObjects();
+			for (var i = 0; i < objs.Length; i++)
 				labels[i].Apply(objs[i]);
 		}
 
 		public static List<LabelOBJECT> ExportLabels(NJS_OBJECT obj)
 		{
-			List<LabelOBJECT> result = new List<LabelOBJECT>();
-			NJS_OBJECT[] objs = obj.GetObjects();
-			for (int i = 0; i < objs.Length; i++)
+			var result = new List<LabelOBJECT>();
+			var objs = obj.GetObjects();
+			for (var i = 0; i < objs.Length; i++)
 				result.Add(new LabelOBJECT(objs[i]));
 			return result;
 		}
 
 		public static void Save(List<LabelOBJECT> list, string filename)
 		{
-			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			var js = new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, Culture = CultureInfo.InvariantCulture };
 			using (TextWriter tw = File.CreateText(filename))
-			using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+			using (var jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
 				js.Serialize(jtw, list);
 		}
 
 		public static void OutputLabelList(NJS_OBJECT root, List<LabelOBJECT> LabelObjectList, Dictionary<int, string> labelList)
 		{
-			int o = 0;
-			foreach (NJS_OBJECT obj in root.GetObjects())
+			var o = 0;
+			foreach (var obj in root.GetObjects())
 			{
-				LabelOBJECT label = LabelObjectList[o];
-				int objAddr = 0;
-				int.TryParse(obj.Name.Substring(obj.Name.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out objAddr);
+				var label = LabelObjectList[o];
+				int.TryParse(obj.Name.AsSpan(obj.Name.Length - 8, 8), NumberStyles.HexNumber, null, out var objAddr);
 				if (objAddr != 0 && !labelList.ContainsKey(objAddr))
 				{
 					labelList.Add(objAddr, label.ObjectName);
 				}
 				if (obj.Attach != null)
 				{
-					int attAddr = 0;
-					int.TryParse(obj.Attach.Name.Substring(obj.Attach.Name.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out attAddr);
+					int.TryParse(obj.Attach.Name.AsSpan(obj.Attach.Name.Length - 8, 8), NumberStyles.HexNumber, null, out var attAddr);
 					if (attAddr != 0 && !labelList.ContainsKey(attAddr))
 					{
 						labelList.Add(attAddr, label.AttachName);
@@ -144,8 +144,7 @@ namespace SplitTools
 					{
 						if (batt.Vertex != null)
 						{
-							int vrtAddr = 0;
-							int.TryParse(batt.VertexName.Substring(batt.VertexName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out vrtAddr);
+							int.TryParse(batt.VertexName.AsSpan(batt.VertexName.Length - 8, 8), NumberStyles.HexNumber, null, out var vrtAddr);
 							if (vrtAddr != 0 && !labelList.ContainsKey(vrtAddr))
 							{
 								labelList.Add(vrtAddr, label.VertexName);
@@ -153,8 +152,7 @@ namespace SplitTools
 						}
 						if (batt.Normal != null)
 						{
-							int nrmAddr = 0;
-							int.TryParse(batt.NormalName.Substring(batt.NormalName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out nrmAddr);
+							int.TryParse(batt.NormalName.AsSpan(batt.NormalName.Length - 8, 8), NumberStyles.HexNumber, null, out var nrmAddr);
 							if (nrmAddr != 0 && !labelList.ContainsKey(nrmAddr))
 							{
 								labelList.Add(nrmAddr, label.NormalName);
@@ -162,8 +160,7 @@ namespace SplitTools
 						}
 						if (batt.Material != null)
 						{
-							int matAddr = 0;
-							int.TryParse(batt.MaterialName.Substring(batt.NormalName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out matAddr);
+							int.TryParse(batt.MaterialName.AsSpan(batt.NormalName.Length - 8, 8), NumberStyles.HexNumber, null, out var matAddr);
 							if (matAddr != 0 && !labelList.ContainsKey(matAddr))
 							{
 								labelList.Add(matAddr, label.MaterialName);
@@ -171,35 +168,33 @@ namespace SplitTools
 						}
 						if (batt.Mesh != null)
 						{
-							int meshsetAddr = 0;
-							int.TryParse(batt.MeshName.Substring(batt.MeshName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out meshsetAddr);
+							int.TryParse(batt.MeshName.AsSpan(batt.MeshName.Length - 8, 8), NumberStyles.HexNumber, null, out var meshsetAddr);
 							if (meshsetAddr != 0 && !labelList.ContainsKey(meshsetAddr))
 							{
 								labelList.Add(meshsetAddr, label.MeshsetName);
 							}
-							int i = 0;
-							foreach (NJS_MESHSET mesh in batt.Mesh)
+							var i = 0;
+							foreach (var mesh in batt.Mesh)
 							{
-								int polyAddr = 0;
-								int.TryParse(mesh.PolyName.Substring(mesh.PolyName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out polyAddr);
+								int.TryParse(mesh.PolyName.AsSpan(mesh.PolyName.Length - 8, 8), NumberStyles.HexNumber, null, out var polyAddr);
 								if (polyAddr != 0 && !labelList.ContainsKey(polyAddr))
 								{
 									labelList.Add(polyAddr, label.MeshsetItems[i].PolyName);
 								}
-								int uvAddr = 0;
-								int.TryParse(mesh.UVName.Substring(mesh.UVName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out uvAddr);
+
+								int.TryParse(mesh.UVName.AsSpan(mesh.UVName.Length - 8, 8), NumberStyles.HexNumber, null, out var uvAddr);
 								if (uvAddr != 0 && !labelList.ContainsKey(uvAddr))
 								{
 									labelList.Add(uvAddr, label.MeshsetItems[i].UVName);
 								}
-								int pnAddr = 0;
-								int.TryParse(mesh.PolyNormalName.Substring(mesh.PolyNormalName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out pnAddr);
+
+								int.TryParse(mesh.PolyNormalName.AsSpan(mesh.PolyNormalName.Length - 8, 8), NumberStyles.HexNumber, null, out var pnAddr);
 								if (pnAddr != 0 && !labelList.ContainsKey(pnAddr))
 								{
 									labelList.Add(pnAddr, label.MeshsetItems[i].PolyNormalName);
 								}
-								int vcAddr = 0;
-								int.TryParse(mesh.VColorName.Substring(mesh.VColorName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out vcAddr);
+
+								int.TryParse(mesh.VColorName.AsSpan(mesh.VColorName.Length - 8, 8), NumberStyles.HexNumber, null, out var vcAddr);
 								if (vcAddr != 0 && !labelList.ContainsKey(vcAddr))
 								{
 									labelList.Add(vcAddr, label.MeshsetItems[i].VColorName);
@@ -212,8 +207,7 @@ namespace SplitTools
 					{
 						if (catt.Vertex != null)
 						{
-							int vrtAddr = 0;
-							int.TryParse(catt.VertexName.Substring(catt.VertexName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out vrtAddr);
+							int.TryParse(catt.VertexName.AsSpan(catt.VertexName.Length - 8, 8), NumberStyles.HexNumber, null, out var vrtAddr);
 							if (vrtAddr != 0 && !labelList.ContainsKey(vrtAddr))
 							{
 								labelList.Add(vrtAddr, label.VertexName);
@@ -221,8 +215,7 @@ namespace SplitTools
 						}
 						if (catt.Poly != null)
 						{
-							int plyAddr = 0;
-							int.TryParse(catt.PolyName.Substring(catt.PolyName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out plyAddr);
+							int.TryParse(catt.PolyName.AsSpan(catt.PolyName.Length - 8, 8), NumberStyles.HexNumber, null, out var plyAddr);
 							if (plyAddr != 0 && !labelList.ContainsKey(plyAddr))
 							{
 								labelList.Add(plyAddr, label.MeshsetName);
@@ -251,8 +244,8 @@ namespace SplitTools
 					if (batt.Mesh != null)
 					{
 						batt.MeshName = MeshsetName;
-						int i = 0;
-						foreach (NJS_MESHSET mesh in batt.Mesh)
+						var i = 0;
+						foreach (var mesh in batt.Mesh)
 						{
 							MeshsetItems[i].Apply(mesh);
 							i++;
@@ -379,25 +372,25 @@ namespace SplitTools
 			MotionName = mot.Name;
 			MdataName = mot.MdataName;
 			MkeyNames = new Dictionary<int, LabelMKEY>();
-			foreach (KeyValuePair<int, AnimModelData> anm in mot.Models)
+			foreach (var anm in mot.Models)
 				MkeyNames.Add(anm.Key, new LabelMKEY(anm.Value));
 		}
 
 		public static LabelMOTION Load(string filename)
 		{
-			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			var js = new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, Culture = CultureInfo.InvariantCulture };
 			using TextReader tr = File.OpenText(filename);
-			using JsonTextReader jtr = new JsonTextReader(tr);
-			LabelMOTION result = js.Deserialize<LabelMOTION>(jtr);
+			using var jtr = new JsonTextReader(tr);
+			var result = js.Deserialize<LabelMOTION>(jtr);
 			jtr.Close();
 			return result;
 		}
 
 		public void Save(string filename)
 		{
-			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			var js = new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, Culture = CultureInfo.InvariantCulture };
 			using (TextWriter tw = File.CreateText(filename))
-			using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+			using (var jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
 				js.Serialize(jtw, this);
 		}
 
@@ -405,7 +398,7 @@ namespace SplitTools
 		{
 			mot.Name = MotionName;
 			mot.MdataName = MdataName;
-			foreach (KeyValuePair<int, AnimModelData> anm in mot.Models)
+			foreach (var anm in mot.Models)
 				MkeyNames[anm.Key].Apply(anm.Value);
 		}
 
@@ -443,19 +436,19 @@ namespace SplitTools
 
 		public static LabelACTION Load(string filename)
 		{
-			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			var js = new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, Culture = CultureInfo.InvariantCulture };
 			using TextReader tr = File.OpenText(filename);
-			using JsonTextReader jtr = new JsonTextReader(tr);
-			LabelACTION result = js.Deserialize<LabelACTION>(jtr);
+			using var jtr = new JsonTextReader(tr);
+			var result = js.Deserialize<LabelACTION>(jtr);
 			jtr.Close();
 			return result;
 		}
 
 		public void Save(string filename)
 		{
-			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			var js = new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, Culture = CultureInfo.InvariantCulture };
 			using (TextWriter tw = File.CreateText(filename))
-			using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+			using (var jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
 				js.Serialize(jtw, this);
 		}
 
@@ -492,31 +485,31 @@ namespace SplitTools
 			COLListName = land.COLName;
 			GeoAnimListName = land.AnimName;
 			ColObjectNames = new List<LabelOBJECT>();
-			foreach (COL o in land.COL)
+			foreach (var o in land.COL)
 				ColObjectNames.Add(new LabelOBJECT(o.Model));
 			if (land.Anim != null)
 			{
 				GeoAnimActionNames = new List<LabelACTION>();
-				foreach (GeoAnimData g in land.Anim)
+				foreach (var g in land.Anim)
 					GeoAnimActionNames.Add(new LabelACTION(g));
 			}
 		}
 
 		public static LabelLANDTABLE Load(string filename)
 		{
-			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			var js = new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, Culture = CultureInfo.InvariantCulture };
 			using TextReader tr = File.OpenText(filename);
-			using JsonTextReader jtr = new JsonTextReader(tr);
-			LabelLANDTABLE result = js.Deserialize<LabelLANDTABLE>(jtr);
+			using var jtr = new JsonTextReader(tr);
+			var result = js.Deserialize<LabelLANDTABLE>(jtr);
 			jtr.Close();
 			return result;
 		}
 
 		public void Save(string filename)
 		{
-			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			var js = new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, Culture = CultureInfo.InvariantCulture };
 			using (TextWriter tw = File.CreateText(filename))
-			using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+			using (var jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
 				js.Serialize(jtw, this);
 		}
 
@@ -525,10 +518,10 @@ namespace SplitTools
 			land.Name = LandtableName;
 			land.COLName = COLListName;
 			land.AnimName = GeoAnimListName;
-			foreach (COL o in land.COL)
+			foreach (var o in land.COL)
 				ColObjectNames[land.COL.IndexOf(o)].Apply(o.Model);
 			if (land.Anim != null)
-				foreach (GeoAnimData g in land.Anim)
+				foreach (var g in land.Anim)
 				{
 					g.Animation.ActionName = GeoAnimActionNames[land.Anim.IndexOf(g)].ActionName;
 					GeoAnimActionNames[land.Anim.IndexOf(g)].MotionNames.Apply(g.Animation);
@@ -558,19 +551,19 @@ namespace SplitTools
 
 		public static LabelTEXLIST Load(string filename)
 		{
-			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			var js = new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, Culture = CultureInfo.InvariantCulture };
 			using TextReader tr = File.OpenText(filename);
-			using JsonTextReader jtr = new JsonTextReader(tr);
-			LabelTEXLIST result = js.Deserialize<LabelTEXLIST>(jtr);
+			using var jtr = new JsonTextReader(tr);
+			var result = js.Deserialize<LabelTEXLIST>(jtr);
 			jtr.Close();
 			return result;
 		}
 
 		public void Save(string filename)
 		{
-			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			var js = new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, Culture = CultureInfo.InvariantCulture };
 			using (TextWriter tw = File.CreateText(filename))
-			using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+			using (var jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
 				js.Serialize(jtw, this);
 		}
 
@@ -582,14 +575,13 @@ namespace SplitTools
 
 		public static void OutputLabelList(NJS_TEXLIST texlist, LabelTEXLIST label, Dictionary<int, string> labelList)
 		{
-			int texlistAddr = 0;
-			int.TryParse(texlist.Name.Substring(texlist.Name.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out texlistAddr);
+			int.TryParse(texlist.Name.AsSpan(texlist.Name.Length - 8, 8), NumberStyles.HexNumber, null, out var texlistAddr);
 			if (texlistAddr != 0 && !labelList.ContainsKey(texlistAddr))
 			{
 				labelList.Add(texlistAddr, label.TexlistName);
 			}
-			int texnameAddr = 0;
-			int.TryParse(texlist.TexnameArrayName.Substring(texlist.TexnameArrayName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out texnameAddr);
+
+			int.TryParse(texlist.TexnameArrayName.AsSpan(texlist.TexnameArrayName.Length - 8, 8), NumberStyles.HexNumber, null, out var texnameAddr);
 			if (texnameAddr != 0 && !labelList.ContainsKey(texnameAddr))
 			{
 				labelList.Add(texnameAddr, label.TexnamesName);

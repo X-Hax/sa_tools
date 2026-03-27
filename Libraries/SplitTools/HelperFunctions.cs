@@ -1,11 +1,12 @@
-﻿using SAModel;
-using System;
+﻿using System;
 using System.Buffers.Binary;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
+using SAModel;
 
 namespace SplitTools
 {
@@ -279,7 +280,7 @@ namespace SplitTools
 			}
 		}
 
-		private static readonly System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
+		private static readonly MD5 md5 = MD5.Create();
 
 		public static string FileHash(string path, int rangeStart = 0, int rangeFinish = 0)
 		{
@@ -396,7 +397,7 @@ namespace SplitTools
 
 		public static string ToC(this string str) => str.ToC(Languages.Japanese);
 
-		public static string ToC(this string str, Languages language) => ToC(str, Game.SA1, language);
+		public static string ToC(this string str, Languages language) => str.ToC(Game.SA1, language);
 
 		public static string ToC(this string str, Game game, Languages language)
 		{
@@ -447,7 +448,7 @@ namespace SplitTools
 						break;
 					case > '\x7F':
 					{
-						foreach (byte b in enc.GetBytes(item.ToString()))
+						foreach (var b in enc.GetBytes(item.ToString()))
 							result.Append($@"\{Convert.ToString(b, 8).PadLeft(3, '0')}");
 						break;
 					}
@@ -543,7 +544,7 @@ namespace SplitTools
 			}
 
 			var num = Convert.ToUInt64(item);
-			var values = Array.ConvertAll((T[])Enum.GetValues(type), (a) => Convert.ToUInt64(a));
+			var values = Array.ConvertAll((T[])Enum.GetValues(type), a => Convert.ToUInt64(a));
 			var num2 = values.Length - 1;
 			var stringBuilder = new StringBuilder();
 			var flag = true;

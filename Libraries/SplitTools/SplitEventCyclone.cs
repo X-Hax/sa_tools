@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using PSO.PRS;
-using SAModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
+using PSO.PRS;
+using SAModel;
 
 namespace SplitTools.SAArc
 {
@@ -25,7 +25,7 @@ namespace SplitTools.SAArc
 			motionfiles.Clear();
 			texanimfiles.Clear();
 			
-			string dir = Environment.CurrentDirectory;
+			var dir = Environment.CurrentDirectory;
 			
 			try
 			{
@@ -35,10 +35,10 @@ namespace SplitTools.SAArc
 				}
 
 				// get file name, read it from the console if nothing
-				string evfilename = filename;
+				var evfilename = filename;
 
 				evfilename = Path.GetFullPath(evfilename);
-				string EventFileName = Path.GetFileNameWithoutExtension(evfilename);
+				var EventFileName = Path.GetFileNameWithoutExtension(evfilename);
 				if (Path.GetExtension(evfilename).Equals(".bin", StringComparison.OrdinalIgnoreCase))
 				{
 					EventFileName += "_bin";
@@ -60,7 +60,7 @@ namespace SplitTools.SAArc
 					fc = PRS.Decompress(File.ReadAllBytes(evfilename));
 				}
 
-				EventCycloneIniData ini = new EventCycloneIniData() { Name = Path.GetFileNameWithoutExtension(evfilename) };
+				var ini = new EventCycloneIniData { Name = Path.GetFileNameWithoutExtension(evfilename) };
 				if (outputPath.Length != 0)
 				{
 					if (!Directory.Exists(outputPath))
@@ -79,8 +79,8 @@ namespace SplitTools.SAArc
 
 				// Metadata for SAMDL Project Mode
 				byte[] mlength = null;
-				Dictionary<string, string> evsectionlist = new Dictionary<string, string>();
-				Dictionary<string, string> evsplitfilenames = new Dictionary<string, string>();
+				var evsectionlist = new Dictionary<string, string>();
+				var evsplitfilenames = new Dictionary<string, string>();
 				if (labelFile != null)
 				{
 					labelFile = Path.GetFullPath(labelFile);
@@ -91,10 +91,10 @@ namespace SplitTools.SAArc
 					evsplitfilenames = IniSerializer.Deserialize<Dictionary<string, string>>(labelFile);
 					mlength = File.ReadAllBytes(labelFile);
 				}
-				string evname = Path.GetFileNameWithoutExtension(evfilename);
+				var evname = Path.GetFileNameWithoutExtension(evfilename);
 				string[] evmetadata = [];
 
-				string evtexname = Path.Combine("EVENT", evname);
+				var evtexname = Path.Combine("EVENT", evname);
 
 				List<NJS_MOTION> motions = null;
 				List<NJS_CAMERA> ncams = null;
@@ -116,12 +116,12 @@ namespace SplitTools.SAArc
 					battle = false;
 					Console.WriteLine("File is in DC format.");
 				}
-				int ptr = fc.GetPointer(0, key);
+				var ptr = fc.GetPointer(0, key);
 				if (ptr != 0)
 				{
-					NJS_TEXLIST tls = new NJS_TEXLIST(fc, ptr, key);
+					var tls = new NJS_TEXLIST(fc, ptr, key);
 					ini.Texlist = GetTexlist(fc, 0, key, "tailsPlain.satex");
-					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "tailsPlain.satex");
+					var fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "tailsPlain.satex");
 					tls.Save(fp);
 					ini.Files.Add("tailsPlain.satex", HelperFunctions.FileHash(fp));
 				}
@@ -170,31 +170,31 @@ namespace SplitTools.SAArc
 				}
 				foreach (var item in motionfiles.Values)
 				{
-					string fn = item.Filename;
-					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
+					var fn = item.Filename;
+					var fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
 					item.Motion.Save(fp);
 					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
 				}
 				foreach (var item in modelfiles.Values)
 				{
-					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), item.Filename);
+					var fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), item.Filename);
 					ModelFile.CreateFile(fp, item.Model, item.Motions.ToArray(), null, null, null, item.Format);
 					ini.Files.Add(item.Filename, HelperFunctions.FileHash(fp));
 				}
 				foreach (var item in camarrayfiles.Values)
 				{
-					string fn = item.Filename;
-					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
+					var fn = item.Filename;
+					var fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
 					item.CamData.Save(fp);
 					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
 				}
 				// Creates metadata ini file for SAMDL Project Mode
 				if (labelFile != null)
 				{
-					string evsectionListFilename = Path.GetFileNameWithoutExtension(labelFile) + "_data.ini";
+					var evsectionListFilename = Path.GetFileNameWithoutExtension(labelFile) + "_data.ini";
 					IniSerializer.Serialize(evsectionlist, Path.Combine(outputPath, evsectionListFilename));
 				}
-				JsonSerializer js = new JsonSerializer
+				var js = new JsonSerializer
 				{
 					Formatting = Formatting.Indented,
 					NullValueHandling = NullValueHandling.Ignore
@@ -215,7 +215,7 @@ namespace SplitTools.SAArc
 			motionfiles.Clear();
 			camarrayfiles.Clear();
 
-			string dir = Environment.CurrentDirectory;
+			var dir = Environment.CurrentDirectory;
 			try
 			{
 				if (fileOutputPath[fileOutputPath.Length - 1] != '/')
@@ -230,11 +230,11 @@ namespace SplitTools.SAArc
 				}
 
 				Environment.CurrentDirectory = Path.GetDirectoryName(filename);
-				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
-				JsonSerializer js = new JsonSerializer();
+				var path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
+				var js = new JsonSerializer();
 				EventCycloneIniData evinfo;
 				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
-				using (JsonTextReader jtr = new JsonTextReader(tr))
+				using (var jtr = new JsonTextReader(tr))
 					evinfo = js.Deserialize<EventCycloneIniData>(jtr);
 				uint gamekey;
 				if (!isBigEndian.HasValue)
@@ -246,13 +246,13 @@ namespace SplitTools.SAArc
 					ByteConverter.BigEndian = isBigEndian.Value;
 				}
 
-				List<byte> evfile = new List<byte>();
-				List<byte> databytes = new List<byte>();
-				Dictionary<string, int> animaddrs = new Dictionary<string, int>();
-				Dictionary<int, uint> mdladdrs = new Dictionary<int, uint>();
-				Dictionary<int, int> panimaddrs = new Dictionary<int, int>();
-				Dictionary<string, uint> labels = new Dictionary<string, uint>();
-				if (evinfo.BigEndian == true)
+				var evfile = new List<byte>();
+				var databytes = new List<byte>();
+				var animaddrs = new Dictionary<string, int>();
+				var mdladdrs = new Dictionary<int, uint>();
+				var panimaddrs = new Dictionary<int, int>();
+				var labels = new Dictionary<string, uint>();
+				if (evinfo.BigEndian)
 				{
 					gamekey = 0x8162FE60;
 				}
@@ -261,48 +261,48 @@ namespace SplitTools.SAArc
 					gamekey = 0xCB00000;
 				}
 
-				uint imageBase = gamekey + 0x10;
-				uint tlsstart = gamekey + 0x10;
-				NJS_TEXLIST tex = NJS_TEXLIST.Load(Path.Combine(path, "tailsPlain.satex"));
-				List<byte> texbytes = new List<byte>();
-				List<byte> namebytes = new List<byte>();
-				Dictionary<int, int> texaddrs = new Dictionary<int, int>();
-				for (int t = 0; t < tex.NumTextures; t++)
+				var imageBase = gamekey + 0x10;
+				var tlsstart = gamekey + 0x10;
+				var tex = NJS_TEXLIST.Load(Path.Combine(path, "tailsPlain.satex"));
+				var texbytes = new List<byte>();
+				var namebytes = new List<byte>();
+				var texaddrs = new Dictionary<int, int>();
+				for (var t = 0; t < tex.NumTextures; t++)
 				{
-					string names = tex.TextureNames[t];
-					string texname = names.PadRight(28);
+					var names = tex.TextureNames[t];
+					var texname = names.PadRight(28);
 					namebytes.AddRange(Encoding.ASCII.GetBytes(texname));
 					namebytes.AddRange(new byte[4]);
-					int texaddr = 0x20 * t;
+					var texaddr = 0x20 * t;
 					texaddrs[t] = texaddr;
 				}
-				int texlistaddr = (int)(imageBase + (tex.NumTextures * 0xC));
-				imageBase += (uint)((tex.NumTextures * 0xC) + 8);
+				var texlistaddr = (int)(imageBase + (tex.NumTextures * 0xC));
+				imageBase += (tex.NumTextures * 0xC) + 8;
 
-				NJS_OBJECT partmdldata = new ModelFile(Path.Combine(path, "tailsPlain.sa2mdl")).Model;
-				byte[] tmpmdl = partmdldata.GetBytes(imageBase, false, labels, new List<uint>(), out uint addrmdl);
+				var partmdldata = new ModelFile(Path.Combine(path, "tailsPlain.sa2mdl")).Model;
+				var tmpmdl = partmdldata.GetBytes(imageBase, false, labels, new List<uint>(), out var addrmdl);
 				databytes.AddRange(tmpmdl);
 				mdladdrs[0] = labels[partmdldata.Name];
 				imageBase += (uint)tmpmdl.Length;
 
-				List<byte> animbytes = new List<byte>();
-				NJS_MOTION anim = NJS_MOTION.Load(Path.Combine(path, "tailsPlain.saanim"));
-				animbytes.AddRange(anim.GetBytes(imageBase, out uint addranim));
+				var animbytes = new List<byte>();
+				var anim = NJS_MOTION.Load(Path.Combine(path, "tailsPlain.saanim"));
+				animbytes.AddRange(anim.GetBytes(imageBase, out var addranim));
 				panimaddrs[0] = (int)(addranim + imageBase);
 				databytes.AddRange(animbytes);
 				imageBase += (uint)animbytes.Count;
 
-				NJS_CAMERA camfile = NJS_CAMERA.Load(Path.Combine(path, "CameraAttributes.ini"));
-				List<byte> ncambytes = new List<byte>();
-				NinjaCamera ndata = camfile.NinjaCameraData;
-				int ncamaddr = (int)imageBase;
+				var camfile = NJS_CAMERA.Load(Path.Combine(path, "CameraAttributes.ini"));
+				var ncambytes = new List<byte>();
+				var ndata = camfile.NinjaCameraData;
+				var ncamaddr = (int)imageBase;
 				ncambytes.AddRange(ndata.GetBytes());
 				databytes.AddRange(ncambytes);
 				imageBase += (uint)ncambytes.Count;
 
-				List<byte> canimbytes = new List<byte>();
-				NJS_MOTION camanim = NJS_MOTION.Load(Path.Combine(path, "Camera.saanim"));
-				canimbytes.AddRange(camanim.GetBytes(imageBase, out uint addrcam));
+				var canimbytes = new List<byte>();
+				var camanim = NJS_MOTION.Load(Path.Combine(path, "Camera.saanim"));
+				canimbytes.AddRange(camanim.GetBytes(imageBase, out var addrcam));
 				animaddrs[camanim.Name] = (int)(addrcam + imageBase);
 				databytes.AddRange(canimbytes);
 				imageBase += (uint)canimbytes.Count;
@@ -317,9 +317,9 @@ namespace SplitTools.SAArc
 				evfile.AddRange(ByteConverter.GetBytes(mdladdrs[0]));
 				evfile.AddRange(ByteConverter.GetBytes(panimaddrs[0]));
 				evfile.AddRange(ByteConverter.GetBytes(animaddrs[camanim.Name]));
-				for (int n = 0; n < tex.NumTextures; n++)
+				for (var n = 0; n < tex.NumTextures; n++)
 				{
-					int tlsaddrs = (int)imageBase + texaddrs[n];
+					var tlsaddrs = (int)imageBase + texaddrs[n];
 					evfile.AddRange(ByteConverter.GetBytes(tlsaddrs));
 					evfile.AddRange(new byte[8]);
 				}
@@ -360,16 +360,16 @@ namespace SplitTools.SAArc
 		private static string GetModel(byte[] fc, int address, uint key, string fn, string meta = null)
 			{
 				string name = null;
-				int ptr3 = fc.GetPointer(address, key);
+				var ptr3 = fc.GetPointer(address, key);
 				if (ptr3 != 0)
 				{
 					name = $"object_{ptr3:X8}";
 					if (!nodenames.Contains(name))
 					{
-						NJS_OBJECT obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk, null);
+						var obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk, null);
 						name = obj.Name;
-						List<string> names = new List<string>(obj.GetObjects().Select((o) => o.Name));
-						foreach (string s in names)
+						var names = new List<string>(obj.GetObjects().Select(o => o.Name));
+						foreach (var s in names)
 							if (modelfiles.ContainsKey(s))
 							{
 								modelfiles.Remove(s);
@@ -391,11 +391,13 @@ namespace SplitTools.SAArc
 			}
 			else
 			{
-				int ptr3 = fc.GetPointer(address, key);
+				var ptr3 = fc.GetPointer(address, key);
 				if (ptr3 != 0)
 				{
-					mtn = new NJS_MOTION(fc, ptr3, key, cnt);
-					mtn.Description = meta;
+					mtn = new NJS_MOTION(fc, ptr3, key, cnt)
+					{
+						Description = meta
+					};
 					mtn.OptimizeShape();
 				}
 			}
@@ -415,7 +417,7 @@ namespace SplitTools.SAArc
 		private static string GetTexlist(byte[] fc, int address, uint key, string fn)
 		{
 			string name = null;
-			int ptr3 = fc.GetPointer(address, key);
+			var ptr3 = fc.GetPointer(address, key);
 			if (ptr3 != 0)
 			{
 				name = $"texlist_{ptr3:X8}";
@@ -426,7 +428,7 @@ namespace SplitTools.SAArc
 		private static string GetTexSizes(byte[] fc, int address, uint key, string fn)
 		{
 			string name = null;
-			int ptr3 = fc.GetPointer(address, key);
+			var ptr3 = fc.GetPointer(address, key);
 			if (ptr3 != 0)
 			{
 				name = $"texsizes_{ptr3:X8}";
@@ -437,7 +439,7 @@ namespace SplitTools.SAArc
 		private static string GetReflectData(byte[] fc, int address, uint key, string fn)
 		{
 			string name = null;
-			int ptr3 = fc.GetPointer(address, key);
+			var ptr3 = fc.GetPointer(address, key);
 			if (ptr3 != 0)
 			{
 				name = $"matrix_{ptr3:X8}";
@@ -454,7 +456,7 @@ namespace SplitTools.SAArc
 			}
 			else
 			{
-				int ptr3 = fc.GetPointer(address, key);
+				var ptr3 = fc.GetPointer(address, key);
 				if (ptr3 != 0)
 				{
 					ncam = new NJS_CAMERA(fc, ptr3 + 0xC, key);
@@ -481,8 +483,8 @@ namespace SplitTools.SAArc
 		[JsonProperty(PropertyName = "Game")]
 		public string GameString
 		{
-			get { return Game.ToString(); }
-			set { Game = (Game)Enum.Parse(typeof(Game), value); }
+			get => Game.ToString();
+			set => Game = Enum.Parse<Game>(value);
 		}
 		public bool BigEndian { get; set; }
 		public Dictionary<string, string> Files { get; set; } = new();
