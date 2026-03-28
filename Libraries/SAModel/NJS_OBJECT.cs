@@ -378,8 +378,6 @@ namespace SAModel
 					return Children[0].GetModelFormat();
 				else if (Sibling != null)
 					return Sibling.GetModelFormat();
-				else if (Parent != null)
-					return Parent.GetModelFormat();
 			if (Attach is ChunkAttach)
 				result = ModelFormat.Chunk;
 			else if (Attach is GCAttach)
@@ -718,7 +716,7 @@ namespace SAModel
 				isGinja = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is GCAttach;
 				isXinja = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is XJ.XJAttach;
 			}
-			//Because these two use different calculations for weights if one vertex has a value that's too high
+			//Because this uses different calculations for weights if one vertex has a value that's too high
 			if (isChunk || isGinja)
 			{
 				foreach (NJS_OBJECT main in mdls)
@@ -737,21 +735,6 @@ namespace SAModel
 											weightpower++;
 									}
 								}
-							}
-						}
-					}
-					if (main.Attach is GCAttach gatt)
-					{
-						if (gatt.vertexSkinData.Count > 0)
-						{
-							foreach (var item in gatt.vertexSkinData)
-							{
-								if (item.elementType == GCSkinAttribute.PartialWeight || item.elementType == GCSkinAttribute.PartialWeightStart)
-									foreach (var weights in item.weightData)
-									{
-										if (weights.weight > 255)
-											weightpower++;
-									}
 							}
 						}
 					}
@@ -798,7 +781,7 @@ namespace SAModel
 					GCAttach gcattach = Attach as GCAttach;
 					if (!labels.Contains(gcattach.Name))
 					{
-						gcattach.ToNJA(writer, labels, textures, shortweight);
+						gcattach.ToNJA(writer, labels, textures);
 						labels.Add(gcattach.Name);
 					}
 				}
