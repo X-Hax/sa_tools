@@ -205,7 +205,7 @@ namespace SAModel
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				Sibling = new NJS_OBJECT(file, tmpaddr, imageBase, format, parent, labels, attaches);
 			}
-			if (isNinja2)
+			if (isNinja2 || format == ModelFormat.GC)
 				QuaternionScalar = ByteConverter.ToSingle(file, address + 0x34);
 			else
 				QuaternionScalar = 0.0F;
@@ -378,6 +378,8 @@ namespace SAModel
 					return Children[0].GetModelFormat();
 				else if (Sibling != null)
 					return Sibling.GetModelFormat();
+				else if (Parent != null)
+					return Parent.GetModelFormat();
 			if (Attach is ChunkAttach)
 				result = ModelFormat.Chunk;
 			else if (Attach is GCAttach)
@@ -563,7 +565,43 @@ namespace SAModel
 								result.Add(batt.Material[i].TextureID);
 						break;
 					case ChunkAttach catt:
+						if (catt.Poly == null)
+							break;
+						for (int i = 0; i < catt.Poly.Count; i++)
+							if (catt.Poly[i].Type == ChunkType.Tiny_TextureID || catt.Poly[i].Type == ChunkType.Tiny_TextureID2)
+							{
+								PolyChunkTinyTextureID tid = (PolyChunkTinyTextureID)catt.Poly[i];
+								result.Add(tid.TextureID);
+							}
+						break;
 					case GCAttach gatt:
+						if (gatt.OpaqueMeshes.Count == 0 && gatt.TranslucentMeshes.Count == 0)
+							break;
+						if (gatt.OpaqueMeshes.Count > 0)
+							for (int i = 0; i < gatt.OpaqueMeshes.Count; i++)
+							{
+								if (gatt.OpaqueMeshes[i].Parameters.Count > 0)
+								{
+									for (int k = 0; k < gatt.OpaqueMeshes[i].Parameters.Count; k++)
+									{
+										if (gatt.OpaqueMeshes[i].Parameters[k].Type == ParameterType.Texture)
+											result.Add((ushort)gatt.OpaqueMeshes[i].Parameters[k].Data);
+									}
+								}
+							}
+						if (gatt.TranslucentMeshes.Count > 0)
+							for (int i = 0; i < gatt.TranslucentMeshes.Count; i++)
+							{
+								if (gatt.TranslucentMeshes[i].Parameters.Count > 0)
+								{
+									for (int k = 0; k < gatt.TranslucentMeshes[i].Parameters.Count; k++)
+									{
+										if (gatt.TranslucentMeshes[i].Parameters[k].Type == ParameterType.Texture)
+											result.Add((ushort)gatt.TranslucentMeshes[i].Parameters[k].Data);
+									}
+								}
+							}
+						break;
 					case SAModel.XJ.XJAttach xatt:
 						// Unimplemented
 						throw new NotImplementedException("Counting used texture IDs is currently not implemented for ChunkAttach, GCAttach and XJAttach.");
