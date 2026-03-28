@@ -110,7 +110,7 @@ namespace SAModel.GC
 
 			return result.ToString();
 		}
-		public void ToNJA(TextWriter writer, bool weightpower)
+		public void ToNJA(TextWriter writer)
 		{
 			var translatedweight = weight / 255.0F * 100.0F;
 			writer.WriteLine($"\tGJWIdx( {vertIndex}, {translatedweight.ToString("F6")} ),");
