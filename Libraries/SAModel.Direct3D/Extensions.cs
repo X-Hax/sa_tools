@@ -419,7 +419,8 @@ namespace SAModel.Direct3D
 		static List<int> GinjaVertexIndices = new List<int>();
 
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];
-		static CachedGinjaPoly GinjaPolyCache;
+		static CachedGinjaPoly GinjaOPolyCache;
+		static CachedGinjaPoly GinjaTPolyCache;
 		static List<GC.IOVtx> GinjaUVCache;
 		static List<GC.IOVtx> GinjaVColorCache;
 
@@ -784,6 +785,21 @@ namespace SAModel.Direct3D
 			List<Mesh> meshes = new List<Mesh>();
 			GinjaObjs = obj.GetObjects();
 			int mdlindex = -1;
+			foreach (NJS_OBJECT gjo in GinjaObjs)
+			{
+				mdlindex++;
+				if (gjo.Attach is GC.GCAttach gcatt)
+				{
+					if (gcatt.vertexSkinData.Count > 0)
+					{
+						for (int c = 0; c < gcatt.vertexSkinData.Count; c++)
+						{
+							GinjaVertexIndices.Add(mdlindex);
+						}
+					}
+				}
+			}
+			mdlindex = -1;
 			do
 			{
 				ProcessWeightedGinjaModel(obj, new MatrixStack(), meshes, ref mdlindex);
@@ -889,11 +905,17 @@ namespace SAModel.Direct3D
 				GinjaVColorCache = colors;
 			if (uvs != null)
 				GinjaUVCache = uvs;
-			if (mdlindex == 0)
-				GinjaPolyCache = new CachedGinjaPoly(attach.OpaqueMeshes, mdlindex);
+			if (mdlindex == 0 && attach.OpaqueMeshes.Count > 0)
+				GinjaOPolyCache = new CachedGinjaPoly(attach.OpaqueMeshes, mdlindex);
+			if (mdlindex == 0 && attach.TranslucentMeshes.Count > 0)
+				GinjaTPolyCache = new CachedGinjaPoly(attach.TranslucentMeshes, mdlindex);
 			if (mdlindex == GinjaVertexIndices.Last())
 			{
-				foreach (GC.GCMesh poly in GinjaPolyCache.Polys)
+				foreach (GC.GCMesh poly in GinjaOPolyCache.Polys)
+				{
+					result.Add(ProcessGinjaPolyList(poly, 0, GinjaVColorCache, GinjaUVCache, 0, weights));
+				}
+				foreach (GC.GCMesh poly in GinjaTPolyCache.Polys)
 				{
 					result.Add(ProcessGinjaPolyList(poly, 0, GinjaVColorCache, GinjaUVCache, 0, weights));
 				}
