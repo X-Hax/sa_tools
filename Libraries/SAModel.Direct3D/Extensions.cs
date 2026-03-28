@@ -784,53 +784,21 @@ namespace SAModel.Direct3D
 			List<Mesh> meshes = new List<Mesh>();
 			GinjaObjs = obj.GetObjects();
 			int mdlindex = -1;
-			int weightpower = 0;
-			bool shortweight = false;
-			foreach (NJS_OBJECT gjo in GinjaObjs)
-			{
-				mdlindex++;
-				if (gjo.Attach is GC.GCAttach gcatt)
-				{
-					if (gcatt.vertexSkinData.Count > 0)
-					{
-						for (int c = 0; c < gcatt.vertexSkinData.Count; c++)
-						{
-							GC.GCSkinVertexSet chunk = gcatt.vertexSkinData[c];
-							if (chunk.elementType != GC.GCSkinAttribute.WeightStructEndMarker)
-							{
-								if (chunk.elementType != GC.GCSkinAttribute.StaticWeight)
-								{
-									for (int i = 0; i < chunk.indexCount; i++)
-									{
-										var weightshort = chunk.weightData[i].weight;
-										if (weightshort > 255)
-											weightpower++;
-									}
-								}
-							}
-							GinjaVertexIndices.Add(mdlindex);
-						}
-						if (weightpower != 0)
-							shortweight = true;
-					}
-				}
-			}
-			mdlindex = -1;
 			do
 			{
-				ProcessWeightedGinjaModel(obj, new MatrixStack(), meshes, ref mdlindex, shortweight);
+				ProcessWeightedGinjaModel(obj, new MatrixStack(), meshes, ref mdlindex);
 				obj = obj.Sibling;
 			} while (obj != null);
 			return meshes;
 		}
 
-		private static void ProcessWeightedGinjaModel(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, ref int mdlindex, bool shortweight = false)
+		private static void ProcessWeightedGinjaModel(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, ref int mdlindex)
 		{
 			mdlindex++;
 			transform.Push();
 			obj.ProcessTransforms(transform);
 			if (obj.Attach is GC.GCAttach cnkatt)
-				meshes.Add(ProcessWeightedGinjaAttach(cnkatt, transform, mdlindex, shortweight));
+				meshes.Add(ProcessWeightedGinjaAttach(cnkatt, transform, mdlindex));
 			else
 				meshes.Add(null);
 			foreach (NJS_OBJECT child in obj.Children)
@@ -838,7 +806,7 @@ namespace SAModel.Direct3D
 			transform.Pop();
 		}
 
-		private static Mesh ProcessWeightedGinjaAttach(GC.GCAttach attach, MatrixStack transform, int mdlindex, bool shortweight = false)
+		private static Mesh ProcessWeightedGinjaAttach(GC.GCAttach attach, MatrixStack transform, int mdlindex)
 		{
 			if (attach.vertexSkinData.Count != 0)
 			{
@@ -857,10 +825,10 @@ namespace SAModel.Direct3D
 							for (int i = 0; i < chunk.indexCount; i++)
 							{
 								var origpos = chunk.posNrms[i].pos;
-								var newpos = new Vector3(origpos.X / (shortweight ? 65535f : 255f), origpos.Y / (shortweight ? 65535f : 255f), origpos.Z / (shortweight ? 65535f : 255f));
+								var newpos = new Vector3(origpos.X / 255f, origpos.Y / 255f, origpos.Z / 255f);
 								var position = Vector3.TransformCoordinate(newpos, transform.Top).ToVertex();
 								var orignor = chunk.posNrms[i].nrm;
-								var newnor = new Vector3(orignor.X / (shortweight ? 65535f : 255f), orignor.Y / (shortweight ? 65535f : 255f), orignor.Z / (shortweight ? 65535f : 255f));
+								var newnor = new Vector3(orignor.X / 255f, orignor.Y / 255f, orignor.Z / 255f);
 								Vertex normal = Vector3.TransformNormal(newnor, transform.Top).ToVertex();
 								GinjaVertexBuffer[i + chunk.startingIndex] = new VertexData(position, normal);
 								GinjaWeightBuffer[i + chunk.startingIndex] = new List<WeightData>
@@ -874,13 +842,13 @@ namespace SAModel.Direct3D
 							for (int i = 0; i < chunk.indexCount; i++)
 							{
 								var weightshort = chunk.weightData[i].weight;
-								var weight = weightshort / (shortweight ? 65535f : 255f);
+								var weight = weightshort / 255f;
 								var origpos = chunk.posNrms[i].pos;
-								var newpos = new Vector3(origpos.X / (shortweight ? 65535f : 255f), origpos.Y / (shortweight ? 65535f : 255f), origpos.Z / (shortweight ? 65535f : 255f));
+								var newpos = new Vector3(origpos.X / 255f, origpos.Y / 255f, origpos.Z / 255f);
 
 								var position = (Vector3.TransformCoordinate(newpos, transform.Top) * weight).ToVertex();
 								var orignor = chunk.posNrms[i].nrm;
-								var newnor = new Vector3(orignor.X / (shortweight ? 65535f : 255f), orignor.Y / (shortweight ? 65535f : 255f), orignor.Z / (shortweight ? 65535f : 255f));
+								var newnor = new Vector3(orignor.X / 255f, orignor.Y / 255f, orignor.Z / 255f);
 								var normal = (Vector3.TransformNormal(newnor, transform.Top) * weight).ToVertex();
 								// Store vertex in cache
 								var vertexId = chunk.weightData[i].vertIndex;
