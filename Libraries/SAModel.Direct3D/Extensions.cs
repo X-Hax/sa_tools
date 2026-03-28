@@ -911,13 +911,19 @@ namespace SAModel.Direct3D
 				GinjaTPolyCache = new CachedGinjaPoly(attach.TranslucentMeshes, mdlindex);
 			if (mdlindex == GinjaVertexIndices.Last())
 			{
-				foreach (GC.GCMesh poly in GinjaOPolyCache.Polys)
+				if (GinjaOPolyCache != null)
 				{
-					result.Add(ProcessGinjaPolyList(poly, 0, GinjaVColorCache, GinjaUVCache, 0, weights));
+					foreach (GC.GCMesh poly in GinjaOPolyCache.Polys)
+					{
+						result.Add(ProcessGinjaPolyList(poly, 0, GinjaVColorCache, GinjaUVCache, 0, weights));
+					}
 				}
-				foreach (GC.GCMesh poly in GinjaTPolyCache.Polys)
+				if (GinjaTPolyCache != null)
 				{
-					result.Add(ProcessGinjaPolyList(poly, 0, GinjaVColorCache, GinjaUVCache, 0, weights));
+					foreach (GC.GCMesh poly in GinjaTPolyCache.Polys)
+					{
+						result.Add(ProcessGinjaPolyList(poly, 0, GinjaVColorCache, GinjaUVCache, 0, weights));
+					}
 				}
 			}
 			attach.MeshInfo = result.ToArray();
