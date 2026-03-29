@@ -43,6 +43,19 @@ namespace SAModel.GC
 
 			return result.ToString();
 		}
+		public string ToGCMDEStruct()
+		{
+			var result = new StringBuilder("{ ");
+
+			result.Append(XF);
+			result.Append(", ");
+			result.Append(YF);
+			result.Append(", ");
+			result.Append(ZF);
+			result.Append(" }");
+
+			return result.ToString();
+		}
 		public Vertex ToVertex()
 		{
 			return new Vertex(XF, YF, ZF);
@@ -110,6 +123,7 @@ namespace SAModel.GC
 
 			return result.ToString();
 		}
+
 		public void ToNJA(TextWriter writer)
 		{
 			var translatedweight = weight / 255.0F * 100.0F;

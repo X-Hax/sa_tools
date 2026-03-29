@@ -192,5 +192,10 @@ namespace SAModel.GC
 				writer.WriteLine($"\tGJWIdxPtr    NULL,");
 			writer.WriteLine($"ATTREND{Environment.NewLine}");
 		}
+		public GCSkinVertexSet Clone()
+		{
+			var result = (GCSkinVertexSet)MemberwiseClone();
+			return result;
+		}
 	}
 }

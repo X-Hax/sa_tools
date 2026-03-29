@@ -917,6 +917,7 @@ namespace SAModel.Direct3D
 					{
 						result.Add(ProcessGinjaPolyList(poly, 0, GinjaVColorCache, GinjaUVCache, 0, weights));
 					}
+					GinjaOPolyCache = null;
 				}
 				if (GinjaTPolyCache != null)
 				{
@@ -924,7 +925,10 @@ namespace SAModel.Direct3D
 					{
 						result.Add(ProcessGinjaPolyList(poly, 0, GinjaVColorCache, GinjaUVCache, 0, weights));
 					}
+					GinjaTPolyCache = null;
 				}
+				GinjaVColorCache = null;
+				GinjaUVCache = null;
 			}
 			attach.MeshInfo = result.ToArray();
 			if (attach.MeshInfo.All(a => a.Vertices.Length == 0))
