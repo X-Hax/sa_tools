@@ -642,6 +642,12 @@ namespace SAModel.SALVL
 				LoadPVM("E_KYOKOTEX", systemPath);
 				LoadPVM("E_BIGTEX", systemPath);
 				LoadPVM("E_AKAHIGETEX", systemPath);
+				LoadPVM("E_1000TEX", systemPath);
+				LoadPVM("E_BATATEX", systemPath);
+				LoadPVM("E_BEETONTEX", systemPath);
+				LoadPVM("E_UNITEX", systemPath);
+				LoadPVM("E_NAMITEX", systemPath);
+				LoadPVM("E_CHAOSTEX", systemPath);
 			}
 		}
 
