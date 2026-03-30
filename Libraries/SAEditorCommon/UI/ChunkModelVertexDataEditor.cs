@@ -126,7 +126,14 @@ namespace SAModel.SAEditorCommon.UI
 							spec = "S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
 							break;
 						case ChunkType.Vertex_VertexNinjaFlags:
-							flags = "NFlags(0x" + NinjaFlags[i].ToString("X8") + ")";
+							//Temporary, until we find other examples of ninja flag usage
+							var shortweights = (NinjaFlags[i] >> 16) > 255;
+							var nflagtype = "NFlagsW(";
+							var nflagindex = (ushort)NinjaFlags[i];
+							if (shortweights)
+								nflagtype += "2";
+							var translatedweight = (NinjaFlags[i] >> 16) / (shortweights ? 65525.0F : 255.0F) * 100.0F;
+							flags = $"{nflagtype}" + nflagindex.ToString() + ", " + translatedweight.ToString("F6") + ")";
 							break;
 						case ChunkType.Vertex_VertexUserFlags:
 							flags = "UFlags(0x" + UserFlags[i].ToCHex() + ")";
@@ -148,7 +155,13 @@ namespace SAModel.SAEditorCommon.UI
 							if (VertData.Type == ChunkType.Vertex_VertexNormalNinjaFlags)
 							{
 								NinjaFlags = VertData.NinjaFlags;
-								flags = "NFlags(0x" + NinjaFlags[i].ToString("X8") + ")";
+								var shortweightsN = (NinjaFlags[i] >> 16) > 255;
+								var nflagtypeN = "NFlagsW(";
+								var nflagindexN = (ushort)NinjaFlags[i];
+								if (shortweightsN)
+									nflagtypeN += "2";
+								var translatedweightN = (NinjaFlags[i] >> 16) / (shortweightsN ? 65525.0F : 255.0F) * 100.0F;
+								flags = nflagtypeN + nflagindexN.ToString() + ", " + translatedweightN.ToString("F6") + ")";
 							}
 							switch (VertData.Type)
 							{

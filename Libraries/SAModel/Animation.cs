@@ -2535,6 +2535,7 @@ namespace SAModel
 							hasPos = true;
 							hasRot = true;
 							hasScl = true;
+							flags |= AnimFlags.Position | AnimFlags.Rotation | AnimFlags.Scale;
 						}
 					}
 					if (!labels.Contains(MdataName))

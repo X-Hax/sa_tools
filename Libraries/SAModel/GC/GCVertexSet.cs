@@ -329,7 +329,7 @@ namespace SAModel.GC
 					vertType2 = "NORMAL      ";
 					break;
 				case GCVertexAttribute.Color0:
-					vertType = "ARGB ";
+					vertType = "BGRA ";
 					vertType2 = "VERTCOLOR      ";
 					break;
 				case GCVertexAttribute.Tex0:

@@ -81,23 +81,23 @@
 			contextMenuStripMatEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
 			contextMenuStripMatEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editPCMatToolStripMenuItem, editTextureIDToolStripMenuItem, editStripAlphaToolStripMenuItem });
 			contextMenuStripMatEdit.Name = "contextMenuStripMatEdit";
-			contextMenuStripMatEdit.Size = new System.Drawing.Size(73, 76);
+			contextMenuStripMatEdit.Size = new System.Drawing.Size(68, 70);
 			contextMenuStripMatEdit.Opening += contextMenuStrip2_Opening;
 			// 
 			// editPCMatToolStripMenuItem
 			// 
 			editPCMatToolStripMenuItem.Name = "editPCMatToolStripMenuItem";
-			editPCMatToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
+			editPCMatToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
 			// 
 			// editTextureIDToolStripMenuItem
 			// 
 			editTextureIDToolStripMenuItem.Name = "editTextureIDToolStripMenuItem";
-			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
+			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
 			// 
 			// editStripAlphaToolStripMenuItem
 			// 
 			editStripAlphaToolStripMenuItem.Name = "editStripAlphaToolStripMenuItem";
-			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
+			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
 			// 
 			// groupBoxVertList
 			// 
@@ -175,17 +175,18 @@
 			contextMenuStripVertCol.ImageScalingSize = new System.Drawing.Size(24, 24);
 			contextMenuStripVertCol.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { showVertexCollectionToolStripMenuItem });
 			contextMenuStripVertCol.Name = "contextMenuStripVertCol";
-			contextMenuStripVertCol.Size = new System.Drawing.Size(265, 36);
+			contextMenuStripVertCol.Size = new System.Drawing.Size(195, 26);
 			// 
 			// showVertexCollectionToolStripMenuItem
 			// 
 			showVertexCollectionToolStripMenuItem.Name = "showVertexCollectionToolStripMenuItem";
-			showVertexCollectionToolStripMenuItem.Size = new System.Drawing.Size(264, 32);
+			showVertexCollectionToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
 			showVertexCollectionToolStripMenuItem.Text = "Show Vertex Collection";
 			// 
 			// ChunkModelVertexDataEditor
 			// 
-			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			ClientSize = new System.Drawing.Size(1157, 551);
 			Controls.Add(groupBoxVertList);
 			Controls.Add(buttonClose);

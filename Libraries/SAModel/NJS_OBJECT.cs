@@ -205,7 +205,7 @@ namespace SAModel
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				Sibling = new NJS_OBJECT(file, tmpaddr, imageBase, format, parent, labels, attaches);
 			}
-			if (isNinja2)
+			if (isNinja2 || format == ModelFormat.GC)
 				QuaternionScalar = ByteConverter.ToSingle(file, address + 0x34);
 			else
 				QuaternionScalar = 0.0F;
@@ -563,7 +563,43 @@ namespace SAModel
 								result.Add(batt.Material[i].TextureID);
 						break;
 					case ChunkAttach catt:
+						if (catt.Poly == null)
+							break;
+						for (int i = 0; i < catt.Poly.Count; i++)
+							if (catt.Poly[i].Type == ChunkType.Tiny_TextureID || catt.Poly[i].Type == ChunkType.Tiny_TextureID2)
+							{
+								PolyChunkTinyTextureID tid = (PolyChunkTinyTextureID)catt.Poly[i];
+								result.Add(tid.TextureID);
+							}
+						break;
 					case GCAttach gatt:
+						if (gatt.OpaqueMeshes.Count == 0 && gatt.TranslucentMeshes.Count == 0)
+							break;
+						if (gatt.OpaqueMeshes.Count > 0)
+							for (int i = 0; i < gatt.OpaqueMeshes.Count; i++)
+							{
+								if (gatt.OpaqueMeshes[i].Parameters.Count > 0)
+								{
+									for (int k = 0; k < gatt.OpaqueMeshes[i].Parameters.Count; k++)
+									{
+										if (gatt.OpaqueMeshes[i].Parameters[k].Type == ParameterType.Texture)
+											result.Add((ushort)gatt.OpaqueMeshes[i].Parameters[k].Data);
+									}
+								}
+							}
+						if (gatt.TranslucentMeshes.Count > 0)
+							for (int i = 0; i < gatt.TranslucentMeshes.Count; i++)
+							{
+								if (gatt.TranslucentMeshes[i].Parameters.Count > 0)
+								{
+									for (int k = 0; k < gatt.TranslucentMeshes[i].Parameters.Count; k++)
+									{
+										if (gatt.TranslucentMeshes[i].Parameters[k].Type == ParameterType.Texture)
+											result.Add((ushort)gatt.TranslucentMeshes[i].Parameters[k].Data);
+									}
+								}
+							}
+						break;
 					case SAModel.XJ.XJAttach xatt:
 						// Unimplemented
 						throw new NotImplementedException("Counting used texture IDs is currently not implemented for ChunkAttach, GCAttach and XJAttach.");
@@ -680,7 +716,7 @@ namespace SAModel
 				isGinja = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is GCAttach;
 				isXinja = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is XJ.XJAttach;
 			}
-			//Because these two use different calculations for weights if one vertex has a value that's too high
+			//Because this uses different calculations for weights if one vertex has a value that's too high
 			if (isChunk || isGinja)
 			{
 				foreach (NJS_OBJECT main in mdls)
@@ -699,21 +735,6 @@ namespace SAModel
 											weightpower++;
 									}
 								}
-							}
-						}
-					}
-					if (main.Attach is GCAttach gatt)
-					{
-						if (gatt.vertexSkinData.Count > 0)
-						{
-							foreach (var item in gatt.vertexSkinData)
-							{
-								if (item.elementType == GCSkinAttribute.PartialWeight || item.elementType == GCSkinAttribute.PartialWeightStart)
-									foreach (var weights in item.weightData)
-									{
-										if (weights.weight > 255)
-											weightpower++;
-									}
 							}
 						}
 					}
@@ -760,7 +781,7 @@ namespace SAModel
 					GCAttach gcattach = Attach as GCAttach;
 					if (!labels.Contains(gcattach.Name))
 					{
-						gcattach.ToNJA(writer, labels, textures, shortweight);
+						gcattach.ToNJA(writer, labels, textures);
 						labels.Add(gcattach.Name);
 					}
 				}

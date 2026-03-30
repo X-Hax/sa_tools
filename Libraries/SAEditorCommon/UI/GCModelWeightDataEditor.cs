@@ -102,15 +102,15 @@ namespace SAModel.SAEditorCommon.UI
 					switch (VertData.elementType)
 					{
 						case GCSkinAttribute.StaticWeight:
-							vdata = VertData.posNrms[i].pos.ToStruct();
-							ndata = VertData.posNrms[i].nrm.ToStruct();
+							vdata = VertData.posNrms[i].pos.ToGCMDEStruct();
+							ndata = VertData.posNrms[i].nrm.ToGCMDEStruct();
 							break;
 						case GCSkinAttribute.PartialWeight:
 						case GCSkinAttribute.PartialWeightStart:
-							vdata = VertData.posNrms[i].pos.ToStruct();
-							ndata = VertData.posNrms[i].nrm.ToStruct();
+							vdata = VertData.posNrms[i].pos.ToGCMDEStruct();
+							ndata = VertData.posNrms[i].nrm.ToGCMDEStruct();
 							index = VertData.weightData[i].vertIndex.ToString();
-							weight = VertData.weightData[i].weight.ToString();
+							weight = (VertData.weightData[i].weight/255F * 100F).ToString("F6");
 							break;
 					}
 					newvert.SubItems.Add(index);

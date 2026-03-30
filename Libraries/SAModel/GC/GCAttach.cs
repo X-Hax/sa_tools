@@ -242,7 +242,7 @@ namespace SAModel.GC
 			var result = new List<byte>();
 			uint vertexAddress = 0;
 			
-			if (VertexData != null && VertexData?.Count > 0)
+			if (VertexData?.Count > 0)
 			{
 				if (labels.TryGetValue(VertexName, out var vertAddr))
 				{
@@ -302,32 +302,34 @@ namespace SAModel.GC
 					{
 						if (vertexSkinData[i].elementType < GCSkinAttribute.WeightStructEndMarker)
 						{
-							if (labels.ContainsKey(vertexSkinData[i].DataNamePos))
-								vdataAddrs[i] = labels[vertexSkinData[i].DataNamePos];
+							if (labels.TryGetValue(vertexSkinData[i].DataNamePos, out var posAddr))
+							{
+								vdataAddrs[i] = posAddr;
+							}
 							else
 							{
 								result.Align(4);
 								vdataAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(vertexSkinData[i].DataNamePos, vdataAddrs[i]);
-								for (int j = 0; j < vertexSkinData[i].posNrms.Count; j++)
+								foreach (var posnrm in vertexSkinData[i].posNrms)
 								{
-									result.AddRange((vertexSkinData[i].posNrms[j].pos.GetBytes()));
-									result.AddRange((vertexSkinData[i].posNrms[j].nrm.GetBytes()));
+									result.AddRange(posnrm.GetBytes());
 								}
 							}
 							if (vertexSkinData[i].elementType == GCSkinAttribute.PartialWeight || vertexSkinData[i].elementType == GCSkinAttribute.PartialWeightStart)
 							{
-								if (labels.ContainsKey(vertexSkinData[i].DataNameWeight))
-									vdataAddrs[i] = labels[vertexSkinData[i].DataNameWeight];
+								if (labels.TryGetValue(vertexSkinData[i].DataNameWeight, out var weightAddr))
+								{
+									wdataAddrs[i] = weightAddr;
+								}
 								else
 								{
 									result.Align(4);
 									wdataAddrs[i] = (uint)result.Count + imageBase;
 									labels.Add(vertexSkinData[i].DataNameWeight, wdataAddrs[i]);
-									for (int j = 0; j < vertexSkinData[i].weightData.Count; j++)
+									foreach (var weight in vertexSkinData[i].weightData)
 									{
-										result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].weightData[j].vertIndex));
-										result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].weightData[j].weight));
+										result.AddRange(weight.GetBytes());
 									}
 								}
 							}
@@ -344,7 +346,7 @@ namespace SAModel.GC
 						if (wdataAddrs[i] != 0)
 							njOffsets.Add((uint)(result.Count + imageBase + 0xC));
 
-						result.AddRange(vertexSkinData[i].GetBytes());
+						result.AddRange(vertexSkinData[i].GetBytes(vdataAddrs[i], wdataAddrs[i]));
 					}
 				}
 			}
@@ -975,7 +977,7 @@ namespace SAModel.GC
 		}
 
 		// WIP
-		public void ToNJA(TextWriter writer, List<string> labels, string[] textures, bool shortweights = false)
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures)
 		{
 			if (VertexData.Count != 0 && !labels.Contains(VertexName))
 			{
@@ -1005,7 +1007,7 @@ namespace SAModel.GC
 				writer.WriteLine($"START{Environment.NewLine}");
 				foreach (var item in vertexSkinData)
 				{
-					item.ToNJA(writer, shortweights);
+					item.ToNJA(writer);
 				}
 				foreach (var item in vertexSkinData)
 				{

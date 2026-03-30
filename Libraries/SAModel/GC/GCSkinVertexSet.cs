@@ -37,70 +37,65 @@ namespace SAModel.GC
 			totalVertIndices = ByteConverter.ToUInt16(file, (int)address + 0x2);
 			startingIndex = ByteConverter.ToUInt16(file, (int)address + 0x4);
 			indexCount = ByteConverter.ToUInt16(file, (int)address + 0x6);
-			positionNormalsOffset = (int)(ByteConverter.ToInt32(file, (int)address + 0x8) - imageBase);
-			weightsOffset = (int)(ByteConverter.ToInt32(file, (int)address + 0xC) - imageBase);
+			var posnrmsOffset = (int)(ByteConverter.ToUInt32(file, (int)address + 8) - imageBase);
+			var weightindexOffset = (int)(ByteConverter.ToUInt32(file, (int)address + 0xC) - imageBase);
 
-			var weightType = elementType switch
-			{
-				GCSkinAttribute.StaticWeight => "Static",
-				GCSkinAttribute.PartialWeightStart => "Start",
-				GCSkinAttribute.PartialWeight => "Middle",
-				GCSkinAttribute.WeightStructEndMarker => "End",
-				_ => null
-			};
 			switch (elementType)
 			{
 				case GCSkinAttribute.StaticWeight:
-					if (labels.TryGetValue(positionNormalsOffset, out var wPosName))
+					if (labels.TryGetValue(posnrmsOffset, out var wPosName))
 					{
 						DataNamePos = wPosName;
 					}
 					else
 					{
-						DataNamePos = $"weightpoint_{positionNormalsOffset:X8}";
+						DataNamePos = $"weightpoint_{posnrmsOffset:X8}";
 					}
 					for (int i = 0; i < indexCount; i++)
 					{
 						posNrms.Add(new GCSkinVertexSetPosNrm()
 						{
-							pos = new Vector3Short(file, (int)positionNormalsOffset + (i * 0xC)),
-							nrm = new Vector3Short(file, (int)positionNormalsOffset + (i * 0xC) + 0x6),
+							pos = new Vector3Short(file, (int)posnrmsOffset),
+							nrm = new Vector3Short(file, (int)posnrmsOffset + 0x6),
 						});
+						posnrmsOffset += 12;
 					}
 					break;
 				case GCSkinAttribute.PartialWeightStart:
 				case GCSkinAttribute.PartialWeight:
-					if (labels.TryGetValue(positionNormalsOffset, out var wPosPWName))
+					if (labels.TryGetValue(posnrmsOffset, out var wPosPWName))
 					{
 						DataNamePos = wPosPWName;
 					}
 					else
 					{
-						DataNamePos = $"weightpoint_{positionNormalsOffset:X8}";
+						DataNamePos = $"weightpoint_{posnrmsOffset:X8}";
 					}
-					if (labels.TryGetValue(weightsOffset, out var wDataName))
+					if (labels.TryGetValue(weightindexOffset, out var wDataName))
 					{
 						DataNameWeight = wDataName;
 					}
 					else
 					{
-						DataNameWeight = $"weightdata_{weightsOffset:X8}";
+						DataNameWeight = $"weightdata_{weightindexOffset:X8}";
 					}
 					for (int i = 0; i < indexCount; i++)
 					{
 						posNrms.Add(new GCSkinVertexSetPosNrm()
 						{
-							pos = new Vector3Short(file, (int)positionNormalsOffset + (i * 0xC)),
-							nrm = new Vector3Short(file, (int)positionNormalsOffset + (i * 0xC) + 0x6),
+							pos = new Vector3Short(file, (int)posnrmsOffset),
+							nrm = new Vector3Short(file, (int)posnrmsOffset + 0x6),
 						});
+						posnrmsOffset += 12;
 					}
 					for (int i = 0; i < indexCount; i++)
 					{
 						weightData.Add(new GCSkinVertexSetWeight()
 						{
-							vertIndex = ByteConverter.ToUInt16(file, (int)weightsOffset + (i * 0x4)),
-							weight = ByteConverter.ToUInt16(file, (int)weightsOffset + (i * 0x4) + 0x2),
+							vertIndex = ByteConverter.ToUInt16(file, (int)weightindexOffset),
+							weight = ByteConverter.ToUInt16(file, (int)weightindexOffset + 2),
 						});
+						weightindexOffset += 4;
 					}
 					break;
 				case GCSkinAttribute.WeightStructEndMarker:
@@ -109,15 +104,15 @@ namespace SAModel.GC
 					throw new System.Exception($"Bad GCSkinVertexSet type {elementType:X}");
 			}
 		}
-		public byte[] GetBytes()
+		public byte[] GetBytes(uint posAddress, uint weightAddress)
 		{
 			List<byte> result = new List<byte>();
 			result.AddRange(ByteConverter.GetBytes((ushort)elementType));
 			result.AddRange(ByteConverter.GetBytes(totalVertIndices));
 			result.AddRange(ByteConverter.GetBytes(startingIndex));
 			result.AddRange(ByteConverter.GetBytes(indexCount));
-			result.AddRange(ByteConverter.GetBytes(positionNormalsOffset));
-			result.AddRange(ByteConverter.GetBytes(weightsOffset));
+			result.AddRange(ByteConverter.GetBytes(posAddress));
+			result.AddRange(ByteConverter.GetBytes(weightAddress));
 			return result.ToArray();
 		}
 
@@ -140,7 +135,7 @@ namespace SAModel.GC
 
 			return result.ToString();
 		}
-		public void ToNJA(TextWriter writer, bool shortweights = false)
+		public void ToNJA(TextWriter writer)
 		{
 			switch (elementType)
 			{
@@ -166,7 +161,7 @@ namespace SAModel.GC
 					writer.WriteLine("START");
 					foreach (var wght in weightData)
 					{
-						wght.ToNJA(writer, shortweights);
+						wght.ToNJA(writer);
 					}
 					writer.WriteLine($"END{Environment.NewLine}");
 					break;
@@ -196,6 +191,11 @@ namespace SAModel.GC
 			else
 				writer.WriteLine($"\tGJWIdxPtr    NULL,");
 			writer.WriteLine($"ATTREND{Environment.NewLine}");
+		}
+		public GCSkinVertexSet Clone()
+		{
+			var result = (GCSkinVertexSet)MemberwiseClone();
+			return result;
 		}
 	}
 }

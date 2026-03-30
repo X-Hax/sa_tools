@@ -43,6 +43,19 @@ namespace SAModel.GC
 
 			return result.ToString();
 		}
+		public string ToGCMDEStruct()
+		{
+			var result = new StringBuilder("{ ");
+
+			result.Append(XF);
+			result.Append(", ");
+			result.Append(YF);
+			result.Append(", ");
+			result.Append(ZF);
+			result.Append(" }");
+
+			return result.ToString();
+		}
 		public Vertex ToVertex()
 		{
 			return new Vertex(XF, YF, ZF);
@@ -110,11 +123,11 @@ namespace SAModel.GC
 
 			return result.ToString();
 		}
-		public void ToNJA(TextWriter writer, bool weightpower)
+
+		public void ToNJA(TextWriter writer)
 		{
-			var translatedweight = weight / (weightpower ? 65535.0F : 255.0F) * 100.0F;
-			string wtype = weightpower ? "GJW2Idx" : "GJWIdx";
-			writer.WriteLine($"\t{wtype}( {vertIndex}, {translatedweight.ToString("F6")} ),");
+			var translatedweight = weight / 255.0F * 100.0F;
+			writer.WriteLine($"\tGJWIdx( {vertIndex}, {translatedweight.ToString("F6")} ),");
 		}
 	}
 }

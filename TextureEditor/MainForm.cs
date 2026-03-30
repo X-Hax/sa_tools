@@ -579,6 +579,8 @@ namespace TextureEditor
 
 		private void trackBarMipmapLevel_Scroll(object sender, EventArgs e)
 		{
+			if (listBox1.SelectedIndex == -1)
+				return;
 			GenericTexture currentTexture = textures[listBox1.SelectedIndex];
 			if (!currentTexture.HasMipmaps)
 				return;
