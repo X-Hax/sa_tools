@@ -36,8 +36,9 @@ namespace SA2ObjectDefinitions.CityEscape
 
 			NJS_OBJECT pObject = object_signboard;
 
-			// I tried to get the posters to render unique textures but they would just show the same texture on every instance
-//			((PolyChunkTinyTextureID)((ChunkAttach)pObject.Attach).Poly[1]).Data = posterTexs[posterType];
+			int itemID = Math.Min(5 + item.Rotation.X, 9);
+
+			texlist_signboard.TextureNames[2] = texlist_signboard.TextureNames[itemID];
 
 			transform.Push();
 			{
@@ -47,7 +48,7 @@ namespace SA2ObjectDefinitions.CityEscape
 				result.AddRange(
 					pObject.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode),
 					transform,
-					ObjectHelper.GetTexturesMultiSource(new List<string>(["landtx13", "objtex_stg13"]), texlist_signboard, dev),
+					ObjectHelper.GetTextures(new List<string> { "landtx13", "objtex_stg13" }, texlist_signboard, dev),
 					ObjectHelper.GetMeshes(pObject),
 					EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 
@@ -81,8 +82,6 @@ namespace SA2ObjectDefinitions.CityEscape
 
 			NJS_OBJECT pObject = object_signboard;
 
-//			((PolyChunkTinyTextureID)((ChunkAttach)pObject.Attach).Poly[1]).Data = posterTexs[posterType];
-
 			List<ModelTransform> result = new List<ModelTransform>();
 
 			transform.Push();
@@ -112,8 +111,6 @@ namespace SA2ObjectDefinitions.CityEscape
 
 			return matrix;
 		}
-
-//		internal ushort[] posterTexs = { 2, 5, 6, 7, 8, 9 };
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Poster Content", typeof(CESignboard), "Extended", null, null, (o) => (CESignboard)o.Rotation.X, (o, v) => o.Rotation.X = (int)v)
