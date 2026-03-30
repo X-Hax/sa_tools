@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
 
-namespace SA2ObjectDefinitions.CityEscape
+namespace SA2ObjectDefinitions.DowntownRace
 {
 	public abstract class TreesBase : ObjectDefinition
 	{
@@ -27,7 +27,7 @@ namespace SA2ObjectDefinitions.CityEscape
 
 			NJS_OBJECT curModel = model;
 
-			texs = ObjectHelper.GetTextures(new List<string> { "landtx13", "objtex_stg13" }, texlist, dev);
+			texs = ObjectHelper.GetTextures(new List<string> { "landtx52", "objtex_stg13" }, texlist, dev);
 
 			transform.Push();
 			{
@@ -129,7 +129,7 @@ namespace SA2ObjectDefinitions.CityEscape
 	}
 	public class StreetTree : TreesBase
 	{
-		public override string Name { get { return "City Escape Street Tree"; } }
+		public override string Name { get { return "Downtown Race Street Tree"; } }
 		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("stg13_cityescape/models/GC/TREEST.sa2bmdl");
@@ -138,7 +138,7 @@ namespace SA2ObjectDefinitions.CityEscape
 	}
 	public class GroundTree : TreesBase
 	{
-		public override string Name { get { return "City Escape Ground Tree"; } }
+		public override string Name { get { return "Downtown Race Ground Tree"; } }
 		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("stg13_cityescape/models/GC/TREESTNB.sa2bmdl");
