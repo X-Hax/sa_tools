@@ -105,7 +105,7 @@ namespace SA2ObjectDefinitions.FinalRush
 			meshesCustom = usedMeshes.ToArray();
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (texs == null)
-				texs = ObjectHelper.GetTexturesMultiSource(texpacks, texarr, dev);
+				texs = ObjectHelper.GetTextures(texpacks, texarr, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(0, item.Rotation.Y, 0);

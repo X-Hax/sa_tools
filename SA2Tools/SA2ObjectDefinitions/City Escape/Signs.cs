@@ -120,7 +120,7 @@ namespace SA2ObjectDefinitions.CityEscape
 				result.AddRange(
 					pObject.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode),
 					transform,
-					ObjectHelper.GetTexturesMultiSource(new List<string>(["landtx13", "objtex_stg13"]), pTexlist, dev),
+					ObjectHelper.GetTextures(new List<string> { "landtx13", "objtex_stg13" }, pTexlist, dev),
 					pMesh,
 					EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 

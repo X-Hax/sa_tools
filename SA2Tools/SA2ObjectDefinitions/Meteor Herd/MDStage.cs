@@ -63,7 +63,7 @@ namespace SA2ObjectDefinitions.Common
 			{
 				List<string> textures = ["landtx32", "objtex_stg32"];
 
-				texs = ObjectHelper.GetTexturesMultiSource(textures, tls, dev);
+				texs = ObjectHelper.GetTextures(new List<string> {"landtx32", "objtex_stg32"}, tls, dev);
 			}
 
 			result.AddRange(obj.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, mesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));

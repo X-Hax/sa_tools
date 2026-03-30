@@ -27,7 +27,7 @@ namespace SA2ObjectDefinitions.CityEscape
 
 			NJS_OBJECT curModel = model;
 
-			texs = ObjectHelper.GetTexturesMultiSource(new List<string> { "landtx13", "objtex_stg13" }, texlist, dev);
+			texs = ObjectHelper.GetTextures(new List<string> { "landtx13", "objtex_stg13" }, texlist, dev);
 
 			transform.Push();
 			{
