@@ -32,8 +32,8 @@ body:
   - type: textarea
     id: crash-report
     attributes:
-      label: Crash Report
-      description: If the program crashed and provided a crash report or log, please provide it here.
+      label: Crash Report or Used Files
+      description: If the program crashed and provided a crash report or log, please upload it here. If the program crashed while working on a specific file, please put it in a zip archive and upload it here.
     validations:
       required: false
   - type: dropdown
@@ -53,7 +53,7 @@ body:
       label: Operation System Information
       description: Please provide the version of your Operating System. If you're using Linux or MacOS, please provide the emulation layer you're using.
     validations:
-      required: true
+      required: false
   - type: textarea
     id: additional
     attributes:
