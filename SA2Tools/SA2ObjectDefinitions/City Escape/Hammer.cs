@@ -32,6 +32,17 @@ namespace SA2ObjectDefinitions.CityEscape
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 
+			float oscInten;
+
+			if ((item.Rotation.X & 0xFF00) != 0)
+			{
+				oscInten = item.Scale.Z;
+			}
+			else
+			{
+				oscInten = -item.Scale.Z;
+			}
+
 			transform.Push();
 			{
 				transform.NJTranslate(item.Position);
@@ -53,8 +64,22 @@ namespace SA2ObjectDefinitions.CityEscape
 			}
 			transform.Pop();
 
+			transform.Push();
+			{
+				transform.NJTranslate(item.Position);
+				transform.NJTranslate(0.0f, oscInten, 0.0f);
+
+				transform.NJRotateY(item.Rotation.Y);
+
+				transform.NJScale((item.Scale.X + 1.0f), (item.Scale.Y + 1.0f), (item.Scale.X + 1.0f));
+
+				result.AddRange(object_hammer.DrawModelTreeInvert(transform, ObjectHelper.GetMeshes(object_hammer)));
+			}
+			transform.Pop();
+
 			return result;
 		}
+
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			HitResult result;
@@ -112,10 +137,28 @@ namespace SA2ObjectDefinitions.CityEscape
 			return matrix;
 		}
 
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Rest Time (in frames)", typeof(int), "Movement Stats", null, null, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v),
+			new PropertySpec("Oscillation Speed", typeof(int), "Movement Stats", null, null, (o) => o.Rotation.Z, (o, v) => o.Rotation.Z = (int)v),
+			new PropertySpec("Oscillation Intensity", typeof(float), "Movement Stats", null, null, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v),
+			new PropertySpec("Oscillation Direction", typeof(HammerDirection), "Movement Stats", null, null,
+			(o) => ((o.Rotation.X & 0x100) != 0) ? 0 : 1,
+			(o, v) => {o.Rotation.X &= ~0x100; if ((byte)v == 0) o.Rotation.X |= 0x100;}),
+			new PropertySpec("Width", typeof(float), "Size", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
+			new PropertySpec("Height", typeof(float), "Size", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
+		};
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+
 		public override float DefaultXScale { get { return 0; } }
 
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
+
+		public enum HammerDirection
+		{
+			Up,
+			Down
+		}
 	}
 }
