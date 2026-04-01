@@ -190,6 +190,8 @@ namespace SAModel.SAEditorCommon.SETEditing
 		/// <returns>An array of Texture, or null.</returns>
 		public static Texture[] GetTextures(string pvmName, SplitTools.NJS_TEXLIST texlist = null, Device dev = null)
 		{
+			if (string.IsNullOrEmpty(pvmName))
+				return null;
 			return GetTextures([pvmName], texlist, dev);
 		}
 
