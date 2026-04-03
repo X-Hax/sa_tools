@@ -237,8 +237,13 @@ namespace SAModel.SALVL
 				else if (File.Exists(Path.Combine(modFolder, "textures", pvmName + ".PVMX")))
 					texturePath = Path.Combine(modFolder, "textures", pvmName + ".PVMX");
 				// Check if a PAK file exists in the PRS folder (SA2)
-				else if (File.Exists(Path.Combine(modFolder, "gd-pc", "PRS", pvmName + ".PAK")))
-					texturePath = Path.Combine(modFolder, "gd-pc", "PRS", pvmName + ".PAK");
+				else if (File.Exists(Path.Combine(modFolder, "gd_PC", "PRS", pvmName + ".PAK")))
+					texturePath = Path.Combine(modFolder, "gd_PC", "PRS", pvmName + ".PAK");
+				else if (File.Exists(Path.Combine(modFolder, "gd_PC", $"{pvmName}.PRS")))
+				{
+					extension = ".PRS";
+					texturePath = Path.Combine(modFolder, "gd_PC", $"{pvmName}{extension}");
+				}
 				else if (File.Exists(Path.Combine(systemFallback, "PRS", pvmName) + ".PAK"))
 				{
 					extension = ".PAK";
