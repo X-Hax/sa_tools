@@ -727,9 +727,23 @@ namespace SAModel.GC
 				_ => $"{texmap}"
 			};
 
-			uint unk = Data & 0xF;
+			uint color = Data & 0xF;
+			string color_str = color switch
+			{
+				0 => "GJ_COLOR0",
+				1 => "GJ_COLOR1",
+				2 => "GJ_ALPHA0",
+				3 => "GJ_ALPHA1",
+				4 => "GJ_COLOR0A0",
+				5 => "GJ_COLOR1A1",
+				6 => "GJ_COLORZERO",
+				7 => "GJ_ALPHA_BUMP",
+				8 => "GJ_ALPHA_BUMPN",
+				9 => "GJ_COLORNULL",
+				_ => $"{color}"
+			};
 
-			writer.WriteLine($"GjTev     ( {tevstage_str}, {texcoord_str}, {texmap_str}, {unk} ),");
+			writer.WriteLine($"GjTev     ( {tevstage_str}, {texcoord_str}, {texmap_str}, {color_str} ),");
 		}
 	}
 
