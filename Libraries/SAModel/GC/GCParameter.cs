@@ -28,7 +28,7 @@ namespace SAModel.GC
 		TextureTEVMode = 9,
 		TexCoordGen = 10,
 	}
-	
+
 	/// <summary>
 	/// Base class for all GC parameter types. <br/>
 	/// Used to store geometry information (like materials).
@@ -98,25 +98,25 @@ namespace SAModel.GC
 		public byte[] GetBytes()
 		{
 			List<byte> result = [];
-			
+
 			result.Add((byte)Type);
 			result.AddRange(new byte[3]);
 			result.AddRange(ByteConverter.GetBytes(Data));
-			
+
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
 			var result = new StringBuilder("{ ");
-			
+
 			result.Append((byte)Type);
 			result.Append(", ");
 			result.Append("0, 0, 0");
 			result.Append(", ");
 			result.AppendFormat(Data.ToCHex());
 			result.Append(" }");
-			
+
 			return result.ToString();
 		}
 		object ICloneable.Clone() => Clone();
@@ -406,7 +406,7 @@ namespace SAModel.GC
 				Data &= 0xFFF0FFFF;
 				Data |= (uint)(value << 24);
 			}
-		} 
+		}
 
 		/// <summary>
 		/// Creates a lighting parameter with the default data
@@ -526,7 +526,7 @@ namespace SAModel.GC
 				GCBlendModeControl.InverseSrcAlpha => "GJ_BL_INVSRCALPHA",
 				GCBlendModeControl.DstAlpha => "GJ_BL_DSTALPHA",
 				GCBlendModeControl.InverseDstAlpha => "GJ_BL_INVDSTALPHA",
-				_ => $"{(uint)SourceAlpha}"
+				_ => $"{(uint)DestAlpha}"
 			};
 
 			writer.WriteLine($"GjBlend   ( {mode_str}, {src_str}, {dst_str} ),");
@@ -550,7 +550,7 @@ namespace SAModel.GC
 				{
 					ARGB = Data
 				};
-				
+
 				return col;
 			}
 			set => Data = value.ARGB;
@@ -675,36 +675,61 @@ namespace SAModel.GC
 
 		public override void ToNJA(TextWriter writer)
 		{
-			uint type = (Data >> 4) >> 0xF;
-			string type_str = type switch
+			uint tevstage = Data >> 12;
+			string tevstage_str = tevstage switch
 			{
-				0 => "GJ_TG_MTX3x4",
-				_ => $"{type}"
+				0 => "GJ_TEVSTAGE0",
+				1 => "GJ_TEVSTAGE1",
+				2 => "GJ_TEVSTAGE2",
+				3 => "GJ_TEVSTAGE3",
+				4 => "GJ_TEVSTAGE4",
+				5 => "GJ_TEVSTAGE5",
+				6 => "GJ_TEVSTAGE6",
+				7 => "GJ_TEVSTAGE7",
+				8 => "GJ_TEVSTAGE8",
+				9 => "GJ_TEVSTAGE9",
+				10 => "GJ_TEVSTAGE10",
+				11 => "GJ_TEVSTAGE11",
+				12 => "GJ_TEVSTAGE12",
+				13 => "GJ_TEVSTAGE13",
+				14 => "GJ_TEVSTAGE14",
+				15 => "GJ_TEVSTAGE15",
+				_ => $"{tevstage}"
 			};
 
-			uint src = Data & 0xF;
-			string src_str = src switch
-			{
-				4 => "GJ_TG_TEX0",
-				_ => $"{src}"
-			};
-
-			uint texcoord = Data >> 12;
+			uint texcoord = (Data >> 8) & 0xF;
 			string texcoord_str = texcoord switch
 			{
 				0 => "GJ_TEXCOORD0",
+				1 => "GJ_TEXCOORD1",
+				2 => "GJ_TEXCOORD2",
+				3 => "GJ_TEXCOORD3",
+				4 => "GJ_TEXCOORD4",
+				5 => "GJ_TEXCOORD5",
+				6 => "GJ_TEXCOORD6",
+				7 => "GJ_TEXCOORD7",
+				255 => "GJ_TEXCOORDNULL",
 				_ => $"{texcoord}"
 			};
 
-			uint mtxsrc = Data >> 12;
-			string mtxsrc_str = mtxsrc switch
+			uint texmap = (Data >> 4) & 0xF;
+			string texmap_str = texmap switch
 			{
-				0 => "GJ_TEXMTX0",
-				10 => "GJ_IDENTITY",
-				_ => $"{mtxsrc}"
+				0 => "GJ_TEXMAP0",
+				1 => "GJ_TEXMAP1",
+				2 => "GJ_TEXMAP2",
+				3 => "GJ_TEXMAP3",
+				4 => "GJ_TEXMAP4",
+				5 => "GJ_TEXMAP5",
+				6 => "GJ_TEXMAP6",
+				7 => "GJ_TEXMAP7",
+				255 => "GJ_TEXMAPNULL",
+				_ => $"{texmap}"
 			};
 
-			writer.WriteLine($"GjTexGen  ( {texcoord_str}, {type_str}, {src_str}, {mtxsrc_str} ),");
+			uint unk = Data & 0xF;
+
+			writer.WriteLine($"GjTev     ( {tevstage_str}, {texcoord_str}, {texmap_str}, {unk} ),");
 		}
 	}
 
@@ -785,12 +810,21 @@ namespace SAModel.GC
 			TexGenSrc = texGenSrc;
 			MatrixId = matrixId;
 		}
-		
+
 		public override void ToNJA(TextWriter writer)
 		{
 			string matrixid_str = MatrixId switch
 			{
 				GCTexGenMatrix.Matrix0 => "GJ_TEXMTX0",
+				GCTexGenMatrix.Matrix1 => "GJ_TEXMTX1",
+				GCTexGenMatrix.Matrix2 => "GJ_TEXMTX2",
+				GCTexGenMatrix.Matrix3 => "GJ_TEXMTX3",
+				GCTexGenMatrix.Matrix4 => "GJ_TEXMTX4",
+				GCTexGenMatrix.Matrix5 => "GJ_TEXMTX5",
+				GCTexGenMatrix.Matrix6 => "GJ_TEXMTX6",
+				GCTexGenMatrix.Matrix7 => "GJ_TEXMTX7",
+				GCTexGenMatrix.Matrix8 => "GJ_TEXMTX8",
+				GCTexGenMatrix.Matrix9 => "GJ_TEXMTX9",
 				GCTexGenMatrix.Identity => "GJ_IDENTITY",
 				_ => $"{(uint)MatrixId}"
 			};
@@ -798,23 +832,33 @@ namespace SAModel.GC
 			string texcoordid_str = TexCoordId switch
 			{
 				GCTexCoordID.TexCoord0 => "GJ_TEXCOORD0",
+				GCTexCoordID.TexCoord1 => "GJ_TEXCOORD1",
+				GCTexCoordID.TexCoord2 => "GJ_TEXCOORD2",
+				GCTexCoordID.TexCoord3 => "GJ_TEXCOORD3",
+				GCTexCoordID.TexCoord4 => "GJ_TEXCOORD4",
+				GCTexCoordID.TexCoord5 => "GJ_TEXCOORD5",
+				GCTexCoordID.TexCoord6 => "GJ_TEXCOORD6",
+				GCTexCoordID.TexCoord7 => "GJ_TEXCOORD7",
+				GCTexCoordID.TexCoordNull => "GJ_TEXCOORDNULL",
 				_ => $"{(uint)TexCoordId}"
 			};
 
 			string texgensrc_str = TexGenSrc switch
 			{
+				GCTexGenSrc.Position => "GJ_TG_POS",
+				GCTexGenSrc.Normal => "GJ_TG_NRM",
 				GCTexGenSrc.Tex0 => "GJ_TG_TEX0",
 				_ => $"{(uint)TexGenSrc}"
 			};
 
 			string texgentype_str = TexGenType switch
 			{
-				GCTexGenType.Matrix3x4 => "GJ_MTX3x4",
-				GCTexGenType.Matrix2x4 => "GJ_MTX2x4",
+				GCTexGenType.Matrix3x4 => "GJ_TG_MTX3x4",
+				GCTexGenType.Matrix2x4 => "GJ_TG_MTX2x4",
 				_ => $"{(uint)TexGenType}"
 			};
 
-			writer.WriteLine($"GjTexMtx  ( {matrixid_str}, {texcoordid_str}, {texgensrc_str}, {texgentype_str} ),");
+			writer.WriteLine($"GjTexGen  ( {texcoordid_str}, {texgentype_str}, {texgensrc_str}, {matrixid_str} ),");
 		}
 	}
 }
