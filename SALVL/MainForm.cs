@@ -17,6 +17,7 @@ using Color = System.Drawing.Color;
 using Point = System.Drawing.Point;
 using System.Text;
 using static SAModel.SAEditorCommon.SettingsFile;
+using TextureLib;
 
 namespace SAModel.SALVL
 {
@@ -2201,12 +2202,12 @@ namespace SAModel.SALVL
 					if (string.IsNullOrEmpty(LevelData.geo.TextureFileName))
 						LevelData.geo.TextureFileName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
 					if (LevelData.TextureBitmaps == null)
-						LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
+						LevelData.TextureBitmaps = new Dictionary<string, GenericTexture[]>();
 					if (LevelData.Textures == null)
 						LevelData.Textures = new Dictionary<string, Texture[]>();
 
 					// Load or replace textures
-					BMPInfo[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName, out bool hasNames);
+					GenericTexture[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName, out bool hasNames);
 					if (TexBmps != null)
 					{
 						// Load texture bitmaps

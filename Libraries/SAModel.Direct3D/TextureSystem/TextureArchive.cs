@@ -3,36 +3,28 @@ using System.IO;
 using System.Linq;
 using ArchiveLib;
 using PSO.PRS;
+using TextureLib;
 using static ArchiveLib.GenericArchive;
 
 namespace SAModel.Direct3D.TextureSystem
 {
     /// <summary>
     /// This TextureArchive class is the primary interface for retrieving a texture list/array from a container format, such as PVM/GVM, and eventually PAK.
+	/// TODO: Rework to properly use GenericTexture.
     /// </summary>
     public static class TextureArchive
     {
-		public static BMPInfo[] GetTextures(string filename, out bool hasNames, string paletteFile = null)
+		public static GenericTexture[] GetTextures(string filename, out bool hasNames, string paletteFile = null)
         {
 			hasNames = true;
             if (!File.Exists(filename))
                 return null;
             GenericArchive arc;
-            List<BMPInfo> textures = new List<BMPInfo>();
+            List<GenericTexture> textures = new List<GenericTexture>();
             byte[] file = File.ReadAllBytes(filename);
             string ext = Path.GetExtension(filename).ToLowerInvariant();
             switch (ext)
             {
-                // Folder texture pack
-                case ".txt":
-                    string[] files = File.ReadAllLines(filename);
-                    List<BMPInfo> txts = new List<BMPInfo>();
-                    for (int s = 0; s < files.Length; s++)
-                    {
-                        string[] entry = files[s].Split(',');
-                        txts.Add(new BMPInfo(Path.GetFileNameWithoutExtension(entry[1]), new System.Drawing.Bitmap(Path.Combine(Path.GetDirectoryName(filename), entry[1]))));
-                    }
-                    return txts.ToArray();
                 case ".pak":
                     arc = new PAKFile(filename);
                     string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
@@ -44,7 +36,11 @@ namespace SAModel.Direct3D.TextureSystem
                 case ".pvmx":
                     arc = new PVMXFile(file);
                     break;
-                case ".pb":
+				// Folder texture pack
+				case ".txt":
+					arc = new PVMXFile(filename);
+					break;
+				case ".pb":
                     arc = new PBFile(file);
                     break;
                 case ".pvr":
@@ -73,8 +69,8 @@ namespace SAModel.Direct3D.TextureSystem
 				case ".jpg":
 				case ".gif":
 				case ".bmp":
-					List<BMPInfo> arr = new List<BMPInfo>();
-					arr.Add(new BMPInfo(Path.GetFileNameWithoutExtension(filename), new System.Drawing.Bitmap(filename)));
+					List<GenericTexture> arr = new List<GenericTexture>();
+					arr.Add(new GdiTexture(new System.Drawing.Bitmap(filename), name: Path.GetFileNameWithoutExtension(filename)));
 					return arr.ToArray();
 				case ".prs":
                     file = PRS.Decompress(file);
@@ -93,7 +89,7 @@ namespace SAModel.Direct3D.TextureSystem
             }
             foreach (GenericArchiveEntry entry in arc.Entries)
             {
-                textures.Add(new BMPInfo(Path.GetFileNameWithoutExtension(entry.Name), entry.GetBitmap()));
+                textures.Add(GenericTexture.LoadTexture(entry.Data, name: Path.GetFileNameWithoutExtension(entry.Name)));
 			}
 			hasNames = arc.HasNameData;
 

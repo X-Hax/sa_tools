@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using SAModel.Direct3D.TextureSystem;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -17,9 +17,9 @@ namespace SAModel.SAEditorCommon.UI
 
 		private List<NJS_MATERIAL> materials; // Material list that is being edited
 		private readonly List<NJS_MATERIAL> materialsOriginal; // Original material list at the time of opening the dialog
-		private readonly BMPInfo[] textures;
+		private readonly GenericTexture[] textures;
 
-		public MaterialEditor(List<NJS_MATERIAL> mats, BMPInfo[] textures, string matsName = null)
+		public MaterialEditor(List<NJS_MATERIAL> mats, GenericTexture[] textures, string matsName = null)
 		{
 			materials = mats;
 			materialsOriginal = new List<NJS_MATERIAL>();

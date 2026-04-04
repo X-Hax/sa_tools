@@ -1,17 +1,18 @@
-﻿using System;
+﻿using SAModel.Direct3D;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon.SETEditing;
+using SAModel.SAEditorCommon.UI;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SplitTools;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using SharpDX;
-using SharpDX.Direct3D9;
-using SAModel.Direct3D;
-using SAModel.Direct3D.TextureSystem;
-using SAModel.SAEditorCommon.UI;
-using Mesh = SAModel.Direct3D.Mesh;
 using System.IO;
-using SplitTools;
-using SAModel.SAEditorCommon.SETEditing;
+using System.Linq;
+using TextureLib;
+using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SAModel.SAEditorCommon.DataTypes
 {
@@ -251,7 +252,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		[DisplayName("Edit Materials")]
 		public void EditMaterials()
 		{
-			BMPInfo[] textures;
+			GenericTexture[] textures;
 			if (LevelData.leveltexs == null || LevelData.TextureBitmaps.Count == 0) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
 			switch (COL.Model.Attach)
 			{
@@ -289,7 +290,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		[DisplayName("Edit Model")]
 		public void EditModel()
 		{
-			BMPInfo[] textures;
+			GenericTexture[] textures;
 			if (LevelData.leveltexs == null || LevelData.TextureBitmaps.Count == 0) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
 			switch (COL.Model.Attach)
 			{
@@ -397,7 +398,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 					}
 					for (int i = 0; i < numSteps; i++)
 					{
-						BMPInfo bmp = LevelData.TextureBitmaps[LevelData.leveltexs][i];
+						GenericTexture bmp = LevelData.TextureBitmaps[LevelData.leveltexs][i];
 						texturePaths.Add(System.IO.Path.Combine(rootPath, bmp.Name + ".png"));
 						bmp.Image.Save(System.IO.Path.Combine(rootPath, bmp.Name + ".png"));
 					}

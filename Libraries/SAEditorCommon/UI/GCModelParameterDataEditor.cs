@@ -1,10 +1,10 @@
-﻿using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Text;
+﻿using SAModel.GC;
 using System;
-using SAModel.Direct3D.TextureSystem;
-using SAModel.GC;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -21,9 +21,9 @@ namespace SAModel.SAEditorCommon.UI
 
 		private List<GCParameter> ParamData; // Poly data that is being edited
 		private readonly List<GCParameter> ParamDataOriginal; // Original poly data at the time of opening the dialog
-		private readonly BMPInfo[] textures;
+		private readonly GenericTexture[] textures;
 
-		public GCModelParameterDataEditor(GCMesh meshData, BMPInfo[] textures, int index = 0)
+		public GCModelParameterDataEditor(GCMesh meshData, GenericTexture[] textures, int index = 0)
 		{
 			if (meshData == null)
 			{

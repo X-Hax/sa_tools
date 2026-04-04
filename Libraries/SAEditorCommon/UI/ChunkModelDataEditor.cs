@@ -1,9 +1,9 @@
-﻿using System.Windows.Forms;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System;
-using SAModel.Direct3D.TextureSystem;
 using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -16,7 +16,7 @@ namespace SAModel.SAEditorCommon.UI
 		private Attach originalModel;
 		private bool freeze;
 		private int previousNodeIndex;
-		private readonly BMPInfo[] textures;
+		private readonly GenericTexture[] textures;
 		private Rectangle vertdatagroupdyn;
 		private Rectangle polydatagroupdyn;
 		private Rectangle vertdatalistdyn;
@@ -28,7 +28,7 @@ namespace SAModel.SAEditorCommon.UI
 		private Rectangle polydownbutton;
 		private Size OriginalSize;
 
-		public ChunkModelDataEditor(NJS_OBJECT objectOriginal, BMPInfo[] textures, int index = 0)
+		public ChunkModelDataEditor(NJS_OBJECT objectOriginal, GenericTexture[] textures, int index = 0)
 		{
 			if (objectOriginal == null)
 				return;

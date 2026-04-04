@@ -16,6 +16,7 @@ using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
 using static SAModel.SAEditorCommon.SettingsFile;
 using PSO.PRS;
+using TextureLib;
 
 namespace SA2EventViewer
 {
@@ -80,7 +81,7 @@ namespace SA2EventViewer
 		Mesh cammesh;
 		Matrix cammatrix;
 		string TexturePackName;
-		BMPInfo[] TextureInfo;
+		GenericTexture[] TextureInfo;
 		Texture[] Textures;
 		EventEntity selectedObject;
 		int selectedObjectScene;

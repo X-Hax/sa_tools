@@ -170,10 +170,5 @@ namespace ArchiveLib
 		}
 
 		public NinjaBinaryEntry() {	}
-
-		public override Bitmap GetBitmap()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

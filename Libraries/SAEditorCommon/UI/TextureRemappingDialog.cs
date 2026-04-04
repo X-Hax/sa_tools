@@ -1,14 +1,14 @@
-using SAModel.Direct3D.TextureSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.UI
 {
 	public partial class TextureRemappingDialog : Form
 	{
-		public TextureRemappingDialog(IList<BMPInfo> images)
+		public TextureRemappingDialog(IList<GenericTexture> images)
 		{
 			InitializeComponent();
 			TextureMap = new Dictionary<int, int>();

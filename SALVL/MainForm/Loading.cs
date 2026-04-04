@@ -1,23 +1,24 @@
-﻿using SAModel.Direct3D;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
+using SAModel.Direct3D;
 using SAModel.Direct3D.TextureSystem;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.ProjectManagement;
 using SAModel.SAEditorCommon.SETEditing;
 using SAModel.SAEditorCommon.UI;
-using SAModel.SAEditorCommon.ProjectManagement;
 using SharpDX.Direct3D9;
 using SplitTools;
 using System;
-using System.Text;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
-using System.Globalization;
+using TextureLib;
 
 namespace SAModel.SALVL
 {
@@ -263,7 +264,7 @@ namespace SAModel.SALVL
 					textureFallbackPath = Path.Combine(systemFallback, pvmName) + extension;
 				else
 					textureFallbackPath = Path.Combine(systemFallback, "PRS", pvmName) + extension;
-				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath), out bool hasNames);
+				GenericTexture[] textureBitmaps = TextureArchive.GetTextures(ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath), out bool hasNames);
 				Texture[] d3dTextures;
 				if (textureBitmaps != null)
 				{
@@ -790,7 +791,7 @@ namespace SAModel.SALVL
 				}
 
 				// Initialize level textures
-				LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>(StringComparer.OrdinalIgnoreCase);
+				LevelData.TextureBitmaps = new Dictionary<string, GenericTexture[]>(StringComparer.OrdinalIgnoreCase);
 				LevelData.Textures = new Dictionary<string, Texture[]>(StringComparer.OrdinalIgnoreCase);
 				if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
 					LevelData.leveltexs = LevelData.geo.TextureFileName;

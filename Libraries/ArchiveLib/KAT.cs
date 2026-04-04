@@ -24,12 +24,6 @@ namespace ArchiveLib
 	
 		public class KATArchiveEntry : GenericArchiveEntry
 		{
-
-			public override Bitmap GetBitmap()
-			{
-				throw new NotImplementedException();
-			}
-
 			public KATArchiveEntry(byte[] data, int index, int numch, int freq, int loop, int bits, int bankID, int sampleID)
 			{
 				Name = string.Format("{0}_{1}_{2}.wav", index.ToString("D3"), bankID.ToString("D3"), sampleID.ToString("D3"));

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using TextureLib;
 
 namespace ArchiveLib
@@ -98,6 +99,29 @@ namespace ArchiveLib
                 Entries.Add(new PVMXEntry(name, gbix, texdata, width, height));
             }
         }
+
+		public PVMXFile(string indexFileName)
+		{
+			Entries = new List<GenericArchiveEntry>();
+			if (!File.Exists(indexFileName))
+				return;
+			string folderPath = Path.GetDirectoryName(indexFileName);
+			List<string> filenames = new List<string>(File.ReadAllLines(indexFileName).Where(a => !string.IsNullOrEmpty(a)));
+			foreach (string line in filenames)
+			{
+				string[] split = line.Split(',');
+				string filename = split[0];
+				int width = 0;
+				int height = 0;
+				uint gbix = uint.Parse(split[0]);
+				if (split.Length > 2)
+				{
+					width = int.Parse(split[2].Split('x')[0]);
+					height = int.Parse(split[2].Split('x')[1]);
+				}
+				Entries.Add(new PVMXEntry(Path.GetFileName(filename), gbix, File.ReadAllBytes(Path.Combine(folderPath, filename)), width, height));
+			}
+		}
 
         public PVMXFile()
         {
