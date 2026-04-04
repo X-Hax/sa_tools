@@ -96,11 +96,6 @@ namespace ArchiveLib
 			PaletteName = 0x1000
 		}
 
-		public override void CreateIndexFile(string path)
-        {
-            CreateDefaultIndexFile(path);
-        }
-
 		/// <summary>Checks if the specified byte array contains a GBIX header.</summary>
 		/// <param name="data">Byte array to analyze.</param>
 		/// <returns>True if a GBIX header is present.</returns>
