@@ -4,12 +4,12 @@ using System.Linq;
 using SharpDX;
 using SharpDX.Direct3D9;
 using SAModel.Direct3D;
-using SAModel.Direct3D.TextureSystem;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.Properties;
 using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
 using System.Collections.Concurrent;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.SETEditing
 {
@@ -196,12 +196,12 @@ namespace SAModel.SAEditorCommon.SETEditing
 		}
 
 		/// <summary>
-		/// Gets texture names and images for the specified texture archives and (optionally) a texlist. Used in model export.
+		/// Gets texture data for the specified texture archives and (optionally) a texlist. Used in model export.
 		/// </summary>
 		/// <param name="names">Texture archive names without extensions.</param>
 		/// <param name="texlist">NJS_TEXLIST for objects that load textures from multiple archives. Can be null.</param>
-		/// <returns>An array of BMPInfo, or null.</returns>
-		public static BMPInfo[] GetTextureBmpInfos(List<string> names, SplitTools.NJS_TEXLIST texlist = null)
+		/// <returns>An array of GenericTexture, or null.</returns>
+		public static GenericTexture[] GetTextureBmpInfos(List<string> names, SplitTools.NJS_TEXLIST texlist = null)
 		{
 			// PVM names not specified
 			if (names == null || names.Count == 0)
@@ -209,34 +209,34 @@ namespace SAModel.SAEditorCommon.SETEditing
 			// Textures not loaded or disabled in the editor
 			if (LevelData.Textures == null || EditorOptions.DisableTextures)
 				return null;
-			List<BMPInfo> texInfos = new List<BMPInfo>();
-			// Get BMPInfos for all PVMs and put them into a single List
+			List<GenericTexture> texInfos = new List<GenericTexture>();
+			// Get textures for all PVMs and put them into a single List
 			foreach (var name in names)
 			{
 				// Return null on failure
-				if (!LevelData.TextureBitmaps.TryGetValue(name, out BMPInfo[] texturebmps))
+				if (!LevelData.TextureBitmaps.TryGetValue(name, out GenericTexture[] texturebmps))
 					return null;
 				texInfos.AddRange(texturebmps);
 			}
-			// Return the whole BMPInfo list if not using a texlist
+			// Return the whole texture list if not using a texlist
 			if (texlist == null)
 				return texInfos.ToArray();
 			// Process the texlist using one or multiple PVMs
-			List<BMPInfo> result = new List<BMPInfo>();
+			List<GenericTexture> result = new List<GenericTexture>();
 			// Keep a list of duplicate texture names
 			List<string> dupNames = new List<string>();
 			// Loop through the list of names in the texlist
 			for (int i = 0; i < texlist.TextureNames.Length; i++)
 			{
-				// Loop through the BMPInfos
+				// Loop through the GenericTextures
 				for (int b = 0; b < texInfos.Count; b++)
 				{
-					// If the BMPInfo's name matches the name in the texlist and hasn't been added already, add it to the result
+					// If the texture's name matches the name in the texlist and hasn't been added already, add it to the result
 					if (string.Equals(texInfos[b].Name, texlist.TextureNames[i], StringComparison.OrdinalIgnoreCase) && !dupNames.Contains(texlist.TextureNames[i]))
 					{
 						result.Add(texInfos[b]);
 						dupNames.Add(texlist.TextureNames[i]);
-						// Since the texture for the specified name has been found, the BMPInfo loop can be stopped
+						// Since the texture for the specified name has been found, the GenericTexture loop can be stopped
 						break;
 					}
 				}
@@ -245,12 +245,12 @@ namespace SAModel.SAEditorCommon.SETEditing
 		}
 
 		/// <summary>
-		/// Gets texture names and images for the specified texture archive and (optionally) using the specified texlist. Used in model export.
+		/// Gets texture data for the specified texture archive and (optionally) using the specified texlist. Used in model export.
 		/// </summary>
 		/// <param name="name">Texture archive name without extension.</param>
 		/// <param name="texlist">NJS_TEXLIST for objects that load textures from multiple archives. Can be null.</param>
-		/// <returns>An array of BMPInfo, or null.</returns>
-		public static BMPInfo[] GetTextureBmpInfos(string name, SplitTools.NJS_TEXLIST texlist = null)
+		/// <returns>An array of GenericTexture, or null.</returns>
+		public static GenericTexture[] GetTextureBmpInfos(string name, SplitTools.NJS_TEXLIST texlist = null)
 		{
 			return GetTextureBmpInfos([name], texlist);
 		}

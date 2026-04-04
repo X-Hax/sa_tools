@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using SAModel.Direct3D.TextureSystem;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -16,9 +16,9 @@ namespace SAModel.SAEditorCommon.UI
 
 		private PolyChunk PolyData; // Poly data that is being edited
 		private readonly PolyChunk PolyDataOriginal; // Original poly data at the time of opening the dialog
-		private readonly BMPInfo[] textures;
+		private readonly GenericTexture[] textures;
 
-		public ChunkModelTextureDataEditor(PolyChunk mats, BMPInfo[] textures, string matsName = null)
+		public ChunkModelTextureDataEditor(PolyChunk mats, GenericTexture[] textures, string matsName = null)
 		{
 			PolyData = mats;
 			PolyDataOriginal = mats.Clone();

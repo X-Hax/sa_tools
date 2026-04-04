@@ -280,19 +280,19 @@ namespace TextureLib
 		/// <param name="data">Byte array to load.</param>
 		/// <param name="offset">Offset to load.</param>
 		/// <returns></returns>
-		public static GenericTexture LoadTexture(byte[] data, int offset = 0)
+		public static GenericTexture LoadTexture(byte[] data, int offset = 0, string name = "")
 		{
 			if (PvrTexture.Identify(data, offset))
-				return new PvrTexture(data, offset);
+				return new PvrTexture(data, offset, name);
 			else if (GvrTexture.Identify(data, offset))
-				return new GvrTexture(data, offset);
+				return new GvrTexture(data, offset, name);
 			else if (XvrTexture.Identify(data, offset))
-				return new XvrTexture(data, offset);
+				return new XvrTexture(data, offset, name);
 			else if (DdsTexture.Identify(data, offset))
-				return new DdsTexture(data, offset);
+				return new DdsTexture(data, offset, name: name);
 			else if (GdiTexture.Identify(data, offset))
-				return new GdiTexture(data, offset);
-			return new InvalidTexture(data, offset);
+				return new GdiTexture(data, offset, name: name);
+			return new InvalidTexture(data, offset, name: name);
 		}
 
 		/// <summary>

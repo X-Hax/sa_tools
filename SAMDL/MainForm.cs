@@ -1,23 +1,24 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using PSO.PRS;
+using SAModel.Direct3D;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon;
+using SAModel.SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.UI;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SplitTools;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Newtonsoft.Json;
-using SharpDX;
-using SharpDX.Direct3D9;
-using SAModel.Direct3D;
-using SAModel.Direct3D.TextureSystem;
-using SAModel.SAEditorCommon;
-using SAModel.SAEditorCommon.UI;
+using TextureLib;
+using static SAModel.SAEditorCommon.SettingsFile;
 using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
-using SplitTools;
-using SAModel.SAEditorCommon.ProjectManagement;
-using static SAModel.SAEditorCommon.SettingsFile;
-using PSO.PRS;
 
 namespace SAModel.SAMDL
 {
@@ -55,8 +56,8 @@ namespace SAModel.SAMDL
 		string TexturePackName; // Name of the last loaded PVM/texture pack, used for texture enum export
 		NJS_TEXLIST TexList; // Current texlist
 		NJS_TEXLIST TempTexList; // Texture name list loaded through the model, ex. An .nj NJTL. Use if next loaded texture archive has no names. Clear after each texture load attempt.
-		BMPInfo[] TextureInfo; // Textures in the whole PVM/texture pack
-		BMPInfo[] TextureInfoCurrent; // TextureInfo updated for the current texlist. Used for Material Editor, texture remapping, C++ export etc.
+		GenericTexture[] TextureInfo; // Textures in the whole PVM/texture pack
+		GenericTexture[] TextureInfoCurrent; // TextureInfo updated for the current texlist. Used for Material Editor, texture remapping, C++ export etc.
 		Texture[] Textures; // Created from TextureInfoCurrent; used for rendering
 
 		// Rendering related
@@ -988,7 +989,7 @@ namespace SAModel.SAMDL
 					Dictionary<uint, byte[]> texDict = new Dictionary<uint, byte[]>();
 					if (TextureInfoCurrent != null)
 					{
-						foreach (BMPInfo tex in TextureInfoCurrent)
+						foreach (GenericTexture tex in TextureInfoCurrent)
 						{
 							if (tex != null)
 							{
@@ -1801,7 +1802,7 @@ namespace SAModel.SAMDL
 			if (TexList != null)
 			{
 				List<Texture> textures = new List<Texture>();
-				List<BMPInfo> texinfo = new List<BMPInfo>();
+				List<GenericTexture> texinfo = new List<GenericTexture>();
 				List<string> dupnames = new List<string>();
 				for (int i = 0; i < TexList.TextureNames.Length; i++)
 					for (int j = 0; j < TextureInfo.Length; j++)
@@ -1817,7 +1818,7 @@ namespace SAModel.SAMDL
 			}
 			else
 			{
-				TextureInfoCurrent = new BMPInfo[TextureInfo.Length];
+				TextureInfoCurrent = new GenericTexture[TextureInfo.Length];
 				for (int i = 0; i < TextureInfo.Length; i++)
 					TextureInfoCurrent[i] = TextureInfo[i];
 				Textures = new Texture[TextureInfoCurrent.Length];
@@ -2540,7 +2541,7 @@ namespace SAModel.SAMDL
 			{
 				// Save textures
 				List<string> textureNames = new List<string>();
-				foreach (BMPInfo bmp in TextureInfoCurrent)
+				foreach (GenericTexture bmp in TextureInfoCurrent)
 				{
 					textureNames.Add(bmp.Name);
 					string savePath = Path.Combine(rootPath, bmp.Name + ".png");
@@ -4018,7 +4019,7 @@ namespace SAModel.SAMDL
 
 		private void AddSingleTexture(string filename)
 		{
-			List<BMPInfo> result = new List<BMPInfo>();
+			List<GenericTexture> result = new List<GenericTexture>();
 			if (TextureInfo != null && TextureInfo.Length > 0)
 				result.AddRange(TextureInfo);
 			result.AddRange(TextureArchive.GetTextures(filename, out bool hasNames));
@@ -4028,7 +4029,7 @@ namespace SAModel.SAMDL
 
 		private void AddTextures(string[] filenames, string paletteFile = null)
 		{
-			List<BMPInfo> result = new List<BMPInfo>();
+			List<GenericTexture> result = new List<GenericTexture>();
 			if (TextureInfo != null && TextureInfo.Length > 0)
 				result.AddRange(TextureInfo);
 			for (int i = 0; i < filenames.Length; i++)

@@ -1,11 +1,9 @@
-﻿using System.Windows.Forms;
+﻿using SAModel.GC;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using System;
-using SAModel.GC;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
-using SharpDX.Direct3D9;
-using SAModel.Direct3D.TextureSystem;
+using System.Windows.Forms;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -17,9 +15,9 @@ namespace SAModel.SAEditorCommon.UI
 		private Attach originalModel;
 		private bool freeze;
 		private int previousNodeIndex;
-		private readonly BMPInfo[] textures;
+		private readonly GenericTexture[] textures;
 
-		public GCModelDataEditor(NJS_OBJECT objectOriginal, BMPInfo[] textures, int index = 0)
+		public GCModelDataEditor(NJS_OBJECT objectOriginal, GenericTexture[] textures, int index = 0)
 		{
 			if (objectOriginal == null)
 				return;

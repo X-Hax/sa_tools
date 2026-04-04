@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using SAModel.Direct3D.TextureSystem;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -13,9 +13,9 @@ namespace SAModel.SAEditorCommon.UI
 
 		public int SelectedValue { get { return listView.SelectedIndices[0]; } }
 		private readonly int initialSelection;
-		private readonly BMPInfo[] textureInfo;
+		private readonly GenericTexture[] textureInfo;
 
-		public TexturePicker(BMPInfo[] textureInfo, int initialSelection)
+		public TexturePicker(GenericTexture[] textureInfo, int initialSelection)
 		{
 			InitializeComponent();
 

@@ -6,7 +6,7 @@ using SharpDX.Direct3D9;
 using Mesh = SAModel.Direct3D.Mesh;
 using SharpDX;
 using SplitTools;
-using SAModel.Direct3D.TextureSystem;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.SETEditing
 {
@@ -180,7 +180,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return matrix;
 		}
 
-		public override BMPInfo[] ExportTextures(SETItem item)
+		public override GenericTexture[] ExportTextures(SETItem item)
 		{
 			return ObjectHelper.GetTextureBmpInfos(texture);
 		}

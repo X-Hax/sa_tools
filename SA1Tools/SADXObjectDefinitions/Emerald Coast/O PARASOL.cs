@@ -1,15 +1,16 @@
-﻿using SharpDX;
-using SharpDX.Direct3D9;
-using SAModel;
+﻿using SAModel;
 using SAModel.Direct3D;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
+using SharpDX;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
+using TextureLib;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
-using SAModel.SAEditorCommon;
-using SAModel.Direct3D.TextureSystem;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
@@ -100,7 +101,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return matrix;
 		}
 
-		public override BMPInfo[] ExportTextures(SETItem item)
+		public override GenericTexture[] ExportTextures(SETItem item)
 		{
 			return ObjectHelper.GetTextureBmpInfos("OBJ_BEACH");
 		}
