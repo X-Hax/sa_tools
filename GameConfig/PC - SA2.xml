@@ -97,84 +97,84 @@
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>sonicmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/teriosmdl.prs" LabelFile="TERIOSMDL" MTNLabelFile="TERIOSMTN" EXMTNFile="TERIOSMTN_EX" CmnName="Shadow Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/teriosmdl.prs" LabelFile="TERIOSMDL" MTNLabelFile="TERIOSMTN" EXMTNFile="TERIOSMTN_EX" CmnName="Shadow Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>teriosmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/knuckmdl.prs" LabelFile="KNUCKMDL" MTNLabelFile="KNUCKMTN" EXMTNFile="KNUCKMTN_EX" CmnName="Knuckles Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/knuckmdl.prs" LabelFile="KNUCKMDL" MTNLabelFile="KNUCKMTN" EXMTNFile="KNUCKMTN_EX" CmnName="Knuckles Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>knuckmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/rougemdl.prs" LabelFile="ROUGEMDL" MTNLabelFile="ROUGEMTN" EXMTNFile="ROUGEMTN_EX" CmnName="Rouge Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/rougemdl.prs" LabelFile="ROUGEMDL" MTNLabelFile="ROUGEMTN" EXMTNFile="ROUGEMTN_EX" CmnName="Rouge Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>rougemtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/twalkmdl.prs" LabelFile="TWALKMDL" MTNLabelFile="TWALKMTN" EXMTNFile="TWALKMTN_EX" CmnName="Mech Tails Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/twalkmdl.prs" LabelFile="TWALKMDL" MTNLabelFile="TWALKMTN" EXMTNFile="TWALKMTN_EX" CmnName="Mech Tails Model Data" UseNames="true">
     <MotionFile>twalkmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/ewalkmdl.prs" LabelFile="EWALKMDL" MTNLabelFile="EWALKMTN" EXMTNFile="EWALKMTN_EX" CmnName="Mech Eggman Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/ewalkmdl.prs" LabelFile="EWALKMDL" MTNLabelFile="EWALKMTN" EXMTNFile="EWALKMTN_EX" CmnName="Mech Eggman Model Data" UseNames="true">
     <MotionFile>ewalkmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/milesmdl.prs" LabelFile="MILESMDL" MTNLabelFile="MILESMTN" CmnName="Tails Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/milesmdl.prs" LabelFile="MILESMDL" MTNLabelFile="MILESMTN" CmnName="Tails Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>milesmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/eggmdl.prs" LabelFile="EGGMDL" MTNLabelFile="EGGMTN" CmnName="Eggman Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/eggmdl.prs" LabelFile="EGGMDL" MTNLabelFile="EGGMTN" CmnName="Eggman Model Data" UseNames="true">
     <MotionFile>eggmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/ssonicmdl.prs" LabelFile="SSONICMDL" MTNLabelFile="SSONICMTN" CmnName="Super Sonic Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/ssonicmdl.prs" LabelFile="SSONICMDL" MTNLabelFile="SSONICMTN" CmnName="Super Sonic Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>ssonicmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/sshadowmdl.prs" LabelFile="SSHADOWMDL" MTNLabelFile="SSHADOWMTN" CmnName="Super Shadow Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/sshadowmdl.prs" LabelFile="SSHADOWMDL" MTNLabelFile="SSHADOWMTN" CmnName="Super Shadow Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>sshadowmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/amymdl.prs" LabelFile="AMYMDL" MTNLabelFile="AMYMTN" EXMTNFile="AMYMTN_EX" CmnName="Amy Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/amymdl.prs" LabelFile="AMYMDL" MTNLabelFile="AMYMTN" EXMTNFile="AMYMTN_EX" CmnName="Amy Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>amymtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/metalsonicmdl.prs" LabelFile="METALSONICMDL" MTNLabelFile="METALSONICMTN" EXMTNFile="METALSONICMTN_EX" CmnName="Metal Sonic Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/metalsonicmdl.prs" LabelFile="METALSONICMDL" MTNLabelFile="METALSONICMTN" EXMTNFile="METALSONICMTN_EX" CmnName="Metal Sonic Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>metalsonicmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/ticalmdl.prs" LabelFile="TICALMDL" MTNLabelFile="TICALMTN" EXMTNFile="TICALMTN_EX" CmnName="Tikal Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/ticalmdl.prs" LabelFile="TICALMDL" MTNLabelFile="TICALMTN" EXMTNFile="TICALMTN_EX" CmnName="Tikal Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>ticalmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/chaos0mdl.prs" LabelFile="CHAOS0MDL" MTNLabelFile="CHAOS0MTN" EXMTNFile="CHAOS0MTN_EX" CmnName="Chaos Zero Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/chaos0mdl.prs" LabelFile="CHAOS0MDL" MTNLabelFile="CHAOS0MTN" EXMTNFile="CHAOS0MTN_EX" CmnName="Chaos Zero Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>chaos0mtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/cwalkmdl.prs" LabelFile="CWALKMDL" MTNLabelFile="CWALKMTN" CmnName="Chao Walker Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/cwalkmdl.prs" LabelFile="CWALKMDL" MTNLabelFile="CWALKMTN" CmnName="Chao Walker Model Data" UseNames="true">
     <MotionFile>cwalkmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/dwalkmdl.prs" LabelFile="DWALKMDL" MTNLabelFile="DWALKMTN" CmnName="Dark Chao Walker Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/dwalkmdl.prs" LabelFile="DWALKMDL" MTNLabelFile="DWALKMTN" CmnName="Dark Chao Walker Model Data" UseNames="true">
     <MotionFile>dwalkmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/sonic1mdl.prs" LabelFile="SONIC1MDL" MTNLabelFile="SONICMTN" EXMTNFile="SONICMTN_EX" CmnName="Sonic's Alternate Costume Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/sonic1mdl.prs" LabelFile="SONIC1MDL" MTNLabelFile="SONICMTN" EXMTNFile="SONICMTN_EX" CmnName="Sonic's Alternate Costume Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>sonicmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/shadow1mdl.prs" LabelFile="SHADOW1MDL" MTNLabelFile="TERIOSMTN" EXMTNFile="TERIOSMTN_EX" CmnName="Shadow's Alternate Costume Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/shadow1mdl.prs" LabelFile="SHADOW1MDL" MTNLabelFile="TERIOSMTN" EXMTNFile="TERIOSMTN_EX" CmnName="Shadow's Alternate Costume Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>teriosmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/bknuckmdl.prs" LabelFile="BKNUCKMDL" MTNLabelFile="KNUCKMTN" EXMTNFile="KNUCKMTN_EX" CmnName="Knuckles' Alternate Costume Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/bknuckmdl.prs" LabelFile="BKNUCKMDL" MTNLabelFile="KNUCKMTN" EXMTNFile="KNUCKMTN_EX" CmnName="Knuckles' Alternate Costume Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>knuckmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/brougemdl.prs" LabelFile="BROUGEMDL" MTNLabelFile="ROUGEMTN" EXMTNFile="ROUGEMTN_EX" CmnName="Rouge's Alternate Costume Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/brougemdl.prs" LabelFile="BROUGEMDL" MTNLabelFile="ROUGEMTN" EXMTNFile="ROUGEMTN_EX" CmnName="Rouge's Alternate Costume Model Data" UseNames="true">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>rougemtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/twalk1mdl.prs" LabelFile="TWALK1MDL" MTNLabelFile="TWALKMTN" EXMTNFile="TWALKMTN_EX" CmnName="Mech Tails' Alternate Costume Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/twalk1mdl.prs" LabelFile="TWALK1MDL" MTNLabelFile="TWALKMTN" EXMTNFile="TWALKMTN_EX" CmnName="Mech Tails' Alternate Costume Model Data" UseNames="true">
     <MotionFile>twalkmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/ewalk1mdl.prs" LabelFile="EWALK1MDL" MTNLabelFile="EWALKMTN" EXMTNFile="EWALKMTN_EX" CmnName="Mech Eggman's Army Camo Costume Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/ewalk1mdl.prs" LabelFile="EWALK1MDL" MTNLabelFile="EWALKMTN" EXMTNFile="EWALKMTN_EX" CmnName="Mech Eggman's Army Camo Costume Model Data" UseNames="true">
     <MotionFile>ewalkmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="resource/gd_PC/ewalk2mdl.prs" LabelFile="EWALK2MDL" MTNLabelFile="EWALKMTN" EXMTNFile="EWALKMTN_EX" CmnName="Mech Eggman's Dark Tank Costume Model Data">
+  <SplitEntryMDL ModelFile="resource/gd_PC/ewalk2mdl.prs" LabelFile="EWALK2MDL" MTNLabelFile="EWALKMTN" EXMTNFile="EWALKMTN_EX" CmnName="Mech Eggman's Dark Tank Costume Model Data" UseNames="true">
     <MotionFile>ewalkmtn.prs</MotionFile>
   </SplitEntryMDL>
 </SplitTemplate>

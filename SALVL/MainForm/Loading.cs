@@ -877,6 +877,11 @@ namespace SAModel.SALVL
 						LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
 						character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
 					}
+					else if (File.Exists(character.NamedModel))
+					{
+						LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.NamedModel).Model,
+						character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
+					}
 					else
 					{
 						LevelData.StartPositions[i] = new StartPosItem(new NJS_OBJECT(),
@@ -935,6 +940,12 @@ namespace SAModel.SALVL
 							character.Textures, character.Height, posp1, rotp1, d3ddevice, selectedItems, "2P Start Position (P1)");
 
 						}
+						else if (File.Exists(character.NamedModel))
+						{ 
+							LevelData.SA2StartPositions2P1[i] = new StartPosItem(new ModelFile(character.NamedModel).Model,
+							character.Textures, character.Height, posp1, rotp1, d3ddevice, selectedItems, "2P Start Position (P1)");
+
+						}
 						else
 						{
 							LevelData.SA2StartPositions2P1[i] = new StartPosItem(new NJS_OBJECT(),
@@ -987,6 +998,14 @@ namespace SAModel.SALVL
 							character.Textures, character.Height, posp2, rotp2, d3ddevice, selectedItems, "2P Start Position (P2)");
 
 						}
+
+						else if(File.Exists(character.NamedModel))
+						{
+							LevelData.SA2StartPositions2P2[i] = new StartPosItem(new ModelFile(character.NamedModel).Model,
+							character.Textures, character.Height, posp2, rotp2, d3ddevice, selectedItems, "2P Start Position (P2)");
+
+						}
+
 						else
 						{
 							LevelData.SA2StartPositions2P2[i] = new StartPosItem(new NJS_OBJECT(),
@@ -1039,6 +1058,11 @@ namespace SAModel.SALVL
 							LevelData.EndPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
 							character.Textures, character.Height, pos, rot, d3ddevice, selectedItems, "End Position");
 
+						}
+						else if (File.Exists(character.NamedModel))
+						{
+							LevelData.EndPositions[i] = new StartPosItem(new ModelFile(character.NamedModel).Model,
+							character.Textures, character.Height, pos, rot, d3ddevice, selectedItems, "End Position");
 						}
 						else
 						{
@@ -1093,6 +1117,11 @@ namespace SAModel.SALVL
 							character.Textures, character.Height, posp1, rotp1, d3ddevice, selectedItems, "2P End Position (P1)");
 
 						}
+						if (File.Exists(character.NamedModel))
+						{
+							LevelData.EndPositions2P1[i] = new StartPosItem(new ModelFile(character.NamedModel).Model,
+							character.Textures, character.Height, posp1, rotp1, d3ddevice, selectedItems, "2P End Position (P1)");
+						}
 						else
 						{
 							LevelData.EndPositions2P1[i] = new StartPosItem(new NJS_OBJECT(),
@@ -1145,6 +1174,11 @@ namespace SAModel.SALVL
 							LevelData.EndPositions2P2[i] = new StartPosItem(new ModelFile(character.Model).Model,
 							character.Textures, character.Height, posp2, rotp2, d3ddevice, selectedItems, "2P End Position (P2)");
 
+						}
+						if (File.Exists(character.NamedModel))
+						{
+							LevelData.EndPositions2P2[i] = new StartPosItem(new ModelFile(character.NamedModel).Model,
+							character.Textures, character.Height, posp2, rotp2, d3ddevice, selectedItems, "2P End Position (P2)");
 						}
 						else
 						{
@@ -1203,6 +1237,13 @@ namespace SAModel.SALVL
 							LevelData.MultiplayerIntroPositionsA[i] = new AltStartPosItem(new ModelFile(character.Model).Model,
 							character.Textures, character.Height, posp1, rotp1, d3ddevice, selectedItems, "2P Intro Position (P1)");
 							LevelData.MultiplayerIntroPositionsB[i] = new AltStartPosItem(new ModelFile(character.Model).Model,
+							character.Textures, character.Height, posp2, rotp2, d3ddevice, selectedItems, "2P Intro Position (P2)");
+						}
+						else if (File.Exists(character.NamedModel))
+						{
+							LevelData.MultiplayerIntroPositionsA[i] = new AltStartPosItem(new ModelFile(character.NamedModel).Model,
+							character.Textures, character.Height, posp1, rotp1, d3ddevice, selectedItems, "2P Intro Position (P1)");
+							LevelData.MultiplayerIntroPositionsB[i] = new AltStartPosItem(new ModelFile(character.NamedModel).Model,
 							character.Textures, character.Height, posp2, rotp2, d3ddevice, selectedItems, "2P Intro Position (P2)");
 						}
 						else
@@ -1264,6 +1305,13 @@ namespace SAModel.SALVL
 								character.Textures, character.Height, posm2, rotm2, d3ddevice, selectedItems, "Mission 2 End Position");
 							LevelData.AltEndPositionsB[i] = new AltStartPosItem(new ModelFile(character.Model).Model,
 								character.Textures, character.Height, posm3, rotm3, d3ddevice, selectedItems, "Mission 3 End Position");
+						}
+						else if (File.Exists(character.NamedModel))
+						{
+							LevelData.AltEndPositionsA[i] = new AltStartPosItem(new ModelFile(character.NamedModel).Model,
+							character.Textures, character.Height, posm2, rotm2, d3ddevice, selectedItems, "Mission 2 End Position");
+							LevelData.AltEndPositionsB[i] = new AltStartPosItem(new ModelFile(character.NamedModel).Model,
+							character.Textures, character.Height, posm3, rotm3, d3ddevice, selectedItems, "Mission 3 End Position");
 						}
 						else
 						{

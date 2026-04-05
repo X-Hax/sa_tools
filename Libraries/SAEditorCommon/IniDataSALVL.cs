@@ -43,6 +43,7 @@ namespace SAModel.SAEditorCommon
 	public class IniCharInfo
 	{
 		public string Model { get; set; }
+		public string NamedModel { get; set; }
 		public string Textures { get; set; }
 		public string TextureList { get; set; }
 		public float Height { get; set; }

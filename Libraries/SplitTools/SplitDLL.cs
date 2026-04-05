@@ -851,20 +851,25 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								var hashes = new List<string>();
 								int i = ByteConverter.ToInt16(datafile, address);
-								string animmeta = null;
+								string animmeta = string.Empty;
+								string animname = string.Empty;
 								var metaname = data.Filename;
 								while (i != -1)
 								{
 									if (data.CustomProperties.ContainsKey("meta" + i + "_a"))
 										animmeta = data.CustomProperties["meta" + i + "_a"];
-									if (File.Exists(fileOutputPath + "/" + i + ".saanim") && !splitFlags.HasFlag(SplitFlags.Overwrite))
+									if (data.CustomProperties.ContainsKey("filename" + i))
+										animname = Path.GetFileNameWithoutExtension(data.CustomProperties["filename" + i]);
+									else
+										animname = i.ToString(NumberFormatInfo.InvariantInfo);
+									if (File.Exists(fileOutputPath + "/" + animname + ".saanim") && !splitFlags.HasFlag(SplitFlags.Overwrite))
 										return 0;
 									var anim = new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
 										{
 											Description = animmeta
 										};
-									anim.Save(fileOutputPath + "/" + i + ".saanim", splitFlags.HasFlag(SplitFlags.NoMeta));
-									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i + ".saanim"));
+									anim.Save(fileOutputPath + "/" + animname + ".saanim", splitFlags.HasFlag(SplitFlags.NoMeta));
+									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + animname + ".saanim"));
 									address += 8;
 									i = ByteConverter.ToInt16(datafile, address);
 								}
