@@ -34,7 +34,7 @@ namespace SAModel.SAEditorCommon.UI
 				return;
 			InitializeComponent();
 			freeze = true;
-			this.Resize += ChunkModelDataEditor_Resize;
+			//this.Resize += ChunkModelDataEditor_Resize;
 			OriginalSize = this.Size;
 			comboBoxNode.Items.Clear();
 			originalHierarchy = objectOriginal;
@@ -88,7 +88,7 @@ namespace SAModel.SAEditorCommon.UI
 					c.Size = new Size(r.Width, newYSize);
 					break;
 				case 2: // Poly Data List
-					c.Size = new Size(newXSize, newYSize);
+					c.Size = new Size(newWidth, newHeight);
 					break;
 				case 3: // Buttons below list
 					c.Location = new Point(r.X, newYLoc);
@@ -98,8 +98,8 @@ namespace SAModel.SAEditorCommon.UI
 		private void ChunkModelDataEditor_Resize(object sender, EventArgs e)
 		{
 			resize_Control(listViewMeshes, polydatalistdyn, 2);
-			resize_Control(listViewVertices, vertdatalistdyn, 1);
-			resize_Control(groupBoxVertList, vertdatagroupdyn, 1);
+			//resize_Control(listViewVertices, vertdatalistdyn, 1);
+			//resize_Control(groupBoxVertList, vertdatagroupdyn, 1);
 			resize_Control(groupBoxMeshList, polydatagroupdyn, 2);
 			resize_Control(buttonCloneMesh, polyclonebutton, 3);
 			resize_Control(buttonResetMeshes, polyresetbutton, 3);
@@ -619,6 +619,7 @@ namespace SAModel.SAEditorCommon.UI
 							vertexdata += ", ";
 						vertexdata += vc.VertexCount.ToString() + ent;
 						newvert.SubItems.Add(vertexdata);
+						newvert.SubItems.Add(vc.IndexOffset.ToString());
 						listViewVertices.Items.Add(newvert);
 					}
 				}
