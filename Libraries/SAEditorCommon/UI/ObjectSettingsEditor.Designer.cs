@@ -106,7 +106,7 @@
 			checkBoxEnvelope.TabIndex = 13;
 			checkBoxEnvelope.Text = "Envelope";
 			checkBoxEnvelope.UseVisualStyleBackColor = true;
-			checkBoxEnvelope.Click += checkBoxEnvelope_Click;
+			//checkBoxEnvelope.Click += checkBoxEnvelope_Click;
 			// 
 			// checkBoxRotateSet
 			// 
@@ -117,7 +117,7 @@
 			checkBoxRotateSet.TabIndex = 12;
 			checkBoxRotateSet.Text = "Rotate Set";
 			checkBoxRotateSet.UseVisualStyleBackColor = true;
-			checkBoxRotateSet.Click += checkBoxRotateSet_Click;
+			//checkBoxRotateSet.Click += checkBoxRotateSet_Click;
 			// 
 			// checkBoxRotateBase
 			// 
@@ -128,7 +128,7 @@
 			checkBoxRotateBase.TabIndex = 11;
 			checkBoxRotateBase.Text = "Rotate Base";
 			checkBoxRotateBase.UseVisualStyleBackColor = true;
-			checkBoxRotateBase.Click += checkBoxRotateBase_Click;
+			//checkBoxRotateBase.Click += checkBoxRotateBase_Click;
 			// 
 			// checkBoxQuaternion
 			// 
@@ -139,7 +139,7 @@
 			checkBoxQuaternion.TabIndex = 10;
 			checkBoxQuaternion.Text = "Use Quaternion";
 			checkBoxQuaternion.UseVisualStyleBackColor = true;
-			checkBoxQuaternion.Click += checkBoxQuaternion_Click;
+			//checkBoxQuaternion.Click += checkBoxQuaternion_Click;
 			// 
 			// checkBoxModifier
 			// 
@@ -150,7 +150,7 @@
 			checkBoxModifier.TabIndex = 9;
 			checkBoxModifier.Text = "Modifier";
 			checkBoxModifier.UseVisualStyleBackColor = true;
-			checkBoxModifier.Click += checkBoxModifier_Click;
+			//checkBoxModifier.Click += checkBoxModifier_Click;
 			// 
 			// checkBoxClip
 			// 
@@ -161,7 +161,7 @@
 			checkBoxClip.TabIndex = 8;
 			checkBoxClip.Text = "Clip";
 			checkBoxClip.UseVisualStyleBackColor = true;
-			checkBoxClip.Click += checkBoxClip_Click;
+			//checkBoxClip.Click += checkBoxClip_Click;
 			// 
 			// checkBoxNoShape
 			// 
@@ -172,7 +172,7 @@
 			checkBoxNoShape.TabIndex = 7;
 			checkBoxNoShape.Text = "No Shape Motion";
 			checkBoxNoShape.UseVisualStyleBackColor = true;
-			checkBoxNoShape.Click += checkBoxNoShape_Click;
+			//checkBoxNoShape.Click += checkBoxNoShape_Click;
 			// 
 			// checkBoxNoAnim
 			// 
@@ -183,7 +183,7 @@
 			checkBoxNoAnim.TabIndex = 6;
 			checkBoxNoAnim.Text = "No Animation";
 			checkBoxNoAnim.UseVisualStyleBackColor = true;
-			checkBoxNoAnim.Click += checkBoxNoAnim_Click;
+			//checkBoxNoAnim.Click += checkBoxNoAnim_Click;
 			// 
 			// checkBoxZYXRot
 			// 
@@ -194,7 +194,7 @@
 			checkBoxZYXRot.TabIndex = 5;
 			checkBoxZYXRot.Text = "Use ZYX Rotation";
 			checkBoxZYXRot.UseVisualStyleBackColor = true;
-			checkBoxZYXRot.Click += checkBoxZYXRot_Click;
+			//checkBoxZYXRot.Click += checkBoxZYXRot_Click;
 			// 
 			// checkBoxSkipChild
 			// 
@@ -206,7 +206,7 @@
 			checkBoxSkipChild.Text = "Skip Children";
 			toolTip1.SetToolTip(checkBoxSkipChild, "Bypasses drawing any models that are lower in the object's hierarchy.");
 			checkBoxSkipChild.UseVisualStyleBackColor = true;
-			checkBoxSkipChild.Click += checkBoxSkipChild_Click;
+			//checkBoxSkipChild.Click += checkBoxSkipChild_Click;
 			// 
 			// checkBoxSkipDraw
 			// 
@@ -218,7 +218,7 @@
 			checkBoxSkipDraw.Text = "Hide Model";
 			toolTip1.SetToolTip(checkBoxSkipDraw, "Prevents any models associated with the object from being drawn.\r\nFor objects with weighted meshes, this hides the entire mesh.");
 			checkBoxSkipDraw.UseVisualStyleBackColor = true;
-			checkBoxSkipDraw.Click += checkBoxSkipDraw_Click;
+			//checkBoxSkipDraw.Click += checkBoxSkipDraw_Click;
 			// 
 			// checkBoxIgnoreScl
 			// 
@@ -230,7 +230,7 @@
 			checkBoxIgnoreScl.Text = "Ignore Scale";
 			toolTip1.SetToolTip(checkBoxIgnoreScl, "If enabled, this ignores the object's scale values and defaults to 1, 1, 1.\r\n");
 			checkBoxIgnoreScl.UseVisualStyleBackColor = true;
-			checkBoxIgnoreScl.Click += checkBoxIgnoreScl_Click;
+			//checkBoxIgnoreScl.Click += checkBoxIgnoreScl_Click;
 			// 
 			// checkBoxIgnoreRot
 			// 
@@ -242,7 +242,7 @@
 			checkBoxIgnoreRot.Text = "Ignore Rotation";
 			toolTip1.SetToolTip(checkBoxIgnoreRot, "If enabled, this ignores the object's rotation values and defaults to 0, 0, 0.\r\n");
 			checkBoxIgnoreRot.UseVisualStyleBackColor = true;
-			checkBoxIgnoreRot.Click += checkBoxIgnoreRot_Click;
+			//checkBoxIgnoreRot.Click += checkBoxIgnoreRot_Click;
 			// 
 			// checkBoxIgnorePos
 			// 
@@ -254,7 +254,7 @@
 			checkBoxIgnorePos.Text = "Ignore Position";
 			toolTip1.SetToolTip(checkBoxIgnorePos, "If enabled, this ignores the object's position values and defaults to 0, 0, 0.");
 			checkBoxIgnorePos.UseVisualStyleBackColor = true;
-			checkBoxIgnorePos.Click += checkBoxIgnorePos_Click;
+			//checkBoxIgnorePos.Click += checkBoxIgnorePos_Click;
 			// 
 			// groupBoxPos
 			// 

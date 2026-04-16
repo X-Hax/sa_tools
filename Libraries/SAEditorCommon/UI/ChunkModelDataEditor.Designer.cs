@@ -413,7 +413,7 @@
 			toolStrip1.Location = new System.Drawing.Point(300, 226);
 			toolStrip1.Name = "toolStrip1";
 			toolStrip1.Padding = new System.Windows.Forms.Padding(0);
-			toolStrip1.Size = new System.Drawing.Size(109, 27);
+			toolStrip1.Size = new System.Drawing.Size(78, 27);
 			toolStrip1.TabIndex = 23;
 			toolStrip1.TabStop = true;
 			toolStrip1.Text = "toolStrip1";
@@ -628,15 +628,18 @@
 			// 
 			// columnHeaderEval
 			// 
-			columnHeaderEval.Text = "Eval Flags";
+			columnHeaderEval.Text = "Eval Flags                                                                       ";
+			columnHeaderEval.Width = 300;
 			// 
 			// columnHeaderPos
 			// 
-			columnHeaderPos.Text = "Position";
+			columnHeaderPos.Text = "Position                                   ";
+			columnHeaderPos.Width = 200;
 			// 
 			// columnHeaderRot
 			// 
-			columnHeaderRot.Text = "Rotation";
+			columnHeaderRot.Text = "Rotation                                   ";
+			columnHeaderRot.Width = 200;
 			// 
 			// columnHeaderScl
 			// 

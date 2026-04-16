@@ -66,15 +66,13 @@ namespace SAModel.SAEditorCommon.UI
 		}
 		private void checkSettingsOnClose()
 		{
+			objData.Flags = 0;
 			ObjectFlags newflags = 0;
-			if (checkBoxIgnorePos.Checked || (float.Parse(textBoxPosX.Text) == 0 && float.Parse(textBoxPosY.Text) == 0
-				&& float.Parse(textBoxPosZ.Text) == 0))
+			if (checkBoxIgnorePos.Checked)
 				newflags |= ObjectFlags.NoPosition;
-			if (checkBoxIgnoreRot.Checked || (int.Parse(textBoxRotX.Text, System.Globalization.NumberStyles.HexNumber) == 0 && int.Parse(textBoxRotY.Text, System.Globalization.NumberStyles.HexNumber) == 0
-				&& int.Parse(textBoxRotZ.Text, System.Globalization.NumberStyles.HexNumber) == 0))
+			if (checkBoxIgnoreRot.Checked)
 				newflags |= ObjectFlags.NoRotate;
-			if (checkBoxIgnoreScl.Checked || (float.Parse(textBoxSclX.Text) == 1.0f && float.Parse(textBoxSclY.Text) == 1.0f
-				&& float.Parse(textBoxSclZ.Text) == 1.0f))
+			if (checkBoxIgnoreScl.Checked)
 				newflags |= ObjectFlags.NoScale;
 			if (checkBoxSkipDraw.Checked)
 				newflags |= ObjectFlags.NoDisplay;
@@ -108,6 +106,7 @@ namespace SAModel.SAEditorCommon.UI
 			objData.Scale.X = float.Parse(textBoxSclX.Text);
 			objData.Scale.Y = float.Parse(textBoxSclY.Text);
 			objData.Scale.Z = float.Parse(textBoxSclZ.Text);
+			RaiseFormUpdated();
 		}
 
 		private void buttonClose_Click(object sender, EventArgs e)
@@ -121,88 +120,88 @@ namespace SAModel.SAEditorCommon.UI
 			SetControls(objDataOriginal.Clone());
 		}
 
-		private void checkBoxIgnorePos_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxIgnorePos.Checked ? ObjectFlags.NoPosition : ~ObjectFlags.NoPosition;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxIgnorePos_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxIgnorePos.Checked ? ObjectFlags.NoPosition : ~ObjectFlags.NoPosition;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxIgnoreRot_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxIgnoreRot.Checked ? ObjectFlags.NoRotate : ~ObjectFlags.NoRotate;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxIgnoreRot_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxIgnoreRot.Checked ? ObjectFlags.NoRotate : ~ObjectFlags.NoRotate;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxIgnoreScl_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxIgnoreScl.Checked ? ObjectFlags.NoScale : ~ObjectFlags.NoScale;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxIgnoreScl_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxIgnoreScl.Checked ? ObjectFlags.NoScale : ~ObjectFlags.NoScale;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxSkipDraw_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxSkipDraw.Checked ? ObjectFlags.NoDisplay : ~ObjectFlags.NoDisplay;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxSkipDraw_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxSkipDraw.Checked ? ObjectFlags.NoDisplay : ~ObjectFlags.NoDisplay;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxSkipChild_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxSkipChild.Checked ? ObjectFlags.NoChildren : ~ObjectFlags.NoChildren;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxSkipChild_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxSkipChild.Checked ? ObjectFlags.NoChildren : ~ObjectFlags.NoChildren;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxZYXRot_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxZYXRot.Checked ? ObjectFlags.RotateZYX : ~ObjectFlags.RotateZYX;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxZYXRot_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxZYXRot.Checked ? ObjectFlags.RotateZYX : ~ObjectFlags.RotateZYX;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxNoAnim_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxNoAnim.Checked ? ObjectFlags.NoAnimate : ~ObjectFlags.NoAnimate;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxNoAnim_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxNoAnim.Checked ? ObjectFlags.NoAnimate : ~ObjectFlags.NoAnimate;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxNoShape_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxNoShape.Checked ? ObjectFlags.NoMorph : ~ObjectFlags.NoMorph;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxNoShape_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxNoShape.Checked ? ObjectFlags.NoMorph : ~ObjectFlags.NoMorph;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxClip_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxClip.Checked ? ObjectFlags.Clip : ~ObjectFlags.Clip;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxClip_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxClip.Checked ? ObjectFlags.Clip : ~ObjectFlags.Clip;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxModifier_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxModifier.Checked ? ObjectFlags.Modifier : ~ObjectFlags.Modifier;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxModifier_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxModifier.Checked ? ObjectFlags.Modifier : ~ObjectFlags.Modifier;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxQuaternion_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxQuaternion.Checked ? ObjectFlags.Quaternion : ~ObjectFlags.Quaternion;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxQuaternion_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxQuaternion.Checked ? ObjectFlags.Quaternion : ~ObjectFlags.Quaternion;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxRotateBase_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxRotateBase.Checked ? ObjectFlags.RotateBase : ~ObjectFlags.RotateBase;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxRotateBase_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxRotateBase.Checked ? ObjectFlags.RotateBase : ~ObjectFlags.RotateBase;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxRotateSet_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxRotateSet.Checked ? ObjectFlags.RotateSet : ~ObjectFlags.RotateSet;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxRotateSet_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxRotateSet.Checked ? ObjectFlags.RotateSet : ~ObjectFlags.RotateSet;
+		//	RaiseFormUpdated();
+		//}
 
-		private void checkBoxEnvelope_Click(object sender, EventArgs e)
-		{
-			objData.Flags |= checkBoxEnvelope.Checked ? ObjectFlags.Envelope : ~ObjectFlags.Envelope;
-			RaiseFormUpdated();
-		}
+		//private void checkBoxEnvelope_Click(object sender, EventArgs e)
+		//{
+		//	objData.Flags |= checkBoxEnvelope.Checked ? ObjectFlags.Envelope : ~ObjectFlags.Envelope;
+		//	RaiseFormUpdated();
+		//}
 	}
 }

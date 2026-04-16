@@ -412,9 +412,9 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			listViewObjectData.Items.Clear();
 			string flagnames = "";
-			string objpos = "SKIP";
-			string objang = "SKIP";
-			string objscl = "SKIP";
+			string objpos = "";
+			string objang = "";
+			string objscl = "";
 			ObjectFlags flg = currentObject.Flags;
 			bool nopos = (flg & ObjectFlags.NoPosition) != 0;
 			bool norot = (flg & ObjectFlags.NoRotate) != 0;
@@ -502,12 +502,9 @@ namespace SAModel.SAEditorCommon.UI
 				&& (!clip) && (!modifier) && (!quaternion) && (!rotatebase) && (!rotateset) && (!envelope))
 				flagnames = "NONE";
 			ListViewItem objdata = new ListViewItem(flagnames);
-			if (!nopos)
-				objpos = currentObject.Position.ToString();
-			if (!norot)
-				objang = currentObject.Rotation.ToString();
-			if (!noscl)
-				objscl = currentObject.Scale.ToString();
+			objpos = currentObject.Position.ToString();
+			objang = currentObject.Rotation.ToString();
+			objscl = currentObject.Scale.ToString();
 			objdata.SubItems.Add(objpos);
 			objdata.SubItems.Add(objang);
 			objdata.SubItems.Add(objscl);
