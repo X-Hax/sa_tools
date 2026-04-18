@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using TextureLib;
+using static TextureLib.DirectXTexUtility;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -78,10 +79,21 @@ namespace SAModel.SAEditorCommon.UI
 		private void SetControls(List<GCParameter> gcp)
 		{
 			diffuseSettingBox.Enabled = false;
+			groupBoxAmbient.Enabled = false;
+			groupBoxSpecular.Enabled = false;
 			groupBoxBlendMode.Enabled = false;
-			groupBoxEnvMap.Enabled = false;
+			groupBoxStripFlags.Enabled = false;
 			groupBoxTexData.Enabled = false;
 			groupBoxUVScale.Enabled = false;
+			checkBoxIgnoreLight.Enabled = false;
+			checkBoxIgnoreAmbient.Enabled = false;
+			checkBoxIgnoreSpecular.Enabled = false;
+			checkBoxVMaterial.Enabled = false;
+			checkBoxVAmbient.Enabled = false;
+			checkBoxUseAlpha.Enabled = false;
+			checkBoxPunchthrough.Enabled = false;
+			checkBoxDoubleSide.Enabled = false;
+			checkBoxEnvMap.Enabled = false;
 			for (int i = 0; i < gcp.Count; i++)
 			{
 				GCParameter gp = gcp[i];
@@ -93,6 +105,26 @@ namespace SAModel.SAEditorCommon.UI
 						comboBoxUVScale.SelectedIndex = (byte)gp.Data;
 					}
 				}
+				if (gp.Type == GC.ParameterType.StripFlags1)
+				{
+					groupBoxStripFlags.Enabled = true;
+					checkBoxIgnoreLight.Enabled = true;
+					checkBoxIgnoreAmbient.Enabled = true;
+					checkBoxIgnoreSpecular.Enabled = true;
+					checkBoxVMaterial.Enabled = true;
+					checkBoxVAmbient.Enabled = true;
+					checkBoxUseAlpha.Enabled = true;
+					checkBoxPunchthrough.Enabled = true;
+					checkBoxDoubleSide.Enabled = true;
+					checkBoxIgnoreLight.Checked = ((GCStripFlags)(gp.Data >> 8)).HasFlag(GCStripFlags.IgnoreLight);
+					checkBoxIgnoreAmbient.Checked = ((GCStripFlags)(gp.Data >> 8)).HasFlag(GCStripFlags.IgnoreAmbient);
+					checkBoxIgnoreSpecular.Checked = ((GCStripFlags)(gp.Data >> 8)).HasFlag(GCStripFlags.IgnoreSpecular);
+					checkBoxVMaterial.Checked = ((GCStripFlags)(gp.Data >> 8)).HasFlag(GCStripFlags.VertexDiffuse);
+					checkBoxVAmbient.Checked = ((GCStripFlags)(gp.Data >> 8)).HasFlag(GCStripFlags.VertexAmbient);
+					checkBoxUseAlpha.Checked = ((GCStripFlags)(gp.Data >> 8)).HasFlag(GCStripFlags.UseAlpha);
+					checkBoxPunchthrough.Checked = ((GCStripFlags)(gp.Data >> 8)).HasFlag(GCStripFlags.NoPunchthrough);
+					checkBoxDoubleSide.Checked = ((GCStripFlags)(gp.Data >> 8)).HasFlag(GCStripFlags.DoubleSided);
+				}
 				if (gp.Type == GC.ParameterType.DiffuseColor)
 				{
 					diffuseSettingBox.Enabled = true;
@@ -100,6 +132,20 @@ namespace SAModel.SAEditorCommon.UI
 					diffuseRUpDown.Value = (byte)(gp.Data >> 8);
 					diffuseGUpDown.Value = (byte)(gp.Data >> 16);
 					diffuseBUpDown.Value = (byte)(gp.Data >> 24);
+				}
+				if (gp.Type == GC.ParameterType.AmbientColor)
+				{
+					groupBoxAmbient.Enabled = true;
+					ambientRUpDown.Value = (byte)(gp.Data >> 8);
+					ambientGUpDown.Value = (byte)(gp.Data >> 16);
+					ambientBUpDown.Value = (byte)(gp.Data >> 24);
+				}
+				if (gp.Type == GC.ParameterType.SpecularColor)
+				{
+					groupBoxAmbient.Enabled = true;
+					specularRUpDown.Value = (byte)(gp.Data >> 8);
+					specularGUpDown.Value = (byte)(gp.Data >> 16);
+					specularBUpDown.Value = (byte)(gp.Data >> 24);
 				}
 				if (gp.Type == GC.ParameterType.BlendAlpha)
 				{
@@ -120,7 +166,8 @@ namespace SAModel.SAEditorCommon.UI
 				}
 				if (gp.Type == GC.ParameterType.TexCoordGen)
 				{
-					groupBoxEnvMap.Enabled = true;
+					groupBoxStripFlags.Enabled = true;
+					checkBoxEnvMap.Enabled = true;
 					checkBoxEnvMap.Checked = (((GCTexGenType)((gp.Data >> 12) & 0xF)) == GCTexGenType.Matrix3x4) && ((GCTexGenSrc)((gp.Data >> 4) & 0xFF) == GCTexGenSrc.Normal) && ((GCTexGenMatrix)(gp.Data & 0xF) == GCTexGenMatrix.Matrix4);
 				}
 			}
@@ -130,6 +177,16 @@ namespace SAModel.SAEditorCommon.UI
 		void SetDiffuseFromNumerics()
 		{
 			diffuseColorBox.BackColor = System.Drawing.Color.FromArgb((int)alphaDiffuseNumeric.Value, (int)diffuseRUpDown.Value, (int)diffuseGUpDown.Value, (int)diffuseBUpDown.Value);
+			RaiseFormUpdated();
+		}
+		void SetAmbientFromNumerics()
+		{
+			ambientColorBox.BackColor = System.Drawing.Color.FromArgb(255, (int)ambientRUpDown.Value, (int)ambientGUpDown.Value, (int)ambientBUpDown.Value);
+			RaiseFormUpdated();
+		}
+		void SetSpecularFromNumerics()
+		{
+			specularColorBox.BackColor = System.Drawing.Color.FromArgb(255, (int)specularRUpDown.Value, (int)specularGUpDown.Value, (int)specularBUpDown.Value);
 			RaiseFormUpdated();
 		}
 		private void RaiseFormUpdated()
@@ -221,9 +278,31 @@ namespace SAModel.SAEditorCommon.UI
 							datatype = "AttrFlags";
 							rawdata = $"{((GCIndexAttributeFlags)pdata.Data).ToString().Replace(", ", " | ")}";
 							break;
-						case GC.ParameterType.Lighting:
-							datatype = "LightMode";
-							rawdata = $"{(short)pdata.Data}, {(byte)((pdata.Data >> 16) & 0xF)}, {(byte)((pdata.Data >> 20) & 0xF)}, {(byte)((pdata.Data >> 24) & 0xFF)}";
+						case GC.ParameterType.StripFlags1:
+							datatype = "StripData";
+							string flags = string.Empty;
+
+							if (((GCStripFlags)(pdata.Data >> 8)).HasFlag(GCStripFlags.IgnoreLight))
+								flags += "IL | ";
+							if (((GCStripFlags)(pdata.Data >> 8)).HasFlag(GCStripFlags.IgnoreSpecular))
+								flags += "IS | ";
+							if (((GCStripFlags)(pdata.Data >> 8)).HasFlag(GCStripFlags.IgnoreAmbient))
+								flags += "IA | ";
+							if (((GCStripFlags)(pdata.Data >> 8)).HasFlag(GCStripFlags.VertexDiffuse))
+								flags += "VM | ";
+							if (((GCStripFlags)(pdata.Data >> 8)).HasFlag(GCStripFlags.VertexAmbient))
+								flags += "VA | ";
+							if (((GCStripFlags)(pdata.Data >> 8)).HasFlag(GCStripFlags.UseAlpha))
+								flags += "UA | ";
+							if (((GCStripFlags)(pdata.Data >> 8)).HasFlag(GCStripFlags.NoPunchthrough))
+								flags += "NPT | ";
+							if (((GCStripFlags)(pdata.Data >> 8)).HasFlag(GCStripFlags.DoubleSided))
+								flags += "DB | ";
+							if (flags == string.Empty)
+								flags = "0x0";
+							else
+								flags = flags.Remove(flags.Length - 3);
+							rawdata = $"ChannelNum({(byte)(pdata.Data & 0x3)}), TexGenCount({(byte)((pdata.Data >> 4) & 0xF)}), {flags}, ShadowStencil({(byte)((pdata.Data >> 16) & 0xF)})";
 							break;
 						case GC.ParameterType.BlendAlpha:
 							datatype = "BlendMode";
@@ -295,6 +374,39 @@ namespace SAModel.SAEditorCommon.UI
 				}
 			}
 		}
+		private void SetStripFlags()
+		{
+			List<GCParameter> gcp = ParamData;
+			for (int i = 0; i < gcp.Count; i++)
+			{
+				GCParameter gp = gcp[i];
+				if (gp.Type == GC.ParameterType.StripFlags1)
+				{
+					uint strips = gp.Data;
+					uint flags = 0;
+					if (checkBoxIgnoreLight.Checked)
+						flags |= 0x1;
+					if (checkBoxIgnoreSpecular.Checked)
+						flags |= 0x2;
+					if (checkBoxIgnoreAmbient.Checked)
+						flags |= 0x4;
+					if (checkBoxVMaterial.Checked)
+						flags |= 0x8;
+					if (checkBoxVAmbient.Checked)
+						flags |= 0x10;
+					if (checkBoxUseAlpha.Checked)
+						flags |= 0x20;
+					if (checkBoxPunchthrough.Checked)
+						flags |= 0x40;
+					if (checkBoxDoubleSide.Checked)
+						flags |= 0x80;
+					strips &= 0xFFFF00FF;
+					strips |= (uint)flags << 8;
+					gp.Data = strips;
+				}
+			}
+		}
+
 
 		private void checkSettingsOnClose()
 		{
@@ -309,6 +421,29 @@ namespace SAModel.SAEditorCommon.UI
 						gp.Data &= 0xFFFFFF00;
 						gp.Data |= (byte)comboBoxUVScale.SelectedIndex;
 					}
+				}
+				if (gp.Type == GC.ParameterType.StripFlags1)
+				{
+					uint strips = gp.Data;
+					uint flags = 0;
+					if (checkBoxIgnoreLight.Checked)
+						flags |= 0x1;
+					if (checkBoxIgnoreSpecular.Checked)
+						flags |= 0x2;
+					if (checkBoxIgnoreAmbient.Checked)
+						flags |= 0x4;
+					if (checkBoxVMaterial.Checked)
+						flags |= 0x8;
+					if (checkBoxVAmbient.Checked)
+						flags |= 0x10;
+					if (checkBoxUseAlpha.Checked)
+						flags |= 0x20;
+					if (checkBoxPunchthrough.Checked)
+						flags |= 0x40;
+					if (checkBoxDoubleSide.Checked)
+						flags |= 0x80;
+					strips &= 0xFFFF00FF;
+					strips |= (uint)flags << 8;
 				}
 				if (gp.Type == GC.ParameterType.BlendAlpha)
 				{
@@ -330,6 +465,28 @@ namespace SAModel.SAEditorCommon.UI
 					amb |= (uint)diffuseGUpDown.Value << 16;
 					amb &= 0x00FFFFFF;
 					amb |= (uint)diffuseBUpDown.Value << 24;
+					gp.Data = amb;
+				}
+				if (gp.Type == GC.ParameterType.AmbientColor)
+				{
+					uint amb = gp.Data;
+					amb &= 0xFFFF00FF;
+					amb |= (uint)ambientRUpDown.Value << 8;
+					amb &= 0xFF00FFFF;
+					amb |= (uint)ambientGUpDown.Value << 16;
+					amb &= 0x00FFFFFF;
+					amb |= (uint)ambientBUpDown.Value << 24;
+					gp.Data = amb;
+				}
+				if (gp.Type == GC.ParameterType.SpecularColor)
+				{
+					uint amb = gp.Data;
+					amb &= 0xFFFF00FF;
+					amb |= (uint)specularRUpDown.Value << 8;
+					amb &= 0xFF00FFFF;
+					amb |= (uint)specularGUpDown.Value << 16;
+					amb &= 0x00FFFFFF;
+					amb |= (uint)specularBUpDown.Value << 24;
 					gp.Data = amb;
 				}
 				if (gp.Type == GC.ParameterType.Texture)
@@ -608,6 +765,48 @@ namespace SAModel.SAEditorCommon.UI
 			RaiseFormUpdated();
 		}
 
+		private void checkBoxIgnoreLight_Click(object sender, EventArgs e)
+		{
+			SetStripFlags();
+			RaiseFormUpdated();
+		}
+		private void checkBoxIgnoreAmbient_Click(object sender, EventArgs e)
+		{
+			SetStripFlags();
+			RaiseFormUpdated();
+		}
+		private void checkBoxIgnoreSpecular_Click(object sender, EventArgs e)
+		{
+			SetStripFlags();
+			RaiseFormUpdated();
+		}
+		private void checkBoxVMaterial_Click(object sender, EventArgs e)
+		{
+			SetStripFlags();
+			RaiseFormUpdated();
+		}
+		private void checkBoxVAmbient_Click(object sender, EventArgs e)
+		{
+			SetStripFlags();
+			RaiseFormUpdated();
+		}
+		private void checkBoxUseAlpha_Click(object sender, EventArgs e)
+		{
+			SetStripFlags();
+			RaiseFormUpdated();
+		}
+		private void checkBoxPunchthrough_Click(object sender, EventArgs e)
+		{
+			SetStripFlags();
+			RaiseFormUpdated();
+		}
+		private void checkBoxDoubleSide_Click(object sender, EventArgs e)
+		{
+			SetStripFlags();
+			RaiseFormUpdated();
+		}
+
+
 		private void textureBox_Click(object sender, EventArgs e)
 		{
 			if (textures == null)
@@ -701,6 +900,154 @@ namespace SAModel.SAEditorCommon.UI
 				}
 			}
 			RaiseFormUpdated();
+		}
+
+		private void ambientRUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			SetAmbientFromNumerics();
+			List<GCParameter> gcp = ParamData;
+			for (int i = 0; i < gcp.Count; i++)
+			{
+				GCParameter gp = gcp[i];
+				if (gp.Type == GC.ParameterType.AmbientColor)
+				{
+					gp.Data &= 0xFFFF00FF;
+					gp.Data |= (uint)ambientRUpDown.Value << 8;
+				}
+			}
+		}
+
+		private void ambientGUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			SetAmbientFromNumerics();
+			List<GCParameter> gcp = ParamData;
+			for (int i = 0; i < gcp.Count; i++)
+			{
+				GCParameter gp = gcp[i];
+				if (gp.Type == GC.ParameterType.AmbientColor)
+				{
+					gp.Data &= 0xFF00FFFF;
+					gp.Data |= (uint)ambientGUpDown.Value << 16;
+				}
+			}
+		}
+
+		private void ambientBUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			SetAmbientFromNumerics();
+			List<GCParameter> gcp = ParamData;
+			for (int i = 0; i < gcp.Count; i++)
+			{
+				GCParameter gp = gcp[i];
+				if (gp.Type == GC.ParameterType.AmbientColor)
+				{
+					gp.Data &= 0x00FFFFFF;
+					gp.Data |= (uint)ambientBUpDown.Value << 24;
+				}
+			}
+		}
+
+		private void specularRUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			SetSpecularFromNumerics();
+			List<GCParameter> gcp = ParamData;
+			for (int i = 0; i < gcp.Count; i++)
+			{
+				GCParameter gp = gcp[i];
+				if (gp.Type == GC.ParameterType.SpecularColor)
+				{
+					gp.Data &= 0xFFFF00FF;
+					gp.Data |= (uint)specularRUpDown.Value << 8;
+				}
+			}
+		}
+
+		private void specularGUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			SetSpecularFromNumerics();
+			List<GCParameter> gcp = ParamData;
+			for (int i = 0; i < gcp.Count; i++)
+			{
+				GCParameter gp = gcp[i];
+				if (gp.Type == GC.ParameterType.SpecularColor)
+				{
+					gp.Data &= 0xFF00FFFF;
+					gp.Data |= (uint)specularGUpDown.Value << 16;
+				}
+			}
+		}
+
+		private void specularBUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			SetSpecularFromNumerics();
+			List<GCParameter> gcp = ParamData;
+			for (int i = 0; i < gcp.Count; i++)
+			{
+				GCParameter gp = gcp[i];
+				if (gp.Type == GC.ParameterType.SpecularColor)
+				{
+					gp.Data &= 0x00FFFFFF;
+					gp.Data |= (uint)specularBUpDown.Value << 24;
+				}
+			}
+		}
+
+		private void ambientColorBox_Click(object sender, EventArgs e)
+		{
+			List<GCParameter> gcp = ParamData;
+			for (int i = 0; i < gcp.Count; i++)
+			{
+				GCParameter gp = gcp[i];
+				if (gp.Type == GC.ParameterType.AmbientColor)
+				{
+					uint edata = gp.Data;
+					byte Red = (byte)((edata >> 8) & 0xFF);
+					byte Green = (byte)((edata >> 16) & 0xFF);
+					byte Blue = (byte)(edata >> 24);
+					colorDialog.Color = System.Drawing.Color.FromArgb(255, Red, Green, Blue);
+					if (colorDialog.ShowDialog() == DialogResult.OK)
+					{
+						Red = colorDialog.Color.R;
+						Green = colorDialog.Color.G;
+						Blue = colorDialog.Color.B;
+						colorDialog.Color = System.Drawing.Color.FromArgb(255, Red, Green, Blue);
+						ambientRUpDown.Value = Red;
+						ambientGUpDown.Value = Green;
+						ambientBUpDown.Value = Blue;
+					}
+				}
+			}
+			RaiseFormUpdated();
+		}
+
+		private void specularColorBox_Click(object sender, EventArgs e)
+		{
+			{
+				List<GCParameter> gcp = ParamData;
+				for (int i = 0; i < gcp.Count; i++)
+				{
+					GCParameter gp = gcp[i];
+					if (gp.Type == GC.ParameterType.SpecularColor)
+					{
+						uint edata = gp.Data;
+						byte Red = (byte)((edata >> 8) & 0xFF);
+						byte Green = (byte)((edata >> 16) & 0xFF);
+						byte Blue = (byte)(edata >> 24);
+						colorDialog.Color = System.Drawing.Color.FromArgb(255, Red, Green, Blue);
+						if (colorDialog.ShowDialog() == DialogResult.OK)
+						{
+							Red = colorDialog.Color.R;
+							Green = colorDialog.Color.G;
+							Blue = colorDialog.Color.B;
+							colorDialog.Color = System.Drawing.Color.FromArgb(255, Red, Green, Blue);
+							specularRUpDown.Value = Red;
+							specularGUpDown.Value = Green;
+							specularBUpDown.Value = Blue;
+						}
+					}
+				}
+				RaiseFormUpdated();
+			}
 		}
 	}
 }

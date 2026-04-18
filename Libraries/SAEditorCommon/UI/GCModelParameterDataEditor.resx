@@ -126,6 +126,21 @@
   <metadata name="contextMenuStripVertCol.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>603, 17</value>
   </metadata>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 63</value>
+  </metadata>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 63</value>
+  </metadata>
+  <data name="checkBoxIgnoreAmbient.ToolTip" xml:space="preserve">
+    <value>If checked, the mesh will ignore the ambient light source.
+In other words, the ambient light will be treated as black, darkening the model.
+This flag can be set, but it does nothing in games that utilize Ginja models.</value>
+  </data>
+  <data name="checkBoxEnvMap.ToolTip" xml:space="preserve">
+    <value>If checked, the texture's uv maps will be mapped to the environment and the model will appear 'shiny'.
+This flag is not part of the Strip Flag data set, since its functionality is controlled by TexGen.</value>
+  </data>
   <metadata name="colorDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
