@@ -100,11 +100,11 @@ namespace SAModel.SAEditorCommon.UI
 			flagsGroupBox.Controls.Add(useAlphaCheck);
 			flagsGroupBox.Controls.Add(ignoreSpecCheck);
 			flagsGroupBox.Controls.Add(ignoreAmbiCheck);
-			flagsGroupBox.Location = new System.Drawing.Point(490, 13);
+			flagsGroupBox.Location = new System.Drawing.Point(360, 13);
 			flagsGroupBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flagsGroupBox.Name = "flagsGroupBox";
 			flagsGroupBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			flagsGroupBox.Size = new System.Drawing.Size(425, 385);
+			flagsGroupBox.Size = new System.Drawing.Size(336, 254);
 			flagsGroupBox.TabIndex = 10;
 			flagsGroupBox.TabStop = false;
 			flagsGroupBox.Text = "Flags";
@@ -112,9 +112,9 @@ namespace SAModel.SAEditorCommon.UI
 			// exAlphaLabel
 			// 
 			exAlphaLabel.AutoSize = true;
-			exAlphaLabel.Location = new System.Drawing.Point(62, 75);
+			exAlphaLabel.Location = new System.Drawing.Point(54, 45);
 			exAlphaLabel.Name = "exAlphaLabel";
-			exAlphaLabel.Size = new System.Drawing.Size(104, 25);
+			exAlphaLabel.Size = new System.Drawing.Size(69, 15);
 			exAlphaLabel.TabIndex = 18;
 			exAlphaLabel.Text = "Alpha Type:";
 			// 
@@ -122,33 +122,33 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			exAlphaSettingComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			exAlphaSettingComboBox.FormattingEnabled = true;
-			exAlphaSettingComboBox.Items.AddRange(new object[] { "Normal", "No Alpha Test", "Force Alpha Test" });
-			exAlphaSettingComboBox.Location = new System.Drawing.Point(178, 73);
+			exAlphaSettingComboBox.Items.AddRange(new object[] { "Normal", "No Punchthrough", "Force Punchthrough" });
+			exAlphaSettingComboBox.Location = new System.Drawing.Point(129, 42);
 			exAlphaSettingComboBox.Name = "exAlphaSettingComboBox";
-			exAlphaSettingComboBox.Size = new System.Drawing.Size(198, 33);
+			exAlphaSettingComboBox.Size = new System.Drawing.Size(190, 23);
 			exAlphaSettingComboBox.TabIndex = 12;
 			toolTip.SetToolTip(exAlphaSettingComboBox, resources.GetString("exAlphaSettingComboBox.ToolTip"));
 			exAlphaSettingComboBox.SelectedIndexChanged += exAlphaSettingComboBox_SelectedIndexChanged;
 			// 
 			// userFlagsNumericUpDown
 			// 
-			userFlagsNumericUpDown.Location = new System.Drawing.Point(123, 328);
+			userFlagsNumericUpDown.Location = new System.Drawing.Point(82, 213);
 			userFlagsNumericUpDown.Name = "userFlagsNumericUpDown";
-			userFlagsNumericUpDown.Size = new System.Drawing.Size(64, 31);
+			userFlagsNumericUpDown.Size = new System.Drawing.Size(64, 23);
 			userFlagsNumericUpDown.TabIndex = 19;
 			// 
 			// label4
 			// 
 			label4.AutoSize = true;
-			label4.Location = new System.Drawing.Point(21, 329);
+			label4.Location = new System.Drawing.Point(13, 215);
 			label4.Name = "label4";
-			label4.Size = new System.Drawing.Size(97, 25);
+			label4.Size = new System.Drawing.Size(63, 15);
 			label4.TabIndex = 13;
 			label4.Text = "User Flags:";
 			// 
 			// ignoreLightCheck
 			// 
-			ignoreLightCheck.Location = new System.Drawing.Point(20, 255);
+			ignoreLightCheck.Location = new System.Drawing.Point(12, 165);
 			ignoreLightCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreLightCheck.Name = "ignoreLightCheck";
 			ignoreLightCheck.Size = new System.Drawing.Size(232, 29);
@@ -160,7 +160,7 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// flatShadeCheck
 			// 
-			flatShadeCheck.Location = new System.Drawing.Point(20, 183);
+			flatShadeCheck.Location = new System.Drawing.Point(12, 117);
 			flatShadeCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flatShadeCheck.Name = "flatShadeCheck";
 			flatShadeCheck.Size = new System.Drawing.Size(215, 29);
@@ -172,7 +172,7 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// doubleSideCheck
 			// 
-			doubleSideCheck.Location = new System.Drawing.Point(20, 147);
+			doubleSideCheck.Location = new System.Drawing.Point(12, 93);
 			doubleSideCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			doubleSideCheck.Name = "doubleSideCheck";
 			doubleSideCheck.Size = new System.Drawing.Size(215, 29);
@@ -184,7 +184,7 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// envMapCheck
 			// 
-			envMapCheck.Location = new System.Drawing.Point(20, 111);
+			envMapCheck.Location = new System.Drawing.Point(12, 69);
 			envMapCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			envMapCheck.Name = "envMapCheck";
 			envMapCheck.Size = new System.Drawing.Size(260, 29);
@@ -196,7 +196,7 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// useAlphaCheck
 			// 
-			useAlphaCheck.Location = new System.Drawing.Point(20, 39);
+			useAlphaCheck.Location = new System.Drawing.Point(12, 21);
 			useAlphaCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			useAlphaCheck.Name = "useAlphaCheck";
 			useAlphaCheck.Size = new System.Drawing.Size(215, 29);
@@ -208,7 +208,7 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// ignoreSpecCheck
 			// 
-			ignoreSpecCheck.Location = new System.Drawing.Point(20, 291);
+			ignoreSpecCheck.Location = new System.Drawing.Point(12, 189);
 			ignoreSpecCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreSpecCheck.Name = "ignoreSpecCheck";
 			ignoreSpecCheck.Size = new System.Drawing.Size(215, 29);
@@ -220,7 +220,7 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// ignoreAmbiCheck
 			// 
-			ignoreAmbiCheck.Location = new System.Drawing.Point(20, 218);
+			ignoreAmbiCheck.Location = new System.Drawing.Point(12, 140);
 			ignoreAmbiCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreAmbiCheck.Name = "ignoreAmbiCheck";
 			ignoreAmbiCheck.Size = new System.Drawing.Size(215, 29);
@@ -232,11 +232,11 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// doneButton
 			// 
-			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(818, 540);
+			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+			doneButton.Location = new System.Drawing.Point(631, 459);
 			doneButton.Margin = new System.Windows.Forms.Padding(4);
 			doneButton.Name = "doneButton";
-			doneButton.Size = new System.Drawing.Size(132, 40);
+			doneButton.Size = new System.Drawing.Size(71, 40);
 			doneButton.TabIndex = 25;
 			doneButton.Text = "Done";
 			doneButton.UseVisualStyleBackColor = true;
@@ -250,11 +250,11 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// resetButton
 			// 
-			resetButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			resetButton.Location = new System.Drawing.Point(659, 540);
+			resetButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+			resetButton.Location = new System.Drawing.Point(533, 459);
 			resetButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			resetButton.Name = "resetButton";
-			resetButton.Size = new System.Drawing.Size(132, 40);
+			resetButton.Size = new System.Drawing.Size(71, 40);
 			resetButton.TabIndex = 24;
 			resetButton.Text = "Reset";
 			toolTip.SetToolTip(resetButton, "Reset the poly data to the state it was when this dialog opened.");
@@ -263,9 +263,9 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// deleteAllUVButton
 			// 
-			deleteAllUVButton.Location = new System.Drawing.Point(247, 383);
+			deleteAllUVButton.Location = new System.Drawing.Point(190, 328);
 			deleteAllUVButton.Name = "deleteAllUVButton";
-			deleteAllUVButton.Size = new System.Drawing.Size(186, 34);
+			deleteAllUVButton.Size = new System.Drawing.Size(131, 34);
 			deleteAllUVButton.TabIndex = 4;
 			deleteAllUVButton.Text = "Delete All UV Data";
 			toolTip.SetToolTip(deleteAllUVButton, "Deletes all UV data from the strip collection, converting the data chunk\r\nto use the Strip_Strip format.");
@@ -283,16 +283,16 @@ namespace SAModel.SAEditorCommon.UI
 			groupBox1.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			groupBox1.Name = "groupBox1";
 			groupBox1.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			groupBox1.Size = new System.Drawing.Size(454, 567);
+			groupBox1.Size = new System.Drawing.Size(330, 489);
 			groupBox1.TabIndex = 0;
 			groupBox1.TabStop = false;
 			groupBox1.Text = "Strip Sets";
 			// 
 			// deleteSelectedUVButton
 			// 
-			deleteSelectedUVButton.Location = new System.Drawing.Point(30, 383);
+			deleteSelectedUVButton.Location = new System.Drawing.Point(9, 329);
 			deleteSelectedUVButton.Name = "deleteSelectedUVButton";
-			deleteSelectedUVButton.Size = new System.Drawing.Size(190, 34);
+			deleteSelectedUVButton.Size = new System.Drawing.Size(144, 34);
 			deleteSelectedUVButton.TabIndex = 3;
 			deleteSelectedUVButton.Text = "Delete Selected Strip";
 			deleteSelectedUVButton.UseVisualStyleBackColor = true;
@@ -304,18 +304,18 @@ namespace SAModel.SAEditorCommon.UI
 			groupBox2.Controls.Add(flipAllWindingsButton);
 			groupBox2.Controls.Add(resetWindingButton);
 			groupBox2.Controls.Add(flipWindingButton);
-			groupBox2.Location = new System.Drawing.Point(30, 425);
+			groupBox2.Location = new System.Drawing.Point(17, 369);
 			groupBox2.Name = "groupBox2";
-			groupBox2.Size = new System.Drawing.Size(403, 122);
+			groupBox2.Size = new System.Drawing.Size(294, 110);
 			groupBox2.TabIndex = 5;
 			groupBox2.TabStop = false;
 			groupBox2.Text = "Windings";
 			// 
 			// resetAllWindingsButton
 			// 
-			resetAllWindingsButton.Location = new System.Drawing.Point(217, 70);
+			resetAllWindingsButton.Location = new System.Drawing.Point(165, 62);
 			resetAllWindingsButton.Name = "resetAllWindingsButton";
-			resetAllWindingsButton.Size = new System.Drawing.Size(137, 34);
+			resetAllWindingsButton.Size = new System.Drawing.Size(115, 34);
 			resetAllWindingsButton.TabIndex = 9;
 			resetAllWindingsButton.Text = "Reset All";
 			resetAllWindingsButton.UseVisualStyleBackColor = true;
@@ -323,9 +323,9 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// flipAllWindingsButton
 			// 
-			flipAllWindingsButton.Location = new System.Drawing.Point(217, 30);
+			flipAllWindingsButton.Location = new System.Drawing.Point(165, 22);
 			flipAllWindingsButton.Name = "flipAllWindingsButton";
-			flipAllWindingsButton.Size = new System.Drawing.Size(137, 34);
+			flipAllWindingsButton.Size = new System.Drawing.Size(115, 34);
 			flipAllWindingsButton.TabIndex = 7;
 			flipAllWindingsButton.Text = "Flip All";
 			flipAllWindingsButton.UseVisualStyleBackColor = true;
@@ -333,9 +333,9 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// resetWindingButton
 			// 
-			resetWindingButton.Location = new System.Drawing.Point(40, 70);
+			resetWindingButton.Location = new System.Drawing.Point(15, 62);
 			resetWindingButton.Name = "resetWindingButton";
-			resetWindingButton.Size = new System.Drawing.Size(137, 34);
+			resetWindingButton.Size = new System.Drawing.Size(115, 34);
 			resetWindingButton.TabIndex = 8;
 			resetWindingButton.Text = "Reset Selected";
 			resetWindingButton.UseVisualStyleBackColor = true;
@@ -343,9 +343,9 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// flipWindingButton
 			// 
-			flipWindingButton.Location = new System.Drawing.Point(40, 30);
+			flipWindingButton.Location = new System.Drawing.Point(15, 22);
 			flipWindingButton.Name = "flipWindingButton";
-			flipWindingButton.Size = new System.Drawing.Size(137, 34);
+			flipWindingButton.Size = new System.Drawing.Size(115, 34);
 			flipWindingButton.TabIndex = 6;
 			flipWindingButton.Text = "Flip Selected";
 			flipWindingButton.UseVisualStyleBackColor = true;
@@ -357,10 +357,10 @@ namespace SAModel.SAEditorCommon.UI
 			stripListView.FullRowSelect = true;
 			stripListView.GridLines = true;
 			stripListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			stripListView.Location = new System.Drawing.Point(30, 97);
+			stripListView.Location = new System.Drawing.Point(9, 52);
 			stripListView.MultiSelect = false;
 			stripListView.Name = "stripListView";
-			stripListView.Size = new System.Drawing.Size(403, 269);
+			stripListView.Size = new System.Drawing.Size(308, 269);
 			stripListView.TabIndex = 2;
 			stripListView.UseCompatibleStateImageBehavior = false;
 			stripListView.View = System.Windows.Forms.View.Details;
@@ -389,9 +389,9 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			stripSetComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			stripSetComboBox.FormattingEnabled = true;
-			stripSetComboBox.Location = new System.Drawing.Point(30, 39);
+			stripSetComboBox.Location = new System.Drawing.Point(9, 23);
 			stripSetComboBox.Name = "stripSetComboBox";
-			stripSetComboBox.Size = new System.Drawing.Size(403, 33);
+			stripSetComboBox.Size = new System.Drawing.Size(308, 23);
 			stripSetComboBox.TabIndex = 1;
 			stripSetComboBox.SelectedIndexChanged += stripSetComboBox_SelectedIndexChanged;
 			// 
@@ -403,67 +403,68 @@ namespace SAModel.SAEditorCommon.UI
 			groupBox3.Controls.Add(label3);
 			groupBox3.Controls.Add(label2);
 			groupBox3.Controls.Add(label1);
-			groupBox3.Location = new System.Drawing.Point(491, 405);
+			groupBox3.Location = new System.Drawing.Point(360, 274);
 			groupBox3.Name = "groupBox3";
-			groupBox3.Size = new System.Drawing.Size(457, 97);
+			groupBox3.Size = new System.Drawing.Size(145, 118);
 			groupBox3.TabIndex = 20;
 			groupBox3.TabStop = false;
 			groupBox3.Text = "User Flags (Strip)";
 			// 
 			// userFlag3NumericUpDown
 			// 
-			userFlag3NumericUpDown.Location = new System.Drawing.Point(370, 37);
+			userFlag3NumericUpDown.Location = new System.Drawing.Point(62, 75);
 			userFlag3NumericUpDown.Name = "userFlag3NumericUpDown";
-			userFlag3NumericUpDown.Size = new System.Drawing.Size(60, 31);
+			userFlag3NumericUpDown.Size = new System.Drawing.Size(60, 23);
 			userFlag3NumericUpDown.TabIndex = 23;
 			// 
 			// userFlag2NumericUpDown
 			// 
-			userFlag2NumericUpDown.Location = new System.Drawing.Point(231, 37);
+			userFlag2NumericUpDown.Location = new System.Drawing.Point(62, 49);
 			userFlag2NumericUpDown.Name = "userFlag2NumericUpDown";
-			userFlag2NumericUpDown.Size = new System.Drawing.Size(60, 31);
+			userFlag2NumericUpDown.Size = new System.Drawing.Size(60, 23);
 			userFlag2NumericUpDown.TabIndex = 22;
 			// 
 			// userFlag1NumericUpDown
 			// 
-			userFlag1NumericUpDown.Location = new System.Drawing.Point(95, 37);
+			userFlag1NumericUpDown.Location = new System.Drawing.Point(62, 24);
 			userFlag1NumericUpDown.Name = "userFlag1NumericUpDown";
-			userFlag1NumericUpDown.Size = new System.Drawing.Size(60, 31);
+			userFlag1NumericUpDown.Size = new System.Drawing.Size(60, 23);
 			userFlag1NumericUpDown.TabIndex = 21;
 			// 
 			// label3
 			// 
 			label3.AutoSize = true;
-			label3.Location = new System.Drawing.Point(298, 37);
+			label3.Location = new System.Drawing.Point(13, 77);
 			label3.Name = "label3";
-			label3.Size = new System.Drawing.Size(64, 25);
+			label3.Size = new System.Drawing.Size(41, 15);
 			label3.TabIndex = 2;
 			label3.Text = "Flag 3:";
 			// 
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new System.Drawing.Point(161, 37);
+			label2.Location = new System.Drawing.Point(13, 51);
 			label2.Name = "label2";
-			label2.Size = new System.Drawing.Size(64, 25);
+			label2.Size = new System.Drawing.Size(41, 15);
 			label2.TabIndex = 1;
 			label2.Text = "Flag 2:";
 			// 
 			// label1
 			// 
 			label1.AutoSize = true;
-			label1.Location = new System.Drawing.Point(23, 37);
+			label1.Location = new System.Drawing.Point(13, 26);
 			label1.Name = "label1";
-			label1.Size = new System.Drawing.Size(64, 25);
+			label1.Size = new System.Drawing.Size(41, 15);
 			label1.TabIndex = 0;
 			label1.Text = "Flag 1:";
 			// 
 			// ChunkModelStripDataEditor
 			// 
 			AcceptButton = doneButton;
-			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(965, 601);
+			ClientSize = new System.Drawing.Size(711, 510);
 			ControlBox = false;
 			Controls.Add(groupBox3);
 			Controls.Add(groupBox1);

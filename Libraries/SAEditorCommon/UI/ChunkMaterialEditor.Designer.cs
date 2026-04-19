@@ -33,6 +33,7 @@
 			currentMaterialLabel = new System.Windows.Forms.Label();
 			colorDialog = new System.Windows.Forms.ColorDialog();
 			flagsGroupBox = new System.Windows.Forms.GroupBox();
+			noAlphaTestCheck = new System.Windows.Forms.CheckBox();
 			labelFlags = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			userFlagsLabel = new System.Windows.Forms.Label();
@@ -73,7 +74,6 @@
 			cloneButton = new System.Windows.Forms.Button();
 			deleteButton = new System.Windows.Forms.Button();
 			resetButton = new System.Windows.Forms.Button();
-			noAlphaTestCheck = new System.Windows.Forms.CheckBox();
 			flagsGroupBox.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)userFlagsNumeric).BeginInit();
 			generalSettingBox.SuspendLayout();
@@ -85,10 +85,10 @@
 			// 
 			comboMaterial.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			comboMaterial.FormattingEnabled = true;
-			comboMaterial.Location = new System.Drawing.Point(178, 21);
-			comboMaterial.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			comboMaterial.Location = new System.Drawing.Point(119, 14);
+			comboMaterial.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			comboMaterial.Name = "comboMaterial";
-			comboMaterial.Size = new System.Drawing.Size(404, 33);
+			comboMaterial.Size = new System.Drawing.Size(271, 23);
 			comboMaterial.TabIndex = 1;
 			comboMaterial.SelectedIndexChanged += comboMaterial_SelectedIndexChanged;
 			comboMaterial.KeyDown += onKeyDown;
@@ -96,10 +96,10 @@
 			// currentMaterialLabel
 			// 
 			currentMaterialLabel.AutoSize = true;
-			currentMaterialLabel.Location = new System.Drawing.Point(21, 26);
-			currentMaterialLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			currentMaterialLabel.Location = new System.Drawing.Point(14, 17);
+			currentMaterialLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			currentMaterialLabel.Name = "currentMaterialLabel";
-			currentMaterialLabel.Size = new System.Drawing.Size(142, 25);
+			currentMaterialLabel.Size = new System.Drawing.Size(96, 15);
 			currentMaterialLabel.TabIndex = 0;
 			currentMaterialLabel.Text = "Current Material:";
 			// 
@@ -129,53 +129,67 @@
 			flagsGroupBox.Controls.Add(clampUCheck);
 			flagsGroupBox.Controls.Add(superSampleCheck);
 			flagsGroupBox.Controls.Add(pickStatusCheck);
-			flagsGroupBox.Location = new System.Drawing.Point(552, 68);
-			flagsGroupBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			flagsGroupBox.Location = new System.Drawing.Point(368, 45);
+			flagsGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			flagsGroupBox.Name = "flagsGroupBox";
-			flagsGroupBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			flagsGroupBox.Size = new System.Drawing.Size(436, 317);
+			flagsGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			flagsGroupBox.Size = new System.Drawing.Size(291, 211);
 			flagsGroupBox.TabIndex = 8;
 			flagsGroupBox.TabStop = false;
 			flagsGroupBox.Text = "Flags";
 			// 
+			// noAlphaTestCheck
+			// 
+			noAlphaTestCheck.AutoSize = true;
+			noAlphaTestCheck.Location = new System.Drawing.Point(121, 151);
+			noAlphaTestCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			noAlphaTestCheck.Name = "noAlphaTestCheck";
+			noAlphaTestCheck.Size = new System.Drawing.Size(122, 19);
+			noAlphaTestCheck.TabIndex = 17;
+			noAlphaTestCheck.Text = "No Punchthrough";
+			toolTip.SetToolTip(noAlphaTestCheck, "This flag does nothing outside of SA2B.");
+			noAlphaTestCheck.UseVisualStyleBackColor = true;
+			noAlphaTestCheck.Click += noAlphaTestCheck_Click;
+			noAlphaTestCheck.KeyDown += onKeyDown;
+			// 
 			// labelFlags
 			// 
 			labelFlags.AutoSize = true;
-			labelFlags.Location = new System.Drawing.Point(82, 266);
-			labelFlags.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			labelFlags.Location = new System.Drawing.Point(55, 177);
+			labelFlags.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			labelFlags.Name = "labelFlags";
-			labelFlags.Size = new System.Drawing.Size(60, 25);
+			labelFlags.Size = new System.Drawing.Size(40, 15);
 			labelFlags.TabIndex = 16;
 			labelFlags.Text = "[flags]";
 			// 
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new System.Drawing.Point(10, 266);
-			label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			label2.Location = new System.Drawing.Point(7, 177);
+			label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label2.Name = "label2";
-			label2.Size = new System.Drawing.Size(57, 25);
+			label2.Size = new System.Drawing.Size(37, 15);
 			label2.TabIndex = 15;
 			label2.Text = "Flags:";
 			// 
 			// userFlagsLabel
 			// 
 			userFlagsLabel.AutoSize = true;
-			userFlagsLabel.Location = new System.Drawing.Point(205, 266);
-			userFlagsLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			userFlagsLabel.Location = new System.Drawing.Point(137, 177);
+			userFlagsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			userFlagsLabel.Name = "userFlagsLabel";
-			userFlagsLabel.Size = new System.Drawing.Size(97, 25);
+			userFlagsLabel.Size = new System.Drawing.Size(63, 15);
 			userFlagsLabel.TabIndex = 13;
 			userFlagsLabel.Text = "User Flags:";
 			// 
 			// userFlagsNumeric
 			// 
 			userFlagsNumeric.Hexadecimal = true;
-			userFlagsNumeric.Location = new System.Drawing.Point(314, 264);
-			userFlagsNumeric.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			userFlagsNumeric.Location = new System.Drawing.Point(209, 176);
+			userFlagsNumeric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			userFlagsNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			userFlagsNumeric.Name = "userFlagsNumeric";
-			userFlagsNumeric.Size = new System.Drawing.Size(104, 31);
+			userFlagsNumeric.Size = new System.Drawing.Size(69, 23);
 			userFlagsNumeric.TabIndex = 14;
 			userFlagsNumeric.ValueChanged += userFlagsNumeric_ValueChanged;
 			userFlagsNumeric.KeyDown += onKeyDown;
@@ -183,10 +197,10 @@
 			// ignoreLightCheck
 			// 
 			ignoreLightCheck.AutoSize = true;
-			ignoreLightCheck.Location = new System.Drawing.Point(182, 33);
-			ignoreLightCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			ignoreLightCheck.Location = new System.Drawing.Point(121, 22);
+			ignoreLightCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			ignoreLightCheck.Name = "ignoreLightCheck";
-			ignoreLightCheck.Size = new System.Drawing.Size(159, 29);
+			ignoreLightCheck.Size = new System.Drawing.Size(107, 19);
 			ignoreLightCheck.TabIndex = 12;
 			ignoreLightCheck.Text = "Ignore Lighting";
 			toolTip.SetToolTip(ignoreLightCheck, "If checked, the mesh will not have any lighting applied.");
@@ -197,10 +211,10 @@
 			// flatShadeCheck
 			// 
 			flatShadeCheck.AutoSize = true;
-			flatShadeCheck.Location = new System.Drawing.Point(182, 194);
-			flatShadeCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			flatShadeCheck.Location = new System.Drawing.Point(121, 129);
+			flatShadeCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			flatShadeCheck.Name = "flatShadeCheck";
-			flatShadeCheck.Size = new System.Drawing.Size(131, 29);
+			flatShadeCheck.Size = new System.Drawing.Size(87, 19);
 			flatShadeCheck.TabIndex = 11;
 			flatShadeCheck.Text = "Flat Shaded";
 			toolTip.SetToolTip(flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted, like a cut gem or die. This flag does nothing in SADX.");
@@ -211,10 +225,10 @@
 			// doubleSideCheck
 			// 
 			doubleSideCheck.AutoSize = true;
-			doubleSideCheck.Location = new System.Drawing.Point(182, 161);
-			doubleSideCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			doubleSideCheck.Location = new System.Drawing.Point(121, 107);
+			doubleSideCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			doubleSideCheck.Name = "doubleSideCheck";
-			doubleSideCheck.Size = new System.Drawing.Size(146, 29);
+			doubleSideCheck.Size = new System.Drawing.Size(96, 19);
 			doubleSideCheck.TabIndex = 10;
 			doubleSideCheck.Text = "Double Sided";
 			toolTip.SetToolTip(doubleSideCheck, "Doesn't do anything, since Sonic Adventure does not support backface cull.");
@@ -225,10 +239,10 @@
 			// envMapCheck
 			// 
 			envMapCheck.AutoSize = true;
-			envMapCheck.Location = new System.Drawing.Point(182, 129);
-			envMapCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			envMapCheck.Location = new System.Drawing.Point(121, 86);
+			envMapCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			envMapCheck.Name = "envMapCheck";
-			envMapCheck.Size = new System.Drawing.Size(215, 29);
+			envMapCheck.Size = new System.Drawing.Size(145, 19);
 			envMapCheck.TabIndex = 9;
 			envMapCheck.Text = "Environment Mapping";
 			toolTip.SetToolTip(envMapCheck, "If checked, the texture's uv maps will be mapped to the environment and the model will appear 'shiny'.");
@@ -239,10 +253,10 @@
 			// useTextureCheck
 			// 
 			useTextureCheck.AutoSize = true;
-			useTextureCheck.Location = new System.Drawing.Point(10, 33);
-			useTextureCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			useTextureCheck.Location = new System.Drawing.Point(7, 22);
+			useTextureCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			useTextureCheck.Name = "useTextureCheck";
-			useTextureCheck.Size = new System.Drawing.Size(127, 29);
+			useTextureCheck.Size = new System.Drawing.Size(86, 19);
 			useTextureCheck.TabIndex = 8;
 			useTextureCheck.Text = "Use Texture";
 			toolTip.SetToolTip(useTextureCheck, "If checked, the texture map displayed to the left will be used. Otherwise the model will be a solid color.");
@@ -253,10 +267,10 @@
 			// useAlphaCheck
 			// 
 			useAlphaCheck.AutoSize = true;
-			useAlphaCheck.Location = new System.Drawing.Point(10, 65);
-			useAlphaCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			useAlphaCheck.Location = new System.Drawing.Point(7, 43);
+			useAlphaCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			useAlphaCheck.Name = "useAlphaCheck";
-			useAlphaCheck.Size = new System.Drawing.Size(118, 29);
+			useAlphaCheck.Size = new System.Drawing.Size(79, 19);
 			useAlphaCheck.TabIndex = 7;
 			useAlphaCheck.Text = "Use Alpha";
 			toolTip.SetToolTip(useAlphaCheck, "If checked, texture transparency will be enabled (and possibly non-texture transparency). ");
@@ -267,10 +281,10 @@
 			// ignoreSpecCheck
 			// 
 			ignoreSpecCheck.AutoSize = true;
-			ignoreSpecCheck.Location = new System.Drawing.Point(182, 97);
-			ignoreSpecCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			ignoreSpecCheck.Location = new System.Drawing.Point(121, 65);
+			ignoreSpecCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			ignoreSpecCheck.Name = "ignoreSpecCheck";
-			ignoreSpecCheck.Size = new System.Drawing.Size(162, 29);
+			ignoreSpecCheck.Size = new System.Drawing.Size(108, 19);
 			ignoreSpecCheck.TabIndex = 6;
 			ignoreSpecCheck.Text = "Ignore Specular";
 			toolTip.SetToolTip(ignoreSpecCheck, "Disables specular lighting on the material. This flag does nothing in SADX. In SA1 DC it is used for specular palette selection.");
@@ -281,10 +295,10 @@
 			// flipVCheck
 			// 
 			flipVCheck.AutoSize = true;
-			flipVCheck.Location = new System.Drawing.Point(10, 226);
-			flipVCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			flipVCheck.Location = new System.Drawing.Point(7, 151);
+			flipVCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			flipVCheck.Name = "flipVCheck";
-			flipVCheck.Size = new System.Drawing.Size(103, 29);
+			flipVCheck.Size = new System.Drawing.Size(69, 19);
 			flipVCheck.TabIndex = 5;
 			flipVCheck.Text = "Mirror V";
 			toolTip.SetToolTip(flipVCheck, "If checked, tiling on the V Axis is mirrored.");
@@ -295,10 +309,10 @@
 			// flipUCheck
 			// 
 			flipUCheck.AutoSize = true;
-			flipUCheck.Location = new System.Drawing.Point(10, 193);
-			flipUCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			flipUCheck.Location = new System.Drawing.Point(7, 129);
+			flipUCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			flipUCheck.Name = "flipUCheck";
-			flipUCheck.Size = new System.Drawing.Size(104, 29);
+			flipUCheck.Size = new System.Drawing.Size(70, 19);
 			flipUCheck.TabIndex = 4;
 			flipUCheck.Text = "Mirror U";
 			toolTip.SetToolTip(flipUCheck, "If checked, tiling on the U Axis is mirrored.");
@@ -309,10 +323,10 @@
 			// clampVCheck
 			// 
 			clampVCheck.AutoSize = true;
-			clampVCheck.Location = new System.Drawing.Point(10, 161);
-			clampVCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			clampVCheck.Location = new System.Drawing.Point(7, 107);
+			clampVCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			clampVCheck.Name = "clampVCheck";
-			clampVCheck.Size = new System.Drawing.Size(105, 29);
+			clampVCheck.Size = new System.Drawing.Size(71, 19);
 			clampVCheck.TabIndex = 3;
 			clampVCheck.Text = "Clamp V";
 			toolTip.SetToolTip(clampVCheck, "Enable/Disable tiling on the V Axis.");
@@ -323,10 +337,10 @@
 			// clampUCheck
 			// 
 			clampUCheck.AutoSize = true;
-			clampUCheck.Location = new System.Drawing.Point(10, 129);
-			clampUCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			clampUCheck.Location = new System.Drawing.Point(7, 86);
+			clampUCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			clampUCheck.Name = "clampUCheck";
-			clampUCheck.Size = new System.Drawing.Size(106, 29);
+			clampUCheck.Size = new System.Drawing.Size(72, 19);
 			clampUCheck.TabIndex = 2;
 			clampUCheck.Text = "Clamp U";
 			toolTip.SetToolTip(clampUCheck, "Enable/Disable tiling on the U Axis.");
@@ -337,10 +351,10 @@
 			// superSampleCheck
 			// 
 			superSampleCheck.AutoSize = true;
-			superSampleCheck.Location = new System.Drawing.Point(10, 97);
-			superSampleCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			superSampleCheck.Location = new System.Drawing.Point(7, 65);
+			superSampleCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			superSampleCheck.Name = "superSampleCheck";
-			superSampleCheck.Size = new System.Drawing.Size(148, 29);
+			superSampleCheck.Size = new System.Drawing.Size(98, 19);
 			superSampleCheck.TabIndex = 1;
 			superSampleCheck.Text = "Super Sample";
 			superSampleCheck.UseVisualStyleBackColor = true;
@@ -350,10 +364,10 @@
 			// pickStatusCheck
 			// 
 			pickStatusCheck.AutoSize = true;
-			pickStatusCheck.Location = new System.Drawing.Point(182, 65);
-			pickStatusCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			pickStatusCheck.Location = new System.Drawing.Point(121, 43);
+			pickStatusCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			pickStatusCheck.Name = "pickStatusCheck";
-			pickStatusCheck.Size = new System.Drawing.Size(163, 29);
+			pickStatusCheck.Size = new System.Drawing.Size(109, 19);
 			pickStatusCheck.TabIndex = 0;
 			pickStatusCheck.Text = "Ignore Ambient";
 			pickStatusCheck.UseVisualStyleBackColor = true;
@@ -379,11 +393,11 @@
 			generalSettingBox.Controls.Add(exponentLabel);
 			generalSettingBox.Controls.Add(specColorLabel);
 			generalSettingBox.Controls.Add(diffuseLabel);
-			generalSettingBox.Location = new System.Drawing.Point(21, 68);
-			generalSettingBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			generalSettingBox.Location = new System.Drawing.Point(14, 45);
+			generalSettingBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			generalSettingBox.Name = "generalSettingBox";
-			generalSettingBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			generalSettingBox.Size = new System.Drawing.Size(516, 386);
+			generalSettingBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			generalSettingBox.Size = new System.Drawing.Size(344, 257);
 			generalSettingBox.TabIndex = 7;
 			generalSettingBox.TabStop = false;
 			generalSettingBox.Text = "General";
@@ -392,10 +406,10 @@
 			// ambientColorBox
 			// 
 			ambientColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			ambientColorBox.Location = new System.Drawing.Point(153, 72);
-			ambientColorBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			ambientColorBox.Location = new System.Drawing.Point(102, 48);
+			ambientColorBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			ambientColorBox.Name = "ambientColorBox";
-			ambientColorBox.Size = new System.Drawing.Size(64, 32);
+			ambientColorBox.Size = new System.Drawing.Size(43, 22);
 			ambientColorBox.TabIndex = 17;
 			ambientColorBox.TabStop = true;
 			toolTip.SetToolTip(ambientColorBox, "Ambient is the base coloration for the model when no other lighting effects are applied. This color value is typically a constant.");
@@ -404,10 +418,10 @@
 			// ambientLabel
 			// 
 			ambientLabel.AutoSize = true;
-			ambientLabel.Location = new System.Drawing.Point(12, 75);
-			ambientLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			ambientLabel.Location = new System.Drawing.Point(8, 50);
+			ambientLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			ambientLabel.Name = "ambientLabel";
-			ambientLabel.Size = new System.Drawing.Size(132, 25);
+			ambientLabel.Size = new System.Drawing.Size(88, 15);
 			ambientLabel.TabIndex = 16;
 			ambientLabel.Text = "Ambient Color:";
 			ambientLabel.Click += label1_Click;
@@ -415,20 +429,20 @@
 			// labelAlpha
 			// 
 			labelAlpha.AutoSize = true;
-			labelAlpha.Location = new System.Drawing.Point(229, 35);
-			labelAlpha.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			labelAlpha.Location = new System.Drawing.Point(153, 23);
+			labelAlpha.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			labelAlpha.Name = "labelAlpha";
-			labelAlpha.Size = new System.Drawing.Size(62, 25);
+			labelAlpha.Size = new System.Drawing.Size(41, 15);
 			labelAlpha.TabIndex = 2;
 			labelAlpha.Text = "Alpha:";
 			// 
 			// alphaDiffuseNumeric
 			// 
-			alphaDiffuseNumeric.Location = new System.Drawing.Point(303, 33);
-			alphaDiffuseNumeric.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			alphaDiffuseNumeric.Location = new System.Drawing.Point(202, 22);
+			alphaDiffuseNumeric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			alphaDiffuseNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			alphaDiffuseNumeric.Name = "alphaDiffuseNumeric";
-			alphaDiffuseNumeric.Size = new System.Drawing.Size(73, 31);
+			alphaDiffuseNumeric.Size = new System.Drawing.Size(49, 23);
 			alphaDiffuseNumeric.TabIndex = 2;
 			alphaDiffuseNumeric.ValueChanged += alphaDiffuseNumeric_ValueChanged;
 			alphaDiffuseNumeric.KeyDown += onKeyDown;
@@ -438,10 +452,10 @@
 			dstAlphaCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			dstAlphaCombo.FormattingEnabled = true;
 			dstAlphaCombo.Items.AddRange(new object[] { "Zero", "One", "OtherColor", "InverseOtherColor", "SourceAlpha", "InverseSourceAlpha", "DestinationAlpha", "InverseDestinationAlpha" });
-			dstAlphaCombo.Location = new System.Drawing.Point(243, 326);
-			dstAlphaCombo.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			dstAlphaCombo.Location = new System.Drawing.Point(162, 217);
+			dstAlphaCombo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			dstAlphaCombo.Name = "dstAlphaCombo";
-			dstAlphaCombo.Size = new System.Drawing.Size(244, 33);
+			dstAlphaCombo.Size = new System.Drawing.Size(164, 23);
 			dstAlphaCombo.TabIndex = 8;
 			dstAlphaCombo.SelectedIndexChanged += dstAlphaCombo_SelectedIndexChanged;
 			dstAlphaCombo.KeyDown += onKeyDown;
@@ -449,10 +463,10 @@
 			// specColorBox
 			// 
 			specColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			specColorBox.Location = new System.Drawing.Point(153, 111);
-			specColorBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			specColorBox.Location = new System.Drawing.Point(102, 74);
+			specColorBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			specColorBox.Name = "specColorBox";
-			specColorBox.Size = new System.Drawing.Size(64, 32);
+			specColorBox.Size = new System.Drawing.Size(43, 22);
 			specColorBox.TabIndex = 3;
 			specColorBox.TabStop = true;
 			toolTip.SetToolTip(specColorBox, "Specular reflection is the mirror-like reflection of light from a surface. This specular color will tint the apparent highlights on the model.");
@@ -461,10 +475,10 @@
 			// diffuseColorBox
 			// 
 			diffuseColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			diffuseColorBox.Location = new System.Drawing.Point(153, 33);
-			diffuseColorBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			diffuseColorBox.Location = new System.Drawing.Point(102, 22);
+			diffuseColorBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			diffuseColorBox.Name = "diffuseColorBox";
-			diffuseColorBox.Size = new System.Drawing.Size(64, 32);
+			diffuseColorBox.Size = new System.Drawing.Size(43, 22);
 			diffuseColorBox.TabIndex = 1;
 			diffuseColorBox.TabStop = true;
 			toolTip.SetToolTip(diffuseColorBox, "Diffuse lighting is scattered as opposed to direct. Specifically, this 'diffuse color' will act as a tint to the model.");
@@ -473,19 +487,19 @@
 			// destinationAlphaLabel
 			// 
 			destinationAlphaLabel.AutoSize = true;
-			destinationAlphaLabel.Location = new System.Drawing.Point(238, 292);
-			destinationAlphaLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			destinationAlphaLabel.Location = new System.Drawing.Point(159, 195);
+			destinationAlphaLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			destinationAlphaLabel.Name = "destinationAlphaLabel";
-			destinationAlphaLabel.Size = new System.Drawing.Size(157, 25);
+			destinationAlphaLabel.Size = new System.Drawing.Size(104, 15);
 			destinationAlphaLabel.TabIndex = 13;
 			destinationAlphaLabel.Text = "Destination Alpha:";
 			// 
 			// exponentTextBox
 			// 
-			exponentTextBox.Location = new System.Drawing.Point(326, 111);
-			exponentTextBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			exponentTextBox.Location = new System.Drawing.Point(217, 74);
+			exponentTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			exponentTextBox.Name = "exponentTextBox";
-			exponentTextBox.Size = new System.Drawing.Size(61, 31);
+			exponentTextBox.Size = new System.Drawing.Size(42, 23);
 			exponentTextBox.TabIndex = 5;
 			exponentTextBox.KeyDown += onKeyDown;
 			exponentTextBox.Leave += exponentTextBox_Leave;
@@ -495,10 +509,10 @@
 			srcAlphaCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			srcAlphaCombo.FormattingEnabled = true;
 			srcAlphaCombo.Items.AddRange(new object[] { "Zero", "One", "OtherColor", "InverseOtherColor", "SourceAlpha", "InverseSourceAlpha", "DestinationAlpha", "InverseDestinationAlpha" });
-			srcAlphaCombo.Location = new System.Drawing.Point(243, 250);
-			srcAlphaCombo.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			srcAlphaCombo.Location = new System.Drawing.Point(162, 167);
+			srcAlphaCombo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			srcAlphaCombo.Name = "srcAlphaCombo";
-			srcAlphaCombo.Size = new System.Drawing.Size(244, 33);
+			srcAlphaCombo.Size = new System.Drawing.Size(164, 23);
 			srcAlphaCombo.TabIndex = 7;
 			srcAlphaCombo.SelectionChangeCommitted += srcAlphaCombo_SelectionChangeCommitted;
 			srcAlphaCombo.KeyDown += onKeyDown;
@@ -506,20 +520,20 @@
 			// filterModeLabel
 			// 
 			filterModeLabel.AutoSize = true;
-			filterModeLabel.Location = new System.Drawing.Point(243, 154);
-			filterModeLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			filterModeLabel.Location = new System.Drawing.Point(162, 103);
+			filterModeLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			filterModeLabel.Name = "filterModeLabel";
-			filterModeLabel.Size = new System.Drawing.Size(106, 25);
+			filterModeLabel.Size = new System.Drawing.Size(70, 15);
 			filterModeLabel.TabIndex = 9;
 			filterModeLabel.Text = "Filter Mode:";
 			// 
 			// srcAlphaLabel
 			// 
 			srcAlphaLabel.AutoSize = true;
-			srcAlphaLabel.Location = new System.Drawing.Point(238, 224);
-			srcAlphaLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			srcAlphaLabel.Location = new System.Drawing.Point(159, 149);
+			srcAlphaLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			srcAlphaLabel.Name = "srcAlphaLabel";
-			srcAlphaLabel.Size = new System.Drawing.Size(121, 25);
+			srcAlphaLabel.Size = new System.Drawing.Size(80, 15);
 			srcAlphaLabel.TabIndex = 11;
 			srcAlphaLabel.Text = "Source Alpha:";
 			// 
@@ -527,10 +541,10 @@
 			// 
 			textureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			textureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			textureBox.Location = new System.Drawing.Point(21, 165);
-			textureBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			textureBox.Location = new System.Drawing.Point(14, 110);
+			textureBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			textureBox.Name = "textureBox";
-			textureBox.Size = new System.Drawing.Size(203, 203);
+			textureBox.Size = new System.Drawing.Size(136, 136);
 			textureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			textureBox.TabIndex = 4;
 			textureBox.TabStop = false;
@@ -541,10 +555,10 @@
 			filterModeDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			filterModeDropDown.FormattingEnabled = true;
 			filterModeDropDown.Items.AddRange(new object[] { "PointSampled", "Bilinear", "Trilinear", "Reserved" });
-			filterModeDropDown.Location = new System.Drawing.Point(243, 182);
-			filterModeDropDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			filterModeDropDown.Location = new System.Drawing.Point(162, 121);
+			filterModeDropDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			filterModeDropDown.Name = "filterModeDropDown";
-			filterModeDropDown.Size = new System.Drawing.Size(244, 33);
+			filterModeDropDown.Size = new System.Drawing.Size(164, 23);
 			filterModeDropDown.TabIndex = 6;
 			filterModeDropDown.SelectionChangeCommitted += filterModeDropDown_SelectionChangeCommitted;
 			filterModeDropDown.KeyDown += onKeyDown;
@@ -552,40 +566,40 @@
 			// exponentLabel
 			// 
 			exponentLabel.AutoSize = true;
-			exponentLabel.Location = new System.Drawing.Point(226, 113);
-			exponentLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			exponentLabel.Location = new System.Drawing.Point(151, 75);
+			exponentLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			exponentLabel.Name = "exponentLabel";
-			exponentLabel.Size = new System.Drawing.Size(90, 25);
+			exponentLabel.Size = new System.Drawing.Size(59, 15);
 			exponentLabel.TabIndex = 6;
 			exponentLabel.Text = "Exponent:";
 			// 
 			// specColorLabel
 			// 
 			specColorLabel.AutoSize = true;
-			specColorLabel.Location = new System.Drawing.Point(13, 113);
-			specColorLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			specColorLabel.Location = new System.Drawing.Point(9, 75);
+			specColorLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			specColorLabel.Name = "specColorLabel";
-			specColorLabel.Size = new System.Drawing.Size(131, 25);
+			specColorLabel.Size = new System.Drawing.Size(87, 15);
 			specColorLabel.TabIndex = 4;
 			specColorLabel.Text = "Specular Color:";
 			// 
 			// diffuseLabel
 			// 
 			diffuseLabel.AutoSize = true;
-			diffuseLabel.Location = new System.Drawing.Point(24, 35);
-			diffuseLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+			diffuseLabel.Location = new System.Drawing.Point(16, 23);
+			diffuseLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			diffuseLabel.Name = "diffuseLabel";
-			diffuseLabel.Size = new System.Drawing.Size(120, 25);
+			diffuseLabel.Size = new System.Drawing.Size(79, 15);
 			diffuseLabel.TabIndex = 0;
 			diffuseLabel.Text = "Diffuse Color:";
 			// 
 			// doneButton
 			// 
 			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(872, 413);
-			doneButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			doneButton.Location = new System.Drawing.Point(581, 275);
+			doneButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			doneButton.Name = "doneButton";
-			doneButton.Size = new System.Drawing.Size(132, 40);
+			doneButton.Size = new System.Drawing.Size(88, 27);
 			doneButton.TabIndex = 0;
 			doneButton.Text = "Done";
 			doneButton.UseVisualStyleBackColor = true;
@@ -600,10 +614,9 @@
 			// 
 			// cloneButton
 			// 
-			cloneButton.Location = new System.Drawing.Point(606, 21);
-			cloneButton.Margin = new System.Windows.Forms.Padding(4);
+			cloneButton.Location = new System.Drawing.Point(404, 14);
 			cloneButton.Name = "cloneButton";
-			cloneButton.Size = new System.Drawing.Size(86, 34);
+			cloneButton.Size = new System.Drawing.Size(57, 23);
 			cloneButton.TabIndex = 4;
 			cloneButton.Text = "Clone";
 			toolTip.SetToolTip(cloneButton, "Create an identical copy of the material.");
@@ -613,10 +626,9 @@
 			// deleteButton
 			// 
 			deleteButton.Enabled = false;
-			deleteButton.Location = new System.Drawing.Point(700, 21);
-			deleteButton.Margin = new System.Windows.Forms.Padding(4);
+			deleteButton.Location = new System.Drawing.Point(467, 14);
 			deleteButton.Name = "deleteButton";
-			deleteButton.Size = new System.Drawing.Size(86, 34);
+			deleteButton.Size = new System.Drawing.Size(57, 23);
 			deleteButton.TabIndex = 5;
 			deleteButton.Text = "Delete";
 			toolTip.SetToolTip(deleteButton, "Delete the material.");
@@ -625,36 +637,22 @@
 			// 
 			// resetButton
 			// 
-			resetButton.Location = new System.Drawing.Point(794, 21);
-			resetButton.Margin = new System.Windows.Forms.Padding(4);
+			resetButton.Location = new System.Drawing.Point(529, 14);
 			resetButton.Name = "resetButton";
-			resetButton.Size = new System.Drawing.Size(86, 34);
+			resetButton.Size = new System.Drawing.Size(57, 23);
 			resetButton.TabIndex = 6;
 			resetButton.Text = "Reset";
 			toolTip.SetToolTip(resetButton, "Reset the material list to the state it was when this dialog opened.");
 			resetButton.UseVisualStyleBackColor = true;
 			resetButton.Click += resetButton_Click;
 			// 
-			// noAlphaTestCheck
-			// 
-			noAlphaTestCheck.AutoSize = true;
-			noAlphaTestCheck.Location = new System.Drawing.Point(182, 227);
-			noAlphaTestCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			noAlphaTestCheck.Name = "noAlphaTestCheck";
-			noAlphaTestCheck.Size = new System.Drawing.Size(247, 29);
-			noAlphaTestCheck.TabIndex = 17;
-			noAlphaTestCheck.Text = "No Alpha Test (SA2B Only)";
-			noAlphaTestCheck.UseVisualStyleBackColor = true;
-			noAlphaTestCheck.Click += noAlphaTestCheck_Click;
-			noAlphaTestCheck.KeyDown += onKeyDown;
-			// 
 			// ChunkMaterialEditor
 			// 
 			AcceptButton = doneButton;
-			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+			AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(1019, 473);
+			ClientSize = new System.Drawing.Size(679, 315);
 			ControlBox = false;
 			Controls.Add(resetButton);
 			Controls.Add(deleteButton);
@@ -665,7 +663,7 @@
 			Controls.Add(currentMaterialLabel);
 			Controls.Add(comboMaterial);
 			FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-			Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			MaximizeBox = false;
 			MinimizeBox = false;
 			Name = "ChunkMaterialEditor";

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using TextureLib;
+using static TextureLib.DirectXTexUtility;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -938,41 +939,30 @@ namespace SAModel.SAEditorCommon.UI
 								newmesh.SubItems.Add(texdata);
 								break;
 							case PolyChunkStrip pcs:
-								string stripflags = "";
+								string stripflags = string.Empty;
 								string striptype = "Strip";
 								string stripstart = "FST( ";
 								string stripuserflags = ", UFO_" + pcs.UserFlags.ToString();
-								stripflags += pcs.UseAlpha ? "UA" : "";
-								if (!pcs.UseAlpha)
-									stripflags += pcs.DoubleSide ? "DB" : "";
-								else
-									stripflags += pcs.DoubleSide ? ", DB" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide))
-									stripflags += pcs.EnvironmentMapping ? "ENV" : "";
-								else
-									stripflags += pcs.EnvironmentMapping ? ", ENV" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping))
-									stripflags += pcs.FlatShading ? "FL" : "";
-								else
-									stripflags += pcs.FlatShading ? ", FL" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading))
-									stripflags += pcs.IgnoreLight ? "IL" : "";
-								else
-									stripflags += pcs.IgnoreLight ? ", IL" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading) && (!pcs.IgnoreLight))
-									stripflags += pcs.IgnoreAmbient ? "IA" : "";
-								else
-									stripflags += pcs.IgnoreAmbient ? ", IA" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading) && (!pcs.IgnoreLight) && (!pcs.IgnoreAmbient))
-									stripflags += pcs.IgnoreSpecular ? "IS" : "";
-								else
-									stripflags += pcs.IgnoreSpecular ? ", IS" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading) && (!pcs.IgnoreLight) && (!pcs.IgnoreAmbient) && (!pcs.IgnoreSpecular))
-									stripflags += pcs.NoAlphaTest ? "NAT" : "";
-								else
-									stripflags += pcs.NoAlphaTest ? ", NAT" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading) && (!pcs.IgnoreLight) && (!pcs.IgnoreAmbient) && (!pcs.IgnoreSpecular) && (!pcs.NoAlphaTest))
+								if (pcs.UseAlpha)
+									stripflags += "UA, ";
+								if (pcs.DoubleSide)
+									stripflags += "DB, ";
+								if (pcs.EnvironmentMapping)
+									stripflags += "ENV, ";
+								if (pcs.FlatShading)
+									stripflags += "FL, ";
+								if (pcs.IgnoreLight)
+									stripflags += "IL, ";
+								if (pcs.IgnoreAmbient)
+									stripflags += "IA, ";
+								if (pcs.IgnoreSpecular)
+									stripflags += "IS, ";
+								if (pcs.NoPunchthrough)
+									stripflags += "NPT, ";
+								if (stripflags == string.Empty)
 									stripflags = "NONE";
+								else
+									stripflags = stripflags.Remove(stripflags.Length - 2);
 								stripflags += " )";
 								switch (pcs.Type)
 								{
@@ -1225,7 +1215,7 @@ namespace SAModel.SAEditorCommon.UI
 					stripflags += pcs.IgnoreLight ? ", Ignore Light" : "";
 					stripflags += pcs.IgnoreAmbient ? ", Ignore Ambient" : "";
 					stripflags += pcs.IgnoreSpecular ? ", Ignore Specular" : "";
-					stripflags += pcs.NoAlphaTest ? ", No Alpha Test" : "";
+					stripflags += pcs.NoPunchthrough ? ", No Punchthrough" : "";
 					stripflags += ", User Flags: " + pcs.UserFlags.ToString();
 					pdata2 += stripcount;
 					pdata2 += stripflags;

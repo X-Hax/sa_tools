@@ -357,7 +357,7 @@ namespace SAModel.GC
 						_ => $"{src}"
 					};
 
-					list.Add($"GjVtxDescAttr ( {attr_str}, {src_str} )");
+					list.Add($"GjVtxIdxAttr ( {attr_str}, {src_str} )");
 				}
 			}
 

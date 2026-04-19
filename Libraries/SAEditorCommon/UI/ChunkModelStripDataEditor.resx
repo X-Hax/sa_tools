@@ -125,10 +125,10 @@
   </metadata>
   <data name="exAlphaSettingComboBox.ToolTip" xml:space="preserve">
     <value>Normal: Applies the "Use Alpha" flag. Compatible with all Sonic Adventure/2 game versions.
-No Alpha Test: Applies the "No Alpha Test" flag. Only compatible with SA2B, as it does nothing
+No Punchthrough: Applies the "No Punchthrough" flag. Only compatible with SA2B, as it does nothing
 in the Dreamcast versions.
-Force Alpha Test: Applies both the "Use Alpha" and "No Alpha Test" flags. While the "Use Alpha"
-portion works with all versions, "No Alpha Test" does nothing outside of SA2B.</value>
+Force Punchthrough: Applies both the "Use Alpha" and "No Punchthrough" flags. While the "Use Alpha"
+portion works with all versions, "No Punchthrough" does nothing outside of SA2B.</value>
   </data>
   <data name="doubleSideCheck.ToolTip" xml:space="preserve">
     <value>If enabled, both sides of a mesh will be drawn - hence "double sided". When disabled, only the front faces of the mesh are drawn, with the back faces being culled.
