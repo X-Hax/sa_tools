@@ -1417,11 +1417,11 @@ namespace SAModel.SAEditorCommon.Import
 
 				if (m.HasVertexColors(0))
 				{
-					parameters.Add(new GC.LightingParameter(0xB11, 1));
+					parameters.Add(new GC.StripFlagsParameter(0xB11, 1));
 				}
 				else
 				{
-					parameters.Add(new GC.LightingParameter(0x211, 1));
+					parameters.Add(new GC.StripFlagsParameter(0x211, 1));
 				}
 
 				if (currentAiMat != null)

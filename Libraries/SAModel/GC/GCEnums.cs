@@ -388,6 +388,17 @@ namespace SAModel.GC
 		Scale9 = 0x10,		// Same as NoUV1
 
 	}
+	public enum GCStripFlags
+	{
+		IgnoreLight = 0x1,
+		IgnoreSpecular = 0x2,
+		IgnoreAmbient = 0x4,
+		VertexDiffuse = 0x8,
+		VertexAmbient = 0x10,
+		UseAlpha = 0x20,
+		NoPunchthrough = 0x40,
+		DoubleSided = 0x80
+	}
 
 	/// <summary>
 	/// Used to convert between NJ and GC enums

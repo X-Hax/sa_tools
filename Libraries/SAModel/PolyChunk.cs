@@ -1887,7 +1887,7 @@ namespace SAModel
 			set { Flags = (byte)((Flags & ~0x40) | (value ? 0x40 : 0)); }
 		}
 
-		public bool NoAlphaTest
+		public bool NoPunchthrough
 		{
 			get { return (Flags & 0x80) == 0x80; }
 			set { Flags = (byte)((Flags & ~0x80) | (value ? 0x80 : 0)); }
@@ -1992,8 +1992,8 @@ namespace SAModel
 				flags += "FST_FL|";
 			if (EnvironmentMapping)
 				flags += "FST_ENV|";
-			if (NoAlphaTest)
-				flags += "FST_NAT|";
+			if (NoPunchthrough)
+				flags += "FST_NPT|";
 			if (flags == string.Empty)
 				flags = "0x0";
 			else
@@ -2074,7 +2074,7 @@ namespace SAModel
 			DoubleSide = mat.DoubleSided;
 			FlatShading = mat.FlatShading;
 			EnvironmentMapping = mat.EnvironmentMap;
-			NoAlphaTest = mat.NoAlphaTest;
+			NoPunchthrough = mat.NoPunchthrough;
 		}
 	}
 }

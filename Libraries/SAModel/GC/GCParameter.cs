@@ -18,8 +18,8 @@ namespace SAModel.GC
 	{
 		VtxAttrFmt = 0,
 		IndexAttributeFlags = 1,
-		Lighting = 2,
-		StripFlags = 3,
+		StripFlags1 = 2,
+		StripFlags2 = 3,
 		BlendAlpha = 4,
 		DiffuseColor = 5,
 		AmbientColor = 6,
@@ -71,9 +71,11 @@ namespace SAModel.GC
 			{
 				ParameterType.VtxAttrFmt => new VtxAttrFmtParameter(GCVertexAttribute.Null),
 				ParameterType.IndexAttributeFlags => new IndexAttributeParameter(),
-				ParameterType.Lighting => new LightingParameter(),
+				ParameterType.StripFlags1 => new StripFlagsParameter(),
 				ParameterType.BlendAlpha => new BlendAlphaParameter(),
 				ParameterType.DiffuseColor => new DiffuseColorParameter(),
+				ParameterType.AmbientColor => new AmbientColorParameter(),
+				ParameterType.SpecularColor => new SpecularColorParameter(),
 				ParameterType.Texture => new TextureParameter(),
 				ParameterType.TextureTEVMode => new TexTEVModeParameter(),
 				ParameterType.TexCoordGen => new TexCoordGenParameter(),
@@ -129,7 +131,22 @@ namespace SAModel.GC
 
 		public virtual void ToNJA(TextWriter writer)
 		{
-			writer.WriteLine($"GjMat     ( {(uint)Type}, {(uint)Data} ),");
+			string type_str = Type switch
+			{
+				ParameterType.VtxAttrFmt => "GJ_MT_VTXATTR",
+				ParameterType.IndexAttributeFlags => "GJ_MT_VCD",
+				ParameterType.StripFlags1 => "GJ_MT_FST1",
+				ParameterType.StripFlags2 => "GJ_MT_FST2",
+				ParameterType.BlendAlpha => "GJ_MT_BLEND",
+				ParameterType.DiffuseColor => "GJ_MT_DIFFUSE",
+				ParameterType.AmbientColor => "GJ_MT_AMBIENT",
+				ParameterType.SpecularColor => "GJ_MT_SPECULAR",
+				ParameterType.Texture => "GJ_MT_TEXTURE",
+				ParameterType.TextureTEVMode => "GJ_MT_TEVORDER",
+				ParameterType.TexCoordGen => "GJ_MT_TEXGEN",
+				_ => $"{(uint)Type}"
+			};
+			writer.WriteLine($"GjMaterial ( {type_str}, 0x{(uint)Data:X} ),");
 		}
 	}
 
@@ -269,7 +286,7 @@ namespace SAModel.GC
 				_ => $"{compsize}"
 			};
 
-			writer.WriteLine($"GjVtxAttr ( {attr_str}, {comptype_str}, {compsize_str}, {(uint)UVScale} ),");
+			writer.WriteLine($"GjVtxAttr  ( {attr_str}, {comptype_str}, {compsize_str}, {(uint)UVScale} ),");
 		}
 	}
 
@@ -340,29 +357,29 @@ namespace SAModel.GC
 						_ => $"{src}"
 					};
 
-					list.Add($"GjVtxDescAttr ( {attr_str}, {src_str} )");
+					list.Add($"GjVtxIdxAttr ( {attr_str}, {src_str} )");
 				}
 			}
 
 			if (list.Count == 0)
 			{
-				writer.WriteLine("GjVtxDesc ( NULL ),");
+				writer.WriteLine("GjVtxDesc  ( NULL ),");
 			}
 			else
 			{
-				writer.WriteLine($"GjVtxDesc ( {string.Join(" | ", list)} ),");
+				writer.WriteLine($"GjVtxDesc  ( {string.Join(" | ", list)} ),");
 			}
 		}
 	}
 
 	/// <summary>
-	/// Holds lighting information
+	/// Holds strip information
 	/// </summary>
 	[Serializable]
-	public class LightingParameter : GCParameter
+	public class StripFlagsParameter : GCParameter
 	{
 		/// <summary>
-		/// Lighting flags. Pretty much unknown how they work
+		/// Strip flags. Many of these are analogous with Ninja strip flags
 		/// </summary>
 		public ushort LightingFlags
 		{
@@ -372,6 +389,64 @@ namespace SAModel.GC
 				Data &= 0xFFFF0000;
 				Data |= value;
 			}
+		}
+		public byte ChannelNum
+		{
+			get => (byte)(Data & 0x3);
+			set
+			{
+				Data &= 0xFFFFFFF0;
+				Data |= (uint)((value & 0x3));
+			}
+		}
+		public byte TexGenCount
+		{
+			get => (byte)((Data >> 4) & 0xF);
+			set
+			{
+				Data &= 0xFFFFFF0F;
+				Data |= (uint)((value & 0xF) << 4);
+			}
+		}
+		public bool IgnoreLight
+		{
+			get { return (LightingFlags & 0x100) == 0x100; }
+			set { LightingFlags = (ushort)((LightingFlags & ~0x100) | (value ? 0x100 : 0)); }
+		}
+		public bool IgnoreSpecular
+		{
+			get { return (LightingFlags & 0x200) == 0x200; }
+			set { LightingFlags = (ushort)((LightingFlags & ~0x200) | (value ? 0x200 : 0)); }
+		}
+		public bool IgnoreAmbient
+		{
+			get { return (LightingFlags & 0x400) == 0x400; }
+			set { LightingFlags = (ushort)((LightingFlags & ~0x400) | (value ? 0x400 : 0)); }
+		}
+		public bool VertexDiffuse
+		{
+			get { return (LightingFlags & 0x800) == 0x800; }
+			set { LightingFlags = (ushort)((LightingFlags & ~0x800) | (value ? 0x800 : 0)); }
+		}
+		public bool VertexAmbient
+		{
+			get { return (LightingFlags & 0x1000) == 0x1000; }
+			set { LightingFlags = (ushort)((LightingFlags & ~0x1000) | (value ? 0x1000 : 0)); }
+		}
+		public bool UseAlpha
+		{
+			get { return (LightingFlags & 0x2000) == 0x2000; }
+			set { LightingFlags = (ushort)((LightingFlags & ~0x2000) | (value ? 0x2000 : 0)); }
+		}
+		public bool NoPunchthrough
+		{
+			get { return (LightingFlags & 0x4000) == 0x4000; }
+			set { LightingFlags = (ushort)((LightingFlags & ~0x4000) | (value ? 0x4000 : 0)); }
+		}
+		public bool DoubleSided
+		{
+			get { return (LightingFlags & 0x8000) == 0x8000; }
+			set { LightingFlags = (ushort)((LightingFlags & ~0x8000) | (value ? 0x8000 : 0)); }
 		}
 
 		/// <summary>
@@ -409,16 +484,16 @@ namespace SAModel.GC
 		}
 
 		/// <summary>
-		/// Creates a lighting parameter with the default data
+		/// Creates a strip parameter with the default data
 		/// </summary>
-		public LightingParameter() : base(ParameterType.Lighting)
+		public StripFlagsParameter() : base(ParameterType.StripFlags1)
 		{
-			// Default value
+			// Default value: Ignore Light, Ignore Ambient, Ignore Specular, Vertex Material
 			LightingFlags = 0xB11;
 			ShadowStencil = 1;
 		}
 
-		public LightingParameter(ushort lightingFlags, byte shadowStencil) : base(ParameterType.Lighting)
+		public StripFlagsParameter(ushort lightingFlags, byte shadowStencil) : base(ParameterType.StripFlags1)
 		{
 			LightingFlags = lightingFlags;
 			ShadowStencil = shadowStencil;
@@ -426,7 +501,29 @@ namespace SAModel.GC
 
 		public override void ToNJA(TextWriter writer)
 		{
-			writer.WriteLine($"GjLight   ( {Data} ),");
+			string flags = string.Empty;
+
+			if (IgnoreLight)
+				flags += "GJ_FST_IL|";
+			if (IgnoreSpecular)
+				flags += "GJ_FST_IS|";
+			if (IgnoreAmbient)
+				flags += "GJ_FST_IA|";
+			if (VertexDiffuse)
+				flags += "GJ_FST_VM|";
+			if (VertexAmbient)
+				flags += "GJ_FST_VA|";
+			if (UseAlpha)
+				flags += "GJ_FST_UA|";
+			if (NoPunchthrough)
+				flags += "GJ_FST_NPT|";
+			if (DoubleSided)
+				flags += "GJ_FST_DB|";
+			if (flags == string.Empty)
+				flags = "0x0";
+			else
+				flags = flags.Remove(flags.Length - 1);
+			writer.WriteLine($"GjFst1     ( GJD_FST_CHAN( {ChannelNum} ), GJD_FST_TEXGEN( {TexGenCount} ), {flags}, GJD_FST_TEVSTG( {ShadowStencil} ) ),");
 		}
 	}
 
@@ -529,12 +626,12 @@ namespace SAModel.GC
 				_ => $"{(uint)DestAlpha}"
 			};
 
-			writer.WriteLine($"GjBlend   ( {mode_str}, {src_str}, {dst_str} ),");
+			writer.WriteLine($"GjBlend    ( {mode_str}, {src_str}, {dst_str} ),");
 		}
 	}
 
 	/// <summary>
-	/// Ambient color of the geometry
+	/// Diffuse color of the geometry
 	/// </summary>
 	[Serializable]
 	public class DiffuseColorParameter : GCParameter
@@ -562,7 +659,73 @@ namespace SAModel.GC
 		}
 		public override void ToNJA(TextWriter writer)
 		{
-			writer.WriteLine($"GjDiffuse ( {DiffuseColor.Alpha}, {DiffuseColor.Red}, {DiffuseColor.Green}, {DiffuseColor.Blue} ),");
+			writer.WriteLine($"GjDiffuse  ( {DiffuseColor.Alpha}, {DiffuseColor.Red}, {DiffuseColor.Green}, {DiffuseColor.Blue} ),");
+		}
+	}
+
+	/// <summary>
+	/// Ambient color of the geometry
+	/// </summary>
+	[Serializable]
+	public class AmbientColorParameter : GCParameter
+	{
+		/// <summary>
+		/// The Color of the geometry
+		/// </summary>
+		public Color AmbientColor
+		{
+			get
+			{
+				var col = new Color
+				{
+					ARGB = Data
+				};
+
+				return col;
+			}
+			set => Data = value.ARGB;
+		}
+
+		public AmbientColorParameter() : base(ParameterType.DiffuseColor)
+		{
+			Data = uint.MinValue;
+		}
+		public override void ToNJA(TextWriter writer)
+		{
+			writer.WriteLine($"GjAmbient  ( {AmbientColor.Alpha}, {AmbientColor.Red}, {AmbientColor.Green}, {AmbientColor.Blue} ),");
+		}
+	}
+
+	/// <summary>
+	/// Specular color of the geometry
+	/// </summary>
+	[Serializable]
+	public class SpecularColorParameter : GCParameter
+	{
+		/// <summary>
+		/// The Color of the geometry
+		/// </summary>
+		public Color SpecularColor
+		{
+			get
+			{
+				var col = new Color
+				{
+					ARGB = Data
+				};
+
+				return col;
+			}
+			set => Data = value.ARGB;
+		}
+
+		public SpecularColorParameter() : base(ParameterType.DiffuseColor)
+		{
+			Data = uint.MinValue;
+		}
+		public override void ToNJA(TextWriter writer)
+		{
+			writer.WriteLine($"GjSpecular ( {SpecularColor.Alpha}, {SpecularColor.Red}, {SpecularColor.Green}, {SpecularColor.Blue} ),");
 		}
 	}
 
@@ -630,7 +793,7 @@ namespace SAModel.GC
 				_ => $"{wrap_t}"
 			};
 
-			writer.WriteLine($"GjTexID   ( {TextureId}, {wrap_s_str}, {wrap_t_str}, {(Data >> 13) & 3} ),");
+			writer.WriteLine($"GjTexture  ( {TextureId}, {wrap_s_str}, {wrap_t_str}, {(Data >> 13) & 3} ),");
 		}
 	}
 
@@ -727,23 +890,9 @@ namespace SAModel.GC
 				_ => $"{texmap}"
 			};
 
-			uint color = Data & 0xF;
-			string color_str = color switch
-			{
-				0 => "GJ_COLOR0",
-				1 => "GJ_COLOR1",
-				2 => "GJ_ALPHA0",
-				3 => "GJ_ALPHA1",
-				4 => "GJ_COLOR0A0",
-				5 => "GJ_COLOR1A1",
-				6 => "GJ_COLORZERO",
-				7 => "GJ_ALPHA_BUMP",
-				8 => "GJ_ALPHA_BUMPN",
-				9 => "GJ_COLORNULL",
-				_ => $"{color}"
-			};
+			uint unk = Data & 0xF;
 
-			writer.WriteLine($"GjTev     ( {tevstage_str}, {texcoord_str}, {texmap_str}, {color_str} ),");
+			writer.WriteLine($"GjTevOrder ( {tevstage_str}, {texcoord_str}, {texmap_str}, {unk} ),");
 		}
 	}
 
@@ -872,7 +1021,7 @@ namespace SAModel.GC
 				_ => $"{(uint)TexGenType}"
 			};
 
-			writer.WriteLine($"GjTexGen  ( {texcoordid_str}, {texgentype_str}, {texgensrc_str}, {matrixid_str} ),");
+			writer.WriteLine($"GjTexGen   ( {texcoordid_str}, {texgentype_str}, {texgensrc_str}, {matrixid_str} ),");
 		}
 	}
 }

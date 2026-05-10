@@ -84,9 +84,9 @@ namespace SAModel
 			set { Flags = (uint)((Flags & ~0x80000) | (value ? 0x80000u : 0)); }
 		}
 
-		// The following two are Chunk only
+		// The following two are Chunk and Ginja only
 		public bool IgnoreAmbient { get; set; }
-		public bool NoAlphaTest { get; set; }
+		public bool NoPunchthrough { get; set; }
 
 		public bool UseAlpha
 		{
@@ -328,7 +328,7 @@ namespace SAModel
 					IgnoreAmbient = str.IgnoreAmbient;
 					UseAlpha = str.UseAlpha;
 					UseTexture = EnvironmentMap;
-					NoAlphaTest = str.NoAlphaTest;
+					NoPunchthrough = str.NoPunchthrough;
 					switch (chunk.Type)
 					{
 						case ChunkType.Strip_StripUVN:

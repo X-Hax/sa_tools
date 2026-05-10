@@ -1443,7 +1443,8 @@ namespace SplitTools.Split
 						Directory.CreateDirectory(fileOutputPath);
 						var hashes = new List<string>();
 						int i = ByteConverter.ToInt16(datafile, address);
-						string animmeta = null;
+						string animmeta = string.Empty;
+						string animname = string.Empty;
 						while (i != -1)
 						{
 							if (customProperties.ContainsKey("meta" + i + "_a"))
@@ -1452,8 +1453,12 @@ namespace SplitTools.Split
 								{
 									Description = animmeta
 								};
-							animdata.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim", splitFlags.HasFlag(SplitFlags.NoMeta));
-							hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
+							if (customProperties.ContainsKey("filename" + i))
+								animname = Path.GetFileNameWithoutExtension(customProperties["filename" + i]);
+							else
+								animname = i.ToString(NumberFormatInfo.InvariantInfo);
+							animdata.Save(fileOutputPath + "/" + animname + ".saanim", splitFlags.HasFlag(SplitFlags.NoMeta));
+							hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + animname + ".saanim"));
 							address += 8;
 							i = ByteConverter.ToInt16(datafile, address);
 						}
