@@ -77,9 +77,18 @@ namespace SAModel.Direct3D
 
 		public static Texture ToTexture(this Bitmap bitmap, Device device)
 		{
+			bool convert8888 = false;
+			Bitmap newBitmap = bitmap;
 			// TODO: Convert directly from GenericTexture rather than Bitmap. Perhaps use ImageSharp data instead of Bitmap in GenericTexture?
-			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
-			BitmapData bmpData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+			{
+				convert8888 = true;
+				newBitmap = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppArgb);
+				Graphics g = Graphics.FromImage(newBitmap);
+				g.DrawImage(bitmap, new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height));
+				g.Dispose();
+			}
+			BitmapData bmpData = newBitmap.LockBits(new System.Drawing.Rectangle(0, 0, newBitmap.Width, newBitmap.Height), ImageLockMode.ReadOnly, newBitmap.PixelFormat);
 			int depth = Image.GetPixelFormatSize(bmpData.PixelFormat);
 			int pixelCount = bmpData.Width * bmpData.Height;
 			int bytesPerPixel = depth / 8;
@@ -92,12 +101,14 @@ namespace SAModel.Direct3D
 				int bufferOffset = y * lineBytes;
 				Marshal.Copy(ptr + ptrOffset, rgb, bufferOffset, lineBytes);
 			}
-			bitmap.UnlockBits(bmpData);
-			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 0, Usage.Dynamic | Usage.AutoGenerateMipMap, Format.A8R8G8B8, Pool.Default);
+			newBitmap.UnlockBits(bmpData);
+			Texture texture = new Texture(device, newBitmap.Width, newBitmap.Height, 0, Usage.Dynamic | Usage.AutoGenerateMipMap, Format.A8R8G8B8, Pool.Default);
 			DataRectangle dataRectangle = texture.LockRectangle(0, LockFlags.None);
 			for (int y = 0; y < bmpData.Height; y++)
 				Marshal.Copy(rgb, y * bmpData.Width * bytesPerPixel, dataRectangle.DataPointer + y * dataRectangle.Pitch, bmpData.Width * bytesPerPixel);
 			texture.UnlockRectangle(0);
+			if (convert8888)
+				newBitmap.Dispose();
 			return texture;
 		}
 
