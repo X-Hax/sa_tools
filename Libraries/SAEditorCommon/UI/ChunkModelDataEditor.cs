@@ -412,7 +412,7 @@ namespace SAModel.SAEditorCommon.UI
 		private void BuildObjectDataList()
 		{
 			listViewObjectData.Items.Clear();
-			string flagnames = "";
+			string flagnames = string.Empty;
 			string objpos = "";
 			string objang = "";
 			string objscl = "";
@@ -437,71 +437,34 @@ namespace SAModel.SAEditorCommon.UI
 				flagnames += nopos ? "POS" : "";
 				flagnames += norot ? "ROT" : "";
 				flagnames += noscl ? "SCL" : "";
+				flagnames += ", ";
 			}
-			if ((!nopos) && (!norot) && (!noscl))
-				flagnames += nodraw ? "HIDE" : "";
-			else
-				flagnames += nodraw ? ", HIDE" : "";
-			if ((!nopos) && (!norot) && (!noscl) && (!nodraw))
-				flagnames += nochild ? "BREAK" : "";
-			else
-				flagnames += nochild ? ", BREAK" : "";
-			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild))
-				flagnames += zyxrot ? "ZYX_ANG" : "";
-			else
-				flagnames += zyxrot ? ", ZYX_ANG" : "";
-			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild) && (!zyxrot))
-				flagnames += noanim ? "ANIM_SKIP" : "";
-			else
-				flagnames += noanim ? ", ANIM_SKIP" : "";
-			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild) && (!zyxrot) && (!noanim))
-				flagnames += noshape ? "SHAPE_SKIP" : "";
-			else
-				flagnames += noshape ? ", SHAPE_SKIP" : "";
-			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild) && (!zyxrot) && (!noanim) && (!noshape))
-				flagnames += clip ? "CLIP" : "";
-			else
-				flagnames += clip ? ", CLIP" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip))
-				flagnames += modifier ? "MOD" : "";
-			else
-				flagnames += modifier ? ", MOD" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip) && (!modifier))
-				flagnames += quaternion ? "QUAT" : "";
-			else
-				flagnames += quaternion ? ", QUAT" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip) && (!modifier) && (!quaternion))
-				flagnames += rotatebase ? "ROTBASE" : "";
-			else
-				flagnames += rotatebase ? ", ROTBASE" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip) && (!modifier) && (!quaternion) && (!rotatebase))
-				flagnames += rotateset ? "ROTSET" : "";
-			else
-				flagnames += rotateset ? ", ROTSET" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip) && (!modifier) && (!quaternion) && (!rotatebase) && (!rotateset))
-				flagnames += envelope ? "ENVELOPE" : "";
-			else
-				flagnames += envelope ? ", ENVELOPE" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip) && (!modifier) && (!quaternion) && (!rotatebase) && (!rotateset) && (!envelope))
+			if (nodraw)
+				flagnames += "HIDE, ";
+			if (nochild)
+				flagnames += "BREAK, ";
+			if (zyxrot)
+				flagnames += "ZYX_ANG,";
+			if (noanim)
+				flagnames += "ANIM_SKIP, ";
+			if (noshape)
+				flagnames += "SHAPE_SKIP, ";
+			if (clip)
+				flagnames += "CLIP, ";
+			if (modifier)
+				flagnames += "MOD, " ;
+			if (quaternion)
+				flagnames += "QUAT, ";
+			if (rotatebase)
+				flagnames += "ROTBASE, ";
+			if (rotateset)
+				flagnames += "ROTSET, ";
+			if (envelope)
+				flagnames += "ENVELOPE, ";
+			if (flagnames == string.Empty)
 				flagnames = "NONE";
+			else
+				flagnames = flagnames.Remove(flagnames.Length - 2);
 			ListViewItem objdata = new ListViewItem(flagnames);
 			objpos = currentObject.Position.ToString();
 			objang = currentObject.Rotation.ToString();

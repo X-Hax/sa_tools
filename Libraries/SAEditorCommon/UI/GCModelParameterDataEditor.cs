@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using TextureLib;
-using static TextureLib.DirectXTexUtility;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -23,6 +22,7 @@ namespace SAModel.SAEditorCommon.UI
 		private List<GCParameter> ParamData; // Poly data that is being edited
 		private readonly List<GCParameter> ParamDataOriginal; // Original poly data at the time of opening the dialog
 		private readonly GenericTexture[] textures;
+		private readonly GCMesh originalMesh;
 
 		public GCModelParameterDataEditor(GCMesh meshData, GenericTexture[] textures, int index = 0)
 		{
@@ -33,6 +33,7 @@ namespace SAModel.SAEditorCommon.UI
 			InitializeComponent();
 			ParamDataOriginal = meshData.Clone().Parameters;
 			ParamData = meshData.Parameters;
+			originalMesh = meshData;
 			this.textures = textures;
 			//comboBoxVertexGroup.Items.Clear();
 			//comboBoxVertexGroup.SelectedIndex = index;
@@ -1047,6 +1048,14 @@ namespace SAModel.SAEditorCommon.UI
 					}
 				}
 				RaiseFormUpdated();
+			}
+		}
+
+		private void buttonPrimitiveData_Click(object sender, EventArgs e)
+		{
+			using (GCModelPrimitiveDataEditor pde = new GCModelPrimitiveDataEditor(originalMesh))
+			{
+				pde.ShowDialog(this);
 			}
 		}
 	}

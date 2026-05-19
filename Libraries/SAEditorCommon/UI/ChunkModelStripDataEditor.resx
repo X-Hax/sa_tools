@@ -125,8 +125,12 @@
   </metadata>
   <data name="exAlphaSettingComboBox.ToolTip" xml:space="preserve">
     <value>Normal: Applies the "Use Alpha" flag. Compatible with all Sonic Adventure/2 game versions.
-No Punchthrough: Applies the "No Punchthrough" flag. Only compatible with SA2B, as it does nothing
-in the Dreamcast versions.
+
+No Punchthrough: Applies the "No Punchthrough" flag.
+Disables Punchthrough (AKA "Alpha Test") and Z Write for the strip.
+This can make some transparent textures blend better or worse. Use with caution.
+Only compatible with SA2B, as it does nothing in the Dreamcast versions.
+
 Force Punchthrough: Applies both the "Use Alpha" and "No Punchthrough" flags. While the "Use Alpha"
 portion works with all versions, "No Punchthrough" does nothing outside of SA2B.</value>
   </data>

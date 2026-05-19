@@ -104,7 +104,7 @@ namespace SAModel.SAEditorCommon.UI
 			flagsGroupBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flagsGroupBox.Name = "flagsGroupBox";
 			flagsGroupBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			flagsGroupBox.Size = new System.Drawing.Size(336, 254);
+			flagsGroupBox.Size = new System.Drawing.Size(307, 254);
 			flagsGroupBox.TabIndex = 10;
 			flagsGroupBox.TabStop = false;
 			flagsGroupBox.Text = "Flags";
@@ -125,7 +125,7 @@ namespace SAModel.SAEditorCommon.UI
 			exAlphaSettingComboBox.Items.AddRange(new object[] { "Normal", "No Punchthrough", "Force Punchthrough" });
 			exAlphaSettingComboBox.Location = new System.Drawing.Point(129, 42);
 			exAlphaSettingComboBox.Name = "exAlphaSettingComboBox";
-			exAlphaSettingComboBox.Size = new System.Drawing.Size(190, 23);
+			exAlphaSettingComboBox.Size = new System.Drawing.Size(165, 23);
 			exAlphaSettingComboBox.TabIndex = 12;
 			toolTip.SetToolTip(exAlphaSettingComboBox, resources.GetString("exAlphaSettingComboBox.ToolTip"));
 			exAlphaSettingComboBox.SelectedIndexChanged += exAlphaSettingComboBox_SelectedIndexChanged;
@@ -151,7 +151,7 @@ namespace SAModel.SAEditorCommon.UI
 			ignoreLightCheck.Location = new System.Drawing.Point(12, 165);
 			ignoreLightCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreLightCheck.Name = "ignoreLightCheck";
-			ignoreLightCheck.Size = new System.Drawing.Size(232, 29);
+			ignoreLightCheck.Size = new System.Drawing.Size(232, 21);
 			ignoreLightCheck.TabIndex = 17;
 			ignoreLightCheck.Text = "Ignore Lighting";
 			toolTip.SetToolTip(ignoreLightCheck, "If checked, the mesh will not have any lighting applied.");
@@ -163,7 +163,7 @@ namespace SAModel.SAEditorCommon.UI
 			flatShadeCheck.Location = new System.Drawing.Point(12, 117);
 			flatShadeCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flatShadeCheck.Name = "flatShadeCheck";
-			flatShadeCheck.Size = new System.Drawing.Size(215, 29);
+			flatShadeCheck.Size = new System.Drawing.Size(215, 21);
 			flatShadeCheck.TabIndex = 15;
 			flatShadeCheck.Text = "Flat Shaded";
 			toolTip.SetToolTip(flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted, like a cut gem or die.\r\nThis flag does nothing in SADX, or SA2B without the Render Fix mod.");
@@ -173,9 +173,9 @@ namespace SAModel.SAEditorCommon.UI
 			// doubleSideCheck
 			// 
 			doubleSideCheck.Location = new System.Drawing.Point(12, 93);
-			doubleSideCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			doubleSideCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			doubleSideCheck.Name = "doubleSideCheck";
-			doubleSideCheck.Size = new System.Drawing.Size(215, 29);
+			doubleSideCheck.Size = new System.Drawing.Size(215, 21);
 			doubleSideCheck.TabIndex = 14;
 			doubleSideCheck.Text = "Double Sided";
 			toolTip.SetToolTip(doubleSideCheck, resources.GetString("doubleSideCheck.ToolTip"));
@@ -187,7 +187,7 @@ namespace SAModel.SAEditorCommon.UI
 			envMapCheck.Location = new System.Drawing.Point(12, 69);
 			envMapCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			envMapCheck.Name = "envMapCheck";
-			envMapCheck.Size = new System.Drawing.Size(260, 29);
+			envMapCheck.Size = new System.Drawing.Size(260, 21);
 			envMapCheck.TabIndex = 13;
 			envMapCheck.Text = "Environment Mapping";
 			toolTip.SetToolTip(envMapCheck, "If checked, the texture's uv maps will be mapped to the environment and the model will appear 'shiny'.");
@@ -199,7 +199,7 @@ namespace SAModel.SAEditorCommon.UI
 			useAlphaCheck.Location = new System.Drawing.Point(12, 21);
 			useAlphaCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			useAlphaCheck.Name = "useAlphaCheck";
-			useAlphaCheck.Size = new System.Drawing.Size(215, 29);
+			useAlphaCheck.Size = new System.Drawing.Size(215, 21);
 			useAlphaCheck.TabIndex = 11;
 			useAlphaCheck.Text = "Use Alpha";
 			toolTip.SetToolTip(useAlphaCheck, "If checked, texture transparency will be enabled (and possibly non-texture transparency). ");
@@ -211,7 +211,7 @@ namespace SAModel.SAEditorCommon.UI
 			ignoreSpecCheck.Location = new System.Drawing.Point(12, 189);
 			ignoreSpecCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreSpecCheck.Name = "ignoreSpecCheck";
-			ignoreSpecCheck.Size = new System.Drawing.Size(215, 29);
+			ignoreSpecCheck.Size = new System.Drawing.Size(215, 21);
 			ignoreSpecCheck.TabIndex = 18;
 			ignoreSpecCheck.Text = "Ignore Specular";
 			toolTip.SetToolTip(ignoreSpecCheck, "Disables specular lighting on the material.\r\nThis flag does nothing in SADX or SA2B.");
@@ -223,7 +223,7 @@ namespace SAModel.SAEditorCommon.UI
 			ignoreAmbiCheck.Location = new System.Drawing.Point(12, 140);
 			ignoreAmbiCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreAmbiCheck.Name = "ignoreAmbiCheck";
-			ignoreAmbiCheck.Size = new System.Drawing.Size(215, 29);
+			ignoreAmbiCheck.Size = new System.Drawing.Size(215, 21);
 			ignoreAmbiCheck.TabIndex = 16;
 			ignoreAmbiCheck.Text = "Ignore Ambient";
 			toolTip.SetToolTip(ignoreAmbiCheck, "If checked, the mesh will ignore the ambient light source. In other words, the ambient light will be treated as black, darkening the model.\r\nThis flag does nothing in SA2B without the Render Fix mod.");
@@ -233,10 +233,10 @@ namespace SAModel.SAEditorCommon.UI
 			// doneButton
 			// 
 			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(631, 459);
+			doneButton.Location = new System.Drawing.Point(607, 459);
 			doneButton.Margin = new System.Windows.Forms.Padding(4);
 			doneButton.Name = "doneButton";
-			doneButton.Size = new System.Drawing.Size(71, 40);
+			doneButton.Size = new System.Drawing.Size(62, 40);
 			doneButton.TabIndex = 25;
 			doneButton.Text = "Done";
 			doneButton.UseVisualStyleBackColor = true;
@@ -251,10 +251,10 @@ namespace SAModel.SAEditorCommon.UI
 			// resetButton
 			// 
 			resetButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-			resetButton.Location = new System.Drawing.Point(533, 459);
+			resetButton.Location = new System.Drawing.Point(501, 459);
 			resetButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			resetButton.Name = "resetButton";
-			resetButton.Size = new System.Drawing.Size(71, 40);
+			resetButton.Size = new System.Drawing.Size(70, 40);
 			resetButton.TabIndex = 24;
 			resetButton.Text = "Reset";
 			toolTip.SetToolTip(resetButton, "Reset the poly data to the state it was when this dialog opened.");
@@ -464,7 +464,7 @@ namespace SAModel.SAEditorCommon.UI
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(711, 510);
+			ClientSize = new System.Drawing.Size(678, 510);
 			ControlBox = false;
 			Controls.Add(groupBox3);
 			Controls.Add(groupBox1);

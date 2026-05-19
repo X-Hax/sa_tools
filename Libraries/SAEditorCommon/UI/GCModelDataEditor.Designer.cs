@@ -79,6 +79,7 @@
 			contextMenuStripParamEdit = new System.Windows.Forms.ContextMenuStrip(components);
 			openOParameterViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			openTParameterViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			openPrimitiveViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			comboBoxNode = new System.Windows.Forms.ComboBox();
 			groupBoxVertexList = new System.Windows.Forms.GroupBox();
 			groupBoxVertices = new System.Windows.Forms.GroupBox();
@@ -95,7 +96,14 @@
 			columnHeader11 = new System.Windows.Forms.ColumnHeader();
 			contextMenuStripVertData = new System.Windows.Forms.ContextMenuStrip(components);
 			viewVertexDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			openPrimitiveViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			groupBox1 = new System.Windows.Forms.GroupBox();
+			listViewObjectData = new System.Windows.Forms.ListView();
+			columnHeaderEval = new System.Windows.Forms.ColumnHeader();
+			columnHeaderPos = new System.Windows.Forms.ColumnHeader();
+			columnHeaderRot = new System.Windows.Forms.ColumnHeader();
+			columnHeaderScl = new System.Windows.Forms.ColumnHeader();
+			contextMenuStripObjSet = new System.Windows.Forms.ContextMenuStrip(components);
+			editObjectSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			statusStrip1.SuspendLayout();
 			groupBoxLabels.SuspendLayout();
 			groupBoxBounds.SuspendLayout();
@@ -107,6 +115,8 @@
 			groupBoxVertices.SuspendLayout();
 			groupBoxWeightList.SuspendLayout();
 			contextMenuStripVertData.SuspendLayout();
+			groupBox1.SuspendLayout();
+			contextMenuStripObjSet.SuspendLayout();
 			SuspendLayout();
 			// 
 			// buttonMoveTMeshUp
@@ -145,7 +155,7 @@
 			listViewOMeshes.MultiSelect = false;
 			listViewOMeshes.Name = "listViewOMeshes";
 			listViewOMeshes.ShowGroups = false;
-			listViewOMeshes.Size = new System.Drawing.Size(234, 280);
+			listViewOMeshes.Size = new System.Drawing.Size(234, 219);
 			listViewOMeshes.TabIndex = 11;
 			listViewOMeshes.UseCompatibleStateImageBehavior = false;
 			listViewOMeshes.View = System.Windows.Forms.View.Details;
@@ -169,7 +179,7 @@
 			// 
 			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
 			statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabelInfo });
-			statusStrip1.Location = new System.Drawing.Point(0, 571);
+			statusStrip1.Location = new System.Drawing.Point(0, 629);
 			statusStrip1.Name = "statusStrip1";
 			statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 15, 0);
 			statusStrip1.Size = new System.Drawing.Size(916, 22);
@@ -403,9 +413,9 @@
 			// 
 			groupBoxMeshList.Controls.Add(groupBoxTrans);
 			groupBoxMeshList.Controls.Add(groupBoxOpaque);
-			groupBoxMeshList.Location = new System.Drawing.Point(299, 152);
+			groupBoxMeshList.Location = new System.Drawing.Point(299, 257);
 			groupBoxMeshList.Name = "groupBoxMeshList";
-			groupBoxMeshList.Size = new System.Drawing.Size(605, 380);
+			groupBoxMeshList.Size = new System.Drawing.Size(605, 334);
 			groupBoxMeshList.TabIndex = 28;
 			groupBoxMeshList.TabStop = false;
 			groupBoxMeshList.Text = "Mesh Data";
@@ -418,9 +428,9 @@
 			groupBoxTrans.Controls.Add(buttonMoveTMeshDown);
 			groupBoxTrans.Controls.Add(buttonDeleteTMesh);
 			groupBoxTrans.Controls.Add(buttonCloneTMesh);
-			groupBoxTrans.Location = new System.Drawing.Point(305, 19);
+			groupBoxTrans.Location = new System.Drawing.Point(305, 17);
 			groupBoxTrans.Name = "groupBoxTrans";
-			groupBoxTrans.Size = new System.Drawing.Size(289, 351);
+			groupBoxTrans.Size = new System.Drawing.Size(289, 305);
 			groupBoxTrans.TabIndex = 19;
 			groupBoxTrans.TabStop = false;
 			groupBoxTrans.Text = "Translucent";
@@ -437,7 +447,7 @@
 			listViewTMeshes.MultiSelect = false;
 			listViewTMeshes.Name = "listViewTMeshes";
 			listViewTMeshes.ShowGroups = false;
-			listViewTMeshes.Size = new System.Drawing.Size(234, 280);
+			listViewTMeshes.Size = new System.Drawing.Size(234, 219);
 			listViewTMeshes.TabIndex = 17;
 			listViewTMeshes.UseCompatibleStateImageBehavior = false;
 			listViewTMeshes.View = System.Windows.Forms.View.Details;
@@ -459,7 +469,7 @@
 			// 
 			// buttonResetTMeshes
 			// 
-			buttonResetTMeshes.Location = new System.Drawing.Point(163, 313);
+			buttonResetTMeshes.Location = new System.Drawing.Point(163, 255);
 			buttonResetTMeshes.Margin = new System.Windows.Forms.Padding(4);
 			buttonResetTMeshes.Name = "buttonResetTMeshes";
 			buttonResetTMeshes.Size = new System.Drawing.Size(103, 26);
@@ -471,7 +481,7 @@
 			// buttonDeleteTMesh
 			// 
 			buttonDeleteTMesh.Enabled = false;
-			buttonDeleteTMesh.Location = new System.Drawing.Point(85, 313);
+			buttonDeleteTMesh.Location = new System.Drawing.Point(85, 255);
 			buttonDeleteTMesh.Margin = new System.Windows.Forms.Padding(4);
 			buttonDeleteTMesh.Name = "buttonDeleteTMesh";
 			buttonDeleteTMesh.Size = new System.Drawing.Size(71, 26);
@@ -483,7 +493,7 @@
 			// buttonCloneTMesh
 			// 
 			buttonCloneTMesh.Enabled = false;
-			buttonCloneTMesh.Location = new System.Drawing.Point(7, 313);
+			buttonCloneTMesh.Location = new System.Drawing.Point(7, 255);
 			buttonCloneTMesh.Margin = new System.Windows.Forms.Padding(4);
 			buttonCloneTMesh.Name = "buttonCloneTMesh";
 			buttonCloneTMesh.Size = new System.Drawing.Size(71, 26);
@@ -500,9 +510,9 @@
 			groupBoxOpaque.Controls.Add(buttonDeleteOMesh);
 			groupBoxOpaque.Controls.Add(listViewOMeshes);
 			groupBoxOpaque.Controls.Add(buttonCloneOMesh);
-			groupBoxOpaque.Location = new System.Drawing.Point(8, 19);
+			groupBoxOpaque.Location = new System.Drawing.Point(8, 17);
 			groupBoxOpaque.Name = "groupBoxOpaque";
-			groupBoxOpaque.Size = new System.Drawing.Size(291, 351);
+			groupBoxOpaque.Size = new System.Drawing.Size(291, 305);
 			groupBoxOpaque.TabIndex = 18;
 			groupBoxOpaque.TabStop = false;
 			groupBoxOpaque.Text = "Opaque";
@@ -533,7 +543,7 @@
 			// 
 			// buttonResetOMeshes
 			// 
-			buttonResetOMeshes.Location = new System.Drawing.Point(163, 313);
+			buttonResetOMeshes.Location = new System.Drawing.Point(163, 255);
 			buttonResetOMeshes.Margin = new System.Windows.Forms.Padding(4);
 			buttonResetOMeshes.Name = "buttonResetOMeshes";
 			buttonResetOMeshes.Size = new System.Drawing.Size(103, 26);
@@ -545,7 +555,7 @@
 			// buttonDeleteOMesh
 			// 
 			buttonDeleteOMesh.Enabled = false;
-			buttonDeleteOMesh.Location = new System.Drawing.Point(85, 313);
+			buttonDeleteOMesh.Location = new System.Drawing.Point(85, 255);
 			buttonDeleteOMesh.Margin = new System.Windows.Forms.Padding(4);
 			buttonDeleteOMesh.Name = "buttonDeleteOMesh";
 			buttonDeleteOMesh.Size = new System.Drawing.Size(71, 26);
@@ -557,7 +567,7 @@
 			// buttonCloneOMesh
 			// 
 			buttonCloneOMesh.Enabled = false;
-			buttonCloneOMesh.Location = new System.Drawing.Point(7, 313);
+			buttonCloneOMesh.Location = new System.Drawing.Point(7, 255);
 			buttonCloneOMesh.Margin = new System.Windows.Forms.Padding(4);
 			buttonCloneOMesh.Name = "buttonCloneOMesh";
 			buttonCloneOMesh.Size = new System.Drawing.Size(71, 26);
@@ -569,7 +579,7 @@
 			// buttonClose
 			// 
 			buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-			buttonClose.Location = new System.Drawing.Point(823, 538);
+			buttonClose.Location = new System.Drawing.Point(823, 597);
 			buttonClose.Name = "buttonClose";
 			buttonClose.Size = new System.Drawing.Size(81, 26);
 			buttonClose.TabIndex = 17;
@@ -582,7 +592,7 @@
 			contextMenuStripParamEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
 			contextMenuStripParamEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openOParameterViewerToolStripMenuItem, openTParameterViewerToolStripMenuItem, openPrimitiveViewerToolStripMenuItem });
 			contextMenuStripParamEdit.Name = "contextMenuStripLabels";
-			contextMenuStripParamEdit.Size = new System.Drawing.Size(263, 92);
+			contextMenuStripParamEdit.Size = new System.Drawing.Size(263, 70);
 			// 
 			// openOParameterViewerToolStripMenuItem
 			// 
@@ -597,6 +607,13 @@
 			openTParameterViewerToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
 			openTParameterViewerToolStripMenuItem.Text = "Open Translucent Parameter Viewer";
 			openTParameterViewerToolStripMenuItem.Click += openTParameterViewerToolStripMenuItem_Click;
+			// 
+			// openPrimitiveViewerToolStripMenuItem
+			// 
+			openPrimitiveViewerToolStripMenuItem.Name = "openPrimitiveViewerToolStripMenuItem";
+			openPrimitiveViewerToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
+			openPrimitiveViewerToolStripMenuItem.Text = "Open Primitive Viewer";
+			openPrimitiveViewerToolStripMenuItem.Click += openPrimitiveViewerToolStripMenuItem_Click;
 			// 
 			// comboBoxNode
 			// 
@@ -613,9 +630,9 @@
 			// 
 			groupBoxVertexList.Controls.Add(groupBoxVertices);
 			groupBoxVertexList.Controls.Add(groupBoxWeightList);
-			groupBoxVertexList.Location = new System.Drawing.Point(12, 152);
+			groupBoxVertexList.Location = new System.Drawing.Point(12, 257);
 			groupBoxVertexList.Name = "groupBoxVertexList";
-			groupBoxVertexList.Size = new System.Drawing.Size(281, 380);
+			groupBoxVertexList.Size = new System.Drawing.Size(281, 334);
 			groupBoxVertexList.TabIndex = 29;
 			groupBoxVertexList.TabStop = false;
 			groupBoxVertexList.Text = "Vertex Data";
@@ -623,7 +640,7 @@
 			// groupBoxVertices
 			// 
 			groupBoxVertices.Controls.Add(listViewVertices);
-			groupBoxVertices.Location = new System.Drawing.Point(6, 19);
+			groupBoxVertices.Location = new System.Drawing.Point(8, 17);
 			groupBoxVertices.Name = "groupBoxVertices";
 			groupBoxVertices.Size = new System.Drawing.Size(263, 166);
 			groupBoxVertices.TabIndex = 31;
@@ -637,7 +654,7 @@
 			listViewVertices.FullRowSelect = true;
 			listViewVertices.GridLines = true;
 			listViewVertices.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			listViewVertices.Location = new System.Drawing.Point(3, 26);
+			listViewVertices.Location = new System.Drawing.Point(7, 28);
 			listViewVertices.Margin = new System.Windows.Forms.Padding(4);
 			listViewVertices.MultiSelect = false;
 			listViewVertices.Name = "listViewVertices";
@@ -668,9 +685,9 @@
 			// groupBoxWeightList
 			// 
 			groupBoxWeightList.Controls.Add(listViewWeights);
-			groupBoxWeightList.Location = new System.Drawing.Point(6, 191);
+			groupBoxWeightList.Location = new System.Drawing.Point(8, 186);
 			groupBoxWeightList.Name = "groupBoxWeightList";
-			groupBoxWeightList.Size = new System.Drawing.Size(263, 148);
+			groupBoxWeightList.Size = new System.Drawing.Size(263, 136);
 			groupBoxWeightList.TabIndex = 32;
 			groupBoxWeightList.TabStop = false;
 			groupBoxWeightList.Text = "Weight Data";
@@ -682,7 +699,7 @@
 			listViewWeights.FullRowSelect = true;
 			listViewWeights.GridLines = true;
 			listViewWeights.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			listViewWeights.Location = new System.Drawing.Point(7, 31);
+			listViewWeights.Location = new System.Drawing.Point(7, 21);
 			listViewWeights.Margin = new System.Windows.Forms.Padding(4);
 			listViewWeights.MultiSelect = false;
 			listViewWeights.Name = "listViewWeights";
@@ -724,18 +741,71 @@
 			viewVertexDataToolStripMenuItem.Text = "View Vertex Data";
 			viewVertexDataToolStripMenuItem.Click += viewVertexDataToolStripMenuItem_Click;
 			// 
-			// openPrimitiveViewerToolStripMenuItem
+			// groupBox1
 			// 
-			openPrimitiveViewerToolStripMenuItem.Name = "openPrimitiveViewerToolStripMenuItem";
-			openPrimitiveViewerToolStripMenuItem.Size = new System.Drawing.Size(262, 22);
-			openPrimitiveViewerToolStripMenuItem.Text = "Open Primitive Viewer";
-			openPrimitiveViewerToolStripMenuItem.Click += openPrimitiveViewerToolStripMenuItem_Click;
+			groupBox1.Controls.Add(listViewObjectData);
+			groupBox1.Location = new System.Drawing.Point(12, 151);
+			groupBox1.Name = "groupBox1";
+			groupBox1.Size = new System.Drawing.Size(892, 101);
+			groupBox1.TabIndex = 30;
+			groupBox1.TabStop = false;
+			groupBox1.Text = "Object Data";
+			// 
+			// listViewObjectData
+			// 
+			listViewObjectData.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeaderEval, columnHeaderPos, columnHeaderRot, columnHeaderScl });
+			listViewObjectData.FullRowSelect = true;
+			listViewObjectData.GridLines = true;
+			listViewObjectData.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			listViewObjectData.Location = new System.Drawing.Point(9, 27);
+			listViewObjectData.MultiSelect = false;
+			listViewObjectData.Name = "listViewObjectData";
+			listViewObjectData.ShowGroups = false;
+			listViewObjectData.Size = new System.Drawing.Size(871, 60);
+			listViewObjectData.TabIndex = 12;
+			listViewObjectData.UseCompatibleStateImageBehavior = false;
+			listViewObjectData.View = System.Windows.Forms.View.Details;
+			listViewObjectData.MouseClick += listViewObjectData_MouseClick;
+			// 
+			// columnHeaderEval
+			// 
+			columnHeaderEval.Text = "Eval Flags                                                                       ";
+			columnHeaderEval.Width = 300;
+			// 
+			// columnHeaderPos
+			// 
+			columnHeaderPos.Text = "Position                                   ";
+			columnHeaderPos.Width = 200;
+			// 
+			// columnHeaderRot
+			// 
+			columnHeaderRot.Text = "Rotation                                   ";
+			columnHeaderRot.Width = 200;
+			// 
+			// columnHeaderScl
+			// 
+			columnHeaderScl.Text = "Scale";
+			// 
+			// contextMenuStripObjSet
+			// 
+			contextMenuStripObjSet.ImageScalingSize = new System.Drawing.Size(24, 24);
+			contextMenuStripObjSet.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editObjectSettingsToolStripMenuItem });
+			contextMenuStripObjSet.Name = "contextMenuStripObjSet";
+			contextMenuStripObjSet.Size = new System.Drawing.Size(178, 26);
+			// 
+			// editObjectSettingsToolStripMenuItem
+			// 
+			editObjectSettingsToolStripMenuItem.Name = "editObjectSettingsToolStripMenuItem";
+			editObjectSettingsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			editObjectSettingsToolStripMenuItem.Text = "Edit Object Settings";
+			editObjectSettingsToolStripMenuItem.Click += editObjectSettingsToolStripMenuItem_Click;
 			// 
 			// GCModelDataEditor
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			ClientSize = new System.Drawing.Size(916, 593);
+			ClientSize = new System.Drawing.Size(916, 651);
+			Controls.Add(groupBox1);
 			Controls.Add(groupBoxVertexList);
 			Controls.Add(comboBoxNode);
 			Controls.Add(buttonClose);
@@ -767,6 +837,8 @@
 			groupBoxVertices.ResumeLayout(false);
 			groupBoxWeightList.ResumeLayout(false);
 			contextMenuStripVertData.ResumeLayout(false);
+			groupBox1.ResumeLayout(false);
+			contextMenuStripObjSet.ResumeLayout(false);
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -838,5 +910,13 @@
 		private System.Windows.Forms.ColumnHeader columnHeader4;
 		private System.Windows.Forms.ColumnHeader columnHeader11;
 		private System.Windows.Forms.ToolStripMenuItem openPrimitiveViewerToolStripMenuItem;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.ListView listViewObjectData;
+		private System.Windows.Forms.ColumnHeader columnHeaderEval;
+		private System.Windows.Forms.ColumnHeader columnHeaderPos;
+		private System.Windows.Forms.ColumnHeader columnHeaderRot;
+		private System.Windows.Forms.ColumnHeader columnHeaderScl;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStripObjSet;
+		private System.Windows.Forms.ToolStripMenuItem editObjectSettingsToolStripMenuItem;
 	}
 }

@@ -93,8 +93,13 @@ namespace SAModel.SAEditorCommon.UI
 			useTextureCheck.Checked = materials[index].UseTexture;
 			envMapCheck.Checked = materials[index].EnvironmentMap;
 			doubleSideCheck.Checked = materials[index].DoubleSided;
-			flatShadeCheck.Checked = materials[index].FlatShading;
 			ignoreLightCheck.Checked = materials[index].IgnoreLighting;
+			useAlphaCheck.Checked = materials[index].UseAlpha;
+			pickStatusCheck.Checked = materials[index].IgnoreAmbient;
+			ignoreSpecCheck.Checked = materials[index].IgnoreSpecular;
+			noAlphaTestCheck.Checked = materials[index].NoPunchthrough;
+			checkBoxVMaterial.Checked = materials[index].VertexMaterial;
+			checkBoxVAmbient.Checked = materials[index].VertexAmbient;
 			userFlagsNumeric.Value = materials[index].UserFlags;
 
 			DisplayFlags(index);
@@ -265,18 +270,41 @@ namespace SAModel.SAEditorCommon.UI
 			RaiseFormUpdated();
 		}
 
-		private void flatShadeCheck_Click(object sender, EventArgs e)
-		{
-			materials[comboMaterial.SelectedIndex].FlatShading = flatShadeCheck.Checked;
-			RaiseFormUpdated();
-		}
-
 		private void ignoreLightCheck_Click(object sender, EventArgs e)
 		{
 			materials[comboMaterial.SelectedIndex].IgnoreLighting = ignoreLightCheck.Checked;
 			RaiseFormUpdated();
 		}
-
+		private void pickStatusCheck_Click(object sender, EventArgs e)
+		{
+			materials[comboMaterial.SelectedIndex].IgnoreAmbient = pickStatusCheck.Checked;
+			RaiseFormUpdated();
+		}
+		private void ignoreSpecCheck_Click(object sender, EventArgs e)
+		{
+			materials[comboMaterial.SelectedIndex].IgnoreSpecular = ignoreSpecCheck.Checked;
+			RaiseFormUpdated();
+		}
+		private void noAlphaTestCheck_Click(object sender, EventArgs e)
+		{
+			materials[comboMaterial.SelectedIndex].NoPunchthrough = noAlphaTestCheck.Checked;
+			RaiseFormUpdated();
+		}
+		private void checkBoxVMaterial_Click(object sender, EventArgs e)
+		{
+			materials[comboMaterial.SelectedIndex].VertexMaterial = checkBoxVMaterial.Checked;
+			RaiseFormUpdated();
+		}
+		private void checkBoxVAmbient_Click(object sender, EventArgs e)
+		{
+			materials[comboMaterial.SelectedIndex].VertexAmbient = checkBoxVAmbient.Checked;
+			RaiseFormUpdated();
+		}
+		private void useAlphaCheck_Click(object sender, EventArgs e)
+		{
+			materials[comboMaterial.SelectedIndex].UseAlpha = useAlphaCheck.Checked;
+			RaiseFormUpdated();
+		}
 		private void userFlagsNumeric_ValueChanged(object sender, EventArgs e)
 		{
 			materials[comboMaterial.SelectedIndex].UserFlags = (byte)userFlagsNumeric.Value;

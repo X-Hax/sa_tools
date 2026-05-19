@@ -29,16 +29,22 @@
 		private void InitializeComponent()
 		{
 			components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GCMaterialEditor));
 			comboMaterial = new System.Windows.Forms.ComboBox();
 			currentMaterialLabel = new System.Windows.Forms.Label();
 			colorDialog = new System.Windows.Forms.ColorDialog();
 			flagsGroupBox = new System.Windows.Forms.GroupBox();
+			checkBoxVAmbient = new System.Windows.Forms.CheckBox();
+			checkBoxVMaterial = new System.Windows.Forms.CheckBox();
+			noAlphaTestCheck = new System.Windows.Forms.CheckBox();
+			useAlphaCheck = new System.Windows.Forms.CheckBox();
+			ignoreSpecCheck = new System.Windows.Forms.CheckBox();
+			pickStatusCheck = new System.Windows.Forms.CheckBox();
 			labelFlags = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			userFlagsLabel = new System.Windows.Forms.Label();
 			userFlagsNumeric = new System.Windows.Forms.NumericUpDown();
 			ignoreLightCheck = new System.Windows.Forms.CheckBox();
-			flatShadeCheck = new System.Windows.Forms.CheckBox();
 			doubleSideCheck = new System.Windows.Forms.CheckBox();
 			envMapCheck = new System.Windows.Forms.CheckBox();
 			useTextureCheck = new System.Windows.Forms.CheckBox();
@@ -102,12 +108,17 @@
 			// 
 			// flagsGroupBox
 			// 
+			flagsGroupBox.Controls.Add(checkBoxVAmbient);
+			flagsGroupBox.Controls.Add(checkBoxVMaterial);
+			flagsGroupBox.Controls.Add(noAlphaTestCheck);
+			flagsGroupBox.Controls.Add(useAlphaCheck);
+			flagsGroupBox.Controls.Add(ignoreSpecCheck);
+			flagsGroupBox.Controls.Add(pickStatusCheck);
 			flagsGroupBox.Controls.Add(labelFlags);
 			flagsGroupBox.Controls.Add(label2);
 			flagsGroupBox.Controls.Add(userFlagsLabel);
 			flagsGroupBox.Controls.Add(userFlagsNumeric);
 			flagsGroupBox.Controls.Add(ignoreLightCheck);
-			flagsGroupBox.Controls.Add(flatShadeCheck);
 			flagsGroupBox.Controls.Add(doubleSideCheck);
 			flagsGroupBox.Controls.Add(envMapCheck);
 			flagsGroupBox.Controls.Add(useTextureCheck);
@@ -119,15 +130,89 @@
 			flagsGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			flagsGroupBox.Name = "flagsGroupBox";
 			flagsGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			flagsGroupBox.Size = new System.Drawing.Size(279, 210);
-			flagsGroupBox.TabIndex = 4;
+			flagsGroupBox.Size = new System.Drawing.Size(279, 222);
+			flagsGroupBox.TabIndex = 15;
 			flagsGroupBox.TabStop = false;
 			flagsGroupBox.Text = "Flags";
+			// 
+			// checkBoxVAmbient
+			// 
+			checkBoxVAmbient.AutoSize = true;
+			checkBoxVAmbient.Location = new System.Drawing.Point(121, 44);
+			checkBoxVAmbient.Name = "checkBoxVAmbient";
+			checkBoxVAmbient.Size = new System.Drawing.Size(106, 19);
+			checkBoxVAmbient.TabIndex = 24;
+			checkBoxVAmbient.Text = "Vertex Ambient";
+			checkBoxVAmbient.UseVisualStyleBackColor = true;
+			checkBoxVAmbient.Click += checkBoxVAmbient_Click;
+			// 
+			// checkBoxVMaterial
+			// 
+			checkBoxVMaterial.AutoSize = true;
+			checkBoxVMaterial.Location = new System.Drawing.Point(121, 23);
+			checkBoxVMaterial.Name = "checkBoxVMaterial";
+			checkBoxVMaterial.Size = new System.Drawing.Size(103, 19);
+			checkBoxVMaterial.TabIndex = 23;
+			checkBoxVMaterial.Text = "Vertex Material";
+			checkBoxVMaterial.UseVisualStyleBackColor = true;
+			checkBoxVMaterial.Click += checkBoxVMaterial_Click;
+			// 
+			// noAlphaTestCheck
+			// 
+			noAlphaTestCheck.AutoSize = true;
+			noAlphaTestCheck.Location = new System.Drawing.Point(121, 149);
+			noAlphaTestCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			noAlphaTestCheck.Name = "noAlphaTestCheck";
+			noAlphaTestCheck.Size = new System.Drawing.Size(122, 19);
+			noAlphaTestCheck.TabIndex = 29;
+			noAlphaTestCheck.Text = "No Punchthrough";
+			toolTip.SetToolTip(noAlphaTestCheck, "Disables Punchthrough (AKA \"Alpha Test\") and Z Write for the selected strip.\r\nThis can make some transparent textures blend better or worse. Use with caution.\r\nThis flag does nothing outside of SA2B.");
+			noAlphaTestCheck.UseVisualStyleBackColor = true;
+			noAlphaTestCheck.Click += noAlphaTestCheck_Click;
+			// 
+			// useAlphaCheck
+			// 
+			useAlphaCheck.AutoSize = true;
+			useAlphaCheck.Location = new System.Drawing.Point(7, 23);
+			useAlphaCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			useAlphaCheck.Name = "useAlphaCheck";
+			useAlphaCheck.Size = new System.Drawing.Size(79, 19);
+			useAlphaCheck.TabIndex = 16;
+			useAlphaCheck.Text = "Use Alpha";
+			toolTip.SetToolTip(useAlphaCheck, "If checked, texture transparency will be enabled (and possibly non-texture transparency). ");
+			useAlphaCheck.UseVisualStyleBackColor = true;
+			useAlphaCheck.Click += useAlphaCheck_Click;
+			// 
+			// ignoreSpecCheck
+			// 
+			ignoreSpecCheck.AutoSize = true;
+			ignoreSpecCheck.Location = new System.Drawing.Point(121, 107);
+			ignoreSpecCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			ignoreSpecCheck.Name = "ignoreSpecCheck";
+			ignoreSpecCheck.Size = new System.Drawing.Size(108, 19);
+			ignoreSpecCheck.TabIndex = 27;
+			ignoreSpecCheck.Text = "Ignore Specular";
+			toolTip.SetToolTip(ignoreSpecCheck, "Disables specular lighting on the material. This flag does nothing in SADX. In SA1 DC it is used for specular palette selection.");
+			ignoreSpecCheck.UseVisualStyleBackColor = true;
+			ignoreSpecCheck.Click += ignoreSpecCheck_Click;
+			// 
+			// pickStatusCheck
+			// 
+			pickStatusCheck.AutoSize = true;
+			pickStatusCheck.Location = new System.Drawing.Point(121, 86);
+			pickStatusCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			pickStatusCheck.Name = "pickStatusCheck";
+			pickStatusCheck.Size = new System.Drawing.Size(109, 19);
+			pickStatusCheck.TabIndex = 26;
+			pickStatusCheck.Text = "Ignore Ambient";
+			toolTip.SetToolTip(pickStatusCheck, resources.GetString("pickStatusCheck.ToolTip"));
+			pickStatusCheck.UseVisualStyleBackColor = true;
+			pickStatusCheck.Click += pickStatusCheck_Click;
 			// 
 			// labelFlags
 			// 
 			labelFlags.AutoSize = true;
-			labelFlags.Location = new System.Drawing.Point(50, 155);
+			labelFlags.Location = new System.Drawing.Point(50, 191);
 			labelFlags.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			labelFlags.Name = "labelFlags";
 			labelFlags.Size = new System.Drawing.Size(40, 15);
@@ -137,7 +222,7 @@
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new System.Drawing.Point(7, 155);
+			label2.Location = new System.Drawing.Point(7, 191);
 			label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label2.Name = "label2";
 			label2.Size = new System.Drawing.Size(37, 15);
@@ -147,7 +232,7 @@
 			// userFlagsLabel
 			// 
 			userFlagsLabel.AutoSize = true;
-			userFlagsLabel.Location = new System.Drawing.Point(130, 155);
+			userFlagsLabel.Location = new System.Drawing.Point(130, 191);
 			userFlagsLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			userFlagsLabel.Name = "userFlagsLabel";
 			userFlagsLabel.Size = new System.Drawing.Size(63, 15);
@@ -157,51 +242,37 @@
 			// userFlagsNumeric
 			// 
 			userFlagsNumeric.Hexadecimal = true;
-			userFlagsNumeric.Location = new System.Drawing.Point(203, 150);
+			userFlagsNumeric.Location = new System.Drawing.Point(203, 186);
 			userFlagsNumeric.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			userFlagsNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			userFlagsNumeric.Name = "userFlagsNumeric";
 			userFlagsNumeric.Size = new System.Drawing.Size(69, 23);
-			userFlagsNumeric.TabIndex = 14;
+			userFlagsNumeric.TabIndex = 30;
 			userFlagsNumeric.ValueChanged += userFlagsNumeric_ValueChanged;
 			userFlagsNumeric.KeyDown += onKeyDown;
 			// 
 			// ignoreLightCheck
 			// 
 			ignoreLightCheck.AutoSize = true;
-			ignoreLightCheck.Location = new System.Drawing.Point(121, 107);
+			ignoreLightCheck.Location = new System.Drawing.Point(121, 65);
 			ignoreLightCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			ignoreLightCheck.Name = "ignoreLightCheck";
 			ignoreLightCheck.Size = new System.Drawing.Size(107, 19);
-			ignoreLightCheck.TabIndex = 12;
+			ignoreLightCheck.TabIndex = 25;
 			ignoreLightCheck.Text = "Ignore Lighting";
 			toolTip.SetToolTip(ignoreLightCheck, "If checked, the model will not have any lighting applied.");
 			ignoreLightCheck.UseVisualStyleBackColor = true;
 			ignoreLightCheck.Click += ignoreLightCheck_Click;
 			ignoreLightCheck.KeyDown += onKeyDown;
 			// 
-			// flatShadeCheck
-			// 
-			flatShadeCheck.AutoSize = true;
-			flatShadeCheck.Location = new System.Drawing.Point(121, 87);
-			flatShadeCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			flatShadeCheck.Name = "flatShadeCheck";
-			flatShadeCheck.Size = new System.Drawing.Size(87, 19);
-			flatShadeCheck.TabIndex = 11;
-			flatShadeCheck.Text = "Flat Shaded";
-			toolTip.SetToolTip(flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted, like a cut gem or die.");
-			flatShadeCheck.UseVisualStyleBackColor = true;
-			flatShadeCheck.Click += flatShadeCheck_Click;
-			flatShadeCheck.KeyDown += onKeyDown;
-			// 
 			// doubleSideCheck
 			// 
 			doubleSideCheck.AutoSize = true;
-			doubleSideCheck.Location = new System.Drawing.Point(121, 65);
+			doubleSideCheck.Location = new System.Drawing.Point(7, 149);
 			doubleSideCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			doubleSideCheck.Name = "doubleSideCheck";
 			doubleSideCheck.Size = new System.Drawing.Size(96, 19);
-			doubleSideCheck.TabIndex = 10;
+			doubleSideCheck.TabIndex = 22;
 			doubleSideCheck.Text = "Double Sided";
 			toolTip.SetToolTip(doubleSideCheck, "Doesn't do anything, since Sonic Adventure does not support backface cull.");
 			doubleSideCheck.UseVisualStyleBackColor = true;
@@ -211,11 +282,11 @@
 			// envMapCheck
 			// 
 			envMapCheck.AutoSize = true;
-			envMapCheck.Location = new System.Drawing.Point(121, 43);
+			envMapCheck.Location = new System.Drawing.Point(121, 128);
 			envMapCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			envMapCheck.Name = "envMapCheck";
 			envMapCheck.Size = new System.Drawing.Size(145, 19);
-			envMapCheck.TabIndex = 9;
+			envMapCheck.TabIndex = 28;
 			envMapCheck.Text = "Environment Mapping";
 			toolTip.SetToolTip(envMapCheck, "If checked, the texture's uv maps will be mapped to the environment and the model will appear 'shiny'.");
 			envMapCheck.UseVisualStyleBackColor = true;
@@ -225,11 +296,11 @@
 			// useTextureCheck
 			// 
 			useTextureCheck.AutoSize = true;
-			useTextureCheck.Location = new System.Drawing.Point(121, 21);
+			useTextureCheck.Location = new System.Drawing.Point(7, 44);
 			useTextureCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			useTextureCheck.Name = "useTextureCheck";
 			useTextureCheck.Size = new System.Drawing.Size(86, 19);
-			useTextureCheck.TabIndex = 8;
+			useTextureCheck.TabIndex = 17;
 			useTextureCheck.Text = "Use Texture";
 			toolTip.SetToolTip(useTextureCheck, "If checked, the texture map displayed to the left will be used. Otherwise the model will be a solid color.");
 			useTextureCheck.UseVisualStyleBackColor = true;
@@ -239,11 +310,11 @@
 			// flipVCheck
 			// 
 			flipVCheck.AutoSize = true;
-			flipVCheck.Location = new System.Drawing.Point(7, 87);
+			flipVCheck.Location = new System.Drawing.Point(7, 128);
 			flipVCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			flipVCheck.Name = "flipVCheck";
 			flipVCheck.Size = new System.Drawing.Size(69, 19);
-			flipVCheck.TabIndex = 5;
+			flipVCheck.TabIndex = 21;
 			flipVCheck.Text = "Mirror V";
 			toolTip.SetToolTip(flipVCheck, "If checked, tiling on the V Axis is mirrored.");
 			flipVCheck.UseVisualStyleBackColor = true;
@@ -253,11 +324,11 @@
 			// flipUCheck
 			// 
 			flipUCheck.AutoSize = true;
-			flipUCheck.Location = new System.Drawing.Point(7, 65);
+			flipUCheck.Location = new System.Drawing.Point(7, 107);
 			flipUCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			flipUCheck.Name = "flipUCheck";
 			flipUCheck.Size = new System.Drawing.Size(70, 19);
-			flipUCheck.TabIndex = 4;
+			flipUCheck.TabIndex = 20;
 			flipUCheck.Text = "Mirror U";
 			toolTip.SetToolTip(flipUCheck, "If checked, tiling on the U Axis is mirrored.");
 			flipUCheck.UseVisualStyleBackColor = true;
@@ -267,11 +338,11 @@
 			// clampVCheck
 			// 
 			clampVCheck.AutoSize = true;
-			clampVCheck.Location = new System.Drawing.Point(7, 43);
+			clampVCheck.Location = new System.Drawing.Point(7, 86);
 			clampVCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			clampVCheck.Name = "clampVCheck";
 			clampVCheck.Size = new System.Drawing.Size(71, 19);
-			clampVCheck.TabIndex = 3;
+			clampVCheck.TabIndex = 19;
 			clampVCheck.Text = "Clamp V";
 			toolTip.SetToolTip(clampVCheck, "Enable/Disable tiling on the V Axis.");
 			clampVCheck.UseVisualStyleBackColor = true;
@@ -281,11 +352,11 @@
 			// clampUCheck
 			// 
 			clampUCheck.AutoSize = true;
-			clampUCheck.Location = new System.Drawing.Point(7, 21);
+			clampUCheck.Location = new System.Drawing.Point(7, 65);
 			clampUCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			clampUCheck.Name = "clampUCheck";
 			clampUCheck.Size = new System.Drawing.Size(72, 19);
-			clampUCheck.TabIndex = 2;
+			clampUCheck.TabIndex = 18;
 			clampUCheck.Text = "Clamp U";
 			toolTip.SetToolTip(clampUCheck, "Enable/Disable tiling on the U Axis.");
 			clampUCheck.UseVisualStyleBackColor = true;
@@ -310,7 +381,7 @@
 			generalSettingBox.Name = "generalSettingBox";
 			generalSettingBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			generalSettingBox.Size = new System.Drawing.Size(337, 257);
-			generalSettingBox.TabIndex = 3;
+			generalSettingBox.TabIndex = 7;
 			generalSettingBox.TabStop = false;
 			generalSettingBox.Text = "General";
 			// 
@@ -331,7 +402,7 @@
 			alphaDiffuseNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			alphaDiffuseNumeric.Name = "alphaDiffuseNumeric";
 			alphaDiffuseNumeric.Size = new System.Drawing.Size(63, 23);
-			alphaDiffuseNumeric.TabIndex = 3;
+			alphaDiffuseNumeric.TabIndex = 9;
 			alphaDiffuseNumeric.ValueChanged += alphaDiffuseNumeric_ValueChanged;
 			alphaDiffuseNumeric.KeyDown += onKeyDown;
 			// 
@@ -355,7 +426,7 @@
 			diffuseColorBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			diffuseColorBox.Name = "diffuseColorBox";
 			diffuseColorBox.Size = new System.Drawing.Size(43, 22);
-			diffuseColorBox.TabIndex = 1;
+			diffuseColorBox.TabIndex = 8;
 			toolTip.SetToolTip(diffuseColorBox, "Diffuse lighting is scattered as opposed to direct. Specifically, this 'diffuse color' will act as a tint to the model.");
 			diffuseColorBox.Click += diffuseColorBox_Click;
 			// 
@@ -440,11 +511,11 @@
 			// doneButton
 			// 
 			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(550, 270);
+			doneButton.Location = new System.Drawing.Point(550, 290);
 			doneButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			doneButton.Name = "doneButton";
 			doneButton.Size = new System.Drawing.Size(88, 27);
-			doneButton.TabIndex = 0;
+			doneButton.TabIndex = 31;
 			doneButton.Text = "Done";
 			doneButton.UseVisualStyleBackColor = true;
 			doneButton.Click += doneButton_Click;
@@ -461,7 +532,7 @@
 			resetButton.Location = new System.Drawing.Point(573, 13);
 			resetButton.Name = "resetButton";
 			resetButton.Size = new System.Drawing.Size(57, 23);
-			resetButton.TabIndex = 11;
+			resetButton.TabIndex = 6;
 			resetButton.Text = "Reset";
 			toolTip.SetToolTip(resetButton, "Reset the material list to the state it was when this dialog opened.");
 			resetButton.UseVisualStyleBackColor = true;
@@ -473,7 +544,7 @@
 			deleteButton.Location = new System.Drawing.Point(510, 13);
 			deleteButton.Name = "deleteButton";
 			deleteButton.Size = new System.Drawing.Size(57, 23);
-			deleteButton.TabIndex = 10;
+			deleteButton.TabIndex = 5;
 			deleteButton.Text = "Delete";
 			toolTip.SetToolTip(deleteButton, "Delete the material.");
 			deleteButton.UseVisualStyleBackColor = true;
@@ -484,7 +555,7 @@
 			cloneButton.Location = new System.Drawing.Point(447, 13);
 			cloneButton.Name = "cloneButton";
 			cloneButton.Size = new System.Drawing.Size(57, 23);
-			cloneButton.TabIndex = 9;
+			cloneButton.TabIndex = 4;
 			cloneButton.Text = "Clone";
 			toolTip.SetToolTip(cloneButton, "Create an identical copy of the material.");
 			cloneButton.UseVisualStyleBackColor = true;
@@ -495,7 +566,7 @@
 			downButton.Location = new System.Drawing.Point(418, 13);
 			downButton.Name = "downButton";
 			downButton.Size = new System.Drawing.Size(23, 23);
-			downButton.TabIndex = 8;
+			downButton.TabIndex = 3;
 			downButton.Text = "↓";
 			toolTip.SetToolTip(downButton, "Move the material down on the material list.");
 			downButton.UseVisualStyleBackColor = true;
@@ -507,7 +578,7 @@
 			upButton.Location = new System.Drawing.Point(389, 13);
 			upButton.Name = "upButton";
 			upButton.Size = new System.Drawing.Size(23, 23);
-			upButton.TabIndex = 7;
+			upButton.TabIndex = 2;
 			upButton.Text = "↑";
 			toolTip.SetToolTip(upButton, "Move the material up on the material list.");
 			upButton.UseVisualStyleBackColor = true;
@@ -519,7 +590,7 @@
 			AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(648, 310);
+			ClientSize = new System.Drawing.Size(648, 330);
 			ControlBox = false;
 			Controls.Add(resetButton);
 			Controls.Add(deleteButton);
@@ -568,7 +639,6 @@
 		private System.Windows.Forms.CheckBox envMapCheck;
 		private System.Windows.Forms.CheckBox useTextureCheck;
 		private System.Windows.Forms.CheckBox ignoreLightCheck;
-		private System.Windows.Forms.CheckBox flatShadeCheck;
 		private System.Windows.Forms.GroupBox generalSettingBox;
 		private System.Windows.Forms.Label diffuseLabel;
 		private System.Windows.Forms.PictureBox textureBox;
@@ -592,5 +662,11 @@
 		private System.Windows.Forms.Button cloneButton;
 		private System.Windows.Forms.Button downButton;
 		private System.Windows.Forms.Button upButton;
+		private System.Windows.Forms.CheckBox noAlphaTestCheck;
+		private System.Windows.Forms.CheckBox useAlphaCheck;
+		private System.Windows.Forms.CheckBox ignoreSpecCheck;
+		private System.Windows.Forms.CheckBox pickStatusCheck;
+		private System.Windows.Forms.CheckBox checkBoxVAmbient;
+		private System.Windows.Forms.CheckBox checkBoxVMaterial;
 	}
 }

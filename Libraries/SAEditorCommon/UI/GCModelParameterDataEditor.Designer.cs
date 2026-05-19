@@ -40,7 +40,7 @@ namespace SAModel.SAEditorCommon.UI
 			editTextureIDToolStripMenuItem = new ToolStripMenuItem();
 			editStripAlphaToolStripMenuItem = new ToolStripMenuItem();
 			groupBoxParamList = new GroupBox();
-			button1 = new Button();
+			buttonPrimitiveData = new Button();
 			buttonResetAll = new Button();
 			buttonResetParameter = new Button();
 			listViewParameters = new ListView();
@@ -187,7 +187,7 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// groupBoxParamList
 			// 
-			groupBoxParamList.Controls.Add(button1);
+			groupBoxParamList.Controls.Add(buttonPrimitiveData);
 			groupBoxParamList.Controls.Add(buttonResetAll);
 			groupBoxParamList.Controls.Add(buttonResetParameter);
 			groupBoxParamList.Controls.Add(listViewParameters);
@@ -200,14 +200,15 @@ namespace SAModel.SAEditorCommon.UI
 			groupBoxParamList.TabStop = false;
 			groupBoxParamList.Text = "Parameter Data";
 			// 
-			// button1
+			// buttonPrimitiveData
 			// 
-			button1.Location = new System.Drawing.Point(5, 261);
-			button1.Name = "button1";
-			button1.Size = new System.Drawing.Size(140, 23);
-			button1.TabIndex = 31;
-			button1.Text = "View Primitive Data";
-			button1.UseVisualStyleBackColor = true;
+			buttonPrimitiveData.Location = new System.Drawing.Point(5, 261);
+			buttonPrimitiveData.Name = "buttonPrimitiveData";
+			buttonPrimitiveData.Size = new System.Drawing.Size(140, 23);
+			buttonPrimitiveData.TabIndex = 31;
+			buttonPrimitiveData.Text = "View Primitive Data";
+			buttonPrimitiveData.UseVisualStyleBackColor = true;
+			buttonPrimitiveData.Click += buttonPrimitiveData_Click;
 			// 
 			// buttonResetAll
 			// 
@@ -486,7 +487,7 @@ namespace SAModel.SAEditorCommon.UI
 			checkBoxPunchthrough.Size = new System.Drawing.Size(122, 19);
 			checkBoxPunchthrough.TabIndex = 42;
 			checkBoxPunchthrough.Text = "No Punchthrough";
-			toolTip1.SetToolTip(checkBoxPunchthrough, "This flag does nothing in SA2B.");
+			toolTip1.SetToolTip(checkBoxPunchthrough, "Disables Punchthrough (AKA \"Alpha Test\") and Z Write for the strip.\r\nThis can make some transparent textures blend better or worse. Use with caution.\r\nThis flag does nothing in SA2B.");
 			checkBoxPunchthrough.UseVisualStyleBackColor = true;
 			checkBoxPunchthrough.Click += checkBoxPunchthrough_Click;
 			// 
@@ -1031,7 +1032,7 @@ namespace SAModel.SAEditorCommon.UI
 		private ComboBox dstAlphaCombo;
 		private GroupBox groupBoxUVScale;
 		private ComboBox comboBoxUVScale;
-		private Button button1;
+		private Button buttonPrimitiveData;
 		private CheckBox checkBoxVMaterial;
 		private CheckBox checkBoxIgnoreSpecular;
 		private CheckBox checkBoxIgnoreAmbient;

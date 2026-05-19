@@ -172,9 +172,9 @@ namespace SAModel.GC
 					}
 					break;
 				case GCVertexAttribute.Normal:
-					if (labels.TryGetValue(tempAddr, out var noramlName))
+					if (labels.TryGetValue(tempAddr, out var normalName))
 					{
-						DataName = noramlName;
+						DataName = normalName;
 					}
 					else
 					{

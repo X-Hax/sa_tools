@@ -10,6 +10,7 @@ namespace SAModel.SAEditorCommon.UI
 	public partial class GCModelDataEditor : Form
 	{
 		public NJS_OBJECT editedHierarchy;
+		private NJS_OBJECT currentObject;
 
 		private Attach editedModel;
 		private Attach originalModel;
@@ -33,6 +34,30 @@ namespace SAModel.SAEditorCommon.UI
 			BuildTranslucentMeshList();
 			this.textures = textures;
 			freeze = false;
+		}
+
+		private void updateObjectSettings(NJS_OBJECT obj)
+		{
+			NJS_OBJECT[] objs = editedHierarchy.GetObjects();
+			ObjectFlags flags = obj.Flags;
+			objs[comboBoxNode.SelectedIndex].Position = obj.Position;
+			objs[comboBoxNode.SelectedIndex].Rotation = obj.Rotation;
+			objs[comboBoxNode.SelectedIndex].Scale = obj.Scale;
+			objs[comboBoxNode.SelectedIndex].Flags = flags;
+			objs[comboBoxNode.SelectedIndex].IgnorePosition = (flags & ObjectFlags.NoPosition) == ObjectFlags.NoPosition;
+			objs[comboBoxNode.SelectedIndex].IgnoreRotation = (flags & ObjectFlags.NoRotate) == ObjectFlags.NoRotate;
+			objs[comboBoxNode.SelectedIndex].IgnoreScale = (flags & ObjectFlags.NoScale) == ObjectFlags.NoScale;
+			objs[comboBoxNode.SelectedIndex].SkipDraw = (flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay;
+			objs[comboBoxNode.SelectedIndex].SkipChildren = (flags & ObjectFlags.NoChildren) == ObjectFlags.NoChildren;
+			objs[comboBoxNode.SelectedIndex].RotateZYX = (flags & ObjectFlags.RotateZYX) == ObjectFlags.RotateZYX;
+			objs[comboBoxNode.SelectedIndex].Animate = (flags & ObjectFlags.NoAnimate) == 0;
+			objs[comboBoxNode.SelectedIndex].Morph = (flags & ObjectFlags.NoMorph) == 0;
+			objs[comboBoxNode.SelectedIndex].Clip = (flags & ObjectFlags.Clip) == ObjectFlags.Clip;
+			objs[comboBoxNode.SelectedIndex].Modifier = (flags & ObjectFlags.Modifier) == ObjectFlags.Modifier;
+			objs[comboBoxNode.SelectedIndex].Quaternion = (flags & ObjectFlags.Quaternion) == ObjectFlags.Quaternion;
+			objs[comboBoxNode.SelectedIndex].RotateBase = (flags & ObjectFlags.RotateBase) == ObjectFlags.RotateBase;
+			objs[comboBoxNode.SelectedIndex].RotateSet = (flags & ObjectFlags.RotateSet) == ObjectFlags.RotateSet;
+			objs[comboBoxNode.SelectedIndex].Envelope = (flags & ObjectFlags.Envelope) == ObjectFlags.Envelope;
 		}
 
 		#region Mesh management
@@ -243,6 +268,74 @@ namespace SAModel.SAEditorCommon.UI
 			NJS_OBJECT[] objs = editedHierarchy.GetObjects();
 			for (int i = 0; i < objs.Length; i++)
 				comboBoxNode.Items.Add(i.ToString() + ": " + objs[i].Name.ToString());
+		}
+		private void BuildObjectDataList()
+		{
+			listViewObjectData.Items.Clear();
+			string flagnames = string.Empty;
+			string objpos = "";
+			string objang = "";
+			string objscl = "";
+			ObjectFlags flg = currentObject.Flags;
+			bool nopos = (flg & ObjectFlags.NoPosition) != 0;
+			bool norot = (flg & ObjectFlags.NoRotate) != 0;
+			bool noscl = (flg & ObjectFlags.NoScale) != 0;
+			bool nodraw = (flg & ObjectFlags.NoDisplay) != 0;
+			bool nochild = (flg & ObjectFlags.NoChildren) != 0;
+			bool zyxrot = (flg & ObjectFlags.RotateZYX) != 0;
+			bool noanim = (flg & ObjectFlags.NoAnimate) != 0;
+			bool noshape = (flg & ObjectFlags.NoMorph) != 0;
+			bool clip = (flg & ObjectFlags.Clip) != 0;
+			bool modifier = (flg & ObjectFlags.Modifier) != 0;
+			bool quaternion = (flg & ObjectFlags.Quaternion) != 0;
+			bool rotatebase = (flg & ObjectFlags.RotateBase) != 0;
+			bool rotateset = (flg & ObjectFlags.RotateSet) != 0;
+			bool envelope = (flg & ObjectFlags.Envelope) != 0;
+			if (nopos || norot || noscl)
+			{
+				flagnames += "UNIT_";
+				flagnames += nopos ? "POS" : "";
+				flagnames += norot ? "ROT" : "";
+				flagnames += noscl ? "SCL" : "";
+				flagnames += ", ";
+			}
+			if (nodraw)
+				flagnames += "HIDE, ";
+			if (nochild)
+				flagnames += "BREAK, ";
+			if (zyxrot)
+				flagnames += "ZYX_ANG,";
+			if (noanim)
+				flagnames += "ANIM_SKIP, ";
+			if (noshape)
+				flagnames += "SHAPE_SKIP, ";
+			if (clip)
+				flagnames += "CLIP, ";
+			if (modifier)
+				flagnames += "MOD, ";
+			if (quaternion)
+				flagnames += "QUAT, ";
+			if (rotatebase)
+				flagnames += "ROTBASE, ";
+			if (rotateset)
+				flagnames += "ROTSET, ";
+			if (envelope)
+				flagnames += "ENVELOPE, ";
+			if (flagnames == string.Empty)
+				flagnames = "NONE";
+			else
+				flagnames = flagnames.Remove(flagnames.Length - 2);
+			ListViewItem objdata = new ListViewItem(flagnames);
+			objpos = currentObject.Position.ToString();
+			objang = currentObject.Rotation.ToString();
+			objscl = currentObject.Scale.ToString();
+			objdata.SubItems.Add(objpos);
+			objdata.SubItems.Add(objang);
+			objdata.SubItems.Add(objscl);
+			listViewObjectData.Items.Add(objdata);
+			listViewObjectData.SelectedIndices.Clear();
+			listViewObjectData.SelectedItems.Clear();
+			listViewObjectData.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 		}
 		private void BuildVertexList()
 		{
@@ -553,6 +646,7 @@ namespace SAModel.SAEditorCommon.UI
 			if (index == -1)
 				return;
 			NJS_OBJECT[] objs = editedHierarchy.GetObjects();
+			currentObject = objs[index].Clone();
 			// Apply changes
 			if (!freeze)
 				objs[previousNodeIndex].Name = textBoxObjectName.Text;
@@ -597,6 +691,7 @@ namespace SAModel.SAEditorCommon.UI
 			BuildVertexWeightList();
 			BuildOpaqueMeshList();
 			BuildTranslucentMeshList();
+			BuildObjectDataList();
 		}
 
 		private void buttonClose_Click(object sender, EventArgs e)
@@ -698,7 +793,15 @@ namespace SAModel.SAEditorCommon.UI
 				vde.ShowDialog(this);
 			}
 		}
-
+		private void editObjectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+			{
+				ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+				ose.ShowDialog(this);
+			}
+			BuildObjectDataList();
+		}
 		private void OMeshData_DoubleClick(object sender, EventArgs e)
 		{
 			if (listViewOMeshes.SelectedItems.Count > 0)
@@ -741,6 +844,12 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				de.ShowDialog(this);
 			}
+		}
+
+		private void listViewObjectData_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right && listViewObjectData.SelectedIndices.Count != 0)
+				contextMenuStripObjSet.Show(listViewObjectData, e.Location);
 		}
 	}
 }

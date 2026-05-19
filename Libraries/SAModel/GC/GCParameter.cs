@@ -378,18 +378,6 @@ namespace SAModel.GC
 	[Serializable]
 	public class StripFlagsParameter : GCParameter
 	{
-		/// <summary>
-		/// Strip flags. Many of these are analogous with Ninja strip flags
-		/// </summary>
-		public ushort LightingFlags
-		{
-			get => (ushort)(Data & 0xFFFF);
-			set
-			{
-				Data &= 0xFFFF0000;
-				Data |= value;
-			}
-		}
 		public byte ChannelNum
 		{
 			get => (byte)(Data & 0x3);
@@ -408,45 +396,57 @@ namespace SAModel.GC
 				Data |= (uint)((value & 0xF) << 4);
 			}
 		}
+		/// <summary>
+		/// Strip flags. Many of these are analogous with Ninja strip flags
+		/// </summary>
+		public byte StripFlags
+		{
+			get => (byte)(Data >> 8);
+			set
+			{
+				Data &= 0xFFFF00FF;
+				Data |= value;
+			}
+		}
 		public bool IgnoreLight
 		{
-			get { return (LightingFlags & 0x100) == 0x100; }
-			set { LightingFlags = (ushort)((LightingFlags & ~0x100) | (value ? 0x100 : 0)); }
+			get { return (StripFlags & 0x1) == 0x1; }
+			set { StripFlags = (byte)((StripFlags & ~0x1) | (value ? 0x1 : 0)); }
 		}
 		public bool IgnoreSpecular
 		{
-			get { return (LightingFlags & 0x200) == 0x200; }
-			set { LightingFlags = (ushort)((LightingFlags & ~0x200) | (value ? 0x200 : 0)); }
+			get { return (StripFlags & 0x2) == 0x2; }
+			set { StripFlags = (byte)((StripFlags & ~0x2) | (value ? 0x2 : 0)); }
 		}
 		public bool IgnoreAmbient
 		{
-			get { return (LightingFlags & 0x400) == 0x400; }
-			set { LightingFlags = (ushort)((LightingFlags & ~0x400) | (value ? 0x400 : 0)); }
+			get { return (StripFlags & 0x4) == 0x4; }
+			set { StripFlags = (byte)((StripFlags & ~0x4) | (value ? 0x4 : 0)); }
 		}
 		public bool VertexDiffuse
 		{
-			get { return (LightingFlags & 0x800) == 0x800; }
-			set { LightingFlags = (ushort)((LightingFlags & ~0x800) | (value ? 0x800 : 0)); }
+			get { return (StripFlags & 0x8) == 0x8; }
+			set { StripFlags = (byte)((StripFlags & ~0x8) | (value ? 0x8 : 0)); }
 		}
 		public bool VertexAmbient
 		{
-			get { return (LightingFlags & 0x1000) == 0x1000; }
-			set { LightingFlags = (ushort)((LightingFlags & ~0x1000) | (value ? 0x1000 : 0)); }
+			get { return (StripFlags & 0x10) == 0x10; }
+			set { StripFlags = (byte)((StripFlags & ~0x10) | (value ? 0x10 : 0)); }
 		}
 		public bool UseAlpha
 		{
-			get { return (LightingFlags & 0x2000) == 0x2000; }
-			set { LightingFlags = (ushort)((LightingFlags & ~0x2000) | (value ? 0x2000 : 0)); }
+			get { return (StripFlags & 0x20) == 0x20; }
+			set { StripFlags = (byte)((StripFlags & ~0x20) | (value ? 0x20 : 0)); }
 		}
 		public bool NoPunchthrough
 		{
-			get { return (LightingFlags & 0x4000) == 0x4000; }
-			set { LightingFlags = (ushort)((LightingFlags & ~0x4000) | (value ? 0x4000 : 0)); }
+			get { return (StripFlags & 0x40) == 0x40; }
+			set { StripFlags = (byte)((StripFlags & ~0x40) | (value ? 0x40 : 0)); }
 		}
 		public bool DoubleSided
 		{
-			get { return (LightingFlags & 0x8000) == 0x8000; }
-			set { LightingFlags = (ushort)((LightingFlags & ~0x8000) | (value ? 0x8000 : 0)); }
+			get { return (StripFlags & 0x80) == 0x80; }
+			set { StripFlags = (byte)((StripFlags & ~0x80) | (value ? 0x80 : 0)); }
 		}
 
 		/// <summary>
@@ -488,14 +488,18 @@ namespace SAModel.GC
 		/// </summary>
 		public StripFlagsParameter() : base(ParameterType.StripFlags1)
 		{
+			ChannelNum = 1;
+			TexGenCount = 1;
 			// Default value: Ignore Light, Ignore Ambient, Ignore Specular, Vertex Material
-			LightingFlags = 0xB11;
+			StripFlags = 0xB0;
 			ShadowStencil = 1;
 		}
 
-		public StripFlagsParameter(ushort lightingFlags, byte shadowStencil) : base(ParameterType.StripFlags1)
+		public StripFlagsParameter(byte stripFlags, byte shadowStencil) : base(ParameterType.StripFlags1)
 		{
-			LightingFlags = lightingFlags;
+			StripFlags = stripFlags;
+			ChannelNum = 1;
+			TexGenCount = 1;
 			ShadowStencil = shadowStencil;
 		}
 
