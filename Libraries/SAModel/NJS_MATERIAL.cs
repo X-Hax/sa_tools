@@ -88,6 +88,10 @@ namespace SAModel
 		public bool IgnoreAmbient { get; set; }
 		public bool NoPunchthrough { get; set; }
 
+		// These two are Ginja only
+		public bool VertexMaterial { get; set; }
+		public bool VertexAmbient { get; set; }
+
 		public bool UseAlpha
 		{
 			get { return (Flags & 0x100000) == 0x100000; }
@@ -156,6 +160,11 @@ namespace SAModel
 			DoubleSided = false;
 			FlatShading = false;
 			IgnoreLighting = false;
+			IgnoreAmbient = false;
+			IgnoreSpecular = false;
+			VertexMaterial = false;
+			VertexAmbient = false;
+			NoPunchthrough = false;
 			ClampU = false;
 			ClampV = false;
 			FlipU = false;
