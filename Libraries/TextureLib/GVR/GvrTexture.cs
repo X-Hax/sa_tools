@@ -25,13 +25,17 @@ namespace TextureLib
 		// Encoder parameters
 		private bool useDithering;
 		private bool useSACompatiblePalette;
+		private bool isGCIX;
 
 		public override byte[] GetBytes()
 		{
 			List<byte> result = new();
 			if (Gbix != 0)
 			{
-				result.AddRange(BitConverter.GetBytes(Magic_GBIX));
+				if (isGCIX)
+					result.AddRange(BitConverter.GetBytes(Magic_GCIX));
+				else
+					result.AddRange(BitConverter.GetBytes(Magic_GBIX));
 				result.AddRange(BitConverter.GetBytes((uint)8));
 				result.AddRange(ByteConverter.GetBytesBE(Gbix));
 				result.AddRange(BitConverter.GetBytes((uint)0));
@@ -75,7 +79,8 @@ namespace TextureLib
 		/// <param name="dither">Use dithering for encoding indexed images.</param>
 		/// <param name="paletteExternal">Save the palette to an external file.</param>
 		/// <param name="paletteSACompatible">Use SADX and SA2B compatible palette formats: ARGB1555 instead of IntensityA8 and ARGB4444 instead of RGB5A3.</param>
-		public GvrTexture(Bitmap texture, GvrDataFormat dataFormat, bool mipmaps, TexturePalette inputPalette = null, uint gbix = 0, string name = null, GvrPaletteFormat paletteFormat = GvrPaletteFormat.Rgb5A3orArgb4444, bool dither = false, bool paletteExternal = false, bool paletteSACompatible = true)
+		/// <param name="forceGCIX">Forces GBIX header to use the GCIX header.</param>
+		public GvrTexture(Bitmap texture, GvrDataFormat dataFormat, bool mipmaps, TexturePalette inputPalette = null, uint gbix = 0, string name = null, GvrPaletteFormat paletteFormat = GvrPaletteFormat.Rgb5A3orArgb4444, bool dither = false, bool paletteExternal = false, bool paletteSACompatible = true, bool forceGCIX = false)
 		{
 			// Disable mipmaps if using incompatible texture encoder settings
 			if (mipmaps && texture.Width != texture.Height)
@@ -128,6 +133,10 @@ namespace TextureLib
 			{
 				Gbix = ByteConverter.ToUInt32BE(RawData, currentOffset + 0x8);
 				currentOffset += 0x10;
+				if (BitConverter.ToUInt32(RawData, currentOffset) == Magic_GCIX)
+					isGCIX = true;
+				else
+					isGCIX = false;
 			}
 
 			// Parse header

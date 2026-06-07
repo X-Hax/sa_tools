@@ -67,12 +67,13 @@
 			viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			textureFilteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			highQualityGVMsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			compatibleGVPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			textureConversionSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			preferHighQualityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			allowCompressedFormatsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			gVMSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			highQualityGVMsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			compatibleGVPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			useGCIXHeaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			dDSPNGSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			useDDSInPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			useDDSInPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -487,10 +488,42 @@
 			// 
 			// editToolStripMenuItem
 			// 
-			editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { highQualityGVMsToolStripMenuItem, compatibleGVPToolStripMenuItem, toolStripSeparator5, textureConversionSettingsToolStripMenuItem, dDSPNGSettingsToolStripMenuItem });
+			editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { textureConversionSettingsToolStripMenuItem, gVMSettingsToolStripMenuItem, dDSPNGSettingsToolStripMenuItem });
 			editToolStripMenuItem.Name = "editToolStripMenuItem";
 			editToolStripMenuItem.Size = new System.Drawing.Size(39, 22);
 			editToolStripMenuItem.Text = "&Edit";
+			// 
+			// textureConversionSettingsToolStripMenuItem
+			// 
+			textureConversionSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { preferHighQualityToolStripMenuItem, allowCompressedFormatsToolStripMenuItem });
+			textureConversionSettingsToolStripMenuItem.Name = "textureConversionSettingsToolStripMenuItem";
+			textureConversionSettingsToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+			textureConversionSettingsToolStripMenuItem.Text = "Texture Conversion Settings";
+			// 
+			// preferHighQualityToolStripMenuItem
+			// 
+			preferHighQualityToolStripMenuItem.CheckOnClick = true;
+			preferHighQualityToolStripMenuItem.Name = "preferHighQualityToolStripMenuItem";
+			preferHighQualityToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+			preferHighQualityToolStripMenuItem.Text = "Prefer High Quality";
+			preferHighQualityToolStripMenuItem.ToolTipText = resources.GetString("preferHighQualityToolStripMenuItem.ToolTipText");
+			preferHighQualityToolStripMenuItem.Click += preferHighQualityToolStripMenuItem_Click;
+			// 
+			// allowCompressedFormatsToolStripMenuItem
+			// 
+			allowCompressedFormatsToolStripMenuItem.CheckOnClick = true;
+			allowCompressedFormatsToolStripMenuItem.Name = "allowCompressedFormatsToolStripMenuItem";
+			allowCompressedFormatsToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+			allowCompressedFormatsToolStripMenuItem.Text = "Allow Compressed Formats";
+			allowCompressedFormatsToolStripMenuItem.ToolTipText = resources.GetString("allowCompressedFormatsToolStripMenuItem.ToolTipText");
+			allowCompressedFormatsToolStripMenuItem.Click += allowCompressedFormatsToolStripMenuItem_Click;
+			// 
+			// gVMSettingsToolStripMenuItem
+			// 
+			gVMSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { highQualityGVMsToolStripMenuItem, compatibleGVPToolStripMenuItem, useGCIXHeaderToolStripMenuItem });
+			gVMSettingsToolStripMenuItem.Name = "gVMSettingsToolStripMenuItem";
+			gVMSettingsToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+			gVMSettingsToolStripMenuItem.Text = "GVM Settings";
 			// 
 			// highQualityGVMsToolStripMenuItem
 			// 
@@ -512,41 +545,20 @@
 			compatibleGVPToolStripMenuItem.ToolTipText = resources.GetString("compatibleGVPToolStripMenuItem.ToolTipText");
 			compatibleGVPToolStripMenuItem.Click += compatibleGVPToolStripMenuItem_Click;
 			// 
-			// toolStripSeparator5
+			// useGCIXHeaderToolStripMenuItem
 			// 
-			toolStripSeparator5.Name = "toolStripSeparator5";
-			toolStripSeparator5.Size = new System.Drawing.Size(225, 6);
-			// 
-			// textureConversionSettingsToolStripMenuItem
-			// 
-			textureConversionSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { preferHighQualityToolStripMenuItem, allowCompressedFormatsToolStripMenuItem });
-			textureConversionSettingsToolStripMenuItem.Name = "textureConversionSettingsToolStripMenuItem";
-			textureConversionSettingsToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-			textureConversionSettingsToolStripMenuItem.Text = "Texture Conversion Settings";
-			// 
-			// preferHighQualityToolStripMenuItem
-			// 
-			preferHighQualityToolStripMenuItem.CheckOnClick = true;
-			preferHighQualityToolStripMenuItem.Name = "preferHighQualityToolStripMenuItem";
-			preferHighQualityToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
-			preferHighQualityToolStripMenuItem.Text = "Prefer High Quality";
-			preferHighQualityToolStripMenuItem.ToolTipText = resources.GetString("preferHighQualityToolStripMenuItem.ToolTipText");
-			preferHighQualityToolStripMenuItem.Click += preferHighQualityToolStripMenuItem_Click;
-			// 
-			// allowCompressedFormatsToolStripMenuItem
-			// 
-			allowCompressedFormatsToolStripMenuItem.CheckOnClick = true;
-			allowCompressedFormatsToolStripMenuItem.Name = "allowCompressedFormatsToolStripMenuItem";
-			allowCompressedFormatsToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
-			allowCompressedFormatsToolStripMenuItem.Text = "Allow Compressed Formats";
-			allowCompressedFormatsToolStripMenuItem.ToolTipText = resources.GetString("allowCompressedFormatsToolStripMenuItem.ToolTipText");
-			allowCompressedFormatsToolStripMenuItem.Click += allowCompressedFormatsToolStripMenuItem_Click;
+			useGCIXHeaderToolStripMenuItem.CheckOnClick = true;
+			useGCIXHeaderToolStripMenuItem.Name = "useGCIXHeaderToolStripMenuItem";
+			useGCIXHeaderToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+			useGCIXHeaderToolStripMenuItem.Text = "Use GCIX Header";
+			useGCIXHeaderToolStripMenuItem.ToolTipText = "Changes the Global Index header for GVR textures from 'GBIX' to 'GCIX'.\r\nThis is necessary for certain games such as Skies of Arcadia and Sonic Unleashed (Wii).";
+			useGCIXHeaderToolStripMenuItem.Click += useGCIXHeaderToolStripMenuItem_Click;
 			// 
 			// dDSPNGSettingsToolStripMenuItem
 			// 
 			dDSPNGSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { useDDSInPAKsToolStripMenuItem, useDDSInPVMXToolStripMenuItem, useDDSInTexturePacksToolStripMenuItem });
 			dDSPNGSettingsToolStripMenuItem.Name = "dDSPNGSettingsToolStripMenuItem";
-			dDSPNGSettingsToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+			dDSPNGSettingsToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
 			dDSPNGSettingsToolStripMenuItem.Text = "DDS/PNG Settings";
 			// 
 			// useDDSInPAKsToolStripMenuItem
@@ -1596,7 +1608,6 @@
 		private System.Windows.Forms.Button textureUpButton;
 		private System.Windows.Forms.Button textureDownButton;
 		private System.Windows.Forms.Label textureSizeLabel;
-		private System.Windows.Forms.ToolStripMenuItem highQualityGVMsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importTexturePackToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.NumericUpDown numericUpDownOrigSizeY;
@@ -1619,7 +1630,6 @@
 		private System.Windows.Forms.Label labelStartColor;
 		private System.Windows.Forms.Label labelStartBank;
 		private System.Windows.Forms.NumericUpDown numericUpDownStartBank;
-		private System.Windows.Forms.ToolStripMenuItem compatibleGVPToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.TrackBar texturePreviewZoomTrackBar;
 		private System.Windows.Forms.ToolStripMenuItem textureFilteringToolStripMenuItem;
@@ -1628,7 +1638,6 @@
 		private System.Windows.Forms.ToolStripMenuItem saveXVMToolStripMenuItem;
 		private System.Windows.Forms.Button saveTextureButton;
 		private System.Windows.Forms.ToolStripMenuItem generateNewGbixToolStripMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripMenuItem exportAllToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportAllPVRToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportAllGVRToolStripMenuItem;
@@ -1680,5 +1689,9 @@
 		private System.Windows.Forms.ToolStripMenuItem runSecondToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem powerSecondToolStripMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelPalette;
+		private System.Windows.Forms.ToolStripMenuItem gVMSettingsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem highQualityGVMsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem compatibleGVPToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem useGCIXHeaderToolStripMenuItem;
 	}
 }

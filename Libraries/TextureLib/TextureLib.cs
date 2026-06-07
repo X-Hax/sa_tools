@@ -349,16 +349,17 @@ namespace TextureLib
 		/// <param name="forceMipmaps">Force add mipmaps if the input texture doesn't have them.</param>
 		/// <param name="useCompressed">Allow usage of the DXT1 compression format.</param>
 		/// <param name="maxQuality">Use higher quality formats to avoid data loss.</param>
+		/// <param name="forceGCIX">Use GCIX header instead of GBIX.</param>
 		/// <returns>A GVR texture.</returns>
 		/// <exception cref="Exception"></exception>
-		public GvrTexture ToGvr(bool maxQuality = false, bool useCompressed = false, bool forceMipmaps = false)
+		public GvrTexture ToGvr(bool maxQuality = false, bool useCompressed = false, bool forceMipmaps = false, bool forceGCIX = false)
 		{
 			return this switch
 			{
 				GvrTexture => (GvrTexture)this,
-				PvrTexture pvr => new GvrTexture(pvr, forceMipmaps, useCompressed, maxQuality),
-				DdsTexture gvr => new GvrTexture(gvr, forceMipmaps, maxQuality),
-				GdiTexture gdi => new GvrTexture(gdi),
+				PvrTexture pvr => new GvrTexture(pvr, forceMipmaps, useCompressed, maxQuality, forceGCIX),
+				DdsTexture gvr => new GvrTexture(gvr, forceMipmaps, maxQuality, forceGCIX),
+				GdiTexture gdi => new GvrTexture(gdi, forceGCIX: forceGCIX),
 				_ => throw new Exception("Cannot convert texture to GVR"),
 			};
 		}

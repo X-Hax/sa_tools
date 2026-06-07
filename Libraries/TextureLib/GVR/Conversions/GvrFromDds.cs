@@ -18,19 +18,19 @@ namespace TextureLib
 		};
 
 		/// <summary>Create a new GVR texture from a DDS texture, data format determined automatically.</summary>
-		public GvrTexture(DdsTexture dds, bool forceMipmaps = false, bool maxQuality = false)
+		public GvrTexture(DdsTexture dds, bool forceMipmaps = false, bool maxQuality = false, bool forceGCIX = false)
 		{
 			GvrDataFormat targetGvrDataFormat = AutoGvrDataFormatFromDds(dds.DdsFormat, maxQuality);
-			ConvertFromDds(dds, targetGvrDataFormat, forceMipmaps);
+			ConvertFromDds(dds, targetGvrDataFormat, forceMipmaps, forceGCIX);
 		}
 
 		/// <summary>Create a new GVR texture from a DDS texture, data format specified manually.</summary>
-		public GvrTexture(DdsTexture dds, GvrDataFormat targetGvrDataFormat, bool forceMipmaps = false)
+		public GvrTexture(DdsTexture dds, GvrDataFormat targetGvrDataFormat, bool forceMipmaps = false, bool forceGCIX = false)
 		{
-			ConvertFromDds(dds, targetGvrDataFormat, forceMipmaps);
+			ConvertFromDds(dds, targetGvrDataFormat, forceMipmaps, forceGCIX);
 		}
 
-		private void ConvertFromDds(DdsTexture dds, GvrDataFormat targetGvrDataFormat, bool forceMipmaps = false)
+		private void ConvertFromDds(DdsTexture dds, GvrDataFormat targetGvrDataFormat, bool forceMipmaps = false, bool forceGCIX = false)
 		{
 			// Set common texture properties
 			Image = dds.Image;
@@ -39,6 +39,7 @@ namespace TextureLib
 			Width = dds.Width;
 			Height = dds.Height;
 			GvrDataFormat = targetGvrDataFormat;
+			isGCIX = forceGCIX;
 			PaletteBank = dds.PaletteBank;
 			PaletteStartIndex = dds.PaletteStartIndex;
 			PakMetadata = dds.PakMetadata;

@@ -138,10 +138,6 @@
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="compatibleGVPToolStripMenuItem.ToolTipText" xml:space="preserve">
-    <value>Enable to use ARGB4444 and ARGB1555 pixel formats for Gamecube paletted textures.
-Required for SA2 PC, SADX GC and SA2B GC. Other Gamecube games such as Billy Hatcher and Phantasy Star Online require this option to be unchecked.</value>
-  </data>
   <data name="preferHighQualityToolStripMenuItem.ToolTipText" xml:space="preserve">
     <value>Enable this to try to avoid reducing available colors whenever possible during automatic texture format conversion.
 For example, when converting ARGB4444 PVR to GVR, having this option checked will convert to ARGB8888 instead of RGB5A3.
@@ -152,6 +148,10 @@ Note that "High Quality GVMs" and "Allow Compresed Formats" also influence the f
 For example, when converting an ARGB1555 PVR texture to GVR, having this option checked will convert to DXT1 instead of RGB5A3.
 Note that "Prefer High Quality" also influences the final format selection for automatic conversion.
 </value>
+  </data>
+  <data name="compatibleGVPToolStripMenuItem.ToolTipText" xml:space="preserve">
+    <value>Enable to use ARGB4444 and ARGB1555 pixel formats for Gamecube paletted textures.
+Required for SA2 PC, SADX GC and SA2B GC. Other Gamecube games such as Billy Hatcher and Phantasy Star Online require this option to be unchecked.</value>
   </data>
   <data name="useDDSInTexturePacksToolStripMenuItem.ToolTipText" xml:space="preserve">
     <value>If this option is checked, newly encoded textures in folder texture packs will be in the DDS format.

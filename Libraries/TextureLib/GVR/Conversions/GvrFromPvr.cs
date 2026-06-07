@@ -23,21 +23,21 @@ namespace TextureLib
 		/// <param name="pvr">Source PVR texture.</param>
 		/// <param name="forceMipmaps">Add mipmaps if the source texture doesn't have them.</param>		
 		/// <param name="maxQuality">Use the ARGB8888 pixel format when a lossless conversion is impossible.</param>
-		public GvrTexture(PvrTexture pvr, bool forceMipmaps = false, bool useDxt = true, bool maxQuality = false)
+		public GvrTexture(PvrTexture pvr, bool forceMipmaps = false, bool useDxt = true, bool maxQuality = false, bool forceGCIX = false)
 		{
 			GvrDataFormat targetGvrDataFormat = AutoGvrDataFormatFromPvr(pvr.PvrPixelFormat, maxQuality);
-			ConvertFromPvr(pvr, targetGvrDataFormat, forceMipmaps);
+			ConvertFromPvr(pvr, targetGvrDataFormat, forceMipmaps, forceGCIX: forceGCIX);
 		}
 
 		/// <summary>Create a new GVR texture from a PVR texture, data format specified manually.</summary>
 		/// <param name="targetGvrDataFormat">Target GVR data format.</param>
 		/// <param name="forceMipmaps">Add mipmaps if the source texture doesn't have them.</param>
-		public GvrTexture(PvrTexture pvr, GvrDataFormat targetGvrDataFormat, bool forceMipmaps = false)
+		public GvrTexture(PvrTexture pvr, GvrDataFormat targetGvrDataFormat, bool forceMipmaps = false, bool forceGCIX = false)
 		{
-			ConvertFromPvr(pvr, targetGvrDataFormat, forceMipmaps);
+			ConvertFromPvr(pvr, targetGvrDataFormat, forceMipmaps, forceGCIX: forceGCIX);
 		}
 
-		private void ConvertFromPvr(PvrTexture pvr, GvrDataFormat targetGvrDataFormat, bool forceMipmaps = false)
+		private void ConvertFromPvr(PvrTexture pvr, GvrDataFormat targetGvrDataFormat, bool forceMipmaps = false, bool forceGCIX = false)
 		{
 			Console.WriteLine(targetGvrDataFormat.ToString());
 			// Set common texture properties
@@ -50,6 +50,7 @@ namespace TextureLib
 			PaletteStartIndex = pvr.PaletteStartIndex;
 			PakMetadata = pvr.PakMetadata;
 			GvrDataFormat = targetGvrDataFormat;
+			isGCIX = forceGCIX;
 			PvmxOriginalDimensions = pvr.PvmxOriginalDimensions;
 			bool lossless = false;
 			foreach (var item in CompatibleFormatsGvrPvr)
