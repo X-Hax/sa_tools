@@ -131,6 +131,7 @@ namespace TextureLib
 			// Get global index
 			if (BitConverter.ToUInt32(RawData, currentOffset) == Magic_GBIX || BitConverter.ToUInt32(RawData, currentOffset) == Magic_GCIX)
 			{
+				Gbix = ByteConverter.ToUInt32BE(RawData, currentOffset + 0x8);
 				if (BitConverter.ToUInt32(RawData, currentOffset) == Magic_GCIX)
 					isGCIX = true;
 				currentOffset += 0x10;
