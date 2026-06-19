@@ -20,7 +20,7 @@ namespace SAModel.GC
 		/// <summary>
 		/// For some reason, skinned GC meshes have a separate type of vertex data.
 		/// </summary>
-		public List<GCSkinVertexSet> vertexSkinData = new List<GCSkinVertexSet>();
+		public List<GCSkinVertexSet> VertexSkinData = new List<GCSkinVertexSet>();
 		public string VertexSkinName { get; set; }
 		/// <summary>
 		/// The meshes with opaque rendering properties
@@ -52,7 +52,7 @@ namespace SAModel.GC
 			//	}
 			//	else
 			//	{
-					return vertexSkinData?.Count > 0;
+					return VertexSkinData?.Count > 0;
 				//}
 			}
 		}
@@ -153,13 +153,13 @@ namespace SAModel.GC
 
 			if (gcSkinnedVertexAddress > 0)
 			{
-				vertexSkinData = new List<GCSkinVertexSet>();
+				VertexSkinData = new List<GCSkinVertexSet>();
 				GCSkinVertexSet skinMesh;
 				int i = 0;
 				do
 				{
 					skinMesh = new GCSkinVertexSet(file, (int)gcSkinnedVertexAddress + (0x10 * i), imageBase, labels);
-					vertexSkinData.Add(skinMesh);
+					VertexSkinData.Add(skinMesh);
 					i++;
 				} while (skinMesh.elementType < GCSkinAttribute.WeightStructEndMarker);
 
@@ -290,19 +290,19 @@ namespace SAModel.GC
 				}
 			}
 			uint vertexSkinAddress = 0;
-			if (vertexSkinData?.Count > 0)
+			if (VertexSkinData?.Count > 0)
 			{
 				if (labels.TryGetValue(VertexSkinName, out var vertSkinAddr))
 					vertexSkinAddress = vertSkinAddr;
 				else
 				{
-					var vdataAddrs = new uint[vertexSkinData.Count];
-					var wdataAddrs = new uint[vertexSkinData.Count];
-					for (int i = 0; i < vertexSkinData.Count; i++)
+					var vdataAddrs = new uint[VertexSkinData.Count];
+					var wdataAddrs = new uint[VertexSkinData.Count];
+					for (int i = 0; i < VertexSkinData.Count; i++)
 					{
-						if (vertexSkinData[i].elementType < GCSkinAttribute.WeightStructEndMarker)
+						if (VertexSkinData[i].elementType < GCSkinAttribute.WeightStructEndMarker)
 						{
-							if (labels.TryGetValue(vertexSkinData[i].DataNamePos, out var posAddr))
+							if (labels.TryGetValue(VertexSkinData[i].DataNamePos, out var posAddr))
 							{
 								vdataAddrs[i] = posAddr;
 							}
@@ -310,15 +310,15 @@ namespace SAModel.GC
 							{
 								result.Align(4);
 								vdataAddrs[i] = (uint)result.Count + imageBase;
-								labels.Add(vertexSkinData[i].DataNamePos, vdataAddrs[i]);
-								foreach (var posnrm in vertexSkinData[i].posNrms)
+								labels.Add(VertexSkinData[i].DataNamePos, vdataAddrs[i]);
+								foreach (var posnrm in VertexSkinData[i].posNrms)
 								{
 									result.AddRange(posnrm.GetBytes());
 								}
 							}
-							if (vertexSkinData[i].elementType == GCSkinAttribute.PartialWeight || vertexSkinData[i].elementType == GCSkinAttribute.PartialWeightStart)
+							if (VertexSkinData[i].elementType == GCSkinAttribute.PartialWeight || VertexSkinData[i].elementType == GCSkinAttribute.PartialWeightStart)
 							{
-								if (labels.TryGetValue(vertexSkinData[i].DataNameWeight, out var weightAddr))
+								if (labels.TryGetValue(VertexSkinData[i].DataNameWeight, out var weightAddr))
 								{
 									wdataAddrs[i] = weightAddr;
 								}
@@ -326,8 +326,8 @@ namespace SAModel.GC
 								{
 									result.Align(4);
 									wdataAddrs[i] = (uint)result.Count + imageBase;
-									labels.Add(vertexSkinData[i].DataNameWeight, wdataAddrs[i]);
-									foreach (var weight in vertexSkinData[i].weightData)
+									labels.Add(VertexSkinData[i].DataNameWeight, wdataAddrs[i]);
+									foreach (var weight in VertexSkinData[i].weightData)
 									{
 										result.AddRange(weight.GetBytes());
 									}
@@ -338,7 +338,7 @@ namespace SAModel.GC
 
 					vertexSkinAddress = (uint)result.Count + imageBase;
 					labels.Add(VertexSkinName, vertexSkinAddress);
-					for (int i = 0; i < vertexSkinData.Count; i++)
+					for (int i = 0; i < VertexSkinData.Count; i++)
 					{
 						//POF0
 						if (vdataAddrs[i] != 0)
@@ -346,7 +346,7 @@ namespace SAModel.GC
 						if (wdataAddrs[i] != 0)
 							njOffsets.Add((uint)(result.Count + imageBase + 0xC));
 
-						result.AddRange(vertexSkinData[i].GetBytes(vdataAddrs[i], wdataAddrs[i]));
+						result.AddRange(VertexSkinData[i].GetBytes(vdataAddrs[i], wdataAddrs[i]));
 					}
 				}
 			}
@@ -656,7 +656,7 @@ namespace SAModel.GC
 			var result = new StringBuilder("{ ");
 			result.Append(VertexData.Count > 0 ? VertexName : "NULL");
 			result.Append(", ");
-			result.Append(vertexSkinData.Count > 0 ? VertexSkinName : "NULL");
+			result.Append(VertexSkinData.Count > 0 ? VertexSkinName : "NULL");
 			result.Append(", ");
 			result.Append(OpaqueMeshes.Count != 0 ? OpaqueMeshName : "NULL");
 			result.Append(", ");
@@ -750,9 +750,9 @@ namespace SAModel.GC
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
-			if (vertexSkinData.Count != 0 && !labels.Contains(VertexSkinName))
+			if (VertexSkinData.Count != 0 && !labels.Contains(VertexSkinName))
 			{
-				foreach (var data in vertexSkinData)
+				foreach (var data in VertexSkinData)
 				{
 					switch (data.elementType)
 					{
@@ -799,7 +799,7 @@ namespace SAModel.GC
 				writer.Write(VertexSkinName);
 				writer.Write("[] = {");
 				var chunks = new List<string>(VertexData.Count);
-				chunks.AddRange(vertexSkinData.Select(item => item.ToStruct()));
+				chunks.AddRange(VertexSkinData.Select(item => item.ToStruct()));
 				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", chunks.ToArray())},");
 				writer.WriteLine(" };");
 				writer.WriteLine();
@@ -1001,15 +1001,15 @@ namespace SAModel.GC
 				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
-			if (vertexSkinData.Count != 0 && !labels.Contains(VertexSkinName))
+			if (VertexSkinData.Count != 0 && !labels.Contains(VertexSkinName))
 			{
 				writer.WriteLine($"GJWEIGHTARRAY {VertexSkinName}[]");
 				writer.WriteLine($"START{Environment.NewLine}");
-				foreach (var item in vertexSkinData)
+				foreach (var item in VertexSkinData)
 				{
 					item.ToNJA(writer);
 				}
-				foreach (var item in vertexSkinData)
+				foreach (var item in VertexSkinData)
 				{
 					item.RefToNJA(writer);
 				}
@@ -1061,7 +1061,7 @@ namespace SAModel.GC
 			    writer.WriteLine($"GjArray     {VertexName},");
 			else
 				writer.WriteLine($"GjArray     NULL,");
-			if (vertexSkinData.Count != 0 && !labels.Contains(VertexSkinName))
+			if (VertexSkinData.Count != 0 && !labels.Contains(VertexSkinName))
 			    writer.WriteLine($"GjVlist     {VertexSkinName},");
 			else
 				writer.WriteLine("GjVlist     NULL,");

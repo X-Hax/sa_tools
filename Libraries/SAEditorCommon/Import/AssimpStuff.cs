@@ -513,36 +513,7 @@ namespace SAModel.SAEditorCommon.Import
 			List<Color4D> colors = new List<Color4D>();
 			foreach (GC.GCParameter param in m.Parameters)
 			{
-				if (param.Type == GC.ParameterType.Texture)
-				{
-					GC.TextureParameter tex = param as GC.TextureParameter;
-					MaterialBuffer.UseTexture = true;
-					MaterialBuffer.TextureID = tex.TextureId;
-					if (tex.Tile.HasFlag(GC.GCTileMode.MirrorU))
-						MaterialBuffer.FlipU = true;
-					if (tex.Tile.HasFlag(GC.GCTileMode.MirrorV))
-						MaterialBuffer.FlipV = true;
-					if (!tex.Tile.HasFlag(GC.GCTileMode.WrapU))
-						MaterialBuffer.ClampU = true;
-					if (!tex.Tile.HasFlag(GC.GCTileMode.WrapV))
-						MaterialBuffer.ClampV = true;
-
-					MaterialBuffer.ClampU &= tex.Tile.HasFlag(GC.GCTileMode.Unk_1);
-					MaterialBuffer.ClampV &= tex.Tile.HasFlag(GC.GCTileMode.Unk_1);
-				}
-				else if (param.Type == GC.ParameterType.TexCoordGen)
-				{
-					GC.TexCoordGenParameter gen = param as GC.TexCoordGenParameter;
-					if (gen.TexGenSrc == GC.GCTexGenSrc.Normal)
-						MaterialBuffer.EnvironmentMap = true;
-					else MaterialBuffer.EnvironmentMap = false;
-				}
-				else if (param.Type == GC.ParameterType.BlendAlpha)
-				{
-					GC.BlendAlphaParameter blend = param as GC.BlendAlphaParameter;
-					MaterialBuffer.SourceAlpha = blend.NJSourceAlpha;
-					MaterialBuffer.DestinationAlpha = blend.NJDestAlpha;
-				}
+				MaterialBuffer.UpdateFromGCMesh(param);
 			}
 
 			List<GC.IOVtx> gcPositions = gcAttach.VertexData.Find(x => x.Attribute == GC.GCVertexAttribute.Position)?.Data;

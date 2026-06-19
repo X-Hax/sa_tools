@@ -16,6 +16,9 @@
 	  <PackageReference Include="AssimpNet" Version="4.1.0" />
 	</ItemGroup>
 	<ItemGroup>
+		<Compile Update="UI\ChunkModelVolumeDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
 		<Compile Update="UI\ChunkModelBlendAlphaDataEditor.cs">
 		  <SubType>Form</SubType>
 		</Compile>

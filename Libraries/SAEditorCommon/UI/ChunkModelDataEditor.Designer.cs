@@ -76,6 +76,7 @@
 			editTextureIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			editStripAlphaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			editAlphaBlendDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			editVolumeDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			groupBoxVertList = new System.Windows.Forms.GroupBox();
 			listViewVertices = new System.Windows.Forms.ListView();
 			columnHeaderVertID = new System.Windows.Forms.ColumnHeader();
@@ -147,7 +148,9 @@
 			listViewMeshes.UseCompatibleStateImageBehavior = false;
 			listViewMeshes.View = System.Windows.Forms.View.Details;
 			listViewMeshes.SelectedIndexChanged += listViewMeshes_SelectedIndexChanged;
+			listViewMeshes.DoubleClick += PolyData_DoubleClick;
 			listViewMeshes.MouseClick += listViewMeshes_MouseClick;
+			listViewMeshes.KeyPress += MeshData_EnterKey;
 			// 
 			// columnHeaderMatID
 			// 
@@ -414,7 +417,7 @@
 			toolStrip1.Name = "toolStrip1";
 			toolStrip1.Padding = new System.Windows.Forms.Padding(0);
 			toolStrip1.Size = new System.Drawing.Size(78, 27);
-			toolStrip1.TabIndex = 23;
+			toolStrip1.TabIndex = 22;
 			toolStrip1.TabStop = true;
 			toolStrip1.Text = "toolStrip1";
 			// 
@@ -518,9 +521,9 @@
 			// contextMenuStripMatEdit
 			// 
 			contextMenuStripMatEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
-			contextMenuStripMatEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editPCMatToolStripMenuItem, editTextureIDToolStripMenuItem, editStripAlphaToolStripMenuItem, editAlphaBlendDataToolStripMenuItem });
+			contextMenuStripMatEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editPCMatToolStripMenuItem, editTextureIDToolStripMenuItem, editStripAlphaToolStripMenuItem, editAlphaBlendDataToolStripMenuItem, editVolumeDataToolStripMenuItem });
 			contextMenuStripMatEdit.Name = "contextMenuStripMatEdit";
-			contextMenuStripMatEdit.Size = new System.Drawing.Size(189, 92);
+			contextMenuStripMatEdit.Size = new System.Drawing.Size(189, 114);
 			contextMenuStripMatEdit.Opening += contextMenuStrip2_Opening;
 			// 
 			// editPCMatToolStripMenuItem
@@ -551,6 +554,13 @@
 			editAlphaBlendDataToolStripMenuItem.Text = "Edit Blend Alpha Data";
 			editAlphaBlendDataToolStripMenuItem.Click += editBlendAlphaToolStripMenuItem_Click;
 			// 
+			// editVolumeDataToolStripMenuItem
+			// 
+			editVolumeDataToolStripMenuItem.Name = "editVolumeDataToolStripMenuItem";
+			editVolumeDataToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+			editVolumeDataToolStripMenuItem.Text = "Edit Volume Data";
+			editVolumeDataToolStripMenuItem.Click += editVolumeDataToolStripMenuItem_Click;
+			// 
 			// groupBoxVertList
 			// 
 			groupBoxVertList.Controls.Add(listViewVertices);
@@ -577,7 +587,9 @@
 			listViewVertices.UseCompatibleStateImageBehavior = false;
 			listViewVertices.View = System.Windows.Forms.View.Details;
 			listViewVertices.SelectedIndexChanged += listViewVertices_SelectedIndexChanged;
+			listViewVertices.DoubleClick += VertexData_DoubleClick;
 			listViewVertices.MouseClick += listViewVertices_MouseClick;
+			listViewVertices.KeyPress += VertexData_EnterKey;
 			// 
 			// columnHeaderVertID
 			// 
@@ -624,7 +636,9 @@
 			listViewObjectData.UseCompatibleStateImageBehavior = false;
 			listViewObjectData.View = System.Windows.Forms.View.Details;
 			listViewObjectData.SelectedIndexChanged += listView1_SelectedIndexChanged;
+			listViewObjectData.DoubleClick += ObjectData_DoubleClick;
 			listViewObjectData.MouseClick += listViewObjectData_MouseClick;
+			listViewObjectData.KeyPress += ObjectData_EnterKey;
 			// 
 			// columnHeaderEval
 			// 
@@ -772,5 +786,6 @@
 		private System.Windows.Forms.ToolStripMenuItem addBumpMatToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem addNullChunkToolStripMenuItem;
 		private System.Windows.Forms.ColumnHeader columnHeaderIdxOff;
+		private System.Windows.Forms.ToolStripMenuItem editVolumeDataToolStripMenuItem;
 	}
 }

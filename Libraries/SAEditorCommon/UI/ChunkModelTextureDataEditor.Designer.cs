@@ -94,7 +94,7 @@
 			clampUCheck.Location = new System.Drawing.Point(243, 64);
 			clampUCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			clampUCheck.Name = "clampUCheck";
-			clampUCheck.Size = new System.Drawing.Size(106, 29);
+			clampUCheck.Size = new System.Drawing.Size(72, 19);
 			clampUCheck.TabIndex = 3;
 			clampUCheck.Text = "Clamp U";
 			toolTip.SetToolTip(clampUCheck, "Enable/Disable tiling on the U Axis.");
@@ -107,7 +107,7 @@
 			clampVCheck.Location = new System.Drawing.Point(243, 96);
 			clampVCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			clampVCheck.Name = "clampVCheck";
-			clampVCheck.Size = new System.Drawing.Size(105, 29);
+			clampVCheck.Size = new System.Drawing.Size(71, 19);
 			clampVCheck.TabIndex = 4;
 			clampVCheck.Text = "Clamp V";
 			toolTip.SetToolTip(clampVCheck, "Enable/Disable tiling on the V Axis.");
@@ -120,7 +120,7 @@
 			flipUCheck.Location = new System.Drawing.Point(243, 128);
 			flipUCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flipUCheck.Name = "flipUCheck";
-			flipUCheck.Size = new System.Drawing.Size(104, 29);
+			flipUCheck.Size = new System.Drawing.Size(70, 19);
 			flipUCheck.TabIndex = 5;
 			flipUCheck.Text = "Mirror U";
 			toolTip.SetToolTip(flipUCheck, "If checked, tiling on the U Axis is mirrored.");
@@ -133,7 +133,7 @@
 			flipVCheck.Location = new System.Drawing.Point(243, 160);
 			flipVCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flipVCheck.Name = "flipVCheck";
-			flipVCheck.Size = new System.Drawing.Size(103, 29);
+			flipVCheck.Size = new System.Drawing.Size(69, 19);
 			flipVCheck.TabIndex = 6;
 			flipVCheck.Text = "Mirror V";
 			toolTip.SetToolTip(flipVCheck, "If checked, tiling on the V Axis is mirrored.");
@@ -148,7 +148,7 @@
 			filterModeDropDown.Location = new System.Drawing.Point(243, 220);
 			filterModeDropDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			filterModeDropDown.Name = "filterModeDropDown";
-			filterModeDropDown.Size = new System.Drawing.Size(244, 33);
+			filterModeDropDown.Size = new System.Drawing.Size(244, 23);
 			filterModeDropDown.TabIndex = 7;
 			toolTip.SetToolTip(filterModeDropDown, "Determines the texture filter mode used by the poly data.\r\nWhile this value is read in SA2B, all settings are treated as if they were Trilinear A without the Render Fix mod enabled.");
 			filterModeDropDown.SelectionChangeCommitted += filterModeDropDown_SelectionChangeCommitted;
@@ -160,7 +160,7 @@
 			mipmapDropDown.Items.AddRange(new object[] { "0 (Invalid)", "0.25", "0.50", "0.75", "1.00", "1.25", "1.50", "1.75", "2.00", "2.25", "2.50", "2.75", "3.00", "3.25", "3.50", "3.75" });
 			mipmapDropDown.Location = new System.Drawing.Point(243, 290);
 			mipmapDropDown.Name = "mipmapDropDown";
-			mipmapDropDown.Size = new System.Drawing.Size(135, 33);
+			mipmapDropDown.Size = new System.Drawing.Size(135, 23);
 			mipmapDropDown.TabIndex = 8;
 			toolTip.SetToolTip(mipmapDropDown, "This value adjusts the depth threshold for mipmap generation by using this value as a multiplier.\r\nA value of 0 is not valid.\r\nDoes nothing in SA2B without the Render Fix mod. ");
 			mipmapDropDown.SelectionChangeCommitted += mipmapDropDown_SelectionChangeCommitted;
@@ -171,7 +171,7 @@
 			superSampleCheck.Location = new System.Drawing.Point(243, 32);
 			superSampleCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			superSampleCheck.Name = "superSampleCheck";
-			superSampleCheck.Size = new System.Drawing.Size(148, 29);
+			superSampleCheck.Size = new System.Drawing.Size(98, 19);
 			superSampleCheck.TabIndex = 2;
 			superSampleCheck.Text = "Super Sample";
 			superSampleCheck.UseVisualStyleBackColor = true;
@@ -196,7 +196,7 @@
 			filterModeLabel.Location = new System.Drawing.Point(243, 192);
 			filterModeLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			filterModeLabel.Name = "filterModeLabel";
-			filterModeLabel.Size = new System.Drawing.Size(106, 25);
+			filterModeLabel.Size = new System.Drawing.Size(70, 15);
 			filterModeLabel.TabIndex = 9;
 			filterModeLabel.Text = "Filter Mode:";
 			// 
@@ -228,7 +228,7 @@
 			label2.AutoSize = true;
 			label2.Location = new System.Drawing.Point(243, 258);
 			label2.Name = "label2";
-			label2.Size = new System.Drawing.Size(171, 25);
+			label2.Size = new System.Drawing.Size(113, 15);
 			label2.TabIndex = 12;
 			label2.Text = "Mipmap \"D\" Adjust:";
 			// 
@@ -237,7 +237,7 @@
 			label1.AutoSize = true;
 			label1.Location = new System.Drawing.Point(9, 256);
 			label1.Name = "label1";
-			label1.Size = new System.Drawing.Size(94, 25);
+			label1.Size = new System.Drawing.Size(62, 15);
 			label1.TabIndex = 11;
 			label1.Text = "Texture ID:";
 			// 
@@ -246,7 +246,7 @@
 			textureIDNumeric.Location = new System.Drawing.Point(110, 254);
 			textureIDNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			textureIDNumeric.Name = "textureIDNumeric";
-			textureIDNumeric.Size = new System.Drawing.Size(66, 31);
+			textureIDNumeric.Size = new System.Drawing.Size(66, 23);
 			textureIDNumeric.TabIndex = 1;
 			textureIDNumeric.ValueChanged += textureIDNumeric_ValueChanged;
 			// 

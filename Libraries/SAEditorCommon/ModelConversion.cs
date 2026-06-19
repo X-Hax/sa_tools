@@ -172,6 +172,7 @@ namespace SAModel.SAEditorCommon.ModelConversion
 								{
 									ClampU = mat.ClampU,
 									ClampV = mat.ClampV,
+									MipmapDAdjust = 1.0F,
 									FilterMode = mat.FilterMode,
 									FlipU = mat.FlipU,
 									FlipV = mat.FlipV,

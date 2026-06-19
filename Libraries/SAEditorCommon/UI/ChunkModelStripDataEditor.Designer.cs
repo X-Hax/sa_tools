@@ -220,7 +220,7 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// ignoreAmbiCheck
 			// 
-			ignoreAmbiCheck.Location = new System.Drawing.Point(12, 140);
+			ignoreAmbiCheck.Location = new System.Drawing.Point(12, 141);
 			ignoreAmbiCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreAmbiCheck.Name = "ignoreAmbiCheck";
 			ignoreAmbiCheck.Size = new System.Drawing.Size(215, 21);
@@ -233,10 +233,10 @@ namespace SAModel.SAEditorCommon.UI
 			// doneButton
 			// 
 			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(607, 459);
+			doneButton.Location = new System.Drawing.Point(605, 459);
 			doneButton.Margin = new System.Windows.Forms.Padding(4);
 			doneButton.Name = "doneButton";
-			doneButton.Size = new System.Drawing.Size(62, 40);
+			doneButton.Size = new System.Drawing.Size(62, 27);
 			doneButton.TabIndex = 25;
 			doneButton.Text = "Done";
 			doneButton.UseVisualStyleBackColor = true;
@@ -251,10 +251,10 @@ namespace SAModel.SAEditorCommon.UI
 			// resetButton
 			// 
 			resetButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-			resetButton.Location = new System.Drawing.Point(501, 459);
+			resetButton.Location = new System.Drawing.Point(528, 459);
 			resetButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			resetButton.Name = "resetButton";
-			resetButton.Size = new System.Drawing.Size(70, 40);
+			resetButton.Size = new System.Drawing.Size(59, 27);
 			resetButton.TabIndex = 24;
 			resetButton.Text = "Reset";
 			toolTip.SetToolTip(resetButton, "Reset the poly data to the state it was when this dialog opened.");

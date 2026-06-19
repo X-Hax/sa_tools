@@ -445,13 +445,13 @@ namespace SAModel.SAEditorCommon.UI
 			groupBoxWeightList.Enabled = false;
 			if (editedModel is GC.GCAttach gcmodel)
 			{
-				if (gcmodel.vertexSkinData.Count > 0)
+				if (gcmodel.VertexSkinData.Count > 0)
 				{
 					groupBoxWeightList.Enabled = true;
 					Dictionary<int, GCSkinVertexSet> vertdata = new Dictionary<int, GCSkinVertexSet>();
-					for (int i = 0; i < gcmodel.vertexSkinData.Count; i++)
+					for (int i = 0; i < gcmodel.VertexSkinData.Count; i++)
 					{
-						vertdata.Add(i, gcmodel.vertexSkinData[i]);
+						vertdata.Add(i, gcmodel.VertexSkinData[i]);
 					}
 					foreach (KeyValuePair<int, GCSkinVertexSet> weights in vertdata)
 					{
@@ -554,8 +554,11 @@ namespace SAModel.SAEditorCommon.UI
 			buttonDeleteOMesh.Enabled = ((GC.GCAttach)editedModel).OpaqueMeshes.Count > 0;
 			buttonMoveOMeshUp.Enabled = ((GC.GCAttach)editedModel).OpaqueMeshes.IndexOf(selectedMesh) > 0;
 			buttonMoveOMeshDown.Enabled = ((GC.GCAttach)editedModel).OpaqueMeshes.IndexOf(selectedMesh) < ((GC.GCAttach)editedModel).OpaqueMeshes.Count - 1;
+			openOParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerOToolStripMenuItem.Visible = true;
+			openTParameterViewerToolStripMenuItem.Enabled = openPrimitiveViewerTToolStripMenuItem.Enabled = false;
+			openTParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerTToolStripMenuItem.Visible = false;
 			openOParameterViewerToolStripMenuItem.Enabled = selectedMesh.Parameters.Count > 0;
-			openTParameterViewerToolStripMenuItem.Enabled = false;
+			openPrimitiveViewerOToolStripMenuItem.Enabled = selectedMesh.Primitives.Count > 0;
 			string meshParamAddr = selectedMesh.ParameterName;
 			string meshParamCount = selectedMesh.Parameters.Count.ToString();
 			string meshPrimName = selectedMesh.PrimitiveName;
@@ -594,8 +597,11 @@ namespace SAModel.SAEditorCommon.UI
 			buttonDeleteTMesh.Enabled = ((GC.GCAttach)editedModel).TranslucentMeshes.Count > 0;
 			buttonMoveTMeshUp.Enabled = ((GC.GCAttach)editedModel).TranslucentMeshes.IndexOf(selectedMesh) > 0;
 			buttonMoveTMeshDown.Enabled = ((GC.GCAttach)editedModel).TranslucentMeshes.IndexOf(selectedMesh) < ((GC.GCAttach)editedModel).TranslucentMeshes.Count - 1;
+			openTParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerTToolStripMenuItem.Visible = true;
+			openOParameterViewerToolStripMenuItem.Enabled = openPrimitiveViewerOToolStripMenuItem.Enabled = false;
+			openOParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerOToolStripMenuItem.Visible = false;
 			openTParameterViewerToolStripMenuItem.Enabled = selectedMesh.Parameters.Count > 0;
-			openOParameterViewerToolStripMenuItem.Enabled = false;
+			openPrimitiveViewerTToolStripMenuItem.Enabled = selectedMesh.Primitives.Count > 0;
 			string meshParamAddr = selectedMesh.ParameterName;
 			string meshParamCount = selectedMesh.Parameters.Count.ToString();
 			string meshPrimName = selectedMesh.PrimitiveName;
@@ -624,12 +630,18 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void listViewOMeshes_MouseClick(object sender, MouseEventArgs e)
 		{
+			openOParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerOToolStripMenuItem.Visible = true;
+			openTParameterViewerToolStripMenuItem.Enabled = openPrimitiveViewerTToolStripMenuItem.Enabled = false;
+
 			if (e.Button == MouseButtons.Right && listViewOMeshes.SelectedIndices.Count != 0)
 				contextMenuStripParamEdit.Show(listViewOMeshes, e.Location);
 		}
 
 		private void listViewTMeshes_MouseClick(object sender, MouseEventArgs e)
 		{
+			openTParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerTToolStripMenuItem.Visible = true;
+			openOParameterViewerToolStripMenuItem.Enabled = openPrimitiveViewerOToolStripMenuItem.Enabled = false;
+
 			if (e.Button == MouseButtons.Right && listViewTMeshes.SelectedIndices.Count != 0)
 				contextMenuStripParamEdit.Show(listViewTMeshes, e.Location);
 		}
@@ -740,7 +752,7 @@ namespace SAModel.SAEditorCommon.UI
 				return;
 			}
 			viewVertexDataToolStripMenuItem.Enabled = true;
-			GCSkinVertexSet selectedVerts = ((GC.GCAttach)editedModel).vertexSkinData[listViewWeights.SelectedItems[0].Index];
+			GCSkinVertexSet selectedVerts = ((GC.GCAttach)editedModel).VertexSkinData[listViewWeights.SelectedItems[0].Index];
 			string weighttype = selectedVerts.elementType.ToString();
 			string weightsizetotal = selectedVerts.totalVertIndices.ToString();
 			string weightstart = selectedVerts.startingIndex.ToString();
@@ -817,8 +829,20 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			if (listViewTMeshes.SelectedItems.Count > 0)
 			{
-				GCMesh tMeshData = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewOMeshes.SelectedIndices[0]];
+				GCMesh tMeshData = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewTMeshes.SelectedIndices[0]];
 				using (GCModelParameterDataEditor de = new GCModelParameterDataEditor(tMeshData, textures))
+				{
+					de.ShowDialog(this);
+				}
+			}
+		}
+
+		private void VertexData_DoubleClick(object sender, EventArgs e)
+		{
+			if (listViewVertices.SelectedItems.Count > 0)
+			{
+				GCVertexSet vData = ((GC.GCAttach)editedModel).VertexData[listViewVertices.SelectedIndices[0]];
+				using (GCModelVertexDataEditor de = new GCModelVertexDataEditor(vData))
 				{
 					de.ShowDialog(this);
 				}
@@ -828,7 +852,7 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			if (listViewWeights.SelectedItems.Count > 0)
 			{
-				GCSkinVertexSet weightData = ((GC.GCAttach)editedModel).vertexSkinData[listViewWeights.SelectedIndices[0]];
+				GCSkinVertexSet weightData = ((GC.GCAttach)editedModel).VertexSkinData[listViewWeights.SelectedIndices[0]];
 				using (GCModelWeightDataEditor de = new GCModelWeightDataEditor(weightData))
 				{
 					de.ShowDialog(this);
@@ -836,11 +860,19 @@ namespace SAModel.SAEditorCommon.UI
 			}
 		}
 
-		private void openPrimitiveViewerToolStripMenuItem_Click(object sender, EventArgs e)
+		private void openPrimitiveViewerOToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			GCMesh oMeshData = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
-
 			using (GCModelPrimitiveDataEditor de = new GCModelPrimitiveDataEditor(oMeshData))
+			{
+				de.ShowDialog(this);
+			}
+		}
+
+		private void openPrimitiveViewerTToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			GCMesh tMeshData = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewTMeshes.SelectedIndices[0]];
+			using (GCModelPrimitiveDataEditor de = new GCModelPrimitiveDataEditor(tMeshData))
 			{
 				de.ShowDialog(this);
 			}
@@ -850,6 +882,83 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			if (e.Button == MouseButtons.Right && listViewObjectData.SelectedIndices.Count != 0)
 				contextMenuStripObjSet.Show(listViewObjectData, e.Location);
+		}
+		private void ObjectData_DoubleClick(object sender, EventArgs e)
+		{
+			using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+			{
+				ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+				ose.ShowDialog(this);
+			}
+			BuildObjectDataList();
+		}
+		private void ObjectData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == (char)Keys.Enter)
+			{
+				using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+				{
+					ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+					ose.ShowDialog(this);
+				}
+				BuildObjectDataList();
+			}
+		}
+		private void VertexData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewVertices.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					GCVertexSet vData = ((GC.GCAttach)editedModel).VertexData[listViewVertices.SelectedIndices[0]];
+					using (GCModelVertexDataEditor de = new GCModelVertexDataEditor(vData))
+					{
+						de.ShowDialog(this);
+					}
+				}
+			}
+		}
+		private void WeightData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewWeights.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					GCSkinVertexSet weightData = ((GC.GCAttach)editedModel).VertexSkinData[listViewWeights.SelectedIndices[0]];
+					using (GCModelWeightDataEditor de = new GCModelWeightDataEditor(weightData))
+					{
+						de.ShowDialog(this);
+					}
+				}
+			}
+		}
+		private void OMeshesData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewOMeshes.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					GCMesh oMeshData = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+					using (GCModelParameterDataEditor de = new GCModelParameterDataEditor(oMeshData, textures))
+					{
+						de.ShowDialog(this);
+					}
+				}
+			}
+		}
+		private void TMeshesData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewTMeshes.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					GCMesh tMeshData = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewTMeshes.SelectedIndices[0]];
+					using (GCModelParameterDataEditor de = new GCModelParameterDataEditor(tMeshData, textures))
+					{
+						de.ShowDialog(this);
+					}
+				}
+			}
 		}
 	}
 }

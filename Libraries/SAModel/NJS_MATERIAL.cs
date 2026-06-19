@@ -352,6 +352,56 @@ namespace SAModel
 					break;
 			}
 		}
+		public void UpdateFromGCMesh(GC.GCParameter meshdata)
+		{
+			switch (meshdata.Type)
+			{
+				case GC.ParameterType.StripFlags1:
+					var sflags = meshdata as GC.StripFlagsParameter;
+					IgnoreLighting = sflags.IgnoreLight;
+					IgnoreSpecular = sflags.IgnoreSpecular;
+					IgnoreAmbient = sflags.IgnoreAmbient;
+					NoPunchthrough = sflags.NoPunchthrough;
+					DoubleSided = sflags.DoubleSided;
+					VertexMaterial = sflags.VertexDiffuse;
+					VertexAmbient = sflags.VertexAmbient;
+					UseAlpha = sflags.UseAlpha;
+					break;
+				case GC.ParameterType.BlendAlpha:
+					var blend = meshdata as GC.BlendAlphaParameter;
+					SourceAlpha = blend.NJSourceAlpha;
+					DestinationAlpha = blend.NJDestAlpha;
+					break;
+				case GC.ParameterType.DiffuseColor:
+					var diffuseCol = meshdata as GC.DiffuseColorParameter;
+					DiffuseColor = diffuseCol.DiffuseColor.SystemCol;
+					break;
+				case GC.ParameterType.AmbientColor:
+					var ambiCol = meshdata as GC.AmbientColorParameter;
+					AmbientColor = ambiCol.AmbientColor.SystemCol;
+					break;
+				case GC.ParameterType.SpecularColor:
+					var specCol = meshdata as GC.SpecularColorParameter;
+					SpecularColor = specCol.SpecularColor.SystemCol;
+					break;
+				case GC.ParameterType.Texture:
+					var tex = meshdata as GC.TextureParameter;
+					TextureID = tex.TextureId;
+					FlipU = tex.Tile.HasFlag(GC.GCTileMode.MirrorU);
+					FlipV = tex.Tile.HasFlag(GC.GCTileMode.MirrorV);
+					ClampU = tex.Tile.HasFlag(GC.GCTileMode.WrapU);
+					ClampV = tex.Tile.HasFlag(GC.GCTileMode.WrapV);
+
+					// No idea why, but ok
+					ClampU &= tex.Tile.HasFlag(GC.GCTileMode.Unk_1);
+					ClampV &= tex.Tile.HasFlag(GC.GCTileMode.Unk_1);
+					break;
+				case GC.ParameterType.TexCoordGen:
+					var gen = meshdata as GC.TexCoordGenParameter;
+					EnvironmentMap = gen.TexGenSrc == GC.GCTexGenSrc.Normal;
+					break;
+			}
+		}
 
 		public override bool Equals(object obj)
 		{

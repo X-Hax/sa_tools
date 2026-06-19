@@ -135,7 +135,7 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
 			statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabelInfo });
-			statusStrip1.Location = new System.Drawing.Point(0, 446);
+			statusStrip1.Location = new System.Drawing.Point(0, 415);
 			statusStrip1.Name = "statusStrip1";
 			statusStrip1.Padding = new Padding(1, 0, 10, 0);
 			statusStrip1.Size = new System.Drawing.Size(924, 22);
@@ -153,10 +153,10 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			buttonClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			buttonClose.DialogResult = DialogResult.OK;
-			buttonClose.Location = new System.Drawing.Point(829, 417);
+			buttonClose.Location = new System.Drawing.Point(854, 386);
 			buttonClose.Margin = new Padding(2);
 			buttonClose.Name = "buttonClose";
-			buttonClose.Size = new System.Drawing.Size(84, 24);
+			buttonClose.Size = new System.Drawing.Size(59, 24);
 			buttonClose.TabIndex = 44;
 			buttonClose.Text = "Close";
 			buttonClose.UseVisualStyleBackColor = true;
@@ -204,7 +204,7 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			buttonPrimitiveData.Location = new System.Drawing.Point(5, 261);
 			buttonPrimitiveData.Name = "buttonPrimitiveData";
-			buttonPrimitiveData.Size = new System.Drawing.Size(140, 23);
+			buttonPrimitiveData.Size = new System.Drawing.Size(143, 23);
 			buttonPrimitiveData.TabIndex = 31;
 			buttonPrimitiveData.Text = "View Primitive Data";
 			buttonPrimitiveData.UseVisualStyleBackColor = true;
@@ -223,10 +223,10 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// buttonResetParameter
 			// 
-			buttonResetParameter.Location = new System.Drawing.Point(246, 261);
+			buttonResetParameter.Location = new System.Drawing.Point(240, 261);
 			buttonResetParameter.Margin = new Padding(2);
 			buttonResetParameter.Name = "buttonResetParameter";
-			buttonResetParameter.Size = new System.Drawing.Size(155, 23);
+			buttonResetParameter.Size = new System.Drawing.Size(161, 23);
 			buttonResetParameter.TabIndex = 32;
 			buttonResetParameter.Text = "Reset Selected Parameter";
 			buttonResetParameter.UseVisualStyleBackColor = true;
@@ -280,7 +280,7 @@ namespace SAModel.SAEditorCommon.UI
 			textureBox.BackgroundImageLayout = ImageLayout.Center;
 			textureBox.BorderStyle = BorderStyle.FixedSingle;
 			textureBox.Location = new System.Drawing.Point(11, 20);
-			textureBox.Margin = new Padding(2);
+			textureBox.Margin = new Padding(6, 4, 6, 4);
 			textureBox.Name = "textureBox";
 			textureBox.Size = new System.Drawing.Size(136, 136);
 			textureBox.SizeMode = PictureBoxSizeMode.CenterImage;
@@ -462,7 +462,7 @@ namespace SAModel.SAEditorCommon.UI
 			groupBoxStripFlags.Margin = new Padding(2);
 			groupBoxStripFlags.Name = "groupBoxStripFlags";
 			groupBoxStripFlags.Padding = new Padding(2);
-			groupBoxStripFlags.Size = new System.Drawing.Size(421, 105);
+			groupBoxStripFlags.Size = new System.Drawing.Size(386, 105);
 			groupBoxStripFlags.TabIndex = 34;
 			groupBoxStripFlags.TabStop = false;
 			groupBoxStripFlags.Text = "Strip Flags";
@@ -470,7 +470,7 @@ namespace SAModel.SAEditorCommon.UI
 			// checkBoxDoubleSide
 			// 
 			checkBoxDoubleSide.AutoSize = true;
-			checkBoxDoubleSide.Location = new System.Drawing.Point(144, 71);
+			checkBoxDoubleSide.Location = new System.Drawing.Point(136, 71);
 			checkBoxDoubleSide.Name = "checkBoxDoubleSide";
 			checkBoxDoubleSide.Size = new System.Drawing.Size(96, 19);
 			checkBoxDoubleSide.TabIndex = 40;
@@ -482,7 +482,7 @@ namespace SAModel.SAEditorCommon.UI
 			// checkBoxPunchthrough
 			// 
 			checkBoxPunchthrough.AutoSize = true;
-			checkBoxPunchthrough.Location = new System.Drawing.Point(280, 46);
+			checkBoxPunchthrough.Location = new System.Drawing.Point(252, 46);
 			checkBoxPunchthrough.Name = "checkBoxPunchthrough";
 			checkBoxPunchthrough.Size = new System.Drawing.Size(122, 19);
 			checkBoxPunchthrough.TabIndex = 42;
@@ -494,7 +494,7 @@ namespace SAModel.SAEditorCommon.UI
 			// checkBoxVAmbient
 			// 
 			checkBoxVAmbient.AutoSize = true;
-			checkBoxVAmbient.Location = new System.Drawing.Point(144, 46);
+			checkBoxVAmbient.Location = new System.Drawing.Point(136, 46);
 			checkBoxVAmbient.Name = "checkBoxVAmbient";
 			checkBoxVAmbient.Size = new System.Drawing.Size(106, 19);
 			checkBoxVAmbient.TabIndex = 39;
@@ -505,7 +505,7 @@ namespace SAModel.SAEditorCommon.UI
 			// checkBoxUseAlpha
 			// 
 			checkBoxUseAlpha.AutoSize = true;
-			checkBoxUseAlpha.Location = new System.Drawing.Point(280, 21);
+			checkBoxUseAlpha.Location = new System.Drawing.Point(252, 21);
 			checkBoxUseAlpha.Name = "checkBoxUseAlpha";
 			checkBoxUseAlpha.Size = new System.Drawing.Size(79, 19);
 			checkBoxUseAlpha.TabIndex = 41;
@@ -517,7 +517,7 @@ namespace SAModel.SAEditorCommon.UI
 			// checkBoxVMaterial
 			// 
 			checkBoxVMaterial.AutoSize = true;
-			checkBoxVMaterial.Location = new System.Drawing.Point(144, 21);
+			checkBoxVMaterial.Location = new System.Drawing.Point(136, 21);
 			checkBoxVMaterial.Name = "checkBoxVMaterial";
 			checkBoxVMaterial.Size = new System.Drawing.Size(103, 19);
 			checkBoxVMaterial.TabIndex = 38;
@@ -564,7 +564,7 @@ namespace SAModel.SAEditorCommon.UI
 			// checkBoxEnvMap
 			// 
 			checkBoxEnvMap.AutoSize = true;
-			checkBoxEnvMap.Location = new System.Drawing.Point(280, 71);
+			checkBoxEnvMap.Location = new System.Drawing.Point(252, 71);
 			checkBoxEnvMap.Margin = new Padding(2);
 			checkBoxEnvMap.Name = "checkBoxEnvMap";
 			checkBoxEnvMap.Size = new System.Drawing.Size(121, 19);
@@ -930,7 +930,8 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new System.Drawing.Size(924, 468);
+			AutoSize = true;
+			ClientSize = new System.Drawing.Size(924, 437);
 			Controls.Add(groupBoxSpecular);
 			Controls.Add(groupBoxAmbient);
 			Controls.Add(groupBoxUVScale);

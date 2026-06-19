@@ -191,6 +191,16 @@ namespace SAModel
 			return optimizeMotions = true;
 		}
 
+		public bool IsCameraMotion()
+		{
+			foreach (var mdl in Models)
+			{
+				if (mdl.Value.Roll.Count > 0 || mdl.Value.Angle.Count > 0 || mdl.Value.Target.Count > 0)
+					return true;
+			}
+			return false;
+		}
+
 		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false, int[] numverts = null, string actionName = null, string objectName = null, bool shortcheck = true)
 		{
 			if (nummodels == 0) 
@@ -2239,7 +2249,7 @@ namespace SAModel
 			}
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels = null, bool isDum = false, bool exportDefaults = true, string camera = null, ushort mdatatype = 0)
+		public void ToNJA(TextWriter writer, List<string> labels = null, bool isDum = false, bool exportDefaults = true, string camera = null, ushort mdatatype = 0, bool isNinja2 = false)
 		{
 			bool hasPos = false;
 			bool hasRot = false;
@@ -2259,7 +2269,20 @@ namespace SAModel
 			if (labels == null)
 				labels = new List<string>();
 			// Start is always written
-			writer.WriteLine(IsShapeMotion() ? "SHAPE_MOTION_START" : "MOTION_START");
+			if (isNinja2)
+			{
+				string header = string.Empty;
+				if (IsShapeMotion())
+					header += "SHAPE_";
+				if (IsCameraMotion())
+					header += "CAMERA_";
+				header += "MOTION_START";
+				writer.WriteLine(header);
+			}
+			else
+			{
+				writer.WriteLine(IsShapeMotion() ? "SHAPE_MOTION_START" : "MOTION_START");
+			}
 			// Write motion data if false
 			bool ignoreMotion = labels.Contains(Name);
 			// Write action data if false
@@ -2275,7 +2298,7 @@ namespace SAModel
 						if (model.Value.Position.Count > 0 && !labels.Contains(model.Value.PositionName))
 						{
 							hasPos = true;
-							if (!string.IsNullOrEmpty(camera))
+							if (IsCameraMotion())
 								writer.WriteLine(System.Environment.NewLine + "CPOSITION {0}[]", model.Value.PositionName.MakeIdentifier());
 							else
 								writer.WriteLine(System.Environment.NewLine + "POSITION {0}[]", model.Value.PositionName.MakeIdentifier());
@@ -2408,7 +2431,18 @@ namespace SAModel
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, int> item in model.Value.Roll)
 							{
-								writer.WriteLine("         MKEYA1( " + item.Key + ",   " + item.Value.ToString() + " ),");
+								if (isNinja2)
+								{
+									string space = "  ";
+									float degree = item.Value / 182.044f;
+									if (degree >= 0)
+										space = space.Remove(space.Length - (degree >= 100F ? 2 : 1));
+									writer.WriteLine("         MKEYA1( " + item.Key + ", " + space + degree.ToNJA() + " ),");
+								}
+								else
+								{
+									writer.WriteLine("         MKEYA1( " + item.Key + ",   " + item.Value.ToString() + " ),");
+								}
 							}
 							writer.WriteLine("END");
 							labels.Add(model.Value.RollName);
@@ -2422,7 +2456,18 @@ namespace SAModel
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, int> item in model.Value.Angle)
 							{
-								writer.WriteLine("         MKEYA1( " + item.Key + ",   " + item.Value.ToString() + " ),");
+								if (isNinja2)
+								{
+									string space = "  ";
+									float degree = item.Value / 182.044f;
+									if (degree >= 0)
+										space = space.Remove(space.Length - (degree >= 100F ? 2 : 1));
+									writer.WriteLine("         MKEYA1( " + item.Key + ", " + space + degree.ToNJA() + " ),");
+								}
+								else
+								{
+									writer.WriteLine("         MKEYA1( " + item.Key + ",   " + item.Value.ToString() + " ),");
+								}
 							}
 							writer.WriteLine("END");
 							labels.Add(model.Value.AngleName);
@@ -2766,22 +2811,87 @@ namespace SAModel
 						writer.WriteLine("START");
 						writer.WriteLine("MdataArray     {0}, ", MdataName.MakeIdentifier());
 						writer.WriteLine("MFrameNum      {0},", Frames);
-						writer.WriteLine("MotionBit      0x{0},", ((int)flags).ToString("X"));
-						int interpol = numpairs > 0 ? numpairs : 2;
-						switch (InterpolationMode)
+						if (isNinja2)
 						{
-							case InterpolationMode.Spline:
-								interpol = (interpol | (int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_SPLINE);
-								break;
-							case InterpolationMode.User:
-								interpol = (interpol | (int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER);
-								break;
-								// Technically does nothing because it's 0000
-								//case InterpolationMode.Linear:
-								//interpol = (interpol | (int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_LINER);
-								//break;
+							string mbits = string.Empty;
+							if (flags.HasFlag(AnimFlags.Position))
+								mbits += "FMK_POS0|";
+							if (flags.HasFlag(AnimFlags.Rotation))
+								mbits += "FMK_ANG1|";
+							if (flags.HasFlag(AnimFlags.Scale))
+								mbits += "FMK_SCA2|";
+							if (flags.HasFlag(AnimFlags.Vector))
+								mbits += "FMK_VEC3|";
+							if (flags.HasFlag(AnimFlags.Vertex))
+								mbits += "FMK_VEC0|";
+							if (flags.HasFlag(AnimFlags.Normal))
+								mbits += "FMK_NOR5|";
+							if (flags.HasFlag(AnimFlags.Target))
+								mbits += "FMK_TAR3|";
+							if (flags.HasFlag(AnimFlags.Roll))
+								mbits += "FMK_ROL6|";
+							if (flags.HasFlag(AnimFlags.Angle))
+								mbits += "FMK_ANG7|";
+							if (flags.HasFlag(AnimFlags.Color))
+								mbits += "FMK_RGB8|";
+							if (flags.HasFlag(AnimFlags.Intensity))
+								mbits += "FMK_INT9|";
+							if (flags.HasFlag(AnimFlags.Spot))
+								mbits += "FMK_SPO9|";
+							if (flags.HasFlag(AnimFlags.Point))
+								mbits += "FMK_POI9|";
+							if (flags.HasFlag(AnimFlags.Quaternion))
+								mbits += "FMK_QUA1|";
+							if (flags.HasFlag(AnimFlags.ShapeID))
+								mbits += "FMK_SHID|";
+							if (flags.HasFlag(AnimFlags.Event))
+								mbits += "FMK_EVE4|";
+							mbits = mbits.Remove(mbits.Length - 1);
+							writer.WriteLine("MotionBitF     ({0}),", mbits);
 						}
-						writer.WriteLine("InterpolFct    0x{0},", ((int)interpol).ToString("X"));
+						else
+						{
+							writer.WriteLine("MotionBit      0x{0},", ((int)flags).ToString("X"));
+						}
+						int interpol = numpairs > 0 ? numpairs : 2;
+						if (isNinja2)
+						{
+							string imode = string.Empty;
+							if (InterpolationMode.HasFlag(InterpolationMode.Linear))
+								imode += "FMT_L|";
+							if (InterpolationMode.HasFlag(InterpolationMode.Spline))
+							{
+								imode += "FMT_S|";
+								interpol = interpol | ~(int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_SPLINE;
+							}
+							if (InterpolationMode.HasFlag(InterpolationMode.User))
+							{
+								imode += "FMT_U|";
+								interpol = interpol | ~(int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER;
+							}
+							if (interpol > 0)
+								imode += $"FMT_{interpol}|";
+							imode = imode.Remove(imode.Length - 1);
+
+							writer.WriteLine("InterpolFctF   ({0}),", imode);
+						}
+						else
+						{
+							switch (InterpolationMode)
+							{
+								case InterpolationMode.Spline:
+									interpol = (interpol | (int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_SPLINE);
+									break;
+								case InterpolationMode.User:
+									interpol = (interpol | (int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER);
+									break;
+									// Technically does nothing because it's 0000
+									//case InterpolationMode.Linear:
+									//interpol = (interpol | (int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_LINER);
+									//break;
+							}
+							writer.WriteLine("InterpolFct    0x{0},", ((int)interpol).ToString("X"));
+						}
 						writer.WriteLine("END");
 						labels.Add(Name);
 					}
@@ -2805,7 +2915,20 @@ namespace SAModel
 				writer.WriteLine("END");
 			}
 			// End is always written
-			writer.WriteLine(System.Environment.NewLine + (IsShapeMotion() ? "SHAPE_MOTION_END" : "MOTION_END"));
+			if (isNinja2)
+			{
+				string footer = string.Empty;
+				if (IsShapeMotion())
+					footer += "SHAPE_";
+				if (IsCameraMotion())
+					footer += "CAMERA_";
+				footer += "MOTION_END";
+				writer.WriteLine(System.Environment.NewLine + footer);
+			}
+			else
+			{
+				writer.WriteLine(System.Environment.NewLine + (IsShapeMotion() ? "SHAPE_MOTION_END" : "MOTION_END"));
+			}
 			// Write default start
 			if (exportDefaults)
 			{
@@ -2816,8 +2939,21 @@ namespace SAModel
 				// Write default motion
 				if (!ignoreMotion)
 				{
-					writer.WriteLine("#ifndef DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME");
-					writer.WriteLine("#define DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME " + Name.MakeIdentifier());
+					if (isNinja2)
+					{
+						string motiontype = "MOTION";
+						if (IsShapeMotion())
+							motiontype = "SHAPE";
+						if (IsCameraMotion())
+							motiontype = "CMOTION";
+						writer.WriteLine("#ifndef DEFAULT_" + motiontype + "_NAME");
+						writer.WriteLine("#define DEFAULT_" + motiontype + "_NAME " + Name.MakeIdentifier());
+					}
+					else
+					{
+						writer.WriteLine("#ifndef DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME");
+						writer.WriteLine("#define DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME " + Name.MakeIdentifier());
+					}
 					writer.WriteLine("#endif");
 				}
 				// Write default action
@@ -2833,6 +2969,7 @@ namespace SAModel
 				{
 					writer.Write(System.Environment.NewLine + "DEFAULT_END");
 				}
+				writer.WriteLine(System.Environment.NewLine);
 			}
 		}
 

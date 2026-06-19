@@ -467,6 +467,53 @@ namespace SAModel
           
         }
 
+		public int CountAllVertices()
+		{
+			int total = 0;
+			switch (GetModelFormat())
+			{
+				case ModelFormat.Basic:
+				case ModelFormat.BasicDX:
+					foreach (NJS_OBJECT obj in GetObjects())
+					{
+						BasicAttach bsatt = obj.Attach as BasicAttach;
+						if (bsatt != null && bsatt.Vertex != null)
+							total += bsatt.Vertex.Length;
+					}
+					break;
+				case ModelFormat.Chunk:
+					foreach (NJS_OBJECT obj in GetObjects())
+					{
+						ChunkAttach cnkatt = obj.Attach as ChunkAttach;
+						if (cnkatt != null && cnkatt.Vertex != null)
+						{
+							foreach (VertexChunk vcnk in cnkatt.Vertex)
+							total += vcnk.VertexCount;
+						}
+					}
+					break;
+				case ModelFormat.GC:
+					foreach (NJS_OBJECT obj in GetObjects())
+					{
+						GCAttach gcatt = obj.Attach as GCAttach;
+						if (gcatt != null && gcatt.VertexData.Count > 0)
+						{
+							var positions = gcatt.VertexData.Find(x => x.Attribute == GCVertexAttribute.Position)?.Data;
+							total += positions.Count;
+						}
+						if (gcatt != null && gcatt.VertexSkinData.Count > 0)
+						{
+							foreach (GCSkinVertexSet gcw in gcatt.VertexSkinData)
+							total += gcw.indexCount;
+						}
+					}
+					break;
+				default:
+					break;
+			}
+			return total;
+		}
+
 		public int CountAll()
 		{
 			int result = 1;
@@ -878,6 +925,7 @@ namespace SAModel
 					writer.WriteLine("#define DEFAULT_OBJECT_NAME " + Name.MakeIdentifier());
 					writer.WriteLine("#endif");
 					writer.Write(Environment.NewLine + "DEFAULT_END");
+					writer.WriteLine(Environment.NewLine);
 				}
 			}
 		}

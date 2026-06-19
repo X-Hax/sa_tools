@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using TextureLib;
-using static TextureLib.DirectXTexUtility;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -160,7 +159,7 @@ namespace SAModel.SAEditorCommon.UI
 			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
 			PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
 			int index = selectedObj.IndexOf(selectedMesh);
-			if (polydata.StartsWith("Material"))
+			if (polydata.StartsWith("Material") && polydata != "Material_BU")
 			{
 				using (ChunkModelMaterialDataEditor de = new ChunkModelMaterialDataEditor(selectedObj[matID]))
 				{
@@ -452,7 +451,7 @@ namespace SAModel.SAEditorCommon.UI
 			if (clip)
 				flagnames += "CLIP, ";
 			if (modifier)
-				flagnames += "MOD, " ;
+				flagnames += "MOD, ";
 			if (quaternion)
 				flagnames += "QUAT, ";
 			if (rotatebase)
@@ -687,6 +686,7 @@ namespace SAModel.SAEditorCommon.UI
 								break;
 							case PolyChunkVolume pcv:
 								newmesh.SubItems.Add(pcv.Type.ToString());
+								newmesh.SubItems.Add(pcv.PolyCount.ToString() + (pcv.PolyCount == 1 ? " Entity" : " Entities"));
 								break;
 							case PolyChunkMaterialBump pcmb:
 								newmesh.SubItems.Add("Material_BU");
@@ -1069,10 +1069,11 @@ namespace SAModel.SAEditorCommon.UI
 				buttonCloneMesh.Enabled = false;
 			else
 				buttonCloneMesh.Enabled = true;
-			editPCMatToolStripMenuItem.Enabled = editPCMatToolStripMenuItem.Visible = polytype.Contains("Material");
+			editPCMatToolStripMenuItem.Enabled = editPCMatToolStripMenuItem.Visible = polytype.Contains("Material") && polytype != "Material_BU";
 			editTextureIDToolStripMenuItem.Enabled = editTextureIDToolStripMenuItem.Visible = polytype.StartsWith("Tiny");
 			editStripAlphaToolStripMenuItem.Enabled = editStripAlphaToolStripMenuItem.Visible = polytype.StartsWith("Strip");
 			editAlphaBlendDataToolStripMenuItem.Enabled = editAlphaBlendDataToolStripMenuItem.Visible = polytype == "Bits_BA";
+			editVolumeDataToolStripMenuItem.Enabled = editVolumeDataToolStripMenuItem.Visible = polytype.StartsWith("Volume");
 			buttonDeleteMesh.Enabled = selectedObj.Count > 1;
 			buttonMoveMeshUp.Enabled = selectedObj.IndexOf(selectedMesh) > 0;
 			if (prevmatstart == "Bits_CP" || prevmatstart == "Bits_DP")
@@ -1273,12 +1274,77 @@ namespace SAModel.SAEditorCommon.UI
 			if (e.Button == MouseButtons.Right && listViewVertices.SelectedIndices.Count != 0)
 				contextMenuStripVertCol.Show(listViewVertices, e.Location);
 		}
+
 		private void listViewObjectData_MouseClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Right && listViewObjectData.SelectedIndices.Count != 0)
 				contextMenuStripObjSet.Show(listViewObjectData, e.Location);
 		}
 
+		private void VertexData_DoubleClick(object sender, EventArgs e)
+		{
+			if (listViewVertices.SelectedItems.Count > 0)
+			{
+				VertexChunk vData = ((ChunkAttach)editedModel).Vertex[listViewVertices.SelectedIndices[0]];
+				using (ChunkModelVertexDataEditor de = new ChunkModelVertexDataEditor(vData))
+				{
+					de.ShowDialog(this);
+				}
+			}
+		}
+		private void PolyData_DoubleClick(object sender, EventArgs e)
+		{
+			if (listViewMeshes.SelectedItems.Count > 0)
+			{
+				string polytype = listViewMeshes.SelectedItems[0].SubItems[1].Text;
+				PolyChunk polyData = ((ChunkAttach)editedModel).Poly[listViewMeshes.SelectedIndices[0]];
+				if (polytype.StartsWith("Bits_BA"))
+				{
+					using (ChunkModelBlendAlphaDataEditor de = new ChunkModelBlendAlphaDataEditor(polyData))
+					{
+						PolyChunkBitsBlendAlpha pcba = (PolyChunkBitsBlendAlpha)polyData;
+						de.FormUpdated += (s, ev) => updateBlendAlphaData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcba);
+						de.ShowDialog(this);
+					}
+				}
+				if (polytype.StartsWith("Material") && polytype != "Material_BU")
+				{
+					using (ChunkModelMaterialDataEditor de = new ChunkModelMaterialDataEditor(polyData))
+					{
+						PolyChunkMaterial pcm = (PolyChunkMaterial)polyData;
+						de.FormUpdated += (s, ev) => updateMaterialData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcm);
+						de.ShowDialog(this);
+					}
+				}
+				if (polytype.StartsWith("Tiny"))
+				{
+					using (ChunkModelTextureDataEditor de = new ChunkModelTextureDataEditor(polyData, textures))
+					{
+						PolyChunkTinyTextureID ttid = (PolyChunkTinyTextureID)polyData;
+						de.FormUpdated += (s, ev) => updateTextureData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], ttid);
+						de.ShowDialog(this);
+					}
+				}
+				if (polytype.StartsWith("Strip"))
+				{
+					using (ChunkModelStripDataEditor de = new ChunkModelStripDataEditor(polyData))
+					{
+						PolyChunkStrip pcs = (PolyChunkStrip)polyData;
+						de.FormUpdated += (s, ev) => updateStripData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcs);
+						de.ShowDialog(this);
+					}
+				}
+				if (polytype.StartsWith("Volume"))
+				{
+					using (ChunkModelVolumeDataEditor de = new ChunkModelVolumeDataEditor(polyData))
+					{
+						de.ShowDialog(this);
+					}
+				}
+				else
+					return;
+			}
+		}
 		private void comboBoxNode_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			int index = comboBoxNode.SelectedIndex;
@@ -1553,6 +1619,117 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				selectedObj.Add(newbm);
 				BuildPolyChunkList();
+			}
+		}
+
+		private void editVolumeDataToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string polydata = listViewMeshes.SelectedItems[0].SubItems[1].Text;
+			int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[0].Text);
+			PolyChunkVolume mat;
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+			int index = selectedObj.IndexOf(selectedMesh);
+			if (polydata.StartsWith("Volume"))
+			{
+				using (ChunkModelVolumeDataEditor de = new ChunkModelVolumeDataEditor(selectedObj[matID]))
+				{
+					//mat = (PolyChunkVolume)selectedObj[matID];
+					//de.FormUpdated += (s, ev) => updateBlendAlphaData(selectedObj, matID, mat);
+					de.ShowDialog(this);
+				}
+			}
+			BuildPolyChunkList();
+		}
+		private void ObjectData_DoubleClick(object sender, EventArgs e)
+		{
+			using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+			{
+				ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+				ose.ShowDialog(this);
+			}
+			BuildObjectDataList();
+		}
+		private void ObjectData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == (char)Keys.Enter)
+			{
+				using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+				{
+					ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+					ose.ShowDialog(this);
+				}
+				BuildObjectDataList();
+			}
+		}
+		private void VertexData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewVertices.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					VertexChunk vData = ((ChunkAttach)editedModel).Vertex[listViewVertices.SelectedIndices[0]];
+					using (ChunkModelVertexDataEditor de = new ChunkModelVertexDataEditor(vData))
+					{
+						de.ShowDialog(this);
+					}
+				}
+			}
+		}
+		private void MeshData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewMeshes.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					string polytype = listViewMeshes.SelectedItems[0].SubItems[1].Text;
+					PolyChunk polyData = ((ChunkAttach)editedModel).Poly[listViewMeshes.SelectedIndices[0]];
+					if (polytype.StartsWith("Bits_BA"))
+					{
+						using (ChunkModelBlendAlphaDataEditor de = new ChunkModelBlendAlphaDataEditor(polyData))
+						{
+							PolyChunkBitsBlendAlpha pcba = (PolyChunkBitsBlendAlpha)polyData;
+							de.FormUpdated += (s, ev) => updateBlendAlphaData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcba);
+							de.ShowDialog(this);
+						}
+					}
+					if (polytype.StartsWith("Material") && polytype != "Material_BU")
+					{
+						using (ChunkModelMaterialDataEditor de = new ChunkModelMaterialDataEditor(polyData))
+						{
+							PolyChunkMaterial pcm = (PolyChunkMaterial)polyData;
+							de.FormUpdated += (s, ev) => updateMaterialData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcm);
+							de.ShowDialog(this);
+						}
+					}
+					if (polytype.StartsWith("Tiny"))
+					{
+						using (ChunkModelTextureDataEditor de = new ChunkModelTextureDataEditor(polyData, textures))
+						{
+							PolyChunkTinyTextureID ttid = (PolyChunkTinyTextureID)polyData;
+							de.FormUpdated += (s, ev) => updateTextureData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], ttid);
+							de.ShowDialog(this);
+						}
+					}
+					if (polytype.StartsWith("Strip"))
+					{
+						using (ChunkModelStripDataEditor de = new ChunkModelStripDataEditor(polyData))
+						{
+							PolyChunkStrip pcs = (PolyChunkStrip)polyData;
+							de.FormUpdated += (s, ev) => updateStripData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcs);
+							de.ShowDialog(this);
+						}
+					}
+					if (polytype.StartsWith("Volume"))
+					{
+						using (ChunkModelVolumeDataEditor de = new ChunkModelVolumeDataEditor(polyData))
+						{
+							de.ShowDialog(this);
+						}
+					}
+					else
+						return;
+				}
 			}
 		}
 	}
