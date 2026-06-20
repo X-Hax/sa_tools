@@ -377,6 +377,11 @@ namespace SAModel
 				if (animtype.HasFlag(AnimFlags.Rotation))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
+					//Sometimes a part of an NJS_MOTION will have improper data, such as a higher rotation frame count than what is specified for the animation.
+					//This clamps the value to prevent crashes when splitting data. So far, only one example exists and the discarded data is a duplicate anyway.
+					//See: Artificial Chaos P-1 (Attack Mode) Animation (0x14692A4 in sonic2app.exe)
+					if (frames > Frames)
+						frames = Frames;
 					if (rotoff != 0 && frames > 0)
 					{
 						hasdata = true;
@@ -2823,9 +2828,9 @@ namespace SAModel
 							if (flags.HasFlag(AnimFlags.Vector))
 								mbits += "FMK_VEC3|";
 							if (flags.HasFlag(AnimFlags.Vertex))
-								mbits += "FMK_VEC0|";
+								mbits += "FMK_VRT4|";
 							if (flags.HasFlag(AnimFlags.Normal))
-								mbits += "FMK_NOR5|";
+								mbits += "FMK_NRM5|";
 							if (flags.HasFlag(AnimFlags.Target))
 								mbits += "FMK_TAR3|";
 							if (flags.HasFlag(AnimFlags.Roll))
