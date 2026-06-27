@@ -488,7 +488,10 @@ namespace SAModel
 						if (cnkatt != null && cnkatt.Vertex != null)
 						{
 							foreach (VertexChunk vcnk in cnkatt.Vertex)
-							total += vcnk.VertexCount;
+							{
+								if (vcnk.WeightStatus != WeightStatus.Middle)
+								total += vcnk.VertexCount;
+							}
 						}
 					}
 					break;
@@ -499,12 +502,16 @@ namespace SAModel
 						if (gcatt != null && gcatt.VertexData.Count > 0)
 						{
 							var positions = gcatt.VertexData.Find(x => x.Attribute == GCVertexAttribute.Position)?.Data;
-							total += positions.Count;
+							if (positions != null)
+								total += positions.Count;
 						}
 						if (gcatt != null && gcatt.VertexSkinData.Count > 0)
 						{
 							foreach (GCSkinVertexSet gcw in gcatt.VertexSkinData)
-							total += gcw.indexCount;
+							{
+								if (gcw.elementType != GCSkinAttribute.PartialWeight)
+								total += gcw.indexCount;
+							}
 						}
 					}
 					break;
@@ -722,7 +729,7 @@ namespace SAModel
 			return result.ToString();
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null, bool isDup = false, bool exportDefaults = true, bool isNinja2 = false)
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null, bool isDup = false, bool exportDefaults = true, bool isNinja2 = false, string texlistname = null)
 		{
 			NJS_OBJECT mdl = this;
 			while (mdl.Parent != null)
@@ -764,7 +771,7 @@ namespace SAModel
 				isXinja = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is XJ.XJAttach;
 			}
 			//Because this uses different calculations for weights if one vertex has a value that's too high
-			if (isChunk || isGinja)
+			if (isChunk)
 			{
 				foreach (NJS_OBJECT main in mdls)
 				{
@@ -896,7 +903,7 @@ namespace SAModel
 				else if (isGinja)
 					writer.WriteLine("GjModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
 				else if (isXinja)
-					writer.WriteLine("XINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+					writer.WriteLine("XjModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
 				writer.WriteLine("OPosition  {0},", Position.ToNJA());
 				if (isNinja2 && Quaternion)
 					writer.WriteLine("OAngle     (  0x" + Rotation.X.ToCHex() + ", 0x" + Rotation.Y.ToCHex() + ", 0x" + Rotation.Z.ToCHex() + " ),");
@@ -920,10 +927,16 @@ namespace SAModel
 
 				if (exportDefaults && Parent == null)
 				{
-					writer.WriteLine(Environment.NewLine + "DEFAULT_START");
+					writer.WriteLine(Environment.NewLine + Environment.NewLine + "DEFAULT_START");
 					writer.WriteLine(Environment.NewLine + "#ifndef DEFAULT_OBJECT_NAME");
 					writer.WriteLine("#define DEFAULT_OBJECT_NAME " + Name.MakeIdentifier());
 					writer.WriteLine("#endif");
+					if (!string.IsNullOrEmpty(texlistname))
+					{
+						writer.WriteLine("#ifndef DEFAULT_TEXLIST_NAME");
+						writer.WriteLine("#define DEFAULT_TEXLIST_NAME " + texlistname);
+						writer.WriteLine("#endif");
+					}
 					writer.Write(Environment.NewLine + "DEFAULT_END");
 					writer.WriteLine(Environment.NewLine);
 				}

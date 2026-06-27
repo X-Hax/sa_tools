@@ -2411,8 +2411,12 @@ namespace SAModel.SAMDL
 					List<string> labels = new List<string>() { model.Name };
 					using (StreamWriter sw = File.CreateText(sd.FileName))
 					{
+						string tlsname = string.Empty;
 						if (TexList != null)
+						{
 							TexList.ToNJA(sw, labels);
+							tlsname = TexList.Name;
+						}
 						else if (TexturePackName != null)
 						{
 							string[] texnames = new string[TextureInfoCurrent.Length];
@@ -2422,8 +2426,9 @@ namespace SAModel.SAMDL
 							tls.Name = "texlist_" + TexturePackName;
 							tls.TexnameArrayName = "textures_" + TexturePackName;
 							tls.ToNJA(sw, labels);
+							tlsname = tls.Name;
 						}
-						model.ToNJA(sw, labels, labels.ToArray());
+						model.ToNJA(sw, labels, labels.ToArray(), texlistname: tlsname);
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
 							foreach (NJS_MOTION anim in animationList)
@@ -4607,6 +4612,7 @@ namespace SAModel.SAMDL
 			using (SaveFileDialog sd = new SaveFileDialog() { FileName = outfn, DefaultExt = "nja", Filter = "Ninja Ascii Files|*.nja" })
 				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
+					string tlsname = string.Empty;
 					List<string> labels = new List<string>() { model.Name };
 					using (StreamWriter sw = File.CreateText(sd.FileName))
 					{
@@ -4616,6 +4622,7 @@ namespace SAModel.SAMDL
 						if (TexList != null)
 						{
 							sw.WriteLine($"/* TEXLIST     : {TexList.Name} n({TexList.NumTextures}) */");
+							tlsname = TexList.Name;
 						}
 						else if (TexturePackName != null)
 						{
@@ -4625,6 +4632,7 @@ namespace SAModel.SAMDL
 							NJS_TEXLIST tls = new NJS_TEXLIST(texnames);
 							tls.Name = "texlist_" + TexturePackName;
 							sw.WriteLine($"/* TEXLIST     : {tls.Name} n({tls.NumTextures}) */");
+							tlsname = tls.Name;
 						}
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
@@ -4667,7 +4675,7 @@ namespace SAModel.SAMDL
 							tls.TexnameArrayName = "textures_" + TexturePackName;
 							tls.ToNJA(sw, labels);
 						}
-						model.ToNJA(sw, labels, labels.ToArray());
+						model.ToNJA(sw, labels, labels.ToArray(), texlistname: tlsname);
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
 							foreach (NJS_MOTION anim in animationList)
@@ -4685,6 +4693,7 @@ namespace SAModel.SAMDL
 			using (SaveFileDialog sd = new SaveFileDialog() { FileName = outfn, DefaultExt = "nja", Filter = "Ninja Ascii Files|*.nja" })
 				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
+					string tlsname = string.Empty;
 					List<string> labels = new List<string>() { model.Name };
 					using (StreamWriter sw = File.CreateText(sd.FileName))
 					{
@@ -4712,6 +4721,7 @@ namespace SAModel.SAMDL
 						if (TexList != null)
 						{
 							sw.WriteLine($"/* TEXLIST     : {TexList.Name} n({TexList.NumTextures}) */");
+							tlsname = TexList.Name;
 						}
 						else if (TexturePackName != null)
 						{
@@ -4721,6 +4731,7 @@ namespace SAModel.SAMDL
 							NJS_TEXLIST tls = new NJS_TEXLIST(texnames);
 							tls.Name = "texlist_" + TexturePackName;
 							sw.WriteLine($"/* TEXLIST     : {tls.Name} n({tls.NumTextures}) */");
+							tlsname = tls.Name;
 						}
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
@@ -4749,7 +4760,7 @@ namespace SAModel.SAMDL
 							tls.TexnameArrayName = "textures_" + TexturePackName;
 							tls.ToNJA(sw, labels);
 						}
-						model.ToNJA(sw, labels, labels.ToArray(), isNinja2: true);
+						model.ToNJA(sw, labels, labels.ToArray(), isNinja2: true, texlistname: tlsname);
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
 							foreach (NJS_MOTION anim in animationList)

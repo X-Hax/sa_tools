@@ -289,7 +289,7 @@ namespace SAModel.DataToolbox
 					{
 						NJS_OBJECT tempmodel = new NJS_OBJECT(file, (int)address, (uint)numericUpDownBinaryKey.Value, (ModelFormat)comboBoxBinaryFormat.SelectedIndex, null);
 						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxBinaryAuthor.Text, textBoxBinaryDescription.Text, null, (ModelFormat)comboBoxBinaryFormat.SelectedIndex);
-						ConvertToText(sd.FileName, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, false);
+						ConvertToText(sd.FileName, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, false, NJA2: checkBoxBinaryNJA2.Checked);
 						if (!checkBoxBinarySAModel.Checked) File.Delete(sd.FileName);
 						success = true;
 					}
@@ -303,14 +303,14 @@ namespace SAModel.DataToolbox
 						NJS_ACTION tempaction = new NJS_ACTION(file, (int)address, (uint)numericUpDownBinaryKey.Value, (ModelFormat)comboBoxBinaryFormat.SelectedIndex, null);
 						NJS_OBJECT tempmodel = tempaction.Model;
 						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxBinaryAuthor.Text, textBoxBinaryDescription.Text, null, (ModelFormat)comboBoxBinaryFormat.SelectedIndex);
-						ConvertToText(sd.FileName, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, false);
+						ConvertToText(sd.FileName, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, false, NJA2: checkBoxBinaryNJA2.Checked);
 						if (!checkBoxBinarySAModel.Checked) File.Delete(sd.FileName);
 
 						// Action
 						string saanimPath = Path.Combine(Path.GetDirectoryName(sd.FileName), Path.GetFileNameWithoutExtension(sd.FileName) + ".saanim");
 
 						tempaction.Animation.Save(saanimPath);
-						ConvertToText(saanimPath, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, checkBoxBinaryJSON.Checked);
+						ConvertToText(saanimPath, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, checkBoxBinaryJSON.Checked, NJA2: checkBoxBinaryNJA2.Checked);
 
 						if (checkBoxBinarySAModel.Checked)
 						{
@@ -334,7 +334,7 @@ namespace SAModel.DataToolbox
 
 		private void UpdateStartButtonBinary()
 		{
-			if (!File.Exists(textBoxBinaryFilename.Text) || ((!checkBoxBinaryNJA.Checked && !checkBoxBinarySAModel.Checked && !checkBoxBinaryJSON.Checked && !checkBoxBinaryStructs.Checked))) buttonBinaryExtract.Enabled = false;
+			if (!File.Exists(textBoxBinaryFilename.Text) || ((!checkBoxBinaryNJA.Checked && !checkBoxBinaryNJA2.Checked && !checkBoxBinarySAModel.Checked && !checkBoxBinaryJSON.Checked && !checkBoxBinaryStructs.Checked))) buttonBinaryExtract.Enabled = false;
 			else buttonBinaryExtract.Enabled = true;
 		}
 
@@ -353,6 +353,11 @@ namespace SAModel.DataToolbox
 			UpdateStartButtonBinary();
 		}
 
+		private void checkBox_NJA2_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateStartButtonBinary();
+		}
+
 		private void checkBox_JSON_CheckedChanged(object sender, EventArgs e)
 		{
 			UpdateStartButtonBinary();
@@ -360,7 +365,7 @@ namespace SAModel.DataToolbox
 
 		private void textBoxBinaryFilename_TextChanged(object sender, EventArgs e)
 		{
-			if (!checkBoxBinaryNJA.Checked && !checkBoxBinarySAModel.Checked && !checkBoxBinaryJSON.Checked && !checkBoxBinaryStructs.Checked)
+			if (!checkBoxBinaryNJA.Checked && !checkBoxBinaryNJA2.Checked && !checkBoxBinarySAModel.Checked && !checkBoxBinaryJSON.Checked && !checkBoxBinaryStructs.Checked)
 			{
 				buttonBinaryExtract.Enabled = false;
 				return;
@@ -429,7 +434,7 @@ namespace SAModel.DataToolbox
 		#endregion
 
 		#region Struct Converter Tab
-		void ConvertToText(string FileName, bool CStruct = true, bool NJA = false, bool JSON = false, string outdir = "")
+		void ConvertToText(string FileName, bool CStruct = true, bool NJA = false, bool JSON = false, string outdir = "", bool NJA2 = false)
 		{
 			bool dx = comboBoxBinaryFormat.SelectedIndex == 1;
 			string outext;
@@ -475,7 +480,34 @@ namespace SAModel.DataToolbox
 							outext = ".dup";
 						break;
 				}
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx, false);
+				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx, false, false);
+			}
+			if (NJA2)
+			{
+				switch (Path.GetExtension(FileName).ToLowerInvariant())
+				{
+					case ".saanim":
+						outext = "_n2.nam";
+						if (FileName.ToLowerInvariant().Contains(".nas"))
+							outext = "_n2.nas";
+						else if (FileName.ToLowerInvariant().Contains(".dum"))
+							outext = "_n2.dum";
+						else if (FileName.ToLowerInvariant().Contains(".cut"))
+							outext = "_n2.cut";
+						break;
+					case ".satex":
+						outext = "_n2.tls";
+						break;
+					case ".sa1mdl":
+					case ".sa2mdl":
+					case ".sa2bmdl":
+					default:
+						outext = "_n2.nja";
+						if (FileName.ToLowerInvariant().Contains(".dup"))
+							outext = "_n2.dup";
+						break;
+				}
+				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx, false, true);
 			}
 			if (JSON)
 			{
@@ -486,7 +518,7 @@ namespace SAModel.DataToolbox
 
 		private void UpdateConvertButton()
 		{
-			if (listBoxStructConverter.Items.Count == 0 || ((!checkBoxStructConvNJA.Checked && !checkBoxStructConvJSON.Checked && !checkBoxStructConvStructs.Checked))) buttonStructConvConvertBatch.Enabled = false;
+			if (listBoxStructConverter.Items.Count == 0 || ((!checkBoxStructConvNJA.Checked && !checkBoxStructConvNJA2.Checked && !checkBoxStructConvJSON.Checked && !checkBoxStructConvStructs.Checked))) buttonStructConvConvertBatch.Enabled = false;
 			else buttonStructConvConvertBatch.Enabled = true;
 		}
 
@@ -511,7 +543,7 @@ namespace SAModel.DataToolbox
 			}
 			foreach (string item in listBoxStructConverter.Items)
 			{
-				ConvertToText(item, checkBoxStructConvStructs.Checked, checkBoxStructConvNJA.Checked, checkBoxStructConvJSON.Checked, outdir);
+				ConvertToText(item, checkBoxStructConvStructs.Checked, checkBoxStructConvNJA.Checked, checkBoxStructConvJSON.Checked, outdir, checkBoxStructConvNJA2.Checked);
 			}
 			string finished = "Struct conversion finished!";
 			if (outdir != "") finished += "\nConverted files are saved to " + outdir + ".";

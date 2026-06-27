@@ -946,7 +946,8 @@ namespace SplitTools
 				tw.WriteLine("TextureNum  {0},", NumTextures);
 				tw.WriteLine("END");
 				tw.WriteLine();
-				tw.WriteLine("TEXTURE_END");
+				tw.WriteLine("TEXTURE_END" + Environment.NewLine);
+				tw.WriteLine(Environment.NewLine);
 				labels.Add(Name);
 			}
 		}
