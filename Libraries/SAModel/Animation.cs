@@ -400,11 +400,9 @@ namespace SAModel
 									ShortRot = true;
 									break;
 								}
-								// If any of the rotation frames isn't in the range from -65535 to 65535, assume it uses shorts
-								Rotation rot = new Rotation(file, tmpaddr + 4);
-								if (rot.X > 65535 || rot.X < -65535 ||
-									rot.Y > 65535 || rot.Y < -65535 ||
-									rot.Z > 65535 || rot.Z < -65535)
+								// If any of the rotation frames have unusually large/small values, assume the animation uses shorts
+								int framecheck = ByteConverter.ToInt32(file, tmpaddr + 16);
+								if (framecheck < 0 || framecheck > Frames)
 								{
 									ShortRot = true;
 									break;

@@ -52,7 +52,7 @@ namespace SplitTools.SAArc
 					
 					if (!processedAnims.ContainsKey(aniaddr))
 					{
-						new NJS_MOTION(file, aniaddr, 0, ByteConverter.ToInt16(file, address + 2))
+						new NJS_MOTION(file, aniaddr, 0, ByteConverter.ToInt16(file, address + 2), shortcheck: false)
 							.Save(Path.GetFileNameWithoutExtension(filename) + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 						
 						processedAnims[aniaddr] = i;
