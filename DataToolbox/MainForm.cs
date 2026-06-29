@@ -480,7 +480,7 @@ namespace SAModel.DataToolbox
 							outext = ".dup";
 						break;
 				}
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx, false, false);
+				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx, false, false, true);
 			}
 			if (NJA2)
 			{
@@ -507,7 +507,7 @@ namespace SAModel.DataToolbox
 							outext = "_n2.dup";
 						break;
 				}
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx, false, true);
+				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx, false, true, true);
 			}
 			if (JSON)
 			{
