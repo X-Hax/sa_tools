@@ -1,8 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using SAModel.SAEditorCommon.ModManagement;
+using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using SAModel.SAEditorCommon.ModManagement;
 
 namespace SAToolsHub
 {
@@ -43,18 +44,41 @@ namespace SAToolsHub
 		void RunModManager()
 		{
 			string managerPath = Path.Combine(SAToolsHub.gameDirectory, modManager);
+			bool exist = false;
 
 			if (!File.Exists(managerPath))
 			{
-				DialogResult managerError = MessageBox.Show((modManager + " was not located."), "Game Not Located", MessageBoxButtons.OK);
-				if (managerError == DialogResult.OK)
-					this.Close();
+				// if file doesn't exist try to get the path from samanager.txt
+				string saManagerTxtPath = Path.Combine(SAToolsHub.gameDirectory, "mods", ".modloader", "samanager.txt");
+				if (File.Exists(saManagerTxtPath))
+				{
+					string managerPathFromTxtFile = File.ReadLines(saManagerTxtPath).First();
+
+					managerPathFromTxtFile = Path.Combine(managerPathFromTxtFile, modManager);
+
+					if (File.Exists(managerPathFromTxtFile))
+					{
+						managerPath = managerPathFromTxtFile;
+						exist = true;
+					}
+				}			
 			}
 			else
+			{
+				exist = true;
+			}
+
+			if (exist)
 			{
 				Environment.CurrentDirectory = Path.GetDirectoryName(managerPath);
 
 				Process process = Process.Start(managerPath);
+			}
+			else
+			{
+				DialogResult managerError = MessageBox.Show((modManager + " was not located."), "Game Not Located", MessageBoxButtons.OK);
+				if (managerError == DialogResult.OK)
+					this.Close();
 			}
 		}
 
