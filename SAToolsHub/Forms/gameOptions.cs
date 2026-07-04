@@ -157,13 +157,13 @@ namespace SAToolsHub
 			switch (SAToolsHub.setGame)
 			{
 				case ("SADXPC"):
-					modManager = "SADXModManager.exe";
+					modManager = "SAModManager.exe";
 					gameEXE = "sonic.exe";
 					radRunGame.Text = "Launch SADX";
 					modLoaderINI = SAToolsHub.gameDirectory + "\\mods\\SADXModLoader.ini";
 					break;
 				case ("SA2PC"):
-					modManager = "SA2ModManager.exe";
+					modManager = "SAModManager.exe";
 					gameEXE = "sonic2app.exe";
 					radRunGame.Text = "Launch SA2PC";
 					modLoaderINI = SAToolsHub.gameDirectory + "\\mods\\SA2ModLoader.ini";
