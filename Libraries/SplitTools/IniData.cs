@@ -4123,12 +4123,65 @@ namespace SplitTools
 		Z
 	}
 
+	public struct ChunkUV
+	{
+		[IniAlwaysInclude]
+		public short U { get; set; }
+		[IniAlwaysInclude]
+		public short V { get; set; }
+
+		public ChunkUV(byte[] file, int address)
+			: this()
+		{
+			U = ByteConverter.ToInt16(file, address);
+			V = ByteConverter.ToInt16(file, address + 2);
+		}
+	}
+	public class SA2ModelTexanimFrames
+	{
+		public SA2ModelTexanimFrames(byte[] file, int address)
+		{
+			Offset = ByteConverter.ToInt16(file, address);
+			UVCount = ByteConverter.ToInt16(file, address + 2);
+			UVData = new List<ChunkUV>(UVCount);
+			for (int i = 0; i < UVCount; i++)
+			{
+				Console.WriteLine($"UV set {i}");
+				UVData.Add(new ChunkUV(file, address + 4 + (i * 4)));
+			}
+
+		}
+		public short Offset { get; set; }
+		public short UVCount { get; set; }
+		public List<ChunkUV> UVData { get; set; }
+	}
+
+	public class SA2ModelTexanimData
+	{
+		public SA2ModelTexanimData(byte[] file, int address)
+		{
+			int endpoint = 0;
+			Count = ByteConverter.ToInt16(file, address);
+			FrameTime = ByteConverter.ToInt16(file, address + 2);
+			EditData = new List<SA2ModelTexanimFrames>(Count);
+			for (int i = 0; i < Count; i++)
+			{
+				Console.WriteLine($"Data set {i}");
+				EditData.Add(new SA2ModelTexanimFrames(file, address + 4 + endpoint));
+				endpoint += EditData[i].UVCount * 4 + 4;
+			}
+		}
+		public short Count { get; set; }
+		public short FrameTime { get; set; }
+		public List<SA2ModelTexanimFrames> EditData { get; set; }
+	}
+
 	[Serializable]
 	public class SA2ModelTexanimInfo
 	{
 		public SA2ModelTexanimInfo() { }
 
-		public SA2ModelTexanimInfo(byte[] file, int address, uint imageBase, int count)
+		public SA2ModelTexanimInfo(byte[] file, int address, uint imageBase)
 		{
 			Type = ByteConverter.ToInt32(file, address);
 			//This would have been an all-purpose variable, but the game never uses
@@ -4143,12 +4196,7 @@ namespace SplitTools
 			{
 				var ptr = (int)(uvptr - imageBase);
 				UVEditDataName = "uvdata_" + ptr.ToString("X8");
-				UVEditData = new List<short>(count);
-				for (var i = 0; i < count; i++)
-				{
-					UVEditData.Add(ByteConverter.ToInt16(file, ptr));
-					ptr += sizeof(short);
-				}
+				UVEditData = new SA2ModelTexanimData(file, ptr);
 			}
 			Unk2 = ByteConverter.ToInt32(file, address + 0x14);
 			Unk3 = ByteConverter.ToInt32(file, address + 0x18);
@@ -4166,8 +4214,8 @@ namespace SplitTools
 		public int SpeedDivider { get; set; }
 		[IniAlwaysInclude]
 		public int Unk1 { get; set; }
-		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
-		public List<short> UVEditData { get; set; }
+		[IniAlwaysInclude]
+		public SA2ModelTexanimData UVEditData { get; set; }
 		public string UVEditDataName { get; set; }
 		[IniAlwaysInclude]
 		public int Unk2 { get; set; }
@@ -4222,7 +4270,7 @@ namespace SplitTools
 	{
 		public SA2ModelTexanimArrayA() { }
 
-		public SA2ModelTexanimArrayA(byte[] file, int address, uint imageBase, int count)
+		public SA2ModelTexanimArrayA(byte[] file, int address, uint imageBase)
 		{
 			var modelptr = ByteConverter.ToUInt32(file, address);
 			if (modelptr != 0)
@@ -4234,7 +4282,7 @@ namespace SplitTools
 			if (uvptr != 0)
 			{
 				var ptr = (int)(uvptr - imageBase);
-				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase);
 				TexanimName = "texdata_" + ptr.ToString("X8");
 			}
 			Unk = ByteConverter.ToInt32(file, address + 8);
@@ -4282,7 +4330,7 @@ namespace SplitTools
 	{
 		public SA2ModelTexanimArrayB() { }
 
-		public SA2ModelTexanimArrayB(byte[] file, int address, uint imageBase, int count)
+		public SA2ModelTexanimArrayB(byte[] file, int address, uint imageBase)
 		{
 			Type = ByteConverter.ToInt32(file, address);
 			var modelptr = ByteConverter.ToUInt32(file, address + 4);
@@ -4295,7 +4343,7 @@ namespace SplitTools
 			if (uvptr != 0)
 			{
 				var ptr = (int)(uvptr - imageBase);
-				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase);
 				TexanimName = "texdata_" + ptr.ToString("X8");
 			}
 			Unk1 = ByteConverter.ToInt32(file, address + 0xC);
@@ -4352,7 +4400,7 @@ namespace SplitTools
 	{
 		public SA2ModelTexanimArrayC() { }
 
-		public SA2ModelTexanimArrayC(byte[] file, int address, uint imageBase, int count)
+		public SA2ModelTexanimArrayC(byte[] file, int address, uint imageBase)
 		{
 			var modelptr = ByteConverter.ToUInt32(file, address);
 			if (modelptr != 0)
@@ -4364,7 +4412,7 @@ namespace SplitTools
 			if (uvptr != 0)
 			{
 				var ptr = (int)(uvptr - imageBase);
-				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase);
 				TexanimName = "texdata_" + ptr.ToString("X8");
 			}
 			Unk1 = ByteConverter.ToInt32(file, address + 8);
@@ -4411,7 +4459,85 @@ namespace SplitTools
 			return result.ToString();
 		}
 	}
+	[Serializable]
+	public struct UVScrollData
+	{
+		[IniAlwaysInclude]
+		public string UVAddress { get; set; }
+		[IniAlwaysInclude]
+		public short U { get; set; }
+		[IniAlwaysInclude]
+		public short V { get; set; }
 
+		public UVScrollData() { }
+
+		public UVScrollData(byte[] file, int address, uint imageBase)
+		{
+			var uvAddr = ByteConverter.ToUInt32(file, address);
+			var ptr = (int)(uvAddr - imageBase);
+
+			UVAddress = "uv_" + ptr.ToString("X8");
+			U = ByteConverter.ToInt16(file, address + 4);
+			V = ByteConverter.ToInt16(file, address + 6);
+		}
+	}
+
+	public struct UVScrollTable
+	{
+		public UVScrollTable() { }
+		public UVScrollTable(byte[] file, int address, uint imageBase)
+		{
+			var nameOffset = ByteConverter.ToUInt32(file, address);
+			var nameAddr = (int)(nameOffset - imageBase);
+			UVScrollAddr = "0x" + nameAddr.ToString("X8");
+
+			TextureID = ByteConverter.ToInt32(file, nameAddr);
+
+			var materialOffset = ByteConverter.ToUInt32(file, nameAddr + 4);
+			var materialAddr = (int)(materialOffset - imageBase);
+			MaterialTexAddress = "0x" + materialAddr.ToString("X8");
+			UVEditEntries = ByteConverter.ToInt32(file, nameAddr + 8);
+
+			var texAnimArrayOffset = ByteConverter.ToUInt32(file, nameAddr + 0xC);
+			var texAnimArrayAddr = (int)(texAnimArrayOffset - imageBase);
+			TexAnimArrayAddress = "0x" + texAnimArrayAddr.ToString("X8");
+
+			UVEditData = [];
+
+			if (texAnimArrayOffset == 0)
+			{
+				return;
+			}
+
+			for (var i = 0; i < UVEditEntries; i++)
+			{
+				UVEditData.Add(new UVScrollData(file, file.GetPointer(nameAddr + 0xC, imageBase) + (i * 8), imageBase));
+				//texAnimArrayAddr += 0x8;
+			}
+		}
+		public string UVScrollAddr { get; set; }
+		[IniAlwaysInclude]
+		public int TextureID { get; set; }
+		public string MaterialTexAddress { get; set; }
+		[IniAlwaysInclude]
+		public int UVEditEntries { get; set; }
+		public string TexAnimArrayAddress { get; set; }
+		public List<UVScrollData> UVEditData { get; set; }
+	}
+	public class UVScrollDataHeader
+	{
+		public UVScrollDataHeader() { }
+		public UVScrollDataHeader(byte[] file, int address, uint imageBase)
+		{
+
+			Entries = ByteConverter.ToUInt32(file, address + 4);
+		}
+		public string Model { get; set; }
+		public uint Entries { get; set; }
+		public string ScrollAddress { get; set; }
+		public List<UVScrollTable> ScrollTables { get; set; }
+
+	}
 	public static class BlackMarketItemAttributesList
 	{
 		public static Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>> Load(string filename)

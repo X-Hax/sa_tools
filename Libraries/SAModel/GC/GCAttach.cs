@@ -976,7 +976,6 @@ namespace SAModel.GC
 			writer.WriteLine(";");
 		}
 
-		// WIP
 		public void ToNJA(TextWriter writer, List<string> labels, string[] textures)
 		{
 			if (VertexData.Count != 0 && !labels.Contains(VertexName))

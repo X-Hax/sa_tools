@@ -276,9 +276,21 @@ namespace SAModel.GC
 	/// </summary>
 	public enum GCSkinAttribute : ushort
 	{
+		/// <summary>
+		/// Treated as fully weighted, or 1.0.
+		/// </summary>
 		StaticWeight = 0,
+		/// <summary>
+		/// Similar to Chunk's "Weight Start". Contains variable weight data and sequential indices.
+		/// </summary>
 		PartialWeightStart = 1,
+		/// <summary>
+		/// Similar to Chunk's "Weight Middle". Contains variable weight data and non-sequential indices that are already defined.
+		/// </summary>
 		PartialWeight = 2,
+		/// <summary>
+		/// Endpoint. Usually contains no other data.
+		/// </summary>
 		WeightStructEndMarker = 3,
 	}
 	/// <summary>
@@ -369,23 +381,74 @@ namespace SAModel.GC
 
 	public enum GCUVScale
 	{
-		Default = 0,		// Normal Display
-		NoUV1 = 1,          // UV Map set to 0
-		NoUV2 = 2,			// Same as NoUV1	
-		NoUV3 = 3,          // Same as NoUV1	
-		NoUV4 = 4,          // Same as NoUV1	
-		NoUV5 = 5,          // Same as NoUV1	
-		NoUV6 = 6,          // Same as NoUV1	
-		NoUV7 = 7,          // Same as NoUV1	
-		Scale1 = 8,			// UV * 1.00
-		Scale2 = 9,         // UV * 0.50
-		Scale3 = 0xA,       // UV * 0.25
-		Scale4 = 0xB,       // UV * 0.125
-		Scale5 = 0xC,       // UV * 0.0625
-		Scale6 = 0xD,       // UV * 0.03125
-		Scale7 = 0xE,       // UV * 0.015625
-		Scale8 = 0xF,       // UV * 0.0078125
-		Scale9 = 0x10,		// Same as NoUV1
+		/// <summary>
+		/// Normal Display
+		/// </summary>
+		Default = 0,
+		/// <summary>
+		/// UV Map set to 0
+		/// </summary>
+		NoUV1 = 1,
+		/// <summary>
+		/// Same as NoUV1
+		/// </summary>
+		NoUV2 = 2,
+		/// <summary>
+		/// Same as NoUV1
+		/// </summary>
+		NoUV3 = 3,
+		/// <summary>
+		/// Same as NoUV1
+		/// </summary>
+		NoUV4 = 4,
+		/// <summary>
+		/// Same as NoUV1
+		/// </summary>
+		NoUV5 = 5,
+		/// <summary>
+		/// Same as NoUV1
+		/// </summary>
+		NoUV6 = 6,
+		/// <summary>
+		/// Same as NoUV1
+		/// </summary>
+		NoUV7 = 7,
+		/// <summary>
+		/// UV * 1.00
+		/// </summary>
+		Scale1 = 8,
+		/// <summary>
+		/// UV * 0.50
+		/// </summary>
+		Scale2 = 9,
+		/// <summary>
+		/// UV * 0.25
+		/// </summary>
+		Scale3 = 0xA,
+		/// <summary>
+		/// UV * 0.125
+		/// </summary>
+		Scale4 = 0xB,
+		/// <summary>
+		/// UV * 0.0625
+		/// </summary>
+		Scale5 = 0xC,
+		/// <summary>
+		/// UV * 0.03125
+		/// </summary>
+		Scale6 = 0xD,
+		/// <summary>
+		/// UV * 0.015625
+		/// </summary>
+		Scale7 = 0xE,
+		/// <summary>
+		/// UV * 0.0078125
+		/// </summary>
+		Scale8 = 0xF,
+		/// <summary>
+		/// Same as NoUV1
+		/// </summary>
+		Scale9 = 0x10,
 
 	}
 	public enum GCStripFlags

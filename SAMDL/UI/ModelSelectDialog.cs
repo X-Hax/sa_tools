@@ -69,6 +69,7 @@ namespace SAModel.SAMDL
 								case "basicmodel":
 								case "basicdxmodel":
 								case "chunkmodel":
+								case "chaochunkmodel":
 								case "gcmodel":
 									return true;
 								default:
@@ -384,6 +385,7 @@ namespace SAModel.SAMDL
 									case "basicmodel":
 									case "basicdxmodel":
 									case "chunkmodel":
+									case "chaochunkmodel":
 									case "gcmodel":
 										Models.Add(new ModelLoadInfo(item.Key, item.Value, modFolder));
 										break;
@@ -593,8 +595,9 @@ namespace SAModel.SAMDL
 		public NJS_TEXLIST TextureNames;
 		public int[] TextureIDs;
 		public string TexturePalettePath;
+		public bool ChaoData;
 
-		public ModelLoadInfo(string name, string modelFile, string[] textures, NJS_TEXLIST texnames, int[] texids, string texturePaletteFile)
+		public ModelLoadInfo(string name, string modelFile, string[] textures, NJS_TEXLIST texnames, int[] texids, string texturePaletteFile, bool chaoData = false)
 		{
 			ModelName = name;
 			ModelFilePath = modelFile;
@@ -602,6 +605,7 @@ namespace SAModel.SAMDL
 			TextureNames = texnames;
 			TextureIDs = texids;
 			TexturePalettePath = texturePaletteFile;
+			ChaoData = chaoData;
 		}
 
 		public ModelLoadInfo(string name, SplitTools.FileInfo split, string modFolder)

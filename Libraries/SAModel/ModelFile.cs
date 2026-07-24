@@ -15,12 +15,14 @@ namespace SAModel
 		public const uint GJCMMagic = 0x4D434A47;
 		public const ulong SA1MDL = 0x4C444D314153u;
 		public const ulong SA2MDL = 0x4C444D324153u;
+		public const ulong SA2CMDL = 0x4C444D43324153u;
 		public const ulong SA2BMDL = 0x4C444D42324153u;
 		public const ulong XJMDL = 0x4C444D4A58u;
 		public const ulong FormatMask = 0xFFFFFFFFFFFFFFu;
 		public const ulong CurrentVersion = 3;
 		public const ulong SA1MDLVer = SA1MDL | (CurrentVersion << 56);
 		public const ulong SA2MDLVer = SA2MDL | (CurrentVersion << 56);
+		public const ulong SA2CMDLVer = SA2CMDL | (CurrentVersion << 56);
 		public const ulong SA2BMDLVer = SA2BMDL | (CurrentVersion << 56);
 		public const ulong XJMDLVer = XJMDL | (CurrentVersion << 56);
 
@@ -32,12 +34,12 @@ namespace SAModel
 		public Dictionary<uint, byte[]> Metadata { get; set; }
 		private string[] animationFiles;
 
-		public ModelFile(string filename)
-			: this(File.ReadAllBytes(filename), filename)
+		public ModelFile(string filename, bool chaodata = false)
+			: this(File.ReadAllBytes(filename), filename, chaodata)
 		{
 		}
 
-		public ModelFile(byte[] file, string filename = null)
+		public ModelFile(byte[] file, string filename = null, bool chaodata = false)
 		{
 			int tmpaddr;			
 			ulong magic = BitConverter.ToUInt64(file, 0) & FormatMask;
@@ -215,6 +217,9 @@ namespace SAModel
 					case SA2MDL:
 						Format = ModelFormat.Chunk;
 						break;
+					case SA2CMDL:
+						Format = ModelFormat.ChaoChunk;
+						break;
 					case SA2BMDL:
 						Format = ModelFormat.GC;
 						break;
@@ -312,6 +317,7 @@ namespace SAModel
 					break;
 				case ModelFormat.Basic:
 				case ModelFormat.Chunk:
+				case ModelFormat.ChaoChunk:
 				case ModelFormat.GC:
 				case ModelFormat.XJ:
 					break;
@@ -362,6 +368,7 @@ namespace SAModel
 			{
 				case SA1MDL:
 				case SA2MDL:
+				case SA2CMDL:
 				case SA2BMDL:
 				case XJMDL:
 					return file[7] <= CurrentVersion;
@@ -387,6 +394,10 @@ namespace SAModel
 					break;
 				case ModelFormat.Chunk:
 					magic = SA2MDLVer;
+					ninjaMagic = NJCMMagic;
+					break;
+				case ModelFormat.ChaoChunk:
+					magic = SA2CMDLVer;
 					ninjaMagic = NJCMMagic;
 					break;
 				case ModelFormat.GC:

@@ -100,7 +100,7 @@ namespace SAModel.SAEditorCommon.UI
 			flagsGroupBox.Controls.Add(useAlphaCheck);
 			flagsGroupBox.Controls.Add(ignoreSpecCheck);
 			flagsGroupBox.Controls.Add(ignoreAmbiCheck);
-			flagsGroupBox.Location = new System.Drawing.Point(360, 13);
+			flagsGroupBox.Location = new System.Drawing.Point(347, 13);
 			flagsGroupBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flagsGroupBox.Name = "flagsGroupBox";
 			flagsGroupBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
@@ -214,7 +214,7 @@ namespace SAModel.SAEditorCommon.UI
 			ignoreSpecCheck.Size = new System.Drawing.Size(215, 21);
 			ignoreSpecCheck.TabIndex = 18;
 			ignoreSpecCheck.Text = "Ignore Specular";
-			toolTip.SetToolTip(ignoreSpecCheck, "Disables specular lighting on the material.\r\nThis flag does nothing in SADX or SA2B.");
+			toolTip.SetToolTip(ignoreSpecCheck, "Disables specular lighting on the material.\r\nThis flag does nothing in SADX, or SA2B without the Render Fix mod.");
 			ignoreSpecCheck.UseVisualStyleBackColor = true;
 			ignoreSpecCheck.Click += ignoreSpecCheck_Click;
 			// 
@@ -226,17 +226,16 @@ namespace SAModel.SAEditorCommon.UI
 			ignoreAmbiCheck.Size = new System.Drawing.Size(215, 21);
 			ignoreAmbiCheck.TabIndex = 16;
 			ignoreAmbiCheck.Text = "Ignore Ambient";
-			toolTip.SetToolTip(ignoreAmbiCheck, "If checked, the mesh will ignore the ambient light source. In other words, the ambient light will be treated as black, darkening the model.\r\nThis flag does nothing in SA2B without the Render Fix mod.");
+			toolTip.SetToolTip(ignoreAmbiCheck, "If checked, the mesh will ignore the ambient light source.\r\nIn other words, the ambient light will be treated as black, darkening the model.\r\nThis flag does nothing in SA2B without the Render Fix mod.");
 			ignoreAmbiCheck.UseVisualStyleBackColor = true;
 			ignoreAmbiCheck.Click += ignoreAmbiCheck_Click;
 			// 
 			// doneButton
 			// 
-			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(605, 459);
+			doneButton.Location = new System.Drawing.Point(575, 446);
 			doneButton.Margin = new System.Windows.Forms.Padding(4);
 			doneButton.Name = "doneButton";
-			doneButton.Size = new System.Drawing.Size(62, 27);
+			doneButton.Size = new System.Drawing.Size(79, 26);
 			doneButton.TabIndex = 25;
 			doneButton.Text = "Done";
 			doneButton.UseVisualStyleBackColor = true;
@@ -250,11 +249,10 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// resetButton
 			// 
-			resetButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-			resetButton.Location = new System.Drawing.Point(528, 459);
+			resetButton.Location = new System.Drawing.Point(494, 446);
 			resetButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			resetButton.Name = "resetButton";
-			resetButton.Size = new System.Drawing.Size(59, 27);
+			resetButton.Size = new System.Drawing.Size(71, 26);
 			resetButton.TabIndex = 24;
 			resetButton.Text = "Reset";
 			toolTip.SetToolTip(resetButton, "Reset the poly data to the state it was when this dialog opened.");
@@ -263,9 +261,9 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// deleteAllUVButton
 			// 
-			deleteAllUVButton.Location = new System.Drawing.Point(190, 328);
+			deleteAllUVButton.Location = new System.Drawing.Point(180, 328);
 			deleteAllUVButton.Name = "deleteAllUVButton";
-			deleteAllUVButton.Size = new System.Drawing.Size(131, 34);
+			deleteAllUVButton.Size = new System.Drawing.Size(131, 26);
 			deleteAllUVButton.TabIndex = 4;
 			deleteAllUVButton.Text = "Delete All UV Data";
 			toolTip.SetToolTip(deleteAllUVButton, "Deletes all UV data from the strip collection, converting the data chunk\r\nto use the Strip_Strip format.");
@@ -279,20 +277,20 @@ namespace SAModel.SAEditorCommon.UI
 			groupBox1.Controls.Add(groupBox2);
 			groupBox1.Controls.Add(stripListView);
 			groupBox1.Controls.Add(stripSetComboBox);
-			groupBox1.Location = new System.Drawing.Point(20, 13);
+			groupBox1.Location = new System.Drawing.Point(11, 13);
 			groupBox1.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			groupBox1.Name = "groupBox1";
 			groupBox1.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			groupBox1.Size = new System.Drawing.Size(330, 489);
+			groupBox1.Size = new System.Drawing.Size(330, 459);
 			groupBox1.TabIndex = 0;
 			groupBox1.TabStop = false;
 			groupBox1.Text = "Strip Sets";
 			// 
 			// deleteSelectedUVButton
 			// 
-			deleteSelectedUVButton.Location = new System.Drawing.Point(9, 329);
+			deleteSelectedUVButton.Location = new System.Drawing.Point(17, 328);
 			deleteSelectedUVButton.Name = "deleteSelectedUVButton";
-			deleteSelectedUVButton.Size = new System.Drawing.Size(144, 34);
+			deleteSelectedUVButton.Size = new System.Drawing.Size(144, 26);
 			deleteSelectedUVButton.TabIndex = 3;
 			deleteSelectedUVButton.Text = "Delete Selected Strip";
 			deleteSelectedUVButton.UseVisualStyleBackColor = true;
@@ -304,18 +302,18 @@ namespace SAModel.SAEditorCommon.UI
 			groupBox2.Controls.Add(flipAllWindingsButton);
 			groupBox2.Controls.Add(resetWindingButton);
 			groupBox2.Controls.Add(flipWindingButton);
-			groupBox2.Location = new System.Drawing.Point(17, 369);
+			groupBox2.Location = new System.Drawing.Point(35, 360);
 			groupBox2.Name = "groupBox2";
-			groupBox2.Size = new System.Drawing.Size(294, 110);
+			groupBox2.Size = new System.Drawing.Size(254, 92);
 			groupBox2.TabIndex = 5;
 			groupBox2.TabStop = false;
 			groupBox2.Text = "Windings";
 			// 
 			// resetAllWindingsButton
 			// 
-			resetAllWindingsButton.Location = new System.Drawing.Point(165, 62);
+			resetAllWindingsButton.Location = new System.Drawing.Point(127, 54);
 			resetAllWindingsButton.Name = "resetAllWindingsButton";
-			resetAllWindingsButton.Size = new System.Drawing.Size(115, 34);
+			resetAllWindingsButton.Size = new System.Drawing.Size(115, 26);
 			resetAllWindingsButton.TabIndex = 9;
 			resetAllWindingsButton.Text = "Reset All";
 			resetAllWindingsButton.UseVisualStyleBackColor = true;
@@ -323,9 +321,9 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// flipAllWindingsButton
 			// 
-			flipAllWindingsButton.Location = new System.Drawing.Point(165, 22);
+			flipAllWindingsButton.Location = new System.Drawing.Point(127, 22);
 			flipAllWindingsButton.Name = "flipAllWindingsButton";
-			flipAllWindingsButton.Size = new System.Drawing.Size(115, 34);
+			flipAllWindingsButton.Size = new System.Drawing.Size(115, 26);
 			flipAllWindingsButton.TabIndex = 7;
 			flipAllWindingsButton.Text = "Flip All";
 			flipAllWindingsButton.UseVisualStyleBackColor = true;
@@ -333,9 +331,9 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// resetWindingButton
 			// 
-			resetWindingButton.Location = new System.Drawing.Point(15, 62);
+			resetWindingButton.Location = new System.Drawing.Point(6, 54);
 			resetWindingButton.Name = "resetWindingButton";
-			resetWindingButton.Size = new System.Drawing.Size(115, 34);
+			resetWindingButton.Size = new System.Drawing.Size(115, 26);
 			resetWindingButton.TabIndex = 8;
 			resetWindingButton.Text = "Reset Selected";
 			resetWindingButton.UseVisualStyleBackColor = true;
@@ -343,9 +341,9 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// flipWindingButton
 			// 
-			flipWindingButton.Location = new System.Drawing.Point(15, 22);
+			flipWindingButton.Location = new System.Drawing.Point(6, 22);
 			flipWindingButton.Name = "flipWindingButton";
-			flipWindingButton.Size = new System.Drawing.Size(115, 34);
+			flipWindingButton.Size = new System.Drawing.Size(115, 26);
 			flipWindingButton.TabIndex = 6;
 			flipWindingButton.Text = "Flip Selected";
 			flipWindingButton.UseVisualStyleBackColor = true;
@@ -403,30 +401,30 @@ namespace SAModel.SAEditorCommon.UI
 			groupBox3.Controls.Add(label3);
 			groupBox3.Controls.Add(label2);
 			groupBox3.Controls.Add(label1);
-			groupBox3.Location = new System.Drawing.Point(360, 274);
+			groupBox3.Location = new System.Drawing.Point(347, 274);
 			groupBox3.Name = "groupBox3";
-			groupBox3.Size = new System.Drawing.Size(145, 118);
+			groupBox3.Size = new System.Drawing.Size(130, 104);
 			groupBox3.TabIndex = 20;
 			groupBox3.TabStop = false;
 			groupBox3.Text = "User Flags (Strip)";
 			// 
 			// userFlag3NumericUpDown
 			// 
-			userFlag3NumericUpDown.Location = new System.Drawing.Point(62, 75);
+			userFlag3NumericUpDown.Location = new System.Drawing.Point(58, 71);
 			userFlag3NumericUpDown.Name = "userFlag3NumericUpDown";
 			userFlag3NumericUpDown.Size = new System.Drawing.Size(60, 23);
 			userFlag3NumericUpDown.TabIndex = 23;
 			// 
 			// userFlag2NumericUpDown
 			// 
-			userFlag2NumericUpDown.Location = new System.Drawing.Point(62, 49);
+			userFlag2NumericUpDown.Location = new System.Drawing.Point(58, 45);
 			userFlag2NumericUpDown.Name = "userFlag2NumericUpDown";
 			userFlag2NumericUpDown.Size = new System.Drawing.Size(60, 23);
 			userFlag2NumericUpDown.TabIndex = 22;
 			// 
 			// userFlag1NumericUpDown
 			// 
-			userFlag1NumericUpDown.Location = new System.Drawing.Point(62, 24);
+			userFlag1NumericUpDown.Location = new System.Drawing.Point(58, 20);
 			userFlag1NumericUpDown.Name = "userFlag1NumericUpDown";
 			userFlag1NumericUpDown.Size = new System.Drawing.Size(60, 23);
 			userFlag1NumericUpDown.TabIndex = 21;
@@ -434,7 +432,7 @@ namespace SAModel.SAEditorCommon.UI
 			// label3
 			// 
 			label3.AutoSize = true;
-			label3.Location = new System.Drawing.Point(13, 77);
+			label3.Location = new System.Drawing.Point(9, 73);
 			label3.Name = "label3";
 			label3.Size = new System.Drawing.Size(41, 15);
 			label3.TabIndex = 2;
@@ -443,7 +441,7 @@ namespace SAModel.SAEditorCommon.UI
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new System.Drawing.Point(13, 51);
+			label2.Location = new System.Drawing.Point(9, 47);
 			label2.Name = "label2";
 			label2.Size = new System.Drawing.Size(41, 15);
 			label2.TabIndex = 1;
@@ -452,7 +450,7 @@ namespace SAModel.SAEditorCommon.UI
 			// label1
 			// 
 			label1.AutoSize = true;
-			label1.Location = new System.Drawing.Point(13, 26);
+			label1.Location = new System.Drawing.Point(9, 22);
 			label1.Name = "label1";
 			label1.Size = new System.Drawing.Size(41, 15);
 			label1.TabIndex = 0;
@@ -461,10 +459,10 @@ namespace SAModel.SAEditorCommon.UI
 			// ChunkModelStripDataEditor
 			// 
 			AcceptButton = doneButton;
-			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(678, 510);
+			ClientSize = new System.Drawing.Size(664, 493);
 			ControlBox = false;
 			Controls.Add(groupBox3);
 			Controls.Add(groupBox1);

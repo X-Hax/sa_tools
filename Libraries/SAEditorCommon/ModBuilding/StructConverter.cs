@@ -87,7 +87,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "kartmodelsarray", "Kart Terrain Model Array" },
 			{ "kartsoundparameters", "Kart Sound Parameters" },
 			{ "kartspecialinfolist", "Kart Special Info" },
-			{ "kartobjectarray", "Kart Object Array" },
+			{ "modelscrollarray", "Model UV Scroll Array" },
 			{ "kartcourse", "Kart Course" },
 			{ "kartphysics", "Kart Physics Parameters" },
 			{ "string", "String" },
@@ -378,10 +378,19 @@ namespace SAModel.SAEditorCommon.StructConverter
 							string[] keySplit = md5KeyValuePair.Split(':');
 
 							string filePath = Path.Combine(item.Value.Filename, keySplit[0] + ".saanim");
+							string infoPath = Path.Combine(item.Value.Filename, "info.ini");
 
 							if (File.Exists(filePath))
 							{
 								if (HelperFunctions.FileHash(filePath) != keySplit[1])
+								{
+									modified = true;
+									break;
+								}
+							}
+							else if (File.Exists(infoPath))
+							{
+								if (HelperFunctions.FileHash(infoPath) != keySplit[1])
 								{
 									modified = true;
 									break;
@@ -720,7 +729,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 								{
 									writer.WriteLine("int16_t {0}[] = {{", texanim.UVEditDataName);
 									for (int i = 0; i < texanim.UVEditData.Count; i += 2)
-										writer.WriteLine("\t{0}, {1},", texanim.UVEditData[i], texanim.UVEditData[i + 1]);
+										writer.WriteLine("\t{0},", texanim.UVEditData);
 									writer.WriteLine("};");
 									labels.Add(texanim.UVEditDataName);
 								}
@@ -1470,10 +1479,15 @@ namespace SAModel.SAEditorCommon.StructConverter
 							break;
 						case "animindexlist":
 							{
+								var animpairs = IniSerializer.Deserialize<Dictionary<int, string>>(Path.Combine(data.Filename, "info.ini"));
 								SortedDictionary<short, NJS_MOTION> anims = new SortedDictionary<short, NJS_MOTION>();
-								foreach (string file in Directory.GetFiles(data.Filename, "*.saanim"))
-									if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out short i))
-										anims.Add(i, NJS_MOTION.Load(file));
+								foreach (var anim in animpairs)
+								{
+									anims.Add((short)anim.Key, NJS_MOTION.Load(Path.Combine(data.Filename, anim.Value)));
+								}
+								//foreach (string file in Directory.GetFiles(data.Filename, "*.saanim"))
+								//if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out short i))
+								//anims.Add(i, NJS_MOTION.Load(file));
 								foreach (KeyValuePair<short, NJS_MOTION> obj in anims)
 								{
 									obj.Value.ToStructVariables(writer);

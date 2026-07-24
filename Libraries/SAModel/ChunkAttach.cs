@@ -4,9 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Linq;
-using System.Diagnostics;
-using static SAModel.PolyChunkVolume;
-using static SAModel.PolyChunkStrip;
 
 namespace SAModel
 {
@@ -51,6 +48,7 @@ namespace SAModel
 		public string VertexName { get; set; }
 		public List<PolyChunk> Poly { get; set; }
 		public string PolyName { get; set; }
+		public bool ChaoData { get; set; }
 
 		public override bool HasWeight
 		{
@@ -91,18 +89,19 @@ namespace SAModel
 			}
 		}
 
-		public ChunkAttach(byte[] file, int address, uint imageBase)
-			: this(file, address, imageBase, new Dictionary<int, string>())
+		public ChunkAttach(byte[] file, int address, uint imageBase, bool chaodata = false)
+			: this(file, address, imageBase, new Dictionary<int, string>(), chaodata)
 		{
 		}
 
-		public ChunkAttach(byte[] file, int address, uint imageBase, Dictionary<int, string> labels)
+		public ChunkAttach(byte[] file, int address, uint imageBase, Dictionary<int, string> labels, bool chaodata = false)
 			: this()
 		{
 			if (labels.ContainsKey(address))
 				Name = labels[address];
 			else
 				Name = "attach_" + address.ToString("X8");
+			ChaoData = chaodata;
 			ChunkType ctype;
 			int tmpaddr = ByteConverter.ToInt32(file, address);
 			if (tmpaddr != 0)
@@ -323,7 +322,17 @@ namespace SAModel
 						if (chunk.Normals.Count > 0)
 							VertexBuffer[i + chunk.IndexOffset].Normal = chunk.Normals[i];
 						if (chunk.Diffuse.Count > 0)
-							VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+						{
+							//This is for specific Chao-based models introduced in SA2B. Fun.
+							if (ChaoData)
+							{
+								VertexBuffer[i + chunk.IndexOffset].Color = Color.FromArgb(chunk.Diffuse[i].B, chunk.Diffuse[i].G, chunk.Diffuse[i].R, chunk.Diffuse[i].A);
+							}
+							else
+							{
+								VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+							}
+						}
 					}
 				}
 			}
@@ -364,8 +373,14 @@ namespace SAModel
 						VertexBuffer[i + chunk.IndexOffset] = new VertexData(vertdata[i]);
 						if (normdata.Length > 0)
 							VertexBuffer[i + chunk.IndexOffset].Normal = normdata[i];
-						if (chunk.Diffuse.Count > 0)
-							VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+						if (ChaoData)
+							{
+								VertexBuffer[i + chunk.IndexOffset].Color = Color.FromArgb(chunk.Diffuse[i].B, chunk.Diffuse[i].G, chunk.Diffuse[i].R, chunk.Diffuse[i].A);
+							}
+							else
+							{
+								VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+							}
 					}
 				}
 			}

@@ -187,6 +187,7 @@ namespace SAModel
 		Basic,
 		BasicDX,
 		Chunk,
+		ChaoChunk,
 		GC,
 		XJ
 	}

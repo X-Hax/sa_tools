@@ -735,7 +735,6 @@ namespace SAModel
 			while (mdl.Parent != null)
 				mdl = mdl.Parent;
 			NJS_OBJECT[] mdls = mdl.GetObjects();
-			int weightpower = 0;
 			bool shortweight = false;
 
 			for (int i = 1; i < Children.Count; i++)
@@ -786,7 +785,9 @@ namespace SAModel
 									for (int i = 0; i < item.VertexCount; ++i)
 									{
 										if ((item.NinjaFlags[i] >> 16) > 255)
-											weightpower++;
+										{
+											shortweight = true;
+											break;
 									}
 								}
 							}
@@ -794,10 +795,7 @@ namespace SAModel
 					}
 				}
 			}
-			if (weightpower > 0)
-				shortweight = true;
-			else
-				shortweight = false;
+			}
 
 			if (!Name.StartsWith("DO_NOT_EXPORT"))
 			{

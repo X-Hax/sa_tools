@@ -59,25 +59,23 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 			{
 				case "animindexlist":
 					{
-						Dictionary<int, string> hashes = new Dictionary<int, string>();
+						Dictionary<string, string> hashes = new Dictionary<string, string>();
 						foreach (var hash in item.MD5Hash.Split('|').Select(a =>
 						{
 							string[] b = a.Split(':');
-							return (int.Parse(b[0], NumberFormatInfo.InvariantInfo), b[1]);
+							return (b[0], b[1]);
 						}))
 							hashes.Add(hash.Item1, hash.Item2);
-						foreach (var fn in Directory.GetFiles(item.Filename, "*.saanim"))
-							if (int.TryParse(Path.GetFileNameWithoutExtension(fn), out int i))
+						foreach (var fp in Directory.GetFiles(item.Filename, "*.saanim").Append(Path.Combine(item.Filename, "info.ini")))
+						{
+							string fn = Path.GetFileName(fp);
+							if (!hashes.ContainsKey(fn) || HelperFunctions.FileHash(fp) != hashes[fn])
 							{
-								if (!hashes.ContainsKey(i) || HelperFunctions.FileHash(fn) != hashes[i])
-								{
-									modified = true;
-									break;
-								}
-								hashes.Remove(i);
+								modified = true;
+								break;
 							}
-						if (hashes.Count > 0)
-							modified = true;
+							hashes.Remove(fn);
+						}
 					}
 					break;
 				case "charaobjectdatalist":
@@ -468,10 +466,15 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 							break;
 						case "animindexlist":
 							{
+								var animpairs = IniSerializer.Deserialize<Dictionary<int, string>>(Path.Combine(item.Filename, "info.ini"));
 								SortedDictionary<short, NJS_MOTION> anims = new SortedDictionary<short, NJS_MOTION>();
-								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
-									if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out short i))
-										anims.Add(i, NJS_MOTION.Load(file));
+								foreach (var anim in animpairs)
+								{
+									anims.Add((short)anim.Key, NJS_MOTION.Load(Path.Combine(item.Filename, anim.Value)));
+								}
+								//foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
+									//if (short.TryParse(Path.GetFileNameWithoutExtension(file), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out short i))
+									//	anims.Add(i, NJS_MOTION.Load(file));
 								foreach (KeyValuePair<short, NJS_MOTION> obj in anims)
 								{
 									obj.Value.ToStructVariables(writer);
@@ -647,7 +650,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 										{
 											writer.WriteLine("int16_t {0}[] = {{", tanim.UVEditDataName);
 											for (int u = 0; u < tanim.UVEditData.Count; u += 2)
-												writer.WriteLine("\t{0}, {1},", tanim.UVEditData[u], tanim.UVEditData[u + 1]);
+												writer.WriteLine("\t{0},", tanim.UVEditData);
 											writer.WriteLine("};");
 											labls.Add(tanim.UVEditDataName);
 										}
@@ -677,7 +680,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 										{
 											writer.WriteLine("int16_t {0}[] = {{", tanim.UVEditDataName);
 											for (int u = 0; u < tanim.UVEditData.Count; u += 2)
-												writer.WriteLine("\t{0}, {1},", tanim.UVEditData[u], tanim.UVEditData[u + 1]);
+												writer.WriteLine("\t{0},", tanim.UVEditData);
 											writer.WriteLine("};");
 											labls.Add(tanim.UVEditDataName);
 										}
@@ -707,7 +710,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 										{
 											writer.WriteLine("int16_t {0}[] = {{", tanim.UVEditDataName);
 											for (int u = 0; u < tanim.UVEditData.Count; u += 2)
-												writer.WriteLine("\t{0}, {1},", tanim.UVEditData[u], tanim.UVEditData[u + 1]);
+												writer.WriteLine("\t{0},", tanim.UVEditData);
 											writer.WriteLine("};");
 											labls.Add(tanim.UVEditDataName);
 										}

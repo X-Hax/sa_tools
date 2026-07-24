@@ -854,6 +854,7 @@ namespace SplitTools.SplitDLL
 								string animmeta = string.Empty;
 								string animname = string.Empty;
 								var metaname = data.Filename;
+								Dictionary<int, string> animpairs = new Dictionary<int, string>();
 								while (i != -1)
 								{
 									if (data.CustomProperties.ContainsKey("meta" + i + "_a"))
@@ -869,12 +870,15 @@ namespace SplitTools.SplitDLL
 											Description = animmeta
 										};
 									anim.Save(fileOutputPath + "/" + animname + ".saanim", splitFlags.HasFlag(SplitFlags.NoMeta));
-									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + animname + ".saanim"));
+									hashes.Add(animname + ".saanim" + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + animname + ".saanim"));
+									animpairs.Add(i, animname + ".saanim");
 									address += 8;
 									i = ByteConverter.ToInt16(datafile, address);
 								}
 								if (data.CustomProperties.ContainsKey("metaname"))
 									metaname = data.CustomProperties["metaname"];
+								IniSerializer.Serialize(animpairs, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
 								output.DataItems.Add(new DllDataItemInfo { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
@@ -998,7 +1002,7 @@ namespace SplitTools.SplitDLL
 								var cnt = 4;
 								if (data.CustomProperties.ContainsKey("uvlength"))
 									cnt = int.Parse(data.CustomProperties["uvlength"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
-								new SA2ModelTexanimInfo(datafile, address, imageBase, cnt).Save(fileOutputPath);
+								new SA2ModelTexanimInfo(datafile, address, imageBase).Save(fileOutputPath);
 								var description = data.Filename;
 								if (data.CustomProperties.ContainsKey("meta"))
 									description = data.CustomProperties["meta"];
@@ -1015,7 +1019,7 @@ namespace SplitTools.SplitDLL
 								{
 									if (data.CustomProperties.ContainsKey("uvlength" + i))
 										uvcnt = int.Parse(data.CustomProperties["uvlength" + i], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
-									var tanima = new SA2ModelTexanimArrayA(datafile, address, imageBase, uvcnt);
+									var tanima = new SA2ModelTexanimArrayA(datafile, address, imageBase);
 									aresult.Add(tanima);
 									address += 0xC;
 								}
@@ -1033,13 +1037,10 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								var hashes = new List<string>();
 								var metaname = data.Filename;
-								var uvcnt = 4;
 								var bresult = new List<SA2ModelTexanimArrayB>();
 								for (var i = 0; i < data.Length; i++)
 								{
-									if (data.CustomProperties.ContainsKey("uvlength" + i))
-										uvcnt = int.Parse(data.CustomProperties["uvlength" + i], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
-									var tanimb = new SA2ModelTexanimArrayB(datafile, address, imageBase, uvcnt);
+									var tanimb = new SA2ModelTexanimArrayB(datafile, address, imageBase);
 									bresult.Add(tanimb);
 									address += 0x14;
 								}
@@ -1057,13 +1058,10 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								var hashes = new List<string>();
 								var metaname = data.Filename;
-								var uvcnt = 4;
 								var cresult = new List<SA2ModelTexanimArrayC>();
 								for (var i = 0; i < data.Length; i++)
 								{
-									if (data.CustomProperties.ContainsKey("uvlength" + i))
-										uvcnt = int.Parse(data.CustomProperties["uvlength" + i], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
-									var tanimc = new SA2ModelTexanimArrayC(datafile, address, imageBase, uvcnt);
+									var tanimc = new SA2ModelTexanimArrayC(datafile, address, imageBase);
 									cresult.Add(tanimc);
 									address += 0x10;
 								}
@@ -1177,7 +1175,7 @@ namespace SplitTools.SplitDLL
 											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i] + ".sa2bmdl");
 											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i] + ".sa2bmdl");
 											hashfn = data.CustomProperties["filename" + i] + ".sa2bmdl";
-							}
+										}
 										// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
 										var meta = fn;
 										if (data.CustomProperties.ContainsKey("meta" + i))
@@ -1202,7 +1200,7 @@ namespace SplitTools.SplitDLL
 											outputFN_col = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i] + ".sa1mdl");
 											fn_col = Path.Combine(data.Filename, data.CustomProperties["filename" + i] + ".sa1mdl");
 											hashfn_col = data.CustomProperties["filename" + i] + ".sa1mdl";
-							}
+										}
 										// Metadata for SAMDL project mode
 										var meta_c = fn_col;
 										if (data.CustomProperties.ContainsKey("meta" + i + "_c"))
@@ -1241,15 +1239,15 @@ namespace SplitTools.SplitDLL
 								output.DataItems.Add(new DllDataItemInfo { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
-						case "kartobjectarray":
+						case "modelscrollarray":
 							{
 								Directory.CreateDirectory(fileOutputPath);
-								var result = new List<KartObjectArray>();
+								var result = new List<UVScrollDataHeader>();
 								var hashes = new List<string>();
 								var metaname = data.Filename;
 								for (var i = 0; i < data.Length; i++)
 								{
-									var kartset = new KartObjectArray();
+									var kartset = new UVScrollDataHeader();
 									var ptr = BitConverter.ToInt32(datafile, address);
 									if (ptr != 0)
 									{
@@ -1263,7 +1261,7 @@ namespace SplitTools.SplitDLL
 											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i] + ".sa2mdl");
 											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i] + ".sa2mdl");
 											hashfn = data.CustomProperties["filename" + i] + ".sa2mdl";
-							}
+										}
 										if (File.Exists(outputFN) && !splitFlags.HasFlag(SplitFlags.Overwrite))
 											return 0;
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
@@ -1282,11 +1280,16 @@ namespace SplitTools.SplitDLL
 											output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i]));
 
 									}
-									kartset.Property = ByteConverter.ToUInt32(datafile, address + 4);
+									kartset.Entries = BitConverter.ToUInt32(datafile, address + 4);
+									kartset.ScrollTables = [];
 									ptr = BitConverter.ToInt32(datafile, address + 8);
 									if (ptr != 0)
 									{
-										kartset.Unknown1 = ((uint)ptr - imageBase).ToCHex();
+										kartset.ScrollAddress = ((uint)ptr - imageBase).ToCHex();
+										for (int s = 0; s < kartset.Entries; s++)
+										{
+											kartset.ScrollTables.Add(new UVScrollTable(datafile, datafile.GetPointer(address + 8, imageBase) + (s * 4), imageBase));
+										}
 									}
 									result.Add(kartset);
 									address += 0xC;

@@ -250,6 +250,7 @@ namespace SplitTools.Split
 				case "basicmodel":
 				case "basicdxmodel":
 				case "chunkmodel":
+				case "chaochunkmodel":
 				case "gcmodel":
 					{
 						ModelFormat mdlformat;
@@ -263,6 +264,9 @@ namespace SplitTools.Split
 								break;
 							case "chunkmodel":
 								mdlformat = ModelFormat.Chunk;
+								break;
+							case "chaochunkmodel":
+								mdlformat = ModelFormat.ChaoChunk;
 								break;
 							case "gcmodel":
 								mdlformat = ModelFormat.GC;
@@ -697,10 +701,7 @@ namespace SplitTools.Split
 					break;
 				case "modeltexanim":
 					{
-						var cnt = 4;
-						if (customProperties.ContainsKey("uvlength"))
-							cnt = int.Parse(customProperties["uvlength"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
-						new SA2ModelTexanimInfo(datafile, address, imageBase, cnt).Save(fileOutputPath);
+						new SA2ModelTexanimInfo(datafile, address, imageBase).Save(fileOutputPath);
 					}
 					break;
 				case "leveltexlist":
@@ -1445,6 +1446,7 @@ namespace SplitTools.Split
 						int i = ByteConverter.ToInt16(datafile, address);
 						string animmeta = string.Empty;
 						string animname = string.Empty;
+						Dictionary<int, string> animpairs = new Dictionary<int, string>();
 						while (i != -1)
 						{
 							if (customProperties.ContainsKey("meta" + i + "_a"))
@@ -1458,10 +1460,13 @@ namespace SplitTools.Split
 							else
 								animname = i.ToString(NumberFormatInfo.InvariantInfo);
 							animdata.Save(fileOutputPath + "/" + animname + ".saanim", splitFlags.HasFlag(SplitFlags.NoMeta));
-							hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + animname + ".saanim"));
+							hashes.Add(animname + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + animname + ".saanim"));
+							animpairs.Add(i, animname + ".saanim");
 							address += 8;
 							i = ByteConverter.ToInt16(datafile, address);
 						}
+						IniSerializer.Serialize(animpairs, Path.Combine(fileOutputPath, "info.ini"));
+						hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
 						data.MD5Hash = string.Join("|", hashes.ToArray());
 						nohash = true;
 					}

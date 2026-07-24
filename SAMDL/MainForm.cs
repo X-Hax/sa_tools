@@ -465,7 +465,7 @@ namespace SAModel.SAMDL
 		}
 		*/
 
-		private void LoadFile(string filename, bool cmdLoad = false)
+		private void LoadFile(string filename, bool cmdLoad = false, bool chaodata = false)
 		{
 			string extension = Path.GetExtension(filename).ToLowerInvariant();
 
@@ -487,7 +487,7 @@ namespace SAModel.SAMDL
 				try
 #endif
 				{
-					ModelFile modelFile = new ModelFile(filename);
+					ModelFile modelFile = new ModelFile(filename, chaodata);
 					if (!string.IsNullOrEmpty(modelFile.Description))
 						modelDescription = modelFile.Description;
 					if (!string.IsNullOrEmpty(modelFile.Author))
@@ -923,6 +923,7 @@ namespace SAModel.SAMDL
 					filterString = "SA2B MDL Files|*.sa2bmdl|Ginja|*.gj|Ginja (Big Endian)|*.gj";
 					break;
 				case ModelFormat.Chunk:
+				case ModelFormat.ChaoChunk:
 					filterString = "SA2 MDL Files|*.sa2mdl|Ninja Binary|*.nj|Ninja Binary (Big Endian)|*.nj";
 					break;
 				case ModelFormat.BasicDX:
@@ -934,7 +935,7 @@ namespace SAModel.SAMDL
 			filterString += "|All files *.*|*.*";
 			using (SaveFileDialog a = new SaveFileDialog()
 			{
-				DefaultExt = (outfmt == ModelFormat.GC ? "sa2b" : (outfmt == ModelFormat.Chunk ? "sa2" : "sa1")) + "mdl",
+				DefaultExt = (outfmt == ModelFormat.GC ? "sa2b" : ((outfmt == ModelFormat.Chunk || outfmt == ModelFormat.ChaoChunk) ? "sa2" : "sa1")) + "mdl",
 				Filter = filterString
 			})
 			{
@@ -1997,6 +1998,7 @@ namespace SAModel.SAMDL
 				case ModelFormat.BasicDX:
 					return typeof(BasicAttach);
 				case ModelFormat.Chunk:
+				case ModelFormat.ChaoChunk:
 					return typeof(ChunkAttach);
 				case ModelFormat.GC:
 					return typeof(GC.GCAttach);
@@ -4337,7 +4339,7 @@ namespace SAModel.SAMDL
 				return;
 			// Load model file
 			if (info.ModelFilePath != "" && File.Exists(info.ModelFilePath))
-				LoadFile(info.ModelFilePath);
+				LoadFile(info.ModelFilePath, chaodata: info.ChaoData);
 			// Load textures
 			if (info.TextureArchives != null)
 			{
@@ -4446,7 +4448,7 @@ namespace SAModel.SAMDL
 			{
 				case BasicAttach:
 					{
-						ModelDataEditor me = new ModelDataEditor(model, idx);
+						ModelDataEditor me = new ModelDataEditor(model, TextureInfoCurrent, idx);
 						if (me.ShowDialog(this) == DialogResult.OK)
 						{
 							model = me.editedHierarchy.Clone();

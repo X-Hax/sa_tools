@@ -123,7 +123,7 @@
 			// buttonMoveTMeshUp
 			// 
 			buttonMoveTMeshUp.Enabled = false;
-			buttonMoveTMeshUp.Location = new System.Drawing.Point(249, 28);
+			buttonMoveTMeshUp.Location = new System.Drawing.Point(245, 20);
 			buttonMoveTMeshUp.Margin = new System.Windows.Forms.Padding(4);
 			buttonMoveTMeshUp.Name = "buttonMoveTMeshUp";
 			buttonMoveTMeshUp.Size = new System.Drawing.Size(30, 30);
@@ -135,7 +135,7 @@
 			// buttonMoveTMeshDown
 			// 
 			buttonMoveTMeshDown.Enabled = false;
-			buttonMoveTMeshDown.Location = new System.Drawing.Point(249, 66);
+			buttonMoveTMeshDown.Location = new System.Drawing.Point(245, 51);
 			buttonMoveTMeshDown.Margin = new System.Windows.Forms.Padding(4);
 			buttonMoveTMeshDown.Name = "buttonMoveTMeshDown";
 			buttonMoveTMeshDown.Size = new System.Drawing.Size(30, 30);
@@ -151,7 +151,7 @@
 			listViewOMeshes.FullRowSelect = true;
 			listViewOMeshes.GridLines = true;
 			listViewOMeshes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			listViewOMeshes.Location = new System.Drawing.Point(7, 28);
+			listViewOMeshes.Location = new System.Drawing.Point(7, 20);
 			listViewOMeshes.Margin = new System.Windows.Forms.Padding(4);
 			listViewOMeshes.MultiSelect = false;
 			listViewOMeshes.Name = "listViewOMeshes";
@@ -181,7 +181,7 @@
 			// 
 			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
 			statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabelInfo });
-			statusStrip1.Location = new System.Drawing.Point(0, 629);
+			statusStrip1.Location = new System.Drawing.Point(0, 607);
 			statusStrip1.Name = "statusStrip1";
 			statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 15, 0);
 			statusStrip1.Size = new System.Drawing.Size(916, 22);
@@ -415,9 +415,9 @@
 			// 
 			groupBoxMeshList.Controls.Add(groupBoxTrans);
 			groupBoxMeshList.Controls.Add(groupBoxOpaque);
-			groupBoxMeshList.Location = new System.Drawing.Point(299, 257);
+			groupBoxMeshList.Location = new System.Drawing.Point(299, 243);
 			groupBoxMeshList.Name = "groupBoxMeshList";
-			groupBoxMeshList.Size = new System.Drawing.Size(605, 334);
+			groupBoxMeshList.Size = new System.Drawing.Size(596, 312);
 			groupBoxMeshList.TabIndex = 20;
 			groupBoxMeshList.TabStop = false;
 			groupBoxMeshList.Text = "Mesh Data";
@@ -432,7 +432,7 @@
 			groupBoxTrans.Controls.Add(buttonCloneTMesh);
 			groupBoxTrans.Location = new System.Drawing.Point(305, 17);
 			groupBoxTrans.Name = "groupBoxTrans";
-			groupBoxTrans.Size = new System.Drawing.Size(289, 305);
+			groupBoxTrans.Size = new System.Drawing.Size(281, 283);
 			groupBoxTrans.TabIndex = 28;
 			groupBoxTrans.TabStop = false;
 			groupBoxTrans.Text = "Translucent";
@@ -444,7 +444,7 @@
 			listViewTMeshes.FullRowSelect = true;
 			listViewTMeshes.GridLines = true;
 			listViewTMeshes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			listViewTMeshes.Location = new System.Drawing.Point(7, 28);
+			listViewTMeshes.Location = new System.Drawing.Point(7, 20);
 			listViewTMeshes.Margin = new System.Windows.Forms.Padding(4);
 			listViewTMeshes.MultiSelect = false;
 			listViewTMeshes.Name = "listViewTMeshes";
@@ -472,7 +472,7 @@
 			// 
 			// buttonResetTMeshes
 			// 
-			buttonResetTMeshes.Location = new System.Drawing.Point(163, 255);
+			buttonResetTMeshes.Location = new System.Drawing.Point(163, 245);
 			buttonResetTMeshes.Margin = new System.Windows.Forms.Padding(4);
 			buttonResetTMeshes.Name = "buttonResetTMeshes";
 			buttonResetTMeshes.Size = new System.Drawing.Size(103, 26);
@@ -484,7 +484,7 @@
 			// buttonDeleteTMesh
 			// 
 			buttonDeleteTMesh.Enabled = false;
-			buttonDeleteTMesh.Location = new System.Drawing.Point(85, 255);
+			buttonDeleteTMesh.Location = new System.Drawing.Point(85, 245);
 			buttonDeleteTMesh.Margin = new System.Windows.Forms.Padding(4);
 			buttonDeleteTMesh.Name = "buttonDeleteTMesh";
 			buttonDeleteTMesh.Size = new System.Drawing.Size(71, 26);
@@ -496,7 +496,7 @@
 			// buttonCloneTMesh
 			// 
 			buttonCloneTMesh.Enabled = false;
-			buttonCloneTMesh.Location = new System.Drawing.Point(7, 255);
+			buttonCloneTMesh.Location = new System.Drawing.Point(7, 245);
 			buttonCloneTMesh.Margin = new System.Windows.Forms.Padding(4);
 			buttonCloneTMesh.Name = "buttonCloneTMesh";
 			buttonCloneTMesh.Size = new System.Drawing.Size(71, 26);
@@ -515,7 +515,7 @@
 			groupBoxOpaque.Controls.Add(buttonCloneOMesh);
 			groupBoxOpaque.Location = new System.Drawing.Point(8, 17);
 			groupBoxOpaque.Name = "groupBoxOpaque";
-			groupBoxOpaque.Size = new System.Drawing.Size(291, 305);
+			groupBoxOpaque.Size = new System.Drawing.Size(281, 283);
 			groupBoxOpaque.TabIndex = 21;
 			groupBoxOpaque.TabStop = false;
 			groupBoxOpaque.Text = "Opaque";
@@ -523,7 +523,7 @@
 			// buttonMoveOMeshUp
 			// 
 			buttonMoveOMeshUp.Enabled = false;
-			buttonMoveOMeshUp.Location = new System.Drawing.Point(249, 28);
+			buttonMoveOMeshUp.Location = new System.Drawing.Point(245, 20);
 			buttonMoveOMeshUp.Margin = new System.Windows.Forms.Padding(4);
 			buttonMoveOMeshUp.Name = "buttonMoveOMeshUp";
 			buttonMoveOMeshUp.Size = new System.Drawing.Size(30, 30);
@@ -535,7 +535,7 @@
 			// buttonMoveOMeshDown
 			// 
 			buttonMoveOMeshDown.Enabled = false;
-			buttonMoveOMeshDown.Location = new System.Drawing.Point(249, 66);
+			buttonMoveOMeshDown.Location = new System.Drawing.Point(245, 51);
 			buttonMoveOMeshDown.Margin = new System.Windows.Forms.Padding(4);
 			buttonMoveOMeshDown.Name = "buttonMoveOMeshDown";
 			buttonMoveOMeshDown.Size = new System.Drawing.Size(30, 30);
@@ -546,7 +546,7 @@
 			// 
 			// buttonResetOMeshes
 			// 
-			buttonResetOMeshes.Location = new System.Drawing.Point(163, 255);
+			buttonResetOMeshes.Location = new System.Drawing.Point(163, 245);
 			buttonResetOMeshes.Margin = new System.Windows.Forms.Padding(4);
 			buttonResetOMeshes.Name = "buttonResetOMeshes";
 			buttonResetOMeshes.Size = new System.Drawing.Size(103, 26);
@@ -558,7 +558,7 @@
 			// buttonDeleteOMesh
 			// 
 			buttonDeleteOMesh.Enabled = false;
-			buttonDeleteOMesh.Location = new System.Drawing.Point(85, 255);
+			buttonDeleteOMesh.Location = new System.Drawing.Point(85, 245);
 			buttonDeleteOMesh.Margin = new System.Windows.Forms.Padding(4);
 			buttonDeleteOMesh.Name = "buttonDeleteOMesh";
 			buttonDeleteOMesh.Size = new System.Drawing.Size(71, 26);
@@ -570,7 +570,7 @@
 			// buttonCloneOMesh
 			// 
 			buttonCloneOMesh.Enabled = false;
-			buttonCloneOMesh.Location = new System.Drawing.Point(7, 255);
+			buttonCloneOMesh.Location = new System.Drawing.Point(7, 245);
 			buttonCloneOMesh.Margin = new System.Windows.Forms.Padding(4);
 			buttonCloneOMesh.Name = "buttonCloneOMesh";
 			buttonCloneOMesh.Size = new System.Drawing.Size(71, 26);
@@ -582,7 +582,7 @@
 			// buttonClose
 			// 
 			buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-			buttonClose.Location = new System.Drawing.Point(823, 597);
+			buttonClose.Location = new System.Drawing.Point(823, 567);
 			buttonClose.Name = "buttonClose";
 			buttonClose.Size = new System.Drawing.Size(81, 26);
 			buttonClose.TabIndex = 35;
@@ -644,7 +644,7 @@
 			// 
 			groupBoxVertexList.Controls.Add(groupBoxVertices);
 			groupBoxVertexList.Controls.Add(groupBoxWeightList);
-			groupBoxVertexList.Location = new System.Drawing.Point(12, 257);
+			groupBoxVertexList.Location = new System.Drawing.Point(12, 243);
 			groupBoxVertexList.Name = "groupBoxVertexList";
 			groupBoxVertexList.Size = new System.Drawing.Size(281, 334);
 			groupBoxVertexList.TabIndex = 15;
@@ -668,7 +668,7 @@
 			listViewVertices.FullRowSelect = true;
 			listViewVertices.GridLines = true;
 			listViewVertices.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			listViewVertices.Location = new System.Drawing.Point(7, 28);
+			listViewVertices.Location = new System.Drawing.Point(7, 20);
 			listViewVertices.Margin = new System.Windows.Forms.Padding(4);
 			listViewVertices.MultiSelect = false;
 			listViewVertices.Name = "listViewVertices";
@@ -763,7 +763,7 @@
 			groupBox1.Controls.Add(listViewObjectData);
 			groupBox1.Location = new System.Drawing.Point(12, 151);
 			groupBox1.Name = "groupBox1";
-			groupBox1.Size = new System.Drawing.Size(892, 101);
+			groupBox1.Size = new System.Drawing.Size(892, 87);
 			groupBox1.TabIndex = 13;
 			groupBox1.TabStop = false;
 			groupBox1.Text = "Object Data";
@@ -774,7 +774,7 @@
 			listViewObjectData.FullRowSelect = true;
 			listViewObjectData.GridLines = true;
 			listViewObjectData.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			listViewObjectData.Location = new System.Drawing.Point(9, 27);
+			listViewObjectData.Location = new System.Drawing.Point(7, 19);
 			listViewObjectData.MultiSelect = false;
 			listViewObjectData.Name = "listViewObjectData";
 			listViewObjectData.ShowGroups = false;
@@ -821,9 +821,9 @@
 			// 
 			// GCModelDataEditor
 			// 
-			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			ClientSize = new System.Drawing.Size(916, 651);
+			AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			ClientSize = new System.Drawing.Size(916, 629);
 			Controls.Add(groupBox1);
 			Controls.Add(groupBoxVertexList);
 			Controls.Add(comboBoxNode);

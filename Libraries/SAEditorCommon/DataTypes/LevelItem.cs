@@ -295,7 +295,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			switch (COL.Model.Attach)
 			{
 				case BasicAttach:
-				ModelDataEditor me = new ModelDataEditor(COL.Model);
+				ModelDataEditor me = new ModelDataEditor(COL.Model, textures);
 				if (me.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 				{
 					COL.Model = me.editedHierarchy.Clone();

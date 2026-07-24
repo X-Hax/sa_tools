@@ -327,7 +327,6 @@ namespace SAModel.GC
 			return result.ToString();
 		}
 
-		// WIP
 		public void ToNJA(TextWriter writer)
 		{
 			string vertType = null;

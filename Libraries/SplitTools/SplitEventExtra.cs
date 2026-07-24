@@ -772,30 +772,25 @@ namespace SplitTools.SAArc
 					Console.WriteLine("Mini-Event does not use additional effects.");
 				}
 
-				var misccount = 0;
-				for (var i = 0; i < 1; i++)
-				{
-					addr = 0x1400;
-					var misc = new MiscMiniEffect();
-					var unkdata1 = fc.GetPointer(addr, 0);
-					misc.Unk1 = new Vertex(fc, addr);
-					misc.Unk2 = ByteConverter.ToSingle(fc, addr + 0xC);
-					var unkdata2 = fc.GetPointer(addr + 0x10, 0);
-					misc.Unk3 = new Vertex(fc, addr + 0x10);
-					if (unkdata1 != 0 || unkdata2 != 0)
-					{
-						misccount++;
-					}
+				addr = 0x1400;
+				var posrot = new MiniEventPlacementOffsets();
+				posrot.Position = new Vertex(fc, addr);
+				posrot.Rotation = new Rotation(fc, addr + 0xC);
+				posrot.CameraYRotation = ByteConverter.ToInt32(fc, addr + 0x18).ToString("X");
 
-					ini.Unknown.Add(misc);
-				}
-				if (misccount != 0)
+				ini.PlacementData = posrot;
+				if (posrot.Position.IsEmpty && posrot.Rotation.IsEmpty && posrot.CameraYRotation != "0")
 				{
-					Console.WriteLine("Mini-Event contains an unknown effect entry.");
+					Console.WriteLine("Mini-Event does not use position/rotation offsets.");
 				}
 				else
 				{
-					Console.WriteLine("Mini-Event does not use unknown effects.");
+					if (!posrot.Position.IsEmpty)
+						Console.WriteLine("Mini-Event uses position offsets.");
+					if (!posrot.Rotation.IsEmpty)
+						Console.WriteLine("Mini-Event uses rotation offsets.");
+					if (posrot.CameraYRotation != "0")
+						Console.WriteLine("Mini-Event uses camera Y rotation offset.");
 				}
 
 				var js = new JsonSerializer
@@ -1010,10 +1005,8 @@ namespace SplitTools.SAArc
 				{
 					extradata.AddRange(effect.GetBytes());
 				}
-				foreach (var misc in ini.Unknown)
-				{
-					extradata.AddRange(misc.GetBytes());
-				}
+				//Placement data always exists
+				extradata.AddRange(ini.PlacementData.GetBytes());
 				if (fileOutputPath.Length != 0)
 				{
 					if (!Directory.Exists(fileOutputPath))
@@ -1336,7 +1329,7 @@ namespace SplitTools.SAArc
 		public bool BigEndian { get; set; }
 		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
 		public List<EffectInfo> Effects { get; set; } = new List<EffectInfo>();
-		public List<MiscMiniEffect> Unknown { get; set; } = new List<MiscMiniEffect>();
+		public MiniEventPlacementOffsets PlacementData { get; set; }
 	}
 
 	[Serializable]
@@ -1373,20 +1366,23 @@ namespace SplitTools.SAArc
 		}
 	}
 	[Serializable]
-	public class MiscMiniEffect
+	public class MiniEventPlacementOffsets
 	{
-		public Vertex Unk1 { get; set; }
-		public float Unk2 { get; set; }
-		public Vertex Unk3 { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Position { get; set; }
+		[IniAlwaysInclude]
+		public Rotation Rotation { get; set; }
+		[IniAlwaysInclude]
+		public string CameraYRotation { get; set; }
 
 		public static int Size => 0x1C;
 
 		public byte[] GetBytes()
 		{
 			var result = new List<byte>(Size);
-			result.AddRange(Unk1.GetBytes());
-			result.AddRange(ByteConverter.GetBytes(Unk2));
-			result.AddRange(Unk3.GetBytes());
+			result.AddRange(Position.GetBytes());
+			result.AddRange(Rotation.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(int.Parse(CameraYRotation, System.Globalization.NumberStyles.HexNumber)));
 			result.Align(0x1C);
 			return result.ToArray();
 		}

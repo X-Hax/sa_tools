@@ -233,7 +233,7 @@ namespace SAModel.SAEditorCommon.UI
 			int vertID = int.Parse(listViewVertices.SelectedItems[0].SubItems[0].Text);
 			List<VertexChunk> selectedObj = ((ChunkAttach)editedModel).Vertex;
 			VertexChunk selectedVert = selectedObj[listViewVertices.SelectedIndices[0]];
-			ChunkModelVertexDataEditor vde = new ChunkModelVertexDataEditor(selectedVert);
+			ChunkModelVertexDataEditor vde = new ChunkModelVertexDataEditor(selectedVert, chaodata: ((ChunkAttach)editedModel).ChaoData);
 			if (vde.ShowDialog(this) == DialogResult.OK)
 			{
 				return;
@@ -1286,7 +1286,7 @@ namespace SAModel.SAEditorCommon.UI
 			if (listViewVertices.SelectedItems.Count > 0)
 			{
 				VertexChunk vData = ((ChunkAttach)editedModel).Vertex[listViewVertices.SelectedIndices[0]];
-				using (ChunkModelVertexDataEditor de = new ChunkModelVertexDataEditor(vData))
+				using (ChunkModelVertexDataEditor de = new ChunkModelVertexDataEditor(vData, chaodata: ((ChunkAttach)editedModel).ChaoData))
 				{
 					de.ShowDialog(this);
 				}
@@ -1669,7 +1669,7 @@ namespace SAModel.SAEditorCommon.UI
 				if (e.KeyChar == (char)Keys.Enter)
 				{
 					VertexChunk vData = ((ChunkAttach)editedModel).Vertex[listViewVertices.SelectedIndices[0]];
-					using (ChunkModelVertexDataEditor de = new ChunkModelVertexDataEditor(vData))
+					using (ChunkModelVertexDataEditor de = new ChunkModelVertexDataEditor(vData, chaodata: ((ChunkAttach)editedModel).ChaoData))
 					{
 						de.ShowDialog(this);
 					}
