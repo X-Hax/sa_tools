@@ -373,7 +373,9 @@ namespace SAModel
 						VertexBuffer[i + chunk.IndexOffset] = new VertexData(vertdata[i]);
 						if (normdata.Length > 0)
 							VertexBuffer[i + chunk.IndexOffset].Normal = normdata[i];
-						if (ChaoData)
+						if (chunk.Diffuse.Count > 0)
+						{
+							if (ChaoData)
 							{
 								VertexBuffer[i + chunk.IndexOffset].Color = Color.FromArgb(chunk.Diffuse[i].B, chunk.Diffuse[i].G, chunk.Diffuse[i].R, chunk.Diffuse[i].A);
 							}
@@ -381,6 +383,7 @@ namespace SAModel
 							{
 								VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
 							}
+						}
 					}
 				}
 			}
