@@ -429,7 +429,7 @@ namespace SA2EventViewer
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
 		}
-
+		
 		private void UpdateWeightedModels()
 		{
 			if (scenenum > 0)
@@ -452,7 +452,17 @@ namespace SA2EventViewer
 							if (animframe == -1)
 								@event.Scenes[scenenum].Entities[i].Model.ProcessVertexData();
 							else
-								@event.Scenes[scenenum].Entities[i].Model.ProcessShapeMotionVertexData(@event.Scenes[scenenum].Entities[i].ShapeMotion, animframe);
+							{
+								if (currentFileName.EndsWith("E0024.PRS", StringComparison.OrdinalIgnoreCase) && scenenum == 1)
+								{
+									if ((@event.isBattle && i == 8 )||(!@event.isBattle && i == 10))
+										@event.Scenes[scenenum].Entities[i].Model.ProcessVertexData();
+									else
+										@event.Scenes[scenenum].Entities[i].Model.ProcessShapeMotionVertexData(@event.Scenes[scenenum].Entities[i].ShapeMotion, animframe);
+								}
+								else
+									@event.Scenes[scenenum].Entities[i].Model.ProcessShapeMotionVertexData(@event.Scenes[scenenum].Entities[i].ShapeMotion, animframe);
+							}
 							NJS_OBJECT[] models = @event.Scenes[scenenum].Entities[i].Model.GetObjects();
 							for (int j = 0; j < models.Length; j++)
 								if (models[j].Attach != null)
