@@ -454,6 +454,7 @@ namespace SAModel
                 case ModelFormat.BasicDX:
                     return GetObjects().Where(a => a.Animate).Select(a => (a.Attach as BasicAttach)?.Vertex?.Length ?? 0).ToArray();
                 case ModelFormat.Chunk:
+				case ModelFormat.ChaoChunk:
                     return GetObjects().Where(a => a.Animate).Select(a =>
                     {
                         ChunkAttach cnkatt = a.Attach as ChunkAttach;
@@ -482,6 +483,7 @@ namespace SAModel
 					}
 					break;
 				case ModelFormat.Chunk:
+				case ModelFormat.ChaoChunk:
 					foreach (NJS_OBJECT obj in GetObjects())
 					{
 						ChunkAttach cnkatt = obj.Attach as ChunkAttach;

@@ -31,6 +31,7 @@ namespace SAModel
 		public ReadOnlyCollection<NJS_MOTION> Animations { get; private set; }
 		public string Author { get; set; }
 		public string Description { get; set; }
+		public string ModelFlags { get; set; }
 		public Dictionary<uint, byte[]> Metadata { get; set; }
 		private string[] animationFiles;
 
@@ -198,6 +199,9 @@ namespace SAModel
 								case ChunkTypes.Weights:
 									wght = chunk;
 									break;
+								case ChunkTypes.ModelFlags:
+									ModelFlags = file.GetCString(tmpaddr);
+									break;
 								case ChunkTypes.End:
 									finished = true;
 									break;
@@ -216,9 +220,8 @@ namespace SAModel
 						break;
 					case SA2MDL:
 						Format = ModelFormat.Chunk;
-						break;
-					case SA2CMDL:
-						Format = ModelFormat.ChaoChunk;
+						if (ModelFlags == "ChaoChunk")
+							Format = ModelFormat.ChaoChunk;
 						break;
 					case SA2BMDL:
 						Format = ModelFormat.GC;
@@ -368,7 +371,6 @@ namespace SAModel
 			{
 				case SA1MDL:
 				case SA2MDL:
-				case SA2CMDL:
 				case SA2BMDL:
 				case XJMDL:
 					return file[7] <= CurrentVersion;
@@ -393,11 +395,8 @@ namespace SAModel
 					ninjaMagic = NJBMMagic;
 					break;
 				case ModelFormat.Chunk:
-					magic = SA2MDLVer;
-					ninjaMagic = NJCMMagic;
-					break;
 				case ModelFormat.ChaoChunk:
-					magic = SA2CMDLVer;
+					magic = SA2MDLVer;
 					ninjaMagic = NJCMMagic;
 					break;
 				case ModelFormat.GC:
@@ -527,6 +526,16 @@ namespace SAModel
 					file.AddRange(ByteConverter.GetBytes(chunk.Count));
 					file.AddRange(chunk);
 				}
+				if (!string.IsNullOrEmpty(ModelFlags))
+				{
+					List<byte> chunk = new List<byte>(ModelFlags.Length + 1);
+					chunk.AddRange(Encoding.UTF8.GetBytes(ModelFlags));
+					chunk.Add(0);
+					chunk.Align(4);
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.ModelFlags));
+					file.AddRange(ByteConverter.GetBytes(chunk.Count));
+					file.AddRange(chunk);
+				}
 				foreach (KeyValuePair<uint, byte[]> item in Metadata)
 				{
 					file.AddRange(ByteConverter.GetBytes(item.Key));
@@ -580,13 +589,14 @@ namespace SAModel
 		}
 
 		public static void CreateFile(string filename, NJS_OBJECT model, string[] animationFiles, string author,
-			string description, Dictionary<uint, byte[]> metadata, ModelFormat format, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false)
+			string description, Dictionary<uint, byte[]> metadata, ModelFormat format, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false, string flags = "")
 		{
 			new ModelFile(format, model, Path.GetDirectoryName(Path.GetFullPath(filename)), animationFiles)
 			{
 				Author = author,
 				Description = description,
-				Metadata = metadata ?? new Dictionary<uint, byte[]>()
+				Metadata = metadata ?? new Dictionary<uint, byte[]>(),
+				ModelFlags = flags
 			}.SaveToFile(filename, nometa, useNinjaMetaData, njbLittleEndian);
 		}
 
@@ -598,6 +608,7 @@ namespace SAModel
 			Author = 0x48545541,
 			Tool = 0x4C4F4F54,
 			Description = 0x43534544,
+			ModelFlags = 0x47414C46,
 			Texture = 0x584554,
 			RightHandNode = 0x444E4852,
 			LeftHandNode = 0x444E484C,

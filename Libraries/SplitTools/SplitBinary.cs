@@ -265,9 +265,6 @@ namespace SplitTools.Split
 							case "chunkmodel":
 								mdlformat = ModelFormat.Chunk;
 								break;
-							case "chaochunkmodel":
-								mdlformat = ModelFormat.ChaoChunk;
-								break;
 							case "gcmodel":
 								mdlformat = ModelFormat.GC;
 								break;
@@ -283,7 +280,16 @@ namespace SplitTools.Split
 						if (data.CustomProperties.ContainsKey("reverse"))
 							ByteConverter.Reverse = true;
 						//if (data.CustomProperties.ContainsKey("includetls"))
-							//writetls = true;
+						//writetls = true;
+						string chunkmodeltype = string.Empty;
+						if (customProperties.ContainsKey("chunktype"))
+						{
+							if (customProperties["chunktype"] == "ChaoChunk")
+							{
+								chunkmodeltype = "ChaoChunk";
+								mdlformat = ModelFormat.ChaoChunk;
+							}
+						}
 						var mdl = new NJS_OBJECT(datafile, address, imageBase, mdlformat, labels, new Dictionary<int, Attach>(), ninja2);
 						var mdlanis = new List<string>();
 						string[] mdlanisfiles;
@@ -326,7 +332,8 @@ namespace SplitTools.Split
 							mdlmorphs = customProperties["morphs"].Split(',');
 							mdlanis.AddRange(mdlmorphs);
 						}
-						ModelFile.CreateFile(fileOutputPath, mdl, mdlanis.ToArray(), null, itemName, null, mdlformat, splitFlags.HasFlag(SplitFlags.NoMeta));
+						
+						ModelFile.CreateFile(fileOutputPath, mdl, mdlanis.ToArray(), null, itemName, null, mdlformat, splitFlags.HasFlag(SplitFlags.NoMeta), flags: chunkmodeltype);
 						if (data.CustomProperties.ContainsKey("reverse")) 
 							ByteConverter.Reverse = rev;
 					}
