@@ -1,16 +1,15 @@
 using SAModel;
-using SAModel.SAEditorCommon;
-using System.Text;
-using System.Windows.Forms;
 using static SAModel.SAEditorCommon.SettingsFile;
 
 namespace SA2LightFogEditor
 {
 	public partial class MainForm : Form
 	{
-		public MainForm()
+		public MainForm(string[] args)
 		{
 			InitializeComponent();
+			if (args.Length > 0)
+				filename = Path.GetFullPath(args[0]);
 		}
 		enum LightFogFileTypes
 		{
@@ -23,9 +22,10 @@ namespace SA2LightFogEditor
 		List<Size> formSizes = new List<Size>();
 		public Size currentFormSize { get; set; }
 		List<string> recentFiles = new List<string>();
-		string filename = null;
+		string filename = "";
 		string currentFormatDialog = "";
 		bool bigEndian;
+		bool unsaved = false;
 		string bigEndianDialog = "";
 		public Vertex currentColor { get; set; }
 		public Vertex currentGCColor { get; set; }
@@ -73,7 +73,7 @@ namespace SA2LightFogEditor
 					break;
 			}
 			InitializeLightFogData();
-			if (filename != null)
+			if (!string.IsNullOrEmpty(filename))
 				LoadFile(filename);
 		}
 		private void LoadFile(string filename)
@@ -362,6 +362,21 @@ namespace SA2LightFogEditor
 			switch (MessageBox.Show(this, "Do you want to save before exiting?", "SA2 Light/Fog Editor", MessageBoxButtons.YesNoCancel, MessageBoxIcon.None, MessageBoxDefaultButton.Button3))
 			{
 				case DialogResult.Yes:
+					using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "bin", Filter = "Supported Files|*.bin|All Files|*.*" })
+					{
+						if (filename != null)
+						{
+							dlg.FileName = Path.GetFileName(filename);
+							dlg.InitialDirectory = Path.GetDirectoryName(filename);
+						}
+						if (dlg.ShowDialog(this) == DialogResult.OK)
+						{
+							filename = dlg.FileName;
+							SaveFile();
+							AddRecentFile(filename);
+							Text = "SA2 Light/Fog Editor - " + Path.GetFileName(filename);
+						}
+					}
 					break;
 				case DialogResult.Cancel:
 					e.Cancel = true;
@@ -392,6 +407,56 @@ namespace SA2LightFogEditor
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 					LoadFile(dlg.FileName);
 		}
+
+		#region Drag and Drop
+		// Drag and drop - adding files
+		private void LightEffects_DragEnter(object sender, DragEventArgs e)
+		{
+			string[] newfile = (string[])e.Data.GetData(DataFormats.FileDrop);
+			if (newfile.Length == 1)
+			{
+				foreach (string file in newfile)
+				{
+					switch (Path.GetExtension(file).ToLowerInvariant())
+					{
+						case ".bin":
+							e.Effect = DragDropEffects.Copy;
+							return;
+					}
+				}
+			}
+			e.Effect = DragDropEffects.None;
+		}
+
+		private void LightEffects_DragDrop(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+			{
+				if (unsaved)
+				{
+					DialogResult res = MessageBox.Show(this, "There are unsaved changes. Would you like to save them?", "Save changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+					switch (res)
+					{
+						case DialogResult.Yes:
+							SaveFile();
+							break;
+						case DialogResult.Cancel:
+							return;
+						case DialogResult.No:
+							break;
+					}
+				}
+
+				ClearLightFogData();
+				filename = null;
+
+				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+				LoadFile(files[0]);
+				unsaved = false;
+			}
+		}
+		#endregion
 
 		private float GetPotentialGCLightMultiplier(Vertex color)
 		{
@@ -472,11 +537,13 @@ namespace SA2LightFogEditor
 		private void lightXDirTextBox_TextChanged(object sender, EventArgs e)
 		{
 			currentLightData.LightDir.X = float.Parse(lightXDirTextBox.Text);
+			unsaved = true;
 		}
 
 		private void lightYDirTextBox_TextChanged(object sender, EventArgs e)
 		{
 			currentLightData.LightDir.Y = float.Parse(lightYDirTextBox.Text);
+
 		}
 
 		private void lightZDirTextBox_TextChanged(object sender, EventArgs e)
@@ -899,7 +966,7 @@ namespace SA2LightFogEditor
 					byte[] arraytest = new[] { file[0x12], file[0x13], file[0x10], file[0x11] };
 					float testnormal = ByteConverter.ToSingle(file, 0x10);
 					float testfix = ByteConverter.ToSingle(arraytest, 0);
-					if (testfix > 1 || testfix < 0 || testfix > testnormal)
+					if (testfix >= 0.0f && testfix <= 1.0f)
 					{
 						for (int i = 0; i < 128; i++)
 						{

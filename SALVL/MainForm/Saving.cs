@@ -685,7 +685,7 @@ namespace SAModel.SALVL
 					break;
 				}
 
-				Dictionary<SA2LevelIDs, SA2EndPosInfo> posini = SA2EndPosList.Load(salvlini.Characters[LevelData.SA2Characters[i]].MultiplayerIntroPositions);
+				Dictionary<SA2LevelIDs, SA2MultiPosInfo> posini = SA2MiniPosList.LoadMulti(salvlini.Characters[LevelData.SA2Characters[i]].MultiplayerIntroPositions);
 
 				if (posini.ContainsKey(SA2level))
 					posini.Remove(SA2level);
@@ -697,23 +697,23 @@ namespace SAModel.SALVL
 						LevelData.MultiplayerIntroPositionsB[i].Position.Y != 0 || LevelData.MultiplayerIntroPositionsB[i].Position.Z != 0 || LevelData.MultiplayerIntroPositionsB[i].Rotation.Y != 0))
 					{
 						posini.Add(SA2level,
-						new SA2EndPosInfo()
+						new SA2MultiPosInfo()
 						{
-							Mission2Position = LevelData.MultiplayerIntroPositionsA[i].Position,
-							Mission2YRotation = (ushort)LevelData.MultiplayerIntroPositionsA[i].Rotation.Y,
-							Mission3Position = LevelData.MultiplayerIntroPositionsB[i].Position,
-							Mission3YRotation = (ushort)LevelData.MultiplayerIntroPositionsB[i].YRotation,
+							Player1Position = LevelData.MultiplayerIntroPositionsA[i].Position,
+							Player1YRotation = (ushort)LevelData.MultiplayerIntroPositionsA[i].Rotation.Y,
+							Player2Position = LevelData.MultiplayerIntroPositionsB[i].Position,
+							Player2YRotation = (ushort)LevelData.MultiplayerIntroPositionsB[i].YRotation,
 						});
 					}
 					else
 						posini.Add(SA2level,
-					new SA2EndPosInfo()
+					new SA2MultiPosInfo()
 					{
-						Mission2Position = LevelData.MultiplayerIntroPositionsA[i].Position,
-						Mission2YRotation = (ushort)LevelData.MultiplayerIntroPositionsA[i].Rotation.Y,
+						Player1Position = LevelData.MultiplayerIntroPositionsA[i].Position,
+						Player2YRotation = (ushort)LevelData.MultiplayerIntroPositionsA[i].Rotation.Y,
 					});
 				}
-				posini.Save(salvlini.Characters[LevelData.SA2Characters[i]].MultiplayerIntroPositions);
+				posini.SaveMulti(salvlini.Characters[LevelData.SA2Characters[i]].MultiplayerIntroPositions);
 			}
 
 			progress.StepProgress();
@@ -733,7 +733,7 @@ namespace SAModel.SALVL
 					break;
 				}
 
-				Dictionary<SA2LevelIDs, SA2EndPosInfo> posini = SA2EndPosList.Load(salvlini.Characters[LevelData.SA2Characters[i]].AltEndPositions);
+				Dictionary<SA2LevelIDs, SA2EndPosInfo> posini = SA2MiniPosList.LoadEnd(salvlini.Characters[LevelData.SA2Characters[i]].AltEndPositions);
 
 				if (posini.ContainsKey(SA2level))
 					posini.Remove(SA2level);
@@ -761,7 +761,7 @@ namespace SAModel.SALVL
 						Mission2YRotation = (ushort)LevelData.AltEndPositionsA[i].Rotation.Y,
 					});
 				}
-				posini.Save(salvlini.Characters[LevelData.SA2Characters[i]].AltEndPositions);
+				posini.SaveEnd(salvlini.Characters[LevelData.SA2Characters[i]].AltEndPositions);
 			}
 
 			progress.StepProgress();

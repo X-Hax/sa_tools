@@ -467,7 +467,7 @@
 			jingleFileTextBox.Name = "jingleFileTextBox";
 			jingleFileTextBox.Size = new Size(120, 23);
 			jingleFileTextBox.TabIndex = 17;
-			toolTip1.SetToolTip(jingleFileTextBox, "Normally contains the name of the ADX file that is to be played at the specified frame. If a value of '0' or '-' is set here, the active music file will stop.");
+			toolTip1.SetToolTip(jingleFileTextBox, "Normally contains the name of the ADX file that is to be played at the specified frame. If a value of '0' is set here, the active music file will stop.");
 			jingleFileTextBox.TextChanged += jingleFileTextBox_TextChanged;
 			// 
 			// voiceIDnumericUpDown
@@ -476,9 +476,9 @@
 			voiceIDnumericUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
 			voiceIDnumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, int.MinValue });
 			voiceIDnumericUpDown.Name = "voiceIDnumericUpDown";
-			voiceIDnumericUpDown.Size = new Size(75, 23);
+			voiceIDnumericUpDown.Size = new Size(65, 23);
 			voiceIDnumericUpDown.TabIndex = 12;
-			toolTip1.SetToolTip(voiceIDnumericUpDown, "IDs listed here will need to correspond to the hardcoded look-up table that tells the game which voice sample to play.");
+			toolTip1.SetToolTip(voiceIDnumericUpDown, "IDs listed here will need to correspond to the hardcoded look-up table that tells the game which voice sample to play.\r\n");
 			voiceIDnumericUpDown.Value = new decimal(new int[] { 1, 0, 0, int.MinValue });
 			voiceIDnumericUpDown.ValueChanged += voiceIDnumericUpDown_ValueChanged;
 			// 
@@ -522,7 +522,7 @@
 			// 
 			vSyncNumericUpDown.Location = new Point(124, 156);
 			vSyncNumericUpDown.Name = "vSyncNumericUpDown";
-			vSyncNumericUpDown.Size = new Size(82, 23);
+			vSyncNumericUpDown.Size = new Size(66, 23);
 			vSyncNumericUpDown.TabIndex = 21;
 			toolTip1.SetToolTip(vSyncNumericUpDown, "Does nothing in SA2B. In the Dreamcast version of SA2, this controls the VSync mode used for the cutscene, which determines the framerate. A value of 2 in the first entry locks the cutscene to 30FPS.");
 			vSyncNumericUpDown.ValueChanged += vSyncNumericUpDown_ValueChanged;
@@ -543,7 +543,7 @@
 			musicFileTextBox.Name = "musicFileTextBox";
 			musicFileTextBox.Size = new Size(120, 23);
 			musicFileTextBox.TabIndex = 15;
-			toolTip1.SetToolTip(musicFileTextBox, "Normally contains the name of the ADX file that is to be played at the specified frame. If a value of '0' or '-' is set here, the active music file will stop.");
+			toolTip1.SetToolTip(musicFileTextBox, resources.GetString("musicFileTextBox.ToolTip"));
 			musicFileTextBox.TextChanged += musicFileTextBox_TextChanged;
 			// 
 			// label2
@@ -561,7 +561,7 @@
 			creditsScrollNumericUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			creditsScrollNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, int.MinValue });
 			creditsScrollNumericUpDown.Name = "creditsScrollNumericUpDown";
-			creditsScrollNumericUpDown.Size = new Size(71, 23);
+			creditsScrollNumericUpDown.Size = new Size(55, 23);
 			creditsScrollNumericUpDown.TabIndex = 19;
 			toolTip1.SetToolTip(creditsScrollNumericUpDown, "This control is hardcoded to only work in E0210, AKA \"Last Episode Ending\". Higher numbers cause the credits to scroll slower.");
 			creditsScrollNumericUpDown.Value = new decimal(new int[] { 1, 0, 0, int.MinValue });
@@ -2606,7 +2606,8 @@
 			miniFloatCamPosZTextBox.TextChanged += miniFloatUnk1CTextBox_TextChanged;
 			// 
 			// MainForm
-			// 
+			//
+			AllowDrop = true;
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(1284, 697);
@@ -2630,6 +2631,8 @@
 			Name = "MainForm";
 			Text = "SA2 Cutscene Effect Editor";
 			FormClosing += MainForm_FormClosing;
+			DragDrop += CutsceneEffects_DragDrop;
+			DragEnter += CutsceneEffects_DragEnter;
 			Load += MainForm_Load;
 			groupBoxSubtitle.ResumeLayout(false);
 			groupBoxSubtitle.PerformLayout();

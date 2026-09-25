@@ -1212,11 +1212,11 @@ namespace SAModel.SALVL
 						else
 							character = salvlini.Characters[LevelData.SA2Characters[i]];
 
-						Dictionary<SA2LevelIDs, SA2EndPosInfo> SA2altintroposini = new Dictionary<SA2LevelIDs, SA2EndPosInfo>();
+						Dictionary<SA2LevelIDs, SA2MultiPosInfo> SA2altintroposini = new Dictionary<SA2LevelIDs, SA2MultiPosInfo>();
 
 						if (File.Exists(character.MultiplayerIntroPositions))
 						{
-							SA2altintroposini = SA2EndPosList.Load(character.MultiplayerIntroPositions);
+							SA2altintroposini = SA2MiniPosList.LoadMulti(character.MultiplayerIntroPositions);
 						}
 
 						Vertex posp1 = new Vertex();
@@ -1226,10 +1226,10 @@ namespace SAModel.SALVL
 
 						if (SA2altintroposini.ContainsKey(SA2level))
 						{
-							posp1 = SA2altintroposini[SA2level].Mission2Position;
-							rotp1 = SA2altintroposini[SA2level].Mission2YRotation;
-							posp2 = SA2altintroposini[SA2level].Mission3Position;
-							rotp2 = SA2altintroposini[SA2level].Mission3YRotation;
+							posp1 = SA2altintroposini[SA2level].Player1Position;
+							rotp1 = SA2altintroposini[SA2level].Player2YRotation;
+							posp2 = SA2altintroposini[SA2level].Player1Position;
+							rotp2 = SA2altintroposini[SA2level].Player2YRotation;
 						}
 
 						if (File.Exists(character.Model))
@@ -1283,7 +1283,7 @@ namespace SAModel.SALVL
 
 						if (File.Exists(character.AltEndPositions))
 						{
-							SA2altendposini = SA2EndPosList.Load(character.AltEndPositions);
+							SA2altendposini = SA2MiniPosList.LoadEnd(character.AltEndPositions);
 						}
 
 						Vertex posm2 = new Vertex();

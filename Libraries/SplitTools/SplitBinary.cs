@@ -655,6 +655,7 @@ namespace SplitTools.Split
 					}
 					break;
 				case "startpos":
+				case "startendpos":
 					{
 						var cc = 255;
 						if (customProperties.ContainsKey("count"))
@@ -662,7 +663,7 @@ namespace SplitTools.Split
 						switch (game)
 						{
 							case Game.SA2:
-								SA2DCStartPosList.Load(datafile, address).Save(fileOutputPath);
+								SA2StartPosList.LoadDC(datafile, address).SaveDC(fileOutputPath);
 								break;
 							case Game.SA2B:
 								SA2StartPosList.Load(datafile, address).Save(fileOutputPath);
@@ -955,7 +956,23 @@ namespace SplitTools.Split
 					KartRankTimesList.Load(datafile, address, data.Length).Save(fileOutputPath);
 					break;
 				case "endpos":
-					SA2EndPosList.Load(datafile, address).Save(fileOutputPath);
+				case "shortpos":
+					if (game == Game.SA2)
+					{
+						if (type == "endpos")
+							SA2MiniPosList.LoadDCMulti(datafile, address).SaveMultiDC(fileOutputPath);
+						else
+							SA2MiniPosList.LoadDCEnd(datafile, address).SaveEndDC(fileOutputPath);
+
+					}
+					else
+					{
+						if (type == "shortpos")
+							SA2MiniPosList.LoadMulti(datafile, address).SaveMulti(fileOutputPath);
+						else
+							SA2MiniPosList.LoadEnd(datafile, address).SaveEnd(fileOutputPath);
+							
+					}
 					break;
 				case "animationlist":
 				case "sa1actionlist":

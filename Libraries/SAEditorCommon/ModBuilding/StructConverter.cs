@@ -39,6 +39,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "motionarray", "Animation Array" },
 			{ "objlist", "Object List" },
 			{ "startpos", "Start Positions" },
+			{ "startendpos", "End Positions" },
 			{ "texturedata", "Texture Pack Data" },
 			{ "leveltexlist", "Level Texture List" },
 			{ "triallevellist", "Trial Level List" },
@@ -63,7 +64,8 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "levelrankscores", "Level Rank Scores" },
 			{ "levelranktimes", "Level Rank Times" },
 			{ "kartranktimes", "Kart Rank Times" },
-			{ "endpos", "End Positions" },
+			{ "endpos", "Mission 2/3 End Positions" },
+			{ "shortpos", "Multiplayer Positions" },
 			{ "animationlist", "Animation List" },
 			{ "enemyanimationlist", "Enemy Animation List" },
 			{ "sa1actionlist", "Action List" },
@@ -667,6 +669,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 							}
 							break;
 						case "startpos":
+						case "startendpos":
 							if (SA2)
 							{
 								Dictionary<SA2LevelIDs, SA2StartPosInfo> list = SA2StartPosList.Load(data.Filename);
@@ -1205,11 +1208,23 @@ namespace SAModel.SAEditorCommon.StructConverter
 							break;
 						case "endpos":
 							{
-								Dictionary<SA2LevelIDs, SA2EndPosInfo> list = SA2EndPosList.Load(data.Filename);
+								Dictionary<SA2LevelIDs, SA2EndPosInfo> list = [];
 								writer.WriteLine("LevelEndPosition {0}[] = {{", name);
 								List<string> objs = new List<string>(list.Count);
 								foreach (KeyValuePair<SA2LevelIDs, SA2EndPosInfo> obj in list)
-									objs.Add(obj.ToStruct());
+									objs.Add(obj.ToStructEnd());
+								objs.Add("{ LevelIDs_Invalid }");
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "shortpos":
+							{
+								Dictionary<SA2LevelIDs, SA2MultiPosInfo> list = [];
+								writer.WriteLine("LevelEndPosition {0}[] = {{", name);
+								List<string> objs = new List<string>(list.Count);
+								foreach (KeyValuePair<SA2LevelIDs, SA2MultiPosInfo> obj in list)
+									objs.Add(obj.ToStructMulti());
 								objs.Add("{ LevelIDs_Invalid }");
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");
