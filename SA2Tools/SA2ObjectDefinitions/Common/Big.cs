@@ -5,7 +5,6 @@ using SAModel.Direct3D;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
-using System;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
@@ -31,7 +30,12 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y + 0x4000, item.Rotation.Z);
+			if (item.Rotation.Z != 0)
+				transform.NJRotateX(item.Rotation.Z);
+			if (item.Rotation.X != 0)
+				transform.NJRotateZ(item.Rotation.X);
+			if (item.Rotation.Y != -16384)
+				transform.NJRotateY(item.Rotation.Y + 0x4000);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -44,7 +48,12 @@ namespace SA2ObjectDefinitions.Common
 				texs = ObjectHelper.GetTextures("e_bigtex", texarr, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y + 0x4000, item.Rotation.Z);
+			if (item.Rotation.Z != 0)
+				transform.NJRotateX(item.Rotation.Z);
+			if (item.Rotation.X != 0)
+				transform.NJRotateZ(item.Rotation.X);
+			if (item.Rotation.Y != -16384)
+				transform.NJRotateY(item.Rotation.Y + 0x4000);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
@@ -57,7 +66,12 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y + 0x4000, item.Rotation.Z);
+			if (item.Rotation.Z != 0)
+				transform.NJRotateX(item.Rotation.Z);
+			if (item.Rotation.X != 0)
+				transform.NJRotateZ(item.Rotation.X);
+			if (item.Rotation.Y != -16384)
+				transform.NJRotateY(item.Rotation.Y + 0x4000);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -67,7 +81,12 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y + 0x4000, item.Rotation.Z);
+			if (item.Rotation.Z != 0)
+				transform.NJRotateX(item.Rotation.Z);
+			if (item.Rotation.X != 0)
+				transform.NJRotateZ(item.Rotation.X);
+			if (item.Rotation.Y != -16384)
+				transform.NJRotateY(item.Rotation.Y + 0x4000);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 

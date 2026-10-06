@@ -3662,6 +3662,20 @@ namespace SplitTools
 			}
 			return result;
 		}
+		public static List<PathData> LoadCount(byte[] file, int address, uint imageBase, int count)
+		{
+			var result = new List<PathData>();
+			var ptr = ByteConverter.ToInt32(file, address);
+			address += 4;
+			for (var i = 0; i < count; i++)
+			{
+				ptr = (int)((uint)ptr - imageBase);
+				result.Add(new PathData(file, ptr, imageBase));
+				ptr = ByteConverter.ToInt32(file, address);
+				address += 4;
+			}
+			return result;
+		}
 
 		public static void Save(this List<PathData> paths, string directory, out string[] hashes)
 		{
@@ -3799,6 +3813,124 @@ namespace SplitTools
 		{
 			return string.Format("{{ {0}, {1}, {2}, {3} }}", XRotation.ToCHex(), ZRotation.ToCHex(), Distance.ToC(),
 				Position.ToStruct());
+		}
+	}
+
+	public static class CarPathList
+	{
+		public static List<CarPathData> Load(string directory)
+		{
+			var result = new List<CarPathData>();
+			var i = 0;
+			var filename = Path.Combine(directory, string.Format("{0}.ini", i++));
+			while (File.Exists(filename))
+			{
+				result.Add(CarPathData.Load(filename));
+				filename = Path.Combine(directory, string.Format("{0}.ini", i++));
+			}
+			return result;
+		}
+		public static List<CarPathData> LoadCount(byte[] file, int address, uint imageBase, int count)
+		{
+			var result = new List<CarPathData>();
+			var ptr = ByteConverter.ToInt32(file, address);
+			address += 4;
+			for (var i = 0; i < count; i++)
+			{
+				ptr = (int)((uint)ptr - imageBase);
+				result.Add(new CarPathData(file, ptr, imageBase));
+				ptr = ByteConverter.ToInt32(file, address);
+				address += 4;
+			}
+			return result;
+		}
+
+		public static void Save(this List<CarPathData> paths, string directory, out string[] hashes)
+		{
+			Directory.CreateDirectory(directory);
+			hashes = new string[paths.Count];
+			for (var i = 0; i < paths.Count; i++)
+			{
+				var filename = Path.Combine(directory, string.Format("{0}.ini", i));
+				IniSerializer.Serialize(paths[i], filename);
+				hashes[i] = HelperFunctions.FileHash(filename);
+			}
+		}
+
+		public static byte[] GetBytes(this List<CarPathData> paths, uint imageBase, out uint dataaddr)
+		{
+			var result = new List<byte>();
+			var pointers = new List<uint>();
+			foreach (var path in paths)
+			{
+				result.AddRange(path.GetBytes(imageBase, out var ptr));
+				pointers.Add(ptr);
+			}
+			dataaddr = imageBase + (uint)result.Count;
+			foreach (var item in pointers)
+				result.AddRange(ByteConverter.GetBytes(item));
+			result.AddRange(new byte[4]);
+			return result.ToArray();
+		}
+	}
+
+	[Serializable]
+	public class CarPathData
+	{
+		public short Unknown { get; set; }
+		public float TotalDistance { get; set; }
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public List<Vertex> Path { get; set; }
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint Code { get; set; }
+
+		public CarPathData() { Path = new List<Vertex>(); }
+
+		public static CarPathData Load(string filename)
+		{
+			return IniSerializer.Deserialize<CarPathData>(filename);
+		}
+
+		public CarPathData(byte[] file, int address, uint imageBase)
+		{
+			Unknown = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			var count = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			TotalDistance = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			Path = new List<Vertex>();
+			var ptr = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			if (ptr != 0)
+			{
+				ptr = (int)((uint)ptr - imageBase);
+				for (var i = 0; i < count; i++)
+				{
+					Path.Add(new Vertex(file, ptr));
+					ptr += Vertex.Size;
+				}
+			}
+			Code = ByteConverter.ToUInt32(file, address);
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public byte[] GetBytes(uint imageBase, out uint dataaddr)
+		{
+			var result = new List<byte>(Vertex.Size * Path.Count);
+			foreach (var entry in Path)
+				result.AddRange(entry.GetBytes());
+			dataaddr = imageBase + (uint)result.Count;
+			result.AddRange(ByteConverter.GetBytes(Unknown));
+			result.AddRange(ByteConverter.GetBytes((ushort)result.Count));
+			result.AddRange(ByteConverter.GetBytes(TotalDistance));
+			result.AddRange(ByteConverter.GetBytes(imageBase));
+			result.AddRange(ByteConverter.GetBytes(Code));
+			return result.ToArray();
 		}
 	}
 

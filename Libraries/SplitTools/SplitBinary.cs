@@ -1418,7 +1418,25 @@ namespace SplitTools.Split
 					break;
 				case "pathlist":
 					{
+						if (customProperties.ContainsKey("count"))
+						{
+							var pcnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							PathList.LoadCount(datafile, address, imageBase, pcnt).Save(fileOutputPath, out var hashes);
+							data.MD5Hash = string.Join(",", hashes.ToArray());
+							nohash = true;
+						}
+						else
+						{
 						PathList.Load(datafile, address, imageBase).Save(fileOutputPath, out var hashes);
+						data.MD5Hash = string.Join(",", hashes.ToArray());
+						nohash = true;
+					}
+					}
+					break;
+				case "carpathlist":
+					{
+						var pcnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+						CarPathList.LoadCount(datafile, address, imageBase, pcnt).Save(fileOutputPath, out var hashes);
 						data.MD5Hash = string.Join(",", hashes.ToArray());
 						nohash = true;
 					}

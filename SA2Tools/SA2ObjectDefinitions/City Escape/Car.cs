@@ -59,6 +59,7 @@ namespace SA2ObjectDefinitions.CityEscape
 		protected NJS_OBJECT[] carmodelarray;
 		protected List<Mesh[]> carmeshes;
 		protected Mesh[][] carmesharray;
+		protected List<string> texpacks = [];
 
 		public override void Init(ObjectData data, string name)
 		{
@@ -107,6 +108,9 @@ namespace SA2ObjectDefinitions.CityEscape
 			
 			model13 = ObjectHelper.LoadModel("stg13_cityescape/models/GC/CARKAZ/CIVIC_P.sa2bmdl");
 			mesh13 = ObjectHelper.GetMeshes(model13);
+
+			texpacks.Add("objtex_stg13");
+			texpacks.Add("landtx13");
 		}
 
 		public override Matrix GetHandleMatrix(SETItem item)
@@ -302,19 +306,19 @@ namespace SA2ObjectDefinitions.CityEscape
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (texs1 == null)
-				texs1 = ObjectHelper.GetTextures("objtex_stg13", texarr1, dev);
+				texs1 = ObjectHelper.GetTextures(texpacks, texarr1, dev);
 			if (texs2 == null)
-				texs2 = ObjectHelper.GetTextures("objtex_stg13", texarr2, dev);
+				texs2 = ObjectHelper.GetTextures(texpacks, texarr2, dev);
 			if (texs3 == null)
-				texs3 = ObjectHelper.GetTextures("objtex_stg13", texarr3, dev);
+				texs3 = ObjectHelper.GetTextures(texpacks, texarr3, dev);
 			if (texs4 == null)
-				texs4 = ObjectHelper.GetTextures("objtex_stg13", texarr4, dev);
+				texs4 = ObjectHelper.GetTextures(texpacks, texarr4, dev);
 			if (texs5 == null)
-				texs5 = ObjectHelper.GetTextures("objtex_stg13", texarr5, dev);
+				texs5 = ObjectHelper.GetTextures(texpacks, texarr5, dev);
 			if (texs6 == null)
-				texs6 = ObjectHelper.GetTextures("objtex_stg13", texarr6, dev);
+				texs6 = ObjectHelper.GetTextures(texpacks, texarr6, dev);
 			if (texs7 == null)
-				texs7 = ObjectHelper.GetTextures("objtex_stg13", texarr7, dev);
+				texs7 = ObjectHelper.GetTextures(texpacks, texarr7, dev);
 			int carID = Math.Max((int)item.Scale.Y, 0);
 			if (carID == 2 || carID == 3 || carID == 4 || carID == 5)
 			{
@@ -622,19 +626,19 @@ namespace SA2ObjectDefinitions.CityEscape
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (texs1 == null)
-				texs1 = ObjectHelper.GetTextures("objtex_stg13", texarr1, dev);
+				texs1 = ObjectHelper.GetTextures(texpacks, texarr1, dev);
 			if (texs2 == null)
-				texs2 = ObjectHelper.GetTextures("objtex_stg13", texarr2, dev);
+				texs2 = ObjectHelper.GetTextures(texpacks, texarr2, dev);
 			if (texs3 == null)
-				texs3 = ObjectHelper.GetTextures("objtex_stg13", texarr3, dev);
+				texs3 = ObjectHelper.GetTextures(texpacks, texarr3, dev);
 			if (texs4 == null)
-				texs4 = ObjectHelper.GetTextures("objtex_stg13", texarr4, dev);
+				texs4 = ObjectHelper.GetTextures(texpacks, texarr4, dev);
 			if (texs5 == null)
-				texs5 = ObjectHelper.GetTextures("objtex_stg13", texarr5, dev);
+				texs5 = ObjectHelper.GetTextures(texpacks, texarr5, dev);
 			if (texs6 == null)
-				texs6 = ObjectHelper.GetTextures("objtex_stg13", texarr6, dev);
+				texs6 = ObjectHelper.GetTextures(texpacks, texarr6, dev);
 			if (texs7 == null)
-				texs7 = ObjectHelper.GetTextures("objtex_stg13", texarr7, dev);
+				texs7 = ObjectHelper.GetTextures(texpacks, texarr7, dev);
 			int carID = Math.Max((int)item.Scale.Y, 0);
 			if (carID == 2 || carID == 3 || carID == 4 || carID == 5)
 			{

@@ -1,11 +1,10 @@
+﻿using SharpDX;
+using SharpDX.Direct3D9;
 using SAModel;
 using SAModel.Direct3D;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
-using SharpDX;
-using SharpDX.Direct3D9;
-using SplitTools;
 using System;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
@@ -13,51 +12,49 @@ using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class ChaoPipe : ObjectDefinition
+	public class EGOLD : ObjectDefinition
 	{
 		private NJS_OBJECT model;
-		private Mesh[] meshes;
-		private NJS_TEXLIST texarr;
-		private Texture[] texs;
+		private Mesh[] mesh;
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("object/OBJECT_CHAOPIPE.sa2mdl");
-			meshes = ObjectHelper.GetMeshes(model);
-			texarr = NJS_TEXLIST.Load("object/tls/CHAOPIPE.satex");
+			model = ObjectHelper.LoadModel("enemy/kumi/E_KUMI_ESCAPER.sa2mdl");
+			mesh = ObjectHelper.GetMeshes(model);
 		}
-		
+
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
-			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
+			transform.NJRotateObject(0, item.Rotation.Y, 0);
+			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, mesh);
 			transform.Pop();
 			return result;
 		}
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
+			
 			List<RenderInfo> result = new List<RenderInfo>();
-			if (texs == null)
-				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+			transform.NJRotateObject(0, item.Rotation.Y, 0);
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("e_goldtex"), mesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+			{
+				result.AddRange(model.DrawModelTreeInvert(transform, mesh));
+			}
 			transform.Pop();
-			return result;
+				return result;
 		}
-		
+
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(0, item.Rotation.Y, 0);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -67,7 +64,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateObject(0, item.Rotation.Y, 0);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
@@ -76,7 +73,7 @@ namespace SA2ObjectDefinitions.Common
 			Matrix matrix = Matrix.Identity;
 
 			MatrixFunctions.Translate(ref matrix, item.Position);
-			MatrixFunctions.RotateObject(ref matrix, item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			MatrixFunctions.RotateObject(ref matrix, 0, item.Rotation.Y, 0);
 
 			return matrix;
 		}
@@ -89,11 +86,15 @@ namespace SA2ObjectDefinitions.Common
 		}
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Spawn Animal Type", typeof(float), "Extended", "Values correspond to animal sets that are specific to each stage.", null, (o) => o.Scale.X,
-				(o, v) => o.Scale.X = (float)v),
+			new PropertySpec("Visible Time", typeof(int), "Extended", "This value is multiplied by 10 in the game's code.", null, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v),
+			new PropertySpec("Oscillation Strength", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
+			new PropertySpec("Oscillation Speed", typeof(int), "Extended", null, 1, (o) => o.Rotation.Z, (o, v) => o.Rotation.Z = (int)v > 0 ? (int)v : 999999),
+			new PropertySpec("Vision Radius", typeof(float), "Extended", null, 10.0f, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v > 0 ? (float)v : 999.0f)
 		};
+
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
-		public override string Name { get { return "Animal Pipe"; } }
+
+		public override string Name { get { return "GUN Gold Beetle"; } }
 
 		public override float DefaultXScale { get { return 0; } }
 
