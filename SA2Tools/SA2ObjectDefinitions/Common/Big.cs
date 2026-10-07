@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
 using SplitTools;
+using System;
 
 namespace SA2ObjectDefinitions.Common
 {
