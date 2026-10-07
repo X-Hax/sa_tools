@@ -77,8 +77,18 @@ namespace SAModel.Direct3D
 
 		public static Texture ToTexture(this Bitmap bitmap, Device device)
 		{
-			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
-			BitmapData bmpData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+			bool convert8888 = false;
+			Bitmap newBitmap = bitmap;
+			// TODO: Convert directly from GenericTexture rather than Bitmap. Perhaps use ImageSharp data instead of Bitmap in GenericTexture?
+			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+			{
+				convert8888 = true;
+				newBitmap = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppArgb);
+				Graphics g = Graphics.FromImage(newBitmap);
+				g.DrawImage(bitmap, new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height));
+				g.Dispose();
+			}
+			BitmapData bmpData = newBitmap.LockBits(new System.Drawing.Rectangle(0, 0, newBitmap.Width, newBitmap.Height), ImageLockMode.ReadOnly, newBitmap.PixelFormat);
 			int depth = Image.GetPixelFormatSize(bmpData.PixelFormat);
 			int pixelCount = bmpData.Width * bmpData.Height;
 			int bytesPerPixel = depth / 8;
@@ -91,12 +101,14 @@ namespace SAModel.Direct3D
 				int bufferOffset = y * lineBytes;
 				Marshal.Copy(ptr + ptrOffset, rgb, bufferOffset, lineBytes);
 			}
-			bitmap.UnlockBits(bmpData);
-			Texture texture = new Texture(device, bitmap.Width, bitmap.Height, 0, Usage.Dynamic | Usage.AutoGenerateMipMap, Format.A8R8G8B8, Pool.Default);
+			newBitmap.UnlockBits(bmpData);
+			Texture texture = new Texture(device, newBitmap.Width, newBitmap.Height, 0, Usage.Dynamic | Usage.AutoGenerateMipMap, Format.A8R8G8B8, Pool.Default);
 			DataRectangle dataRectangle = texture.LockRectangle(0, LockFlags.None);
 			for (int y = 0; y < bmpData.Height; y++)
 				Marshal.Copy(rgb, y * bmpData.Width * bytesPerPixel, dataRectangle.DataPointer + y * dataRectangle.Pitch, bmpData.Width * bytesPerPixel);
 			texture.UnlockRectangle(0);
+			if (convert8888)
+				newBitmap.Dispose();
 			return texture;
 		}
 
@@ -790,9 +802,9 @@ namespace SAModel.Direct3D
 				mdlindex++;
 				if (gjo.Attach is GC.GCAttach gcatt)
 				{
-					if (gcatt.vertexSkinData.Count > 0)
+					if (gcatt.VertexSkinData.Count > 0)
 					{
-						for (int c = 0; c < gcatt.vertexSkinData.Count; c++)
+						for (int c = 0; c < gcatt.VertexSkinData.Count; c++)
 						{
 							GinjaVertexIndices.Add(mdlindex);
 						}
@@ -824,11 +836,11 @@ namespace SAModel.Direct3D
 
 		private static Mesh ProcessWeightedGinjaAttach(GC.GCAttach attach, MatrixStack transform, int mdlindex)
 		{
-			if (attach.vertexSkinData.Count != 0)
+			if (attach.VertexSkinData.Count != 0)
 			{
-				for (int c = 0; c < attach.vertexSkinData.Count; c++)
+				for (int c = 0; c < attach.VertexSkinData.Count; c++)
 				{
-					GC.GCSkinVertexSet chunk = attach.vertexSkinData[c];
+					GC.GCSkinVertexSet chunk = attach.VertexSkinData[c];
 					if (chunk.elementType != GC.GCSkinAttribute.WeightStructEndMarker)
 					{
 						if (GinjaVertexBuffer.Length < chunk.startingIndex + chunk.indexCount)
@@ -943,37 +955,13 @@ namespace SAModel.Direct3D
 			// Setting the material properties according to the parameters
 			foreach (var param in strip.Parameters)
 			{
+				MaterialBuffer.UpdateFromGCMesh(param);
 				switch (param.Type)
 				{
 					case GC.ParameterType.VtxAttrFmt:
 						var attrfmt = param as GC.VtxAttrFmtParameter;
 						if (attrfmt.VertexAttribute == GC.GCVertexAttribute.Tex0)
 							scale = (GC.GCUVScale)(byte)attrfmt.UVScale;
-						break;
-					case GC.ParameterType.BlendAlpha:
-						var blend = param as GC.BlendAlphaParameter;
-						MaterialBuffer.SourceAlpha = blend.NJSourceAlpha;
-						MaterialBuffer.DestinationAlpha = blend.NJDestAlpha;
-						break;
-					case GC.ParameterType.DiffuseColor:
-						var diffuseCol = param as GC.DiffuseColorParameter;
-						MaterialBuffer.DiffuseColor = diffuseCol.DiffuseColor.SystemCol;
-						break;
-					case GC.ParameterType.Texture:
-						var tex = param as GC.TextureParameter;
-						MaterialBuffer.TextureID = tex.TextureId;
-						MaterialBuffer.FlipU = tex.Tile.HasFlag(GC.GCTileMode.MirrorU);
-						MaterialBuffer.FlipV = tex.Tile.HasFlag(GC.GCTileMode.MirrorV);
-						MaterialBuffer.ClampU = tex.Tile.HasFlag(GC.GCTileMode.WrapU);
-						MaterialBuffer.ClampV = tex.Tile.HasFlag(GC.GCTileMode.WrapV);
-
-						// No idea why, but ok
-						MaterialBuffer.ClampU &= tex.Tile.HasFlag(GC.GCTileMode.Unk_1);
-						MaterialBuffer.ClampV &= tex.Tile.HasFlag(GC.GCTileMode.Unk_1);
-						break;
-					case GC.ParameterType.TexCoordGen:
-						var gen = param as GC.TexCoordGenParameter;
-						MaterialBuffer.EnvironmentMap = gen.TexGenSrc == GC.GCTexGenSrc.Normal;
 						break;
 				}
 			}

@@ -37,6 +37,8 @@
 			editTextureIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			editStripAlphaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			groupBoxVertList = new System.Windows.Forms.GroupBox();
+			VertexColorLabel = new System.Windows.Forms.Label();
+			FormatLabel = new System.Windows.Forms.Label();
 			buttonDeleteVertex = new System.Windows.Forms.Button();
 			buttonResetVertices = new System.Windows.Forms.Button();
 			listViewVertices = new System.Windows.Forms.ListView();
@@ -56,21 +58,20 @@
 			// statusStrip1
 			// 
 			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-			statusStrip1.Location = new System.Drawing.Point(0, 529);
+			statusStrip1.Location = new System.Drawing.Point(0, 506);
 			statusStrip1.Name = "statusStrip1";
 			statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 15, 0);
-			statusStrip1.Size = new System.Drawing.Size(1157, 22);
+			statusStrip1.Size = new System.Drawing.Size(935, 22);
 			statusStrip1.SizingGrip = false;
 			statusStrip1.TabIndex = 11;
 			statusStrip1.Text = "statusStrip1";
 			// 
 			// buttonClose
 			// 
-			buttonClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
 			buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-			buttonClose.Location = new System.Drawing.Point(1025, 474);
+			buttonClose.Location = new System.Drawing.Point(811, 469);
 			buttonClose.Name = "buttonClose";
-			buttonClose.Size = new System.Drawing.Size(126, 36);
+			buttonClose.Size = new System.Drawing.Size(102, 26);
 			buttonClose.TabIndex = 17;
 			buttonClose.Text = "Close";
 			buttonClose.UseVisualStyleBackColor = true;
@@ -101,30 +102,51 @@
 			// 
 			// groupBoxVertList
 			// 
+			groupBoxVertList.Controls.Add(VertexColorLabel);
+			groupBoxVertList.Controls.Add(FormatLabel);
 			groupBoxVertList.Controls.Add(buttonDeleteVertex);
 			groupBoxVertList.Controls.Add(buttonResetVertices);
 			groupBoxVertList.Controls.Add(listViewVertices);
-			groupBoxVertList.Location = new System.Drawing.Point(12, 22);
+			groupBoxVertList.Location = new System.Drawing.Point(10, 12);
 			groupBoxVertList.Name = "groupBoxVertList";
-			groupBoxVertList.Size = new System.Drawing.Size(1133, 443);
+			groupBoxVertList.Size = new System.Drawing.Size(915, 451);
 			groupBoxVertList.TabIndex = 29;
 			groupBoxVertList.TabStop = false;
 			groupBoxVertList.Text = "Vertex Data";
 			// 
+			// VertexColorLabel
+			// 
+			VertexColorLabel.AutoSize = true;
+			VertexColorLabel.Location = new System.Drawing.Point(6, 40);
+			VertexColorLabel.Name = "VertexColorLabel";
+			VertexColorLabel.Size = new System.Drawing.Size(353, 15);
+			VertexColorLabel.TabIndex = 15;
+			VertexColorLabel.Text = "If vertex color information exists, read the displayed data as ARGB.";
+			// 
+			// FormatLabel
+			// 
+			FormatLabel.AutoSize = true;
+			FormatLabel.Location = new System.Drawing.Point(6, 19);
+			FormatLabel.Name = "FormatLabel";
+			FormatLabel.Size = new System.Drawing.Size(86, 15);
+			FormatLabel.TabIndex = 14;
+			FormatLabel.Text = "Format: Chunk";
+			FormatLabel.Click += FormatLabel_Click;
+			// 
 			// buttonDeleteVertex
 			// 
-			buttonDeleteVertex.Location = new System.Drawing.Point(972, 392);
+			buttonDeleteVertex.Location = new System.Drawing.Point(791, 416);
 			buttonDeleteVertex.Name = "buttonDeleteVertex";
-			buttonDeleteVertex.Size = new System.Drawing.Size(140, 34);
+			buttonDeleteVertex.Size = new System.Drawing.Size(112, 26);
 			buttonDeleteVertex.TabIndex = 13;
 			buttonDeleteVertex.Text = "Delete Vertex";
 			buttonDeleteVertex.UseVisualStyleBackColor = true;
 			// 
 			// buttonResetVertices
 			// 
-			buttonResetVertices.Location = new System.Drawing.Point(824, 392);
+			buttonResetVertices.Location = new System.Drawing.Point(667, 416);
 			buttonResetVertices.Name = "buttonResetVertices";
-			buttonResetVertices.Size = new System.Drawing.Size(142, 34);
+			buttonResetVertices.Size = new System.Drawing.Size(118, 26);
 			buttonResetVertices.TabIndex = 12;
 			buttonResetVertices.Text = "Reset Vertices";
 			buttonResetVertices.UseVisualStyleBackColor = true;
@@ -136,11 +158,11 @@
 			listViewVertices.FullRowSelect = true;
 			listViewVertices.GridLines = true;
 			listViewVertices.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			listViewVertices.Location = new System.Drawing.Point(6, 28);
+			listViewVertices.Location = new System.Drawing.Point(6, 58);
 			listViewVertices.MultiSelect = false;
 			listViewVertices.Name = "listViewVertices";
 			listViewVertices.ShowGroups = false;
-			listViewVertices.Size = new System.Drawing.Size(1109, 352);
+			listViewVertices.Size = new System.Drawing.Size(899, 352);
 			listViewVertices.TabIndex = 11;
 			listViewVertices.UseCompatibleStateImageBehavior = false;
 			listViewVertices.View = System.Windows.Forms.View.Details;
@@ -185,9 +207,9 @@
 			// 
 			// ChunkModelVertexDataEditor
 			// 
-			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			ClientSize = new System.Drawing.Size(1157, 551);
+			AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			ClientSize = new System.Drawing.Size(935, 528);
 			Controls.Add(groupBoxVertList);
 			Controls.Add(buttonClose);
 			Controls.Add(statusStrip1);
@@ -203,6 +225,7 @@
 			Text = "Vertex Data Editor";
 			contextMenuStripMatEdit.ResumeLayout(false);
 			groupBoxVertList.ResumeLayout(false);
+			groupBoxVertList.PerformLayout();
 			contextMenuStripVertCol.ResumeLayout(false);
 			ResumeLayout(false);
 			PerformLayout();
@@ -227,5 +250,7 @@
 		private System.Windows.Forms.ColumnHeader columnHeaderVertColor;
 		private System.Windows.Forms.ColumnHeader columnHeaderVertSpec;
 		private System.Windows.Forms.ColumnHeader columnHeaderVertUF;
+		private System.Windows.Forms.Label FormatLabel;
+		private System.Windows.Forms.Label VertexColorLabel;
 	}
 }

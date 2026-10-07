@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using TextureLib;
 
 namespace SAModel.SALVL
 {
@@ -192,7 +193,7 @@ namespace SAModel.SALVL
 
 			for (int i = 0; i < numSteps; i++)
 			{
-				BMPInfo bmp = LevelData.TextureBitmaps[LevelData.leveltexs][i];
+				GenericTexture bmp = LevelData.TextureBitmaps[LevelData.leveltexs][i];
 				texlist.Add(bmp.Name);
 				texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
 				if (!File.Exists(Path.Combine(rootPath, bmp.Name + ".png")))

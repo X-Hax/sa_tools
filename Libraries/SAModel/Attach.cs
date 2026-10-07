@@ -32,6 +32,7 @@ namespace SAModel
 				case ModelFormat.BasicDX:
 					return 0x2C;
 				case ModelFormat.Chunk:
+				case ModelFormat.ChaoChunk:
 					return 0x18;
 				case ModelFormat.GC:
 					return 0x24;
@@ -67,7 +68,9 @@ namespace SAModel
 				case ModelFormat.BasicDX:
 					return new BasicAttach(file, address, imageBase, format == ModelFormat.BasicDX, labels);
 				case ModelFormat.Chunk:
-					return new ChunkAttach(file, address, imageBase, labels);
+					return new ChunkAttach(file, address, imageBase, labels, false);
+				case ModelFormat.ChaoChunk:
+					return new ChunkAttach(file, address, imageBase, labels, true);
 				case ModelFormat.GC:
 					return new GCAttach(file, address, imageBase, labels);
 				case ModelFormat.XJ:

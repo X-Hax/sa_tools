@@ -169,13 +169,6 @@ namespace ArchiveLib
                     textsize += 1;
                 return System.Text.Encoding.ASCII.GetString(file, address, textsize);
             }
-
-            public override Bitmap GetBitmap()
-            {
-                MemoryStream str = new MemoryStream(Data);
-                return new Bitmap(str);
-            }
-
         }
 
 		/// <summary>

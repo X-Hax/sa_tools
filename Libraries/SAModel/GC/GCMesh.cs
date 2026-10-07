@@ -324,6 +324,7 @@ namespace SAModel.GC
 			// Setting the material properties according to the parameters
 			foreach (var param in Parameters)
 			{
+				material.UpdateFromGCMesh(param);
 				switch (param.Type)
 				{
 					case ParameterType.VtxAttrFmt:

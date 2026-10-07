@@ -8,19 +8,8 @@ namespace ArchiveLib
 	/// <summary>Archives created by the njUtil tool from KATANA SDK (incomplete implementation).</summary>
 	public class NjArchive : GenericArchive
     {
-        public override void CreateIndexFile(string path)
-        {
-			CreateDefaultIndexFile(path);
-        }
-
         public class NjArchiveEntry : GenericArchiveEntry
         {
-
-            public override Bitmap GetBitmap()
-            {
-                throw new NotImplementedException();
-            }
-
             public NjArchiveEntry(int index, byte[] data)
             {
                 Data = data;

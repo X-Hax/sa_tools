@@ -568,7 +568,7 @@ namespace SplitTools.SAArc
 				var ptr3 = fc.GetPointer(address, key);
 				if (ptr3 != 0)
 				{
-					mtn = new NJS_MOTION(fc, ptr3, key, cnt)
+					mtn = new NJS_MOTION(fc, ptr3, key, cnt, shortcheck: false)
 					{
 						Description = meta
 					};

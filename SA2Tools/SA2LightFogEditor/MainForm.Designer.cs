@@ -734,6 +734,7 @@
 			// 
 			// MainForm
 			// 
+			AllowDrop = true;
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(845, 386);
@@ -745,6 +746,8 @@
 			Name = "MainForm";
 			Text = "SA2 Light/Fog Editor";
 			FormClosing += MainForm_FormClosing;
+			DragDrop += LightEffects_DragDrop;
+			DragEnter += LightEffects_DragEnter;
 			Load += MainForm_Load;
 			menuStrip1.ResumeLayout(false);
 			menuStrip1.PerformLayout();

@@ -35,7 +35,7 @@ namespace SplitTools.SAArc
 					fc = File.ReadAllBytes(filename);
 				}
 
-				var ini = new EventExtraIniData { Name = Path.GetFileNameWithoutExtension(filename) };
+				var ini = new EventExtraIniData { Name = Path.GetFileNameWithoutExtension(filename), Version = 2 };
 				if (outputPath.Length != 0)
 				{
 					if (!Directory.Exists(outputPath))
@@ -404,26 +404,27 @@ namespace SplitTools.SAArc
 						for (var i = 0; i < 64; i++)
 						{
 							address = 0x2BC00 + (0x40 * i);
-							var particle2 = new ParticleEffects2
+							var particle2 = new ParticleGeneratorEffects
 							{
 								Position = new Vertex(fc, address),
-								Unk2 = new Vertex(fc, address + 0xC),
-								Unk3 = ByteConverter.ToInt16(fc, address + 0x18),
-								Unk4 = ByteConverter.ToInt16(fc, address + 0x1A),
-								Unk5 = ByteConverter.ToInt16(fc, address + 0x1C),
-								Unk6 = ByteConverter.ToInt16(fc, address + 0x1E),
+								Velocity = new Vertex(fc, address + 0xC),
+								AddRotationZ = ByteConverter.ToInt16(fc, address + 0x18),
+								AddRotationY = ByteConverter.ToInt16(fc, address + 0x1A),
+								AddRotationX = ByteConverter.ToInt16(fc, address + 0x1C),
+								Unk = ByteConverter.ToInt16(fc, address + 0x1E),
 								FrameStart = ByteConverter.ToInt32(fc, address + 0x20)
 							};
 							if (particle2.FrameStart != 0)
 							{
 								particle2count++;
 							}
-
-							particle2.Spread = new Vertex(fc, address + 0x24);
+							particle2.RotationConstant = ByteConverter.ToInt32(fc, address + 0x24);
+							particle2.Spread = ByteConverter.ToSingle(fc, address + 0x28);
+							particle2.YScale = ByteConverter.ToInt32(fc, address + 0x2C);
 							particle2.Count = ByteConverter.ToInt32(fc, address + 0x30);
-							particle2.Unk9 = ByteConverter.ToInt32(fc, address + 0x34);
+							particle2.ModelID = ByteConverter.ToInt32(fc, address + 0x34);
 							particle2.Type = ByteConverter.ToInt32(fc, address + 0x38);
-							particle2.Unk11 = ByteConverter.ToInt32(fc, address + 0x3C);
+							particle2.FrameDelay = ByteConverter.ToInt32(fc, address + 0x3C);
 							ini.ParticleGenerators.Add(particle2);
 						}
 						if (particle2count != 0)
@@ -585,26 +586,27 @@ namespace SplitTools.SAArc
 						for (var i = 0; i < 64; i++)
 						{
 							address = 0x38800 + (0x40 * i);
-							var particle2 = new ParticleEffects2
+							var particle2 = new ParticleGeneratorEffects
 							{
 								Position = new Vertex(fc, address),
-								Unk2 = new Vertex(fc, address + 0xC),
-								Unk3 = ByteConverter.ToInt16(fc, address + 0x18),
-								Unk4 = ByteConverter.ToInt16(fc, address + 0x1A),
-								Unk5 = ByteConverter.ToInt16(fc, address + 0x1C),
-								Unk6 = ByteConverter.ToInt16(fc, address + 0x1E),
+								Velocity = new Vertex(fc, address + 0xC),
+								AddRotationZ = ByteConverter.ToInt16(fc, address + 0x18),
+								AddRotationY = ByteConverter.ToInt16(fc, address + 0x1A),
+								AddRotationX = ByteConverter.ToInt16(fc, address + 0x1C),
+								Unk = ByteConverter.ToInt16(fc, address + 0x1E),
 								FrameStart = ByteConverter.ToInt32(fc, address + 0x20)
 							};
 							if (particle2.FrameStart != 0)
 							{
 								particle2count++;
 							}
-
-							particle2.Spread = new Vertex(fc, address + 0x24);
+							particle2.RotationConstant = ByteConverter.ToInt32(fc, address + 0x24);
+							particle2.Spread = ByteConverter.ToSingle(fc, address + 0x28);
+							particle2.YScale = ByteConverter.ToInt32(fc, address + 0x2C);
 							particle2.Count = ByteConverter.ToInt32(fc, address + 0x30);
-							particle2.Unk9 = ByteConverter.ToInt32(fc, address + 0x34);
+							particle2.ModelID = ByteConverter.ToInt32(fc, address + 0x34);
 							particle2.Type = ByteConverter.ToInt32(fc, address + 0x38);
-							particle2.Unk11 = ByteConverter.ToInt32(fc, address + 0x3C);
+							particle2.FrameDelay = ByteConverter.ToInt32(fc, address + 0x3C);
 							ini.ParticleGenerators.Add(particle2);
 						}
 						if (particle2count != 0)
@@ -772,30 +774,25 @@ namespace SplitTools.SAArc
 					Console.WriteLine("Mini-Event does not use additional effects.");
 				}
 
-				var misccount = 0;
-				for (var i = 0; i < 1; i++)
-				{
-					addr = 0x1400;
-					var misc = new MiscMiniEffect();
-					var unkdata1 = fc.GetPointer(addr, 0);
-					misc.Unk1 = new Vertex(fc, addr);
-					misc.Unk2 = ByteConverter.ToSingle(fc, addr + 0xC);
-					var unkdata2 = fc.GetPointer(addr + 0x10, 0);
-					misc.Unk3 = new Vertex(fc, addr + 0x10);
-					if (unkdata1 != 0 || unkdata2 != 0)
-					{
-						misccount++;
-					}
+				addr = 0x1400;
+				var posrot = new MiniEventPlacementOffsets();
+				posrot.Position = new Vertex(fc, addr);
+				posrot.Rotation = new Rotation(fc, addr + 0xC);
+				posrot.CameraYRotation = ByteConverter.ToInt32(fc, addr + 0x18).ToString("X");
 
-					ini.Unknown.Add(misc);
-				}
-				if (misccount != 0)
+				ini.PlacementData = posrot;
+				if (posrot.Position.IsEmpty && posrot.Rotation.IsEmpty && posrot.CameraYRotation != "0")
 				{
-					Console.WriteLine("Mini-Event contains an unknown effect entry.");
+					Console.WriteLine("Mini-Event does not use position/rotation offsets.");
 				}
 				else
 				{
-					Console.WriteLine("Mini-Event does not use unknown effects.");
+					if (!posrot.Position.IsEmpty)
+						Console.WriteLine("Mini-Event uses position offsets.");
+					if (!posrot.Rotation.IsEmpty)
+						Console.WriteLine("Mini-Event uses rotation offsets.");
+					if (posrot.CameraYRotation != "0")
+						Console.WriteLine("Mini-Event uses camera Y rotation offset.");
 				}
 
 				var js = new JsonSerializer
@@ -830,6 +827,10 @@ namespace SplitTools.SAArc
 				var battle = ini.BattleFormat;
 				var dcbeta = ini.DCBeta;
 				var language = ini.LanguageOnly;
+				if (ini.Version < 2)
+				{
+					Console.WriteLine("Your json file's contents are out of date!\nThe exported file is not valid. Re-split the original and try again.");
+				}
 				if (!isBigEndian.HasValue)
 				{
 					ByteConverter.BigEndian = ini.BigEndian;
@@ -1010,10 +1011,8 @@ namespace SplitTools.SAArc
 				{
 					extradata.AddRange(effect.GetBytes());
 				}
-				foreach (var misc in ini.Unknown)
-				{
-					extradata.AddRange(misc.GetBytes());
-				}
+				//Placement data always exists
+				extradata.AddRange(ini.PlacementData.GetBytes());
 				if (fileOutputPath.Length != 0)
 				{
 					if (!Directory.Exists(fileOutputPath))
@@ -1053,6 +1052,7 @@ namespace SplitTools.SAArc
 		public bool BattleFormat { get; set; }
 		public bool LanguageOnly { get; set; }
 		public bool DCBeta { get; set; }
+		public int Version { get; set; }
 		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
 		public List<AudioInfo> AudioInfo { get; set; } = new List<AudioInfo>();
 		public List<ScreenEffects> ScreenEffects { get; set; } = new List<ScreenEffects>();
@@ -1062,7 +1062,7 @@ namespace SplitTools.SAArc
 		public List<LightingInfo> Lighting3 { get; set; } = new List<LightingInfo>();
 		public List<LightingInfo> Lighting4 { get; set; } = new List<LightingInfo>();
 		public List<BlurInfo> BlurInfo { get; set; } = new List<BlurInfo>();
-		public List<ParticleEffects2> ParticleGenerators { get; set; } = new List<ParticleEffects2>();
+		public List<ParticleGeneratorEffects> ParticleGenerators { get; set; } = new List<ParticleGeneratorEffects>();
 		public List<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
 	}
 
@@ -1250,20 +1250,22 @@ namespace SplitTools.SAArc
 	}
 
 	[Serializable]
-	public class ParticleEffects2
+	public class ParticleGeneratorEffects
 	{
 		public Vertex Position { get; set; }
-		public Vertex Unk2 { get; set; }
-		public short Unk3 { get; set; }
-		public short Unk4 { get; set; }
-		public short Unk5 { get; set; }
-		public short Unk6 { get; set; }
+		public Vertex Velocity { get; set; }
+		public short AddRotationZ { get; set; }
+		public short AddRotationY { get; set; }
+		public short AddRotationX { get; set; }
+		public short Unk { get; set; }
 		public int FrameStart { get; set; }
-		public Vertex Spread { get; set; }
+		public int RotationConstant { get; set; }
+		public float Spread { get; set; }
+		public int YScale { get; set; }
 		public int Count { get; set; }
-		public int Unk9 { get; set; }
+		public int ModelID { get; set; }
 		public int Type { get; set; }
-		public int Unk11 { get; set; }
+		public int FrameDelay { get; set; }
 
 		public static int Size => 0x40;
 
@@ -1271,17 +1273,19 @@ namespace SplitTools.SAArc
 		{
 			var result = new List<byte>(Size);
 			result.AddRange(Position.GetBytes());
-			result.AddRange(Unk2.GetBytes());
-			result.AddRange(ByteConverter.GetBytes(Unk3));
-			result.AddRange(ByteConverter.GetBytes(Unk4));
-			result.AddRange(ByteConverter.GetBytes(Unk5));
-			result.AddRange(ByteConverter.GetBytes(Unk6));
+			result.AddRange(Velocity.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(AddRotationZ));
+			result.AddRange(ByteConverter.GetBytes(AddRotationY));
+			result.AddRange(ByteConverter.GetBytes(AddRotationX));
+			result.AddRange(ByteConverter.GetBytes(Unk));
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
-			result.AddRange(Spread.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(RotationConstant));
+			result.AddRange(ByteConverter.GetBytes(Spread));
+			result.AddRange(ByteConverter.GetBytes(YScale));
 			result.AddRange(ByteConverter.GetBytes(Count));
-			result.AddRange(ByteConverter.GetBytes(Unk9));
+			result.AddRange(ByteConverter.GetBytes(ModelID));
 			result.AddRange(ByteConverter.GetBytes(Type));
-			result.AddRange(ByteConverter.GetBytes(Unk11));
+			result.AddRange(ByteConverter.GetBytes(FrameDelay));
 			result.Align(0x40);
 			return result.ToArray();
 		}
@@ -1336,7 +1340,7 @@ namespace SplitTools.SAArc
 		public bool BigEndian { get; set; }
 		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
 		public List<EffectInfo> Effects { get; set; } = new List<EffectInfo>();
-		public List<MiscMiniEffect> Unknown { get; set; } = new List<MiscMiniEffect>();
+		public MiniEventPlacementOffsets PlacementData { get; set; }
 	}
 
 	[Serializable]
@@ -1373,20 +1377,23 @@ namespace SplitTools.SAArc
 		}
 	}
 	[Serializable]
-	public class MiscMiniEffect
+	public class MiniEventPlacementOffsets
 	{
-		public Vertex Unk1 { get; set; }
-		public float Unk2 { get; set; }
-		public Vertex Unk3 { get; set; }
+		[IniAlwaysInclude]
+		public Vertex Position { get; set; }
+		[IniAlwaysInclude]
+		public Rotation Rotation { get; set; }
+		[IniAlwaysInclude]
+		public string CameraYRotation { get; set; }
 
 		public static int Size => 0x1C;
 
 		public byte[] GetBytes()
 		{
 			var result = new List<byte>(Size);
-			result.AddRange(Unk1.GetBytes());
-			result.AddRange(ByteConverter.GetBytes(Unk2));
-			result.AddRange(Unk3.GetBytes());
+			result.AddRange(Position.GetBytes());
+			result.AddRange(Rotation.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(int.Parse(CameraYRotation, System.Globalization.NumberStyles.HexNumber)));
 			result.Align(0x1C);
 			return result.ToArray();
 		}

@@ -8,9 +8,12 @@ namespace SA2CutsceneEffectEditor
 {
 	public partial class MainForm : Form
 	{
-		public MainForm()
+		public static bool unsaved;
+		public MainForm(string[] args)
 		{
 			InitializeComponent();
+			if (args.Length > 0)
+				filename = Path.GetFullPath(args[0]);
 		}
 		enum CutsceneEffectFileTypes
 		{
@@ -24,10 +27,10 @@ namespace SA2CutsceneEffectEditor
 		public Size currentFormSize { get { return formSizes[effectDataSetComboBox.SelectedIndex]; } }
 		public Size currentMEFormSize { get { return formMESizes[miniEventDataSetComboBox.SelectedIndex]; } }
 		List<string> recentFiles = new List<string>();
-		string filename = "";
-		string currentFormatDialog = "";
+		string filename = string.Empty;
+		string currentFormatDialog = string.Empty;
 		bool bigEndian;
-		string bigEndianDialog = "";
+		string bigEndianDialog = string.Empty;
 		// Effect Data sets
 		List<SubtitleData> subs = new List<SubtitleData>();
 		List<AudioMiscData> audios = new List<AudioMiscData>();
@@ -37,8 +40,19 @@ namespace SA2CutsceneEffectEditor
 		List<BlurData> blurs = new List<BlurData>();
 		List<ParticleGeneratorData> particleGens = new List<ParticleGeneratorData>();
 		List<VideoData> videos = new List<VideoData>();
+		private readonly List<SubtitleData> subsO = new List<SubtitleData>();
+		private readonly List<AudioMiscData> audiosO = new List<AudioMiscData>();
+		private readonly List<ScreenData> screensO = new List<ScreenData>();
+		private readonly List<SingleParticleData> singleParticlesO = new List<SingleParticleData>();
+		private readonly List<LightData> lightsO = new List<LightData>();
+		private readonly List<BlurData> blursO = new List<BlurData>();
+		private readonly List<ParticleGeneratorData> particleGensO = new List<ParticleGeneratorData>();
+		private readonly List<VideoData> videosO = new List<VideoData>();
 		// Mini-Event Effect Data
 		List<MiniEventEffectData> minieffs = new List<MiniEventEffectData>();
+		private readonly List<MiniEventEffectData> minieffsO = new List<MiniEventEffectData>();
+		MiniEventEffectFloats MiniFloats = new MiniEventEffectFloats();
+
 		SubtitleData CurrentSubData { get { return subs[(int)subInstanceNumericUpDown.Value]; } }
 		AudioMiscData CurrentAudioData { get { return audios[(int)audioInstanceNumericUpDown.Value]; } }
 		ScreenData CurrentScreenData { get { return screens[(int)screenInstanceNumericUpDown.Value]; } }
@@ -48,8 +62,7 @@ namespace SA2CutsceneEffectEditor
 		ParticleGeneratorData CurrentParticleGenData { get { return particleGens[(int)particleGenInstanceNumericUpDown.Value]; } }
 		VideoData CurrentVideoData { get { return videos[(int)videoInstanceNumericUpDown.Value]; } }
 		MiniEventEffectData CurrentMiniEventEffectData { get { return minieffs[(int)miniEventEffectInstanceNumericUpDown.Value]; } }
-		MiniEventEffectFloats MiniFloats { get; set; }
-		Settings_SA2CutsceneEffectEditor settingsFile;
+		Settings_SA2CutsceneEffectEditor settingsFile = SAModel.SAEditorCommon.SettingsFile.Settings_SA2CutsceneEffectEditor.Load();
 		CutsceneEffectFileTypes currentFormat;
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -112,6 +125,23 @@ namespace SA2CutsceneEffectEditor
 		}
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			if (unsaved)
+			{
+				DialogResult res = MessageBox.Show(this, "There are unsaved changes. Would you like to save them?", "Save changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				switch (res)
+				{
+					case DialogResult.Yes:
+						if (!string.IsNullOrEmpty(filename))
+							SaveFile();
+						else
+							saveAsToolStripMenuItem_Click(sender, e);
+						break;
+					case DialogResult.Cancel:
+						return;
+					case DialogResult.No:
+						break;
+				}
+			}
 			using (OpenFileDialog dlg = new OpenFileDialog()
 			{
 				DefaultExt = "prs",
@@ -121,7 +151,10 @@ namespace SA2CutsceneEffectEditor
 				"All Files|*.*"
 			})
 				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
 					LoadFile(dlg.FileName);
+					unsaved = false;
+				}
 		}
 		private void LoadFile(string filename)
 		{
@@ -486,9 +519,66 @@ namespace SA2CutsceneEffectEditor
 					while (k < 1024);
 				}
 			}
+			subsO.AddRange(subs);
+			audiosO.AddRange(audios);
+			screensO.AddRange(screens);
+			lightsO.AddRange(lights);
+			minieffsO.AddRange(minieffs);
 			UpdateEffectDataOnLoad();
 			Text = "SA2 Cutscene Effect Editor - " + Path.GetFileName(filename);
 		}
+		#region Drag and Drop
+		// Drag and drop - adding files
+		private void CutsceneEffects_DragEnter(object sender, DragEventArgs e)
+		{
+			string[] newfile = (string[])e.Data.GetData(DataFormats.FileDrop);
+			if (newfile.Length == 1)
+			{
+				foreach (string file in newfile)
+				{
+					switch (Path.GetExtension(file).ToLowerInvariant())
+					{
+						// Add textures from archives
+						case ".prs":
+						case ".bin":
+						case ".scr":
+							e.Effect = DragDropEffects.Copy;
+							return;
+					}
+				}
+			}
+			e.Effect = DragDropEffects.None;
+		}
+
+		private void CutsceneEffects_DragDrop(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+			{
+				if (unsaved)
+				{
+					DialogResult res = MessageBox.Show(this, "There are unsaved changes. Would you like to save them?", "Save changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+					switch (res)
+					{
+						case DialogResult.Yes:
+							SaveFile();
+							break;
+						case DialogResult.Cancel:
+							return;
+						case DialogResult.No:
+							break;
+					}
+				}
+
+				ClearEffectData();
+				filename = null;
+
+				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+				LoadFile(files[0]);
+				unsaved = false;
+			}
+		}
+		#endregion
 		#region Update Effect Data
 		private void UpdateEffectDataOnLoad()
 		{
@@ -667,15 +757,30 @@ namespace SA2CutsceneEffectEditor
 		}
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			switch (MessageBox.Show(this, "Do you want to save before exiting?", "SA2 Cutscene Effect Editor", MessageBoxButtons.YesNoCancel, MessageBoxIcon.None, MessageBoxDefaultButton.Button3))
+			if (unsaved)
 			{
-				case DialogResult.Yes:
-					break;
-				case DialogResult.Cancel:
-					e.Cancel = true;
-					return;
+				DialogResult res = MessageBox.Show(this, "There are unsaved changes. Would you like to save them?", "Save changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				switch (res)
+				{
+					case DialogResult.Yes:
+						if (!string.IsNullOrEmpty(filename))
+							SaveFile();
+						else
+							saveAsToolStripMenuItem_Click(sender, e);
+						break;
+					case DialogResult.Cancel:
+						e.Cancel = true;
+						break;
+					case DialogResult.No:
+						break;
+				}
 			}
-			settingsFile.Save();
+			try
+			{
+				settingsFile.Save();
+			}
+			catch { }
+			;
 		}
 		private void AddRecentFile(string filename)
 		{
@@ -780,6 +885,7 @@ namespace SA2CutsceneEffectEditor
 				File.WriteAllBytes(filename, PRS.Compress(fc.ToArray(), 255));
 			else
 				File.WriteAllBytes(filename, fc.ToArray());
+			unsaved = false;
 		}
 		private void subInstanceNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
@@ -896,6 +1002,7 @@ namespace SA2CutsceneEffectEditor
 					Text = "SA2 Cutscene Effect Editor - " + Path.GetFileName(filename);
 				}
 			}
+			unsaved = false;
 		}
 
 		private void normalToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1187,323 +1294,406 @@ namespace SA2CutsceneEffectEditor
 		private void subFrameNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentSubData.SubtitleStart = (int)subFrameNumericUpDown.Value;
+			if (CurrentSubData.SubtitleStart != subs[(int)subInstanceNumericUpDown.Value].SubtitleStart)
+				unsaved = true;
 		}
 
 		private void subTimeXNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentSubData.SubtitleVisibleX = (int)subTimeXNumericUpDown.Value;
+			if (CurrentSubData.SubtitleVisibleX != subs[(int)subInstanceNumericUpDown.Value].SubtitleVisibleX)
+				unsaved = true;
 		}
 		#endregion
 		#region Audio/Misc Data
 		private void audioFrameNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentAudioData.AudioStart = (int)audioFrameNumericUpDown.Value;
+			if (CurrentAudioData.AudioStart != audios[(int)audioInstanceNumericUpDown.Value].AudioStart)
+				unsaved = true;
 		}
 		private void creditsScrollNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentAudioData.CreditsScroll = (sbyte)creditsScrollNumericUpDown.Value;
+			if (CurrentAudioData.CreditsScroll != audios[(int)audioInstanceNumericUpDown.Value].CreditsScroll)
+				unsaved = true;
 		}
 		private void initSFXCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
 			CurrentAudioData.SFXInit = initSFXCheckBox.Checked ? (sbyte)0 : (sbyte)-1;
+			if (CurrentAudioData.SFXInit != audios[(int)audioInstanceNumericUpDown.Value].SFXInit)
+				unsaved = true;
 		}
 		private void voiceIDnumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentAudioData.VoiceID = (short)voiceIDnumericUpDown.Value;
+			if (CurrentAudioData.VoiceID != audios[(int)audioInstanceNumericUpDown.Value].VoiceID)
+				unsaved = true;
 		}
 		private void musicFileTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentAudioData.MusicSetting = musicFileTextBox.Text;
+			if (CurrentAudioData.MusicSetting != audios[(int)audioInstanceNumericUpDown.Value].MusicSetting)
+				unsaved = true;
 		}
 		private void jingleFileTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentAudioData.JingleSetting = jingleFileTextBox.Text;
+			if (CurrentAudioData.JingleSetting != audios[(int)audioInstanceNumericUpDown.Value].JingleSetting)
+				unsaved = true;
 		}
 		private void vSyncNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentAudioData.VsyncMode = (int)vSyncNumericUpDown.Value;
+			if (CurrentAudioData.VsyncMode != audios[(int)audioInstanceNumericUpDown.Value].VsyncMode)
+				unsaved = true;
 		}
 		#endregion
 		#region Screen Effects
 		private void screenStartNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentScreenData.ScreenStart = (int)screenStartNumericUpDown.Value;
+			if (CurrentScreenData.ScreenStart != screens[(int)screenInstanceNumericUpDown.Value].ScreenStart)
+			unsaved = true;
 		}
 
 		private void screenTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			CurrentScreenData.ScreenType = (byte)screenTypeComboBox.SelectedIndex;
+			if (CurrentScreenData.ScreenType != screens[(int)screenInstanceNumericUpDown.Value].ScreenType)
+				unsaved = true;
 		}
 
 		private void screenTexIDNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentScreenData.TexID = (short)screenTexIDNumericUpDown.Value;
+			if (CurrentScreenData.TexID != screens[(int)screenInstanceNumericUpDown.Value].TexID)
+				unsaved = true;
 		}
 
 		private void screenTexFadeCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
 			CurrentScreenData.Fade = screenTexFadeCheckBox.Checked ? (short)0 : (short)1;
+			if (CurrentScreenData.Fade != screens[(int)screenInstanceNumericUpDown.Value].Fade)
+				unsaved = true;
 		}
 
 		private void screenTexTimeNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentScreenData.VisibleTime = (int)screenTexTimeNumericUpDown.Value;
+			if (CurrentScreenData.VisibleTime != screens[(int)screenInstanceNumericUpDown.Value].VisibleTime)
+				unsaved = true;
 		}
 
 		private void screenTexPosXNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentScreenData.TexPosX = (short)screenTexPosXNumericUpDown.Value;
+			if (CurrentScreenData.TexPosX != screens[(int)screenInstanceNumericUpDown.Value].TexPosX)
+				unsaved = true;
 		}
 
 		private void screenTexPosYNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentScreenData.TexPosY = (short)screenTexPosYNumericUpDown.Value;
+			if (CurrentScreenData.TexPosY != screens[(int)screenInstanceNumericUpDown.Value].TexPosY)
+				unsaved = true;
 		}
 
 		private void screenTexWidthTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentScreenData.TexWidth = float.Parse(screenTexWidthTextBox.Text);
+			if (CurrentScreenData.TexWidth != screens[(int)screenInstanceNumericUpDown.Value].TexWidth)
+				unsaved = true;
 		}
 
 		private void screenTexHeightTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentScreenData.TexHeight = float.Parse(screenTexHeightTextBox.Text);
+			if (CurrentScreenData.TexHeight != screens[(int)screenInstanceNumericUpDown.Value].TexHeight)
+				unsaved = true;
 		}
 		#endregion
 		#region Single Particle Data
 		private void particleFrameNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentSingleParticleData.ParticleStart = (int)particleFrameNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void particleTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			CurrentSingleParticleData.ParticleType = (byte)particleTypeComboBox.SelectedIndex;
+			unsaved = true;
 		}
 
 		private void particleMotionIDNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentSingleParticleData.ParticleMotionID = (byte)particleMotionIDNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void particleTexIDTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentSingleParticleData.ParticleTexID = float.Parse(particleTexIDTextBox.Text);
+			unsaved = true;
 		}
 
 		private void particlePulseXTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentSingleParticleData.PulseTypeX = float.Parse(particlePulseXTextBox.Text);
+			unsaved = true;
 		}
 
 		private void particlePulseConstYTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentSingleParticleData.PulseConstY = float.Parse(particlePulseConstYTextBox.Text);
+			unsaved = true;
 		}
 
 		private void particleSizeTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentSingleParticleData.ParticleSize = float.Parse(particleSizeTextBox.Text);
+			unsaved = true;
 		}
 		#endregion
 		#region Lighting
 		private void lightFrameNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentLightData.LightStart = (int)lightFrameNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void lightFadeNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentLightData.FadeType = (int)lightFadeNumericUpDown.Value;
+			unsaved = true;
 		}
 		private void lightDirXTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentLightData.LightDirection.X = float.Parse(lightDirXTextBox.Text);
+			unsaved = true;
 		}
 		private void lightDirYTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentLightData.LightDirection.Y = float.Parse(lightDirYTextBox.Text);
+			unsaved = true;
 		}
 
 		private void lightDirZTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentLightData.LightDirection.Z = float.Parse(lightDirZTextBox.Text);
+			unsaved = true;
 		}
 		private void singleAmbIntensityTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentLightData.SingleAmbientIntensity = float.Parse(singleAmbIntensityTextBox.Text);
+			unsaved = true;
 		}
 		#endregion
 		#region Blur Models
 		private void blurFrameNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentBlurData.BlurStart = (int)blurFrameNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void blurDurationNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentBlurData.Duration = (int)blurDurationNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void blurModel1NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentBlurData.BlurModel1 = (sbyte)blurModel1NumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void blurModel2NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentBlurData.BlurModel2 = (sbyte)blurModel2NumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void blurModel3NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentBlurData.BlurModel3 = (sbyte)blurModel3NumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void blurModel4NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentBlurData.BlurModel4 = (sbyte)blurModel4NumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void blurModel5NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentBlurData.BlurModel5 = (sbyte)blurModel5NumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void blurModel6NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentBlurData.BlurModel6 = (sbyte)blurModel6NumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void blurCountNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentBlurData.Instances = (int)blurCountNumericUpDown.Value;
+			unsaved = true;
 		}
 		#endregion
 		#region Particle Generator Data
 		private void particleGenStartNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.ParticleGenStart = (int)particleGenStartNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void particleGenTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.ParticleType = (int)particleGenTypeComboBox.SelectedIndex;
+			unsaved = true;
 		}
 
 		private void particleGenCountNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.Count = (int)particleGenCountNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void particleGenXPosTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.Position.X = float.Parse(particleGenXPosTextBox.Text);
+			unsaved = true;
 		}
 
 		private void particleGenYPosTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.Position.Y = float.Parse(particleGenYPosTextBox.Text);
+			unsaved = true;
 		}
 
 		private void particleGenZPosTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.Position.Z = float.Parse(particleGenZPosTextBox.Text);
+			unsaved = true;
 		}
 		private void particleGenUnk1ATextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.Velocity.X = float.Parse(particleGenVelocityXTextBox.Text);
+			unsaved = true;
 		}
 
 		private void particleGenUnk1BTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.Velocity.Y = float.Parse(particleGenVelocityYTextBox.Text);
+			unsaved = true;
 		}
 
 		private void particleGenUnk1CTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.Velocity.Z = float.Parse(particleGenVelocityZTextBox.Text);
+			unsaved = true;
 		}
 
 		private void particleGenUnk1NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.AddRotationZ = (short)particleGenRotZNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void particleGenUnk2NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.AddRotationY = (short)particleGenYRotNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void particleGenUnk6NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.YScale = (int)particleGenYScaleNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void particleGenUnk3NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.AddRotationX = (short)particleGenXRotNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void particleGenUnk4NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.Unk = (short)particleGenUnkNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void particleGenUnk9TextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.Spread = float.Parse(particleGenSpreadTextBox.Text);
+			unsaved = true;
 		}
 
 		private void particleGenUnk7NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.ModelID = (int)particleGenModelIDNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void particleGenUnk5NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.RotationConst = (int)particleGenRotationConstNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void particleGenFrameDelayNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentParticleGenData.FrameDelay = (int)particleGenFrameDelayNumericUpDown.Value;
+			unsaved = true;
 		}
 		#endregion
 		#region Video Data
 		private void videoFrameNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentVideoData.VideoStart = (int)videoFrameNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void videoXPosNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentVideoData.VideoPosX = (short)videoXPosNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void videoYPosNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentVideoData.VideoPosY = (short)videoYPosNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void videoDepthTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentVideoData.VideoDepth = float.Parse(videoDepthTextBox.Text);
+			unsaved = true;
 		}
 
 		private void videoTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			CurrentVideoData.VideoOverlayType = (byte)videoTypeComboBox.SelectedIndex;
+			unsaved = true;
 		}
 
 		private void videoTexIDNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentVideoData.VideoOverlayTexID = (sbyte)videoTexIDNumericUpDown.Value;
+			unsaved = true;
 		}
 
 		private void videoFilenameTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentVideoData.VideoName = videoFilenameTextBox.Text;
+			unsaved = true;
 		}
 		#endregion
 		#region Mini-Event Data
@@ -1511,73 +1701,96 @@ namespace SA2CutsceneEffectEditor
 		private void miniEventEffectStartNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentMiniEventEffectData.EffectStart = (int)miniEventEffectStartNumericUpDown.Value;
+			if (CurrentMiniEventEffectData.EffectStart != minieffs[(int)miniEventEffectInstanceNumericUpDown.Value].EffectStart)
+			unsaved = true;
 		}
 		private void miniEventFadeComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			CurrentMiniEventEffectData.ScreenFadeType = (byte)miniEventFadeComboBox.SelectedIndex;
+			if (CurrentMiniEventEffectData.ScreenFadeType != minieffs[(int)miniEventEffectInstanceNumericUpDown.Value].ScreenFadeType)
+				unsaved = true;
 		}
 
 		private void miniEventSFXID1NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentMiniEventEffectData.SFXEntry1 = (sbyte)miniEventSFXID1NumericUpDown.Value;
+			if (CurrentMiniEventEffectData.SFXEntry1 != minieffs[(int)miniEventEffectInstanceNumericUpDown.Value].SFXEntry1)
+				unsaved = true;
 		}
 
 		private void miniEventSFXID2NumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentMiniEventEffectData.SFXEntry2 = (sbyte)miniEventSFXID2NumericUpDown.Value;
+			if (CurrentMiniEventEffectData.SFXEntry2 != minieffs[(int)miniEventEffectInstanceNumericUpDown.Value].SFXEntry2)
+				unsaved = true;
 		}
 		private void miniEventVoiceIDNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentMiniEventEffectData.VoiceEntry = (short)miniEventVoiceIDNumericUpDown.Value;
+			if (CurrentMiniEventEffectData.VoiceEntry != minieffs[(int)miniEventEffectInstanceNumericUpDown.Value].VoiceEntry)
+				unsaved = true;
 		}
 
 		private void miniEventMusicNameTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentMiniEventEffectData.MusicEntry = miniEventMusicNameTextBox.Text;
+			if (CurrentMiniEventEffectData.MusicEntry != minieffs[(int)miniEventEffectInstanceNumericUpDown.Value].MusicEntry)
+				unsaved = true;
 		}
 
 		private void miniEventJingleNameTextBox_TextChanged(object sender, EventArgs e)
 		{
 			CurrentMiniEventEffectData.JingleEntry = miniEventJingleNameTextBox.Text;
+			if (CurrentMiniEventEffectData.JingleEntry != minieffs[(int)miniEventEffectInstanceNumericUpDown.Value].JingleEntry)
+				unsaved = true;
 		}
 
 		private void miniEventRumbleNumericUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			CurrentMiniEventEffectData.RumblePower = (int)miniEventRumbleNumericUpDown.Value;
+			if (CurrentMiniEventEffectData.RumblePower != minieffs[(int)miniEventEffectInstanceNumericUpDown.Value].RumblePower)
+				unsaved = true;
 		}
 		private void miniFloatUnk1ATextBox_TextChanged(object sender, EventArgs e)
 		{
 			MiniFloats.CameraPos.X = float.Parse(miniFloatCamPosXTextBox.Text);
+			unsaved = true;
 		}
 
 		private void miniFloatUnk1BTextBox_TextChanged(object sender, EventArgs e)
 		{
 			MiniFloats.CameraPos.Y = float.Parse(miniFloatCamPosYTextBox.Text);
+			unsaved = true;
 		}
 
 		private void miniFloatUnk1CTextBox_TextChanged(object sender, EventArgs e)
 		{
 			MiniFloats.CameraPos.Z = float.Parse(miniFloatCamPosZTextBox.Text);
+			unsaved = true;
 		}
 
 		private void miniFloatUnk2TextBox_TextChanged(object sender, EventArgs e)
 		{
 			MiniFloats.PlayerRot.X = int.Parse(miniEventPlayerXRotTextBox.Text, System.Globalization.NumberStyles.HexNumber);
+			unsaved = true;
 		}
 
 		private void miniEventUnk3ATextBox_TextChanged(object sender, EventArgs e)
 		{
 			MiniFloats.PlayerRot.Y = int.Parse(miniEventPlayerYRotTextBox.Text, System.Globalization.NumberStyles.HexNumber);
+			unsaved = true;
 		}
 
 		private void miniEventUnk3BTextBox_TextChanged(object sender, EventArgs e)
 		{
 			MiniFloats.PlayerRot.Z = int.Parse(miniEventPlayerZRotTextBox.Text, System.Globalization.NumberStyles.HexNumber);
+			unsaved = true;
 		}
 
 		private void miniEventUnk3CTextBox_TextChanged(object sender, EventArgs e)
 		{
 			MiniFloats.CameraYRot = int.Parse(miniEventCameraYRotTextBox.Text, System.Globalization.NumberStyles.HexNumber);
+			unsaved = true;
 		}
 		#endregion
 		#endregion
@@ -1625,6 +1838,8 @@ namespace SA2CutsceneEffectEditor
 		public AudioMiscData() 
 		{
 			SFXInit = -1;
+			MusicSetting = string.Empty;
+			JingleSetting = string.Empty;
 			CreditsScroll = -1;
 			VoiceID = -1;
 		}
@@ -1925,7 +2140,10 @@ namespace SA2CutsceneEffectEditor
 		public sbyte VideoOverlayTexID { get; set; }
 		public string VideoName { get; set; }
 		public static int Size { get { return 0x40; } }
-		public VideoData() { }
+		public VideoData() 
+		{
+			VideoName = string.Empty;
+		}
 		public VideoData(byte[] file, int address)
 		{
 			VideoStart = ByteConverter.ToInt32(file, address);
@@ -1980,6 +2198,8 @@ namespace SA2CutsceneEffectEditor
 			SFXEntry1 = -1;
 			SFXEntry2 = -1;
 			VoiceEntry = -1;
+			MusicEntry = string.Empty;
+			JingleEntry = string.Empty;
 		}
 		public MiniEventEffectData(byte[] file, int address)
 		{

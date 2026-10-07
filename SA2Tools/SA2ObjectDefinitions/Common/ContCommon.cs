@@ -1,14 +1,15 @@
-﻿using SharpDX;
-using SharpDX.Direct3D9;
-using SAModel;
+﻿using SAModel;
 using SAModel.Direct3D;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SplitTools;
+using System;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
-using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
@@ -86,7 +87,7 @@ namespace SA2ObjectDefinitions.Common
 
 		public override float DefaultZScale { get { return 0; } }
 	}
-	
+
 	public class ContWood : ContCommon
 	{
 		public override void Init(ObjectData data, string name)
@@ -95,10 +96,18 @@ namespace SA2ObjectDefinitions.Common
 			meshes = ObjectHelper.GetMeshes(model);
 			texarr = NJS_TEXLIST.Load("object/tls/CONTWOOD.satex");
 		}
-		
+
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Wall Bump", typeof(bool), "Extended", "Determines if the box is treated as a wall that knocks the player back.", null, (o) => Convert.ToBoolean(o.Rotation.X % 2), (o, v) => o.Rotation.X = Convert.ToInt32((bool)v)),
+			new PropertySpec("Spawn Animal", typeof(byte), "Extended", "A value of 10 will spawn an animal if the box is destroyed.", null, (o) => (o.Rotation.Z >> 4) & 0xF,
+				(o, v) => { o.Rotation.Z &= 0xFF0F; o.Rotation.Z |= ((byte)v) << 4; }),
+			new PropertySpec("Spawn Animal Type", typeof(byte), "Extended", "Values correspond to animal sets that are specific to each stage.", null, (o) => o.Rotation.Z & 0xF,
+				(o, v) => { o.Rotation.Z &= 0xFFF0; o.Rotation.Z |= (byte)v; }),
+		};
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 		public override string Name { get { return "Wooden Container"; } }
 	}
-	
+
 	public class ContIron : ContCommon
 	{
 		public override void Init(ObjectData data, string name)
@@ -107,10 +116,18 @@ namespace SA2ObjectDefinitions.Common
 			meshes = ObjectHelper.GetMeshes(model);
 			texarr = NJS_TEXLIST.Load("object/tls/CONTIRON.satex");
 		}
-		
+
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Wall Bump", typeof(bool), "Extended", "Determines if the box is treated as a wall that knocks the player back.", null, (o) => Convert.ToBoolean(o.Rotation.X % 2), (o, v) => o.Rotation.X = Convert.ToInt32((bool)v)),
+			new PropertySpec("Spawn Animal", typeof(byte), "Extended", "A value of 10 will spawn an animal if the box is destroyed.", null, (o) => (o.Rotation.Z >> 4) & 0xF,
+				(o, v) => { o.Rotation.Z &= 0xFF0F; o.Rotation.Z |= ((byte)v) << 4; }),
+			new PropertySpec("Spawn Animal Type", typeof(byte), "Extended", "Values correspond to animal sets that are specific to each stage.", null, (o) => o.Rotation.Z & 0xF,
+				(o, v) => { o.Rotation.Z &= 0xFFF0; o.Rotation.Z |= (byte)v; }),
+		};
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 		public override string Name { get { return "Iron Container"; } }
 	}
-	
+
 	public class ContChao : ContCommon
 	{
 		public override void Init(ObjectData data, string name)
@@ -119,10 +136,9 @@ namespace SA2ObjectDefinitions.Common
 			meshes = ObjectHelper.GetMeshes(model);
 			texarr = NJS_TEXLIST.Load("object/tls/CONTCHAO.satex");
 		}
-		
 		public override string Name { get { return "Chao Container"; } }
 	}
-	
+
 	public class SolidBox : ContCommon
 	{
 		public override void Init(ObjectData data, string name)
@@ -131,7 +147,6 @@ namespace SA2ObjectDefinitions.Common
 			meshes = ObjectHelper.GetMeshes(model);
 			texarr = NJS_TEXLIST.Load("object/tls/SOLIDBOX.satex");
 		}
-		
 		public override string Name { get { return "Unbreakable Container"; } }
 	}
 }

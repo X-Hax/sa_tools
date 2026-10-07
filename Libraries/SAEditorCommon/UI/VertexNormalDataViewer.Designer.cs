@@ -1,0 +1,190 @@
+﻿namespace SAModel.SAEditorCommon.UI
+{
+	partial class VertexNormalDataViewer
+	{
+		/// <summary>
+		/// Required designer variable.
+		/// </summary>
+		private System.ComponentModel.IContainer components = null;
+
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && (components != null))
+			{
+				components.Dispose();
+			}
+			base.Dispose(disposing);
+		}
+
+		#region Windows Form Designer generated code
+
+		/// <summary>
+		/// Required method for Designer support - do not modify
+		/// the contents of this method with the code editor.
+		/// </summary>
+		private void InitializeComponent()
+		{
+			components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VertexNormalDataViewer));
+			statusStrip1 = new System.Windows.Forms.StatusStrip();
+			buttonClose = new System.Windows.Forms.Button();
+			contextMenuStripMatEdit = new System.Windows.Forms.ContextMenuStrip(components);
+			editPCMatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			editTextureIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			editStripAlphaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			groupBoxVertList = new System.Windows.Forms.GroupBox();
+			listViewVertices = new System.Windows.Forms.ListView();
+			columnHeaderVertID = new System.Windows.Forms.ColumnHeader();
+			columnHeaderVertPos = new System.Windows.Forms.ColumnHeader();
+			columnHeaderVertNorm = new System.Windows.Forms.ColumnHeader();
+			contextMenuStripVertCol = new System.Windows.Forms.ContextMenuStrip(components);
+			showVertexCollectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			contextMenuStripMatEdit.SuspendLayout();
+			groupBoxVertList.SuspendLayout();
+			contextMenuStripVertCol.SuspendLayout();
+			SuspendLayout();
+			// 
+			// statusStrip1
+			// 
+			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+			statusStrip1.Location = new System.Drawing.Point(0, 465);
+			statusStrip1.Name = "statusStrip1";
+			statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 15, 0);
+			statusStrip1.Size = new System.Drawing.Size(661, 22);
+			statusStrip1.SizingGrip = false;
+			statusStrip1.TabIndex = 11;
+			statusStrip1.Text = "statusStrip1";
+			// 
+			// buttonClose
+			// 
+			buttonClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+			buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
+			buttonClose.Location = new System.Drawing.Point(588, 417);
+			buttonClose.Name = "buttonClose";
+			buttonClose.Size = new System.Drawing.Size(67, 29);
+			buttonClose.TabIndex = 17;
+			buttonClose.Text = "Close";
+			buttonClose.UseVisualStyleBackColor = true;
+			buttonClose.Click += buttonClose_Click;
+			// 
+			// contextMenuStripMatEdit
+			// 
+			contextMenuStripMatEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
+			contextMenuStripMatEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editPCMatToolStripMenuItem, editTextureIDToolStripMenuItem, editStripAlphaToolStripMenuItem });
+			contextMenuStripMatEdit.Name = "contextMenuStripMatEdit";
+			contextMenuStripMatEdit.Size = new System.Drawing.Size(68, 70);
+			contextMenuStripMatEdit.Opening += contextMenuStrip2_Opening;
+			// 
+			// editPCMatToolStripMenuItem
+			// 
+			editPCMatToolStripMenuItem.Name = "editPCMatToolStripMenuItem";
+			editPCMatToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
+			// 
+			// editTextureIDToolStripMenuItem
+			// 
+			editTextureIDToolStripMenuItem.Name = "editTextureIDToolStripMenuItem";
+			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
+			// 
+			// editStripAlphaToolStripMenuItem
+			// 
+			editStripAlphaToolStripMenuItem.Name = "editStripAlphaToolStripMenuItem";
+			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
+			// 
+			// groupBoxVertList
+			// 
+			groupBoxVertList.Controls.Add(listViewVertices);
+			groupBoxVertList.Location = new System.Drawing.Point(12, 22);
+			groupBoxVertList.Name = "groupBoxVertList";
+			groupBoxVertList.Size = new System.Drawing.Size(640, 391);
+			groupBoxVertList.TabIndex = 29;
+			groupBoxVertList.TabStop = false;
+			groupBoxVertList.Text = "Vertex Data";
+			groupBoxVertList.Enter += groupBoxVertList_Enter;
+			// 
+			// listViewVertices
+			// 
+			listViewVertices.AutoArrange = false;
+			listViewVertices.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeaderVertID, columnHeaderVertPos, columnHeaderVertNorm });
+			listViewVertices.FullRowSelect = true;
+			listViewVertices.GridLines = true;
+			listViewVertices.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			listViewVertices.Location = new System.Drawing.Point(6, 22);
+			listViewVertices.MultiSelect = false;
+			listViewVertices.Name = "listViewVertices";
+			listViewVertices.ShowGroups = false;
+			listViewVertices.Size = new System.Drawing.Size(615, 352);
+			listViewVertices.TabIndex = 11;
+			listViewVertices.UseCompatibleStateImageBehavior = false;
+			listViewVertices.View = System.Windows.Forms.View.Details;
+			listViewVertices.SelectedIndexChanged += listViewVertices_SelectedIndexChanged;
+			// 
+			// columnHeaderVertID
+			// 
+			columnHeaderVertID.Text = "ID";
+			// 
+			// columnHeaderVertPos
+			// 
+			columnHeaderVertPos.Text = "Point";
+			// 
+			// columnHeaderVertNorm
+			// 
+			columnHeaderVertNorm.Text = "Normal";
+			// 
+			// contextMenuStripVertCol
+			// 
+			contextMenuStripVertCol.ImageScalingSize = new System.Drawing.Size(24, 24);
+			contextMenuStripVertCol.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { showVertexCollectionToolStripMenuItem });
+			contextMenuStripVertCol.Name = "contextMenuStripVertCol";
+			contextMenuStripVertCol.Size = new System.Drawing.Size(195, 26);
+			// 
+			// showVertexCollectionToolStripMenuItem
+			// 
+			showVertexCollectionToolStripMenuItem.Name = "showVertexCollectionToolStripMenuItem";
+			showVertexCollectionToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+			showVertexCollectionToolStripMenuItem.Text = "Show Vertex Collection";
+			// 
+			// VertexNormalDataViewer
+			// 
+			AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			ClientSize = new System.Drawing.Size(661, 487);
+			Controls.Add(groupBoxVertList);
+			Controls.Add(buttonClose);
+			Controls.Add(statusStrip1);
+			FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+			Margin = new System.Windows.Forms.Padding(4);
+			MaximizeBox = false;
+			MinimizeBox = false;
+			Name = "VertexNormalDataViewer";
+			ShowInTaskbar = false;
+			SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+			StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+			Text = "Vertex Data Editor";
+			contextMenuStripMatEdit.ResumeLayout(false);
+			groupBoxVertList.ResumeLayout(false);
+			contextMenuStripVertCol.ResumeLayout(false);
+			ResumeLayout(false);
+			PerformLayout();
+		}
+
+		#endregion
+		private System.Windows.Forms.StatusStrip statusStrip1;
+		private System.Windows.Forms.Button buttonClose;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStripMatEdit;
+		private System.Windows.Forms.ToolStripMenuItem editPCMatToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editTextureIDToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editStripAlphaToolStripMenuItem;
+		private System.Windows.Forms.GroupBox groupBoxVertList;
+		private System.Windows.Forms.ListView listViewVertices;
+		private System.Windows.Forms.ColumnHeader columnHeaderVertID;
+		private System.Windows.Forms.ColumnHeader columnHeaderVertPos;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStripVertCol;
+		private System.Windows.Forms.ToolStripMenuItem showVertexCollectionToolStripMenuItem;
+		private System.Windows.Forms.ColumnHeader columnHeaderVertNorm;
+	}
+}

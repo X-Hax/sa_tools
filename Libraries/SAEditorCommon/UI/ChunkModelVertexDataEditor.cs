@@ -15,7 +15,7 @@ namespace SAModel.SAEditorCommon.UI
 		private readonly VertexChunk VertDataOriginal;
 
 
-		public ChunkModelVertexDataEditor(VertexChunk verts, int index = 0)
+		public ChunkModelVertexDataEditor(VertexChunk verts, int index = 0, bool chaodata = false)
 		{
 			if (verts == null)
 			{
@@ -24,6 +24,11 @@ namespace SAModel.SAEditorCommon.UI
 			InitializeComponent();
 			VertData = verts;
 			VertDataOriginal = VertData.Clone();
+			if (chaodata)
+			{
+				FormatLabel.Text = "Format: Chao Chunk";
+				VertexColorLabel.Text = "If vertex color information exists, read the displayed data as RGBA.";
+			}
 			//comboBoxVertexGroup.Items.Clear();
 			//comboBoxVertexGroup.SelectedIndex = index;
 			BuildVertexDataList();
@@ -98,27 +103,42 @@ namespace SAModel.SAEditorCommon.UI
 			string diff = "N/A";
 			string spec = "N/A";
 			string flags = "N/A";
+			var shortweights = false;
 			groupBoxVertList.Enabled = true;
 			if (VertData != null)
 			{
 				for (int i = 0; i < VertData.VertexCount; i++)
 				{
+					if (VertData.Type == ChunkType.Vertex_VertexNinjaFlags || VertData.Type == ChunkType.Vertex_VertexNormalNinjaFlags)
+					{
+						if ((NinjaFlags[i] >> 16) > 255)
+						{
+							shortweights = true;
+							break;
+						}
+					}
+				}
+				for (int i = 0; i < VertData.VertexCount; i++)
+				{
 					ListViewItem newvert = new ListViewItem(i.ToString());
 					//Vertex points always exist
-					newvert.SubItems.Add("VERT(" + Vertices[i].ToString() + ")");
+					string vertpoint = "VERT" + Vertices[i].ToNJA();
+					if (VertData.Type == ChunkType.Vertex_VertexSH || VertData.Type == ChunkType.Vertex_VertexNormalSH)
+						vertpoint = "VERT_SH" + Vertices[i].ToNJA();
+					newvert.SubItems.Add(vertpoint);
 					switch (VertData.Type)
 					{
 						default:
 							break;
 						case ChunkType.Vertex_VertexDiffuse8:
-							diff = "D8888(" + Diffuse[i].ToString() + ")"; 
+							diff = "D8888(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + ")";
 							break;
 						case ChunkType.Vertex_VertexDiffuseSpecular16:
 							diff = "D16(" + Diffuse[i].ToString() + ")";
 							spec = "S16(" + Specular[i].ToString() + ")";
 							break;
 						case ChunkType.Vertex_VertexDiffuseSpecular4:
-							diff = "D4444(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + ")";
+							diff = "D4444(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + ")";
 							spec = "S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
 							break;
 						case ChunkType.Vertex_VertexDiffuseSpecular5:
@@ -127,18 +147,20 @@ namespace SAModel.SAEditorCommon.UI
 							break;
 						case ChunkType.Vertex_VertexNinjaFlags:
 							//Temporary, until we find other examples of ninja flag usage
-							var shortweights = (NinjaFlags[i] >> 16) > 255;
-							var nflagtype = "NFlagsW(";
+							//var shortweights = (NinjaFlags[i] >> 16) > 255;
+							var nflagtype = "NFlagsW";
 							var nflagindex = (ushort)NinjaFlags[i];
 							if (shortweights)
 								nflagtype += "2";
-							var translatedweight = (NinjaFlags[i] >> 16) / (shortweights ? 65525.0F : 255.0F) * 100.0F;
+							nflagtype += "(";
+							var translatedweight = (NinjaFlags[i] >> 16) / (shortweights ? 65535.0F : 255.0F) * 100.0F;
 							flags = $"{nflagtype}" + nflagindex.ToString() + ", " + translatedweight.ToString("F6") + ")";
 							break;
 						case ChunkType.Vertex_VertexUserFlags:
 							flags = "UFlags(0x" + UserFlags[i].ToCHex() + ")";
 							break;
 						case ChunkType.Vertex_VertexNormal:
+						case ChunkType.Vertex_VertexNormalSH:
 						case ChunkType.Vertex_VertexNormalDiffuse8:
 						case ChunkType.Vertex_VertexNormalDiffuseSpecular16:
 						case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
@@ -146,7 +168,9 @@ namespace SAModel.SAEditorCommon.UI
 						case ChunkType.Vertex_VertexNormalNinjaFlags:
 						case ChunkType.Vertex_VertexNormalUserFlags:
 							Normals = VertData.Normals;
-							norms = "NORM(" + Normals[i].ToString() + ")";
+							norms = "NORM" + Normals[i].ToNJA();
+							if (VertData.Type == ChunkType.Vertex_VertexNormalSH)
+								norms = "NORM_SH" + Normals[i].ToNJA();
 							if (VertData.Type == ChunkType.Vertex_VertexNormalUserFlags)
 							{
 								UserFlags = VertData.UserFlags;
@@ -155,25 +179,26 @@ namespace SAModel.SAEditorCommon.UI
 							if (VertData.Type == ChunkType.Vertex_VertexNormalNinjaFlags)
 							{
 								NinjaFlags = VertData.NinjaFlags;
-								var shortweightsN = (NinjaFlags[i] >> 16) > 255;
-								var nflagtypeN = "NFlagsW(";
+								//var shortweightsN = (NinjaFlags[i] >> 16) > 255;
+								var nflagtypeN = "NFlagsW";
 								var nflagindexN = (ushort)NinjaFlags[i];
-								if (shortweightsN)
+								if (shortweights)
 									nflagtypeN += "2";
-								var translatedweightN = (NinjaFlags[i] >> 16) / (shortweightsN ? 65525.0F : 255.0F) * 100.0F;
+								nflagtypeN += "(";
+								var translatedweightN = (NinjaFlags[i] >> 16) / (shortweights ? 65535.0F : 255.0F) * 100.0F;
 								flags = nflagtypeN + nflagindexN.ToString() + ", " + translatedweightN.ToString("F6") + ")";
 							}
 							switch (VertData.Type)
 							{
 								case ChunkType.Vertex_VertexNormalDiffuse8:
-									diff = "D8888(" + Diffuse[i].ToString() + ")";
+									diff = "D8888(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + ")";
 									break;
 								case ChunkType.Vertex_VertexNormalDiffuseSpecular16:
 									diff = "D16(" + Diffuse[i].ToString() + ")";
 									spec = "S16(" + Specular[i].ToString() + ")";
 									break;
 								case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
-									diff = "D4444(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + ")";
+									diff = "D4444(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + ")";
 									spec = "S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
 									break;
 								case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
@@ -181,6 +206,10 @@ namespace SAModel.SAEditorCommon.UI
 									spec = "S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
 									break;
 							}
+							break;
+						case ChunkType.Vertex_VertexNormalX:
+						case ChunkType.Vertex_VertexNormalXDiffuse8:
+						case ChunkType.Vertex_VertexNormalXUserFlags:
 							break;
 					}
 					newvert.SubItems.Add(norms);
@@ -190,10 +219,10 @@ namespace SAModel.SAEditorCommon.UI
 					listViewVertices.Items.Add(newvert);
 				}
 			}
-				listViewVertices.SelectedIndices.Clear();
-				listViewVertices.SelectedItems.Clear();
-				listViewVertices_SelectedIndexChanged(null, null);
-				listViewVertices.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+			listViewVertices.SelectedIndices.Clear();
+			listViewVertices.SelectedItems.Clear();
+			listViewVertices_SelectedIndexChanged(null, null);
+			listViewVertices.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 		}
 
 		private void buttonClose_Click(object sender, EventArgs e)
@@ -208,7 +237,12 @@ namespace SAModel.SAEditorCommon.UI
 		}
 
 		private void listViewVertices_SelectedIndexChanged(object sender, EventArgs e)
-		{ 
+		{
+		}
+
+		private void FormatLabel_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

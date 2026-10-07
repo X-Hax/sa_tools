@@ -71,7 +71,7 @@ namespace SAModel.SAEditorCommon.UI
 			// Setting flags
 			ignoreAmbiCheck.Checked = pcs.IgnoreAmbient;
 			ignoreSpecCheck.Checked = pcs.IgnoreSpecular;
-			useAlphaCheck.Checked = pcs.UseAlpha || pcs.NoAlphaTest;
+			useAlphaCheck.Checked = pcs.UseAlpha || pcs.NoPunchthrough;
 			envMapCheck.Checked = pcs.EnvironmentMapping;
 			doubleSideCheck.Checked = pcs.DoubleSide;
 			flatShadeCheck.Checked = pcs.FlatShading;
@@ -79,9 +79,9 @@ namespace SAModel.SAEditorCommon.UI
 			userFlagsNumericUpDown.Value = pcs.UserFlags;
 			if (useAlphaCheck.Checked)
 			{
-				if (pcs.UseAlpha && pcs.NoAlphaTest)
+				if (pcs.UseAlpha && pcs.NoPunchthrough)
 					exAlphaSettingComboBox.SelectedIndex = 2;
-				else if (pcs.NoAlphaTest)
+				else if (pcs.NoPunchthrough)
 					exAlphaSettingComboBox.SelectedIndex = 1;
 				else
 					exAlphaSettingComboBox.SelectedIndex = 0;
@@ -210,7 +210,7 @@ namespace SAModel.SAEditorCommon.UI
 			pcs.CMDEStrips = PolyStripCollection.ToList();
 			if (!exAlphaSettingComboBox.Enabled)
 			{
-				pcs.NoAlphaTest = false;
+				pcs.NoPunchthrough = false;
 				pcs.UseAlpha = false;
 			}
 			else
@@ -220,14 +220,14 @@ namespace SAModel.SAEditorCommon.UI
 					case 0:
 					default:
 						pcs.UseAlpha = true;
-						pcs.NoAlphaTest = false;
+						pcs.NoPunchthrough = false;
 						break;
 					case 1:
-						pcs.NoAlphaTest = true;
+						pcs.NoPunchthrough = true;
 						pcs.UseAlpha = false;
 						break;
 					case 2:
-						pcs.NoAlphaTest = true;
+						pcs.NoPunchthrough = true;
 						pcs.UseAlpha = true;
 						break;
 				}
@@ -388,15 +388,15 @@ namespace SAModel.SAEditorCommon.UI
 				case 0:
 				default:
 					pcs.UseAlpha = true;
-					pcs.NoAlphaTest = false;
+					pcs.NoPunchthrough = false;
 					break;
 				case 1:
 					pcs.UseAlpha = false;
-					pcs.NoAlphaTest = true;
+					pcs.NoPunchthrough = true;
 					break;
 				case 2:
 					pcs.UseAlpha = true;
-					pcs.NoAlphaTest = true;
+					pcs.NoPunchthrough = true;
 					break;
 			}
 			RaiseFormUpdated();

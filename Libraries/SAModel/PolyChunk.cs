@@ -1096,7 +1096,7 @@ namespace SAModel
 				}
 				else
 				{
-					writer.Write("  ");
+					writer.Write("\t");
 					for (int i = 0; i < Indexes.Length; ++i)
 					{
 						writer.Write(Indexes[i].ToString() + ", ");
@@ -1206,7 +1206,7 @@ namespace SAModel
 				}
 				else
 				{
-					writer.Write("  ");
+					writer.Write("\t");
 					for (int i = 0; i < Indexes.Length; ++i)
 					{
 						writer.Write(Indexes[i].ToString() + ", ");
@@ -1295,6 +1295,10 @@ namespace SAModel
 
 			public void ToNJA(TextWriter writer)
 			{
+				if (Reversed)
+					writer.Write("\tStripR(" + Indexes.Length + "),");
+				else
+					writer.Write("\tStripL(" + Indexes.Length + "),");
 				if (UserFlags1 != null)
 				{
 					writer.Write(Environment.NewLine);
@@ -1514,21 +1518,21 @@ namespace SAModel
 			switch (Type)
 			{
 				case ChunkType.Volume_Polygon3:
-					writer.WriteLine("\tCnkO_P3, " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
+					writer.WriteLine("\tCnkO_P3( 0x" + Flags.ToString("X1") + " ), " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
 					foreach (Triangle item in Polys)
 					{
 						item.ToNJA(writer);
 					}
 					break;
 				case ChunkType.Volume_Polygon4:
-					writer.WriteLine("\tCnkO_P4, " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
+					writer.WriteLine("\tCnkO_P4( 0x" + Flags.ToString("X1") + " ), " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
 					foreach (Quad item in Polys)
 					{
 						item.ToNJA(writer);
 					}
 					break;
 				case ChunkType.Volume_Strip:
-					writer.WriteLine("\tCnkO_ST, " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
+					writer.WriteLine("\tCnkO_ST( 0x" + Flags.ToString("X1") + " ), " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
 					foreach (Strip item in Polys)
 					{
 						item.ToNJA(writer);
@@ -1887,7 +1891,7 @@ namespace SAModel
 			set { Flags = (byte)((Flags & ~0x40) | (value ? 0x40 : 0)); }
 		}
 
-		public bool NoAlphaTest
+		public bool NoPunchthrough
 		{
 			get { return (Flags & 0x80) == 0x80; }
 			set { Flags = (byte)((Flags & ~0x80) | (value ? 0x80 : 0)); }
@@ -1992,8 +1996,8 @@ namespace SAModel
 				flags += "FST_FL|";
 			if (EnvironmentMapping)
 				flags += "FST_ENV|";
-			if (NoAlphaTest)
-				flags += "FST_NAT|";
+			if (NoPunchthrough)
+				flags += "FST_NPT|";
 			if (flags == string.Empty)
 				flags = "0x0";
 			else
@@ -2074,7 +2078,7 @@ namespace SAModel
 			DoubleSide = mat.DoubleSided;
 			FlatShading = mat.FlatShading;
 			EnvironmentMapping = mat.EnvironmentMap;
-			NoAlphaTest = mat.NoAlphaTest;
+			NoPunchthrough = mat.NoPunchthrough;
 		}
 	}
 }

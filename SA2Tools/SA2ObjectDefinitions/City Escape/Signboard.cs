@@ -26,7 +26,7 @@ namespace SA2ObjectDefinitions.CityEscape
 			texlist_signboard = NJS_TEXLIST.Load("stg13_cityescape/tls/SIGNBOARD.satex");
 		}
 
-		public override string Name { get { return "City Escape Signboard"; } }
+		public override string Name { get { return "Signboard Poster"; } }
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{

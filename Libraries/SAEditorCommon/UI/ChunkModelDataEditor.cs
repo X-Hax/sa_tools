@@ -1,9 +1,9 @@
-﻿using System.Windows.Forms;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System;
-using SAModel.Direct3D.TextureSystem;
 using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -16,7 +16,7 @@ namespace SAModel.SAEditorCommon.UI
 		private Attach originalModel;
 		private bool freeze;
 		private int previousNodeIndex;
-		private readonly BMPInfo[] textures;
+		private readonly GenericTexture[] textures;
 		private Rectangle vertdatagroupdyn;
 		private Rectangle polydatagroupdyn;
 		private Rectangle vertdatalistdyn;
@@ -28,13 +28,13 @@ namespace SAModel.SAEditorCommon.UI
 		private Rectangle polydownbutton;
 		private Size OriginalSize;
 
-		public ChunkModelDataEditor(NJS_OBJECT objectOriginal, BMPInfo[] textures, int index = 0)
+		public ChunkModelDataEditor(NJS_OBJECT objectOriginal, GenericTexture[] textures, int index = 0)
 		{
 			if (objectOriginal == null)
 				return;
 			InitializeComponent();
 			freeze = true;
-			this.Resize += ChunkModelDataEditor_Resize;
+			//this.Resize += ChunkModelDataEditor_Resize;
 			OriginalSize = this.Size;
 			comboBoxNode.Items.Clear();
 			originalHierarchy = objectOriginal;
@@ -88,7 +88,7 @@ namespace SAModel.SAEditorCommon.UI
 					c.Size = new Size(r.Width, newYSize);
 					break;
 				case 2: // Poly Data List
-					c.Size = new Size(newXSize, newYSize);
+					c.Size = new Size(newWidth, newHeight);
 					break;
 				case 3: // Buttons below list
 					c.Location = new Point(r.X, newYLoc);
@@ -98,8 +98,8 @@ namespace SAModel.SAEditorCommon.UI
 		private void ChunkModelDataEditor_Resize(object sender, EventArgs e)
 		{
 			resize_Control(listViewMeshes, polydatalistdyn, 2);
-			resize_Control(listViewVertices, vertdatalistdyn, 1);
-			resize_Control(groupBoxVertList, vertdatagroupdyn, 1);
+			//resize_Control(listViewVertices, vertdatalistdyn, 1);
+			//resize_Control(groupBoxVertList, vertdatagroupdyn, 1);
 			resize_Control(groupBoxMeshList, polydatagroupdyn, 2);
 			resize_Control(buttonCloneMesh, polyclonebutton, 3);
 			resize_Control(buttonResetMeshes, polyresetbutton, 3);
@@ -159,7 +159,7 @@ namespace SAModel.SAEditorCommon.UI
 			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
 			PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
 			int index = selectedObj.IndexOf(selectedMesh);
-			if (polydata.StartsWith("Material"))
+			if (polydata.StartsWith("Material") && polydata != "Material_BU")
 			{
 				using (ChunkModelMaterialDataEditor de = new ChunkModelMaterialDataEditor(selectedObj[matID]))
 				{
@@ -233,7 +233,7 @@ namespace SAModel.SAEditorCommon.UI
 			int vertID = int.Parse(listViewVertices.SelectedItems[0].SubItems[0].Text);
 			List<VertexChunk> selectedObj = ((ChunkAttach)editedModel).Vertex;
 			VertexChunk selectedVert = selectedObj[listViewVertices.SelectedIndices[0]];
-			ChunkModelVertexDataEditor vde = new ChunkModelVertexDataEditor(selectedVert);
+			ChunkModelVertexDataEditor vde = new ChunkModelVertexDataEditor(selectedVert, chaodata: ((ChunkAttach)editedModel).ChaoData);
 			if (vde.ShowDialog(this) == DialogResult.OK)
 			{
 				return;
@@ -411,10 +411,10 @@ namespace SAModel.SAEditorCommon.UI
 		private void BuildObjectDataList()
 		{
 			listViewObjectData.Items.Clear();
-			string flagnames = "";
-			string objpos = "SKIP";
-			string objang = "SKIP";
-			string objscl = "SKIP";
+			string flagnames = string.Empty;
+			string objpos = "";
+			string objang = "";
+			string objscl = "";
 			ObjectFlags flg = currentObject.Flags;
 			bool nopos = (flg & ObjectFlags.NoPosition) != 0;
 			bool norot = (flg & ObjectFlags.NoRotate) != 0;
@@ -436,78 +436,38 @@ namespace SAModel.SAEditorCommon.UI
 				flagnames += nopos ? "POS" : "";
 				flagnames += norot ? "ROT" : "";
 				flagnames += noscl ? "SCL" : "";
+				flagnames += ", ";
 			}
-			if ((!nopos) && (!norot) && (!noscl))
-				flagnames += nodraw ? "HIDE" : "";
-			else
-				flagnames += nodraw ? ", HIDE" : "";
-			if ((!nopos) && (!norot) && (!noscl) && (!nodraw))
-				flagnames += nochild ? "BREAK" : "";
-			else
-				flagnames += nochild ? ", BREAK" : "";
-			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild))
-				flagnames += zyxrot ? "ZYX_ANG" : "";
-			else
-				flagnames += zyxrot ? ", ZYX_ANG" : "";
-			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild) && (!zyxrot))
-				flagnames += noanim ? "ANIM_SKIP" : "";
-			else
-				flagnames += noanim ? ", ANIM_SKIP" : "";
-			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild) && (!zyxrot) && (!noanim))
-				flagnames += noshape ? "SHAPE_SKIP" : "";
-			else
-				flagnames += noshape ? ", SHAPE_SKIP" : "";
-			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild) && (!zyxrot) && (!noanim) && (!noshape))
-				flagnames += clip ? "CLIP" : "";
-			else
-				flagnames += clip ? ", CLIP" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip))
-				flagnames += modifier ? "MOD" : "";
-			else
-				flagnames += modifier ? ", MOD" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip) && (!modifier))
-				flagnames += quaternion ? "QUAT" : "";
-			else
-				flagnames += quaternion ? ", QUAT" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip) && (!modifier) && (!quaternion))
-				flagnames += rotatebase ? "ROTBASE" : "";
-			else
-				flagnames += rotatebase ? ", ROTBASE" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip) && (!modifier) && (!quaternion) && (!rotatebase))
-				flagnames += rotateset ? "ROTSET" : "";
-			else
-				flagnames += rotateset ? ", ROTSET" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip) && (!modifier) && (!quaternion) && (!rotatebase) && (!rotateset))
-				flagnames += envelope ? "ENVELOPE" : "";
-			else
-				flagnames += envelope ? ", ENVELOPE" : "";
-			if ((!nopos) && (!norot) && (!noscl)
-				&& (!nodraw) && (!nochild) && (!zyxrot)
-				&& (!noanim) && (!noshape)
-				&& (!clip) && (!modifier) && (!quaternion) && (!rotatebase) && (!rotateset) && (!envelope))
+			if (nodraw)
+				flagnames += "HIDE, ";
+			if (nochild)
+				flagnames += "BREAK, ";
+			if (zyxrot)
+				flagnames += "ZYX_ANG,";
+			if (noanim)
+				flagnames += "ANIM_SKIP, ";
+			if (noshape)
+				flagnames += "SHAPE_SKIP, ";
+			if (clip)
+				flagnames += "CLIP, ";
+			if (modifier)
+				flagnames += "MOD, ";
+			if (quaternion)
+				flagnames += "QUAT, ";
+			if (rotatebase)
+				flagnames += "ROTBASE, ";
+			if (rotateset)
+				flagnames += "ROTSET, ";
+			if (envelope)
+				flagnames += "ENVELOPE, ";
+			if (flagnames == string.Empty)
 				flagnames = "NONE";
+			else
+				flagnames = flagnames.Remove(flagnames.Length - 2);
 			ListViewItem objdata = new ListViewItem(flagnames);
-			if (!nopos)
-				objpos = currentObject.Position.ToString();
-			if (!norot)
-				objang = currentObject.Rotation.ToString();
-			if (!noscl)
-				objscl = currentObject.Scale.ToString();
+			objpos = currentObject.Position.ToString();
+			objang = currentObject.Rotation.ToString();
+			objscl = currentObject.Scale.ToString();
 			objdata.SubItems.Add(objpos);
 			objdata.SubItems.Add(objang);
 			objdata.SubItems.Add(objscl);
@@ -619,6 +579,7 @@ namespace SAModel.SAEditorCommon.UI
 							vertexdata += ", ";
 						vertexdata += vc.VertexCount.ToString() + ent;
 						newvert.SubItems.Add(vertexdata);
+						newvert.SubItems.Add(vc.IndexOffset.ToString());
 						listViewVertices.Items.Add(newvert);
 					}
 				}
@@ -725,6 +686,7 @@ namespace SAModel.SAEditorCommon.UI
 								break;
 							case PolyChunkVolume pcv:
 								newmesh.SubItems.Add(pcv.Type.ToString());
+								newmesh.SubItems.Add(pcv.PolyCount.ToString() + (pcv.PolyCount == 1 ? " Entity" : " Entities"));
 								break;
 							case PolyChunkMaterialBump pcmb:
 								newmesh.SubItems.Add("Material_BU");
@@ -940,41 +902,30 @@ namespace SAModel.SAEditorCommon.UI
 								newmesh.SubItems.Add(texdata);
 								break;
 							case PolyChunkStrip pcs:
-								string stripflags = "";
+								string stripflags = string.Empty;
 								string striptype = "Strip";
 								string stripstart = "FST( ";
 								string stripuserflags = ", UFO_" + pcs.UserFlags.ToString();
-								stripflags += pcs.UseAlpha ? "UA" : "";
-								if (!pcs.UseAlpha)
-									stripflags += pcs.DoubleSide ? "DB" : "";
-								else
-									stripflags += pcs.DoubleSide ? ", DB" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide))
-									stripflags += pcs.EnvironmentMapping ? "ENV" : "";
-								else
-									stripflags += pcs.EnvironmentMapping ? ", ENV" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping))
-									stripflags += pcs.FlatShading ? "FL" : "";
-								else
-									stripflags += pcs.FlatShading ? ", FL" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading))
-									stripflags += pcs.IgnoreLight ? "IL" : "";
-								else
-									stripflags += pcs.IgnoreLight ? ", IL" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading) && (!pcs.IgnoreLight))
-									stripflags += pcs.IgnoreAmbient ? "IA" : "";
-								else
-									stripflags += pcs.IgnoreAmbient ? ", IA" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading) && (!pcs.IgnoreLight) && (!pcs.IgnoreAmbient))
-									stripflags += pcs.IgnoreSpecular ? "IS" : "";
-								else
-									stripflags += pcs.IgnoreSpecular ? ", IS" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading) && (!pcs.IgnoreLight) && (!pcs.IgnoreAmbient) && (!pcs.IgnoreSpecular))
-									stripflags += pcs.NoAlphaTest ? "NAT" : "";
-								else
-									stripflags += pcs.NoAlphaTest ? ", NAT" : "";
-								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading) && (!pcs.IgnoreLight) && (!pcs.IgnoreAmbient) && (!pcs.IgnoreSpecular) && (!pcs.NoAlphaTest))
+								if (pcs.UseAlpha)
+									stripflags += "UA, ";
+								if (pcs.DoubleSide)
+									stripflags += "DB, ";
+								if (pcs.EnvironmentMapping)
+									stripflags += "ENV, ";
+								if (pcs.FlatShading)
+									stripflags += "FL, ";
+								if (pcs.IgnoreLight)
+									stripflags += "IL, ";
+								if (pcs.IgnoreAmbient)
+									stripflags += "IA, ";
+								if (pcs.IgnoreSpecular)
+									stripflags += "IS, ";
+								if (pcs.NoPunchthrough)
+									stripflags += "NPT, ";
+								if (stripflags == string.Empty)
 									stripflags = "NONE";
+								else
+									stripflags = stripflags.Remove(stripflags.Length - 2);
 								stripflags += " )";
 								switch (pcs.Type)
 								{
@@ -1118,10 +1069,11 @@ namespace SAModel.SAEditorCommon.UI
 				buttonCloneMesh.Enabled = false;
 			else
 				buttonCloneMesh.Enabled = true;
-			editPCMatToolStripMenuItem.Enabled = editPCMatToolStripMenuItem.Visible = polytype.Contains("Material");
+			editPCMatToolStripMenuItem.Enabled = editPCMatToolStripMenuItem.Visible = polytype.Contains("Material") && polytype != "Material_BU";
 			editTextureIDToolStripMenuItem.Enabled = editTextureIDToolStripMenuItem.Visible = polytype.StartsWith("Tiny");
 			editStripAlphaToolStripMenuItem.Enabled = editStripAlphaToolStripMenuItem.Visible = polytype.StartsWith("Strip");
 			editAlphaBlendDataToolStripMenuItem.Enabled = editAlphaBlendDataToolStripMenuItem.Visible = polytype == "Bits_BA";
+			editVolumeDataToolStripMenuItem.Enabled = editVolumeDataToolStripMenuItem.Visible = polytype.StartsWith("Volume");
 			buttonDeleteMesh.Enabled = selectedObj.Count > 1;
 			buttonMoveMeshUp.Enabled = selectedObj.IndexOf(selectedMesh) > 0;
 			if (prevmatstart == "Bits_CP" || prevmatstart == "Bits_DP")
@@ -1227,7 +1179,7 @@ namespace SAModel.SAEditorCommon.UI
 					stripflags += pcs.IgnoreLight ? ", Ignore Light" : "";
 					stripflags += pcs.IgnoreAmbient ? ", Ignore Ambient" : "";
 					stripflags += pcs.IgnoreSpecular ? ", Ignore Specular" : "";
-					stripflags += pcs.NoAlphaTest ? ", No Alpha Test" : "";
+					stripflags += pcs.NoPunchthrough ? ", No Punchthrough" : "";
 					stripflags += ", User Flags: " + pcs.UserFlags.ToString();
 					pdata2 += stripcount;
 					pdata2 += stripflags;
@@ -1322,12 +1274,77 @@ namespace SAModel.SAEditorCommon.UI
 			if (e.Button == MouseButtons.Right && listViewVertices.SelectedIndices.Count != 0)
 				contextMenuStripVertCol.Show(listViewVertices, e.Location);
 		}
+
 		private void listViewObjectData_MouseClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Right && listViewObjectData.SelectedIndices.Count != 0)
 				contextMenuStripObjSet.Show(listViewObjectData, e.Location);
 		}
 
+		private void VertexData_DoubleClick(object sender, EventArgs e)
+		{
+			if (listViewVertices.SelectedItems.Count > 0)
+			{
+				VertexChunk vData = ((ChunkAttach)editedModel).Vertex[listViewVertices.SelectedIndices[0]];
+				using (ChunkModelVertexDataEditor de = new ChunkModelVertexDataEditor(vData, chaodata: ((ChunkAttach)editedModel).ChaoData))
+				{
+					de.ShowDialog(this);
+				}
+			}
+		}
+		private void PolyData_DoubleClick(object sender, EventArgs e)
+		{
+			if (listViewMeshes.SelectedItems.Count > 0)
+			{
+				string polytype = listViewMeshes.SelectedItems[0].SubItems[1].Text;
+				PolyChunk polyData = ((ChunkAttach)editedModel).Poly[listViewMeshes.SelectedIndices[0]];
+				if (polytype.StartsWith("Bits_BA"))
+				{
+					using (ChunkModelBlendAlphaDataEditor de = new ChunkModelBlendAlphaDataEditor(polyData))
+					{
+						PolyChunkBitsBlendAlpha pcba = (PolyChunkBitsBlendAlpha)polyData;
+						de.FormUpdated += (s, ev) => updateBlendAlphaData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcba);
+						de.ShowDialog(this);
+					}
+				}
+				if (polytype.StartsWith("Material") && polytype != "Material_BU")
+				{
+					using (ChunkModelMaterialDataEditor de = new ChunkModelMaterialDataEditor(polyData))
+					{
+						PolyChunkMaterial pcm = (PolyChunkMaterial)polyData;
+						de.FormUpdated += (s, ev) => updateMaterialData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcm);
+						de.ShowDialog(this);
+					}
+				}
+				if (polytype.StartsWith("Tiny"))
+				{
+					using (ChunkModelTextureDataEditor de = new ChunkModelTextureDataEditor(polyData, textures))
+					{
+						PolyChunkTinyTextureID ttid = (PolyChunkTinyTextureID)polyData;
+						de.FormUpdated += (s, ev) => updateTextureData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], ttid);
+						de.ShowDialog(this);
+					}
+				}
+				if (polytype.StartsWith("Strip"))
+				{
+					using (ChunkModelStripDataEditor de = new ChunkModelStripDataEditor(polyData))
+					{
+						PolyChunkStrip pcs = (PolyChunkStrip)polyData;
+						de.FormUpdated += (s, ev) => updateStripData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcs);
+						de.ShowDialog(this);
+					}
+				}
+				if (polytype.StartsWith("Volume"))
+				{
+					using (ChunkModelVolumeDataEditor de = new ChunkModelVolumeDataEditor(polyData))
+					{
+						de.ShowDialog(this);
+					}
+				}
+				else
+					return;
+			}
+		}
 		private void comboBoxNode_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			int index = comboBoxNode.SelectedIndex;
@@ -1602,6 +1619,117 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				selectedObj.Add(newbm);
 				BuildPolyChunkList();
+			}
+		}
+
+		private void editVolumeDataToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string polydata = listViewMeshes.SelectedItems[0].SubItems[1].Text;
+			int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[0].Text);
+			PolyChunkVolume mat;
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+			int index = selectedObj.IndexOf(selectedMesh);
+			if (polydata.StartsWith("Volume"))
+			{
+				using (ChunkModelVolumeDataEditor de = new ChunkModelVolumeDataEditor(selectedObj[matID]))
+				{
+					//mat = (PolyChunkVolume)selectedObj[matID];
+					//de.FormUpdated += (s, ev) => updateBlendAlphaData(selectedObj, matID, mat);
+					de.ShowDialog(this);
+				}
+			}
+			BuildPolyChunkList();
+		}
+		private void ObjectData_DoubleClick(object sender, EventArgs e)
+		{
+			using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+			{
+				ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+				ose.ShowDialog(this);
+			}
+			BuildObjectDataList();
+		}
+		private void ObjectData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == (char)Keys.Enter)
+			{
+				using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+				{
+					ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+					ose.ShowDialog(this);
+				}
+				BuildObjectDataList();
+			}
+		}
+		private void VertexData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewVertices.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					VertexChunk vData = ((ChunkAttach)editedModel).Vertex[listViewVertices.SelectedIndices[0]];
+					using (ChunkModelVertexDataEditor de = new ChunkModelVertexDataEditor(vData, chaodata: ((ChunkAttach)editedModel).ChaoData))
+					{
+						de.ShowDialog(this);
+					}
+				}
+			}
+		}
+		private void MeshData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewMeshes.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					string polytype = listViewMeshes.SelectedItems[0].SubItems[1].Text;
+					PolyChunk polyData = ((ChunkAttach)editedModel).Poly[listViewMeshes.SelectedIndices[0]];
+					if (polytype.StartsWith("Bits_BA"))
+					{
+						using (ChunkModelBlendAlphaDataEditor de = new ChunkModelBlendAlphaDataEditor(polyData))
+						{
+							PolyChunkBitsBlendAlpha pcba = (PolyChunkBitsBlendAlpha)polyData;
+							de.FormUpdated += (s, ev) => updateBlendAlphaData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcba);
+							de.ShowDialog(this);
+						}
+					}
+					if (polytype.StartsWith("Material") && polytype != "Material_BU")
+					{
+						using (ChunkModelMaterialDataEditor de = new ChunkModelMaterialDataEditor(polyData))
+						{
+							PolyChunkMaterial pcm = (PolyChunkMaterial)polyData;
+							de.FormUpdated += (s, ev) => updateMaterialData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcm);
+							de.ShowDialog(this);
+						}
+					}
+					if (polytype.StartsWith("Tiny"))
+					{
+						using (ChunkModelTextureDataEditor de = new ChunkModelTextureDataEditor(polyData, textures))
+						{
+							PolyChunkTinyTextureID ttid = (PolyChunkTinyTextureID)polyData;
+							de.FormUpdated += (s, ev) => updateTextureData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], ttid);
+							de.ShowDialog(this);
+						}
+					}
+					if (polytype.StartsWith("Strip"))
+					{
+						using (ChunkModelStripDataEditor de = new ChunkModelStripDataEditor(polyData))
+						{
+							PolyChunkStrip pcs = (PolyChunkStrip)polyData;
+							de.FormUpdated += (s, ev) => updateStripData(((ChunkAttach)editedModel).Poly, listViewMeshes.SelectedIndices[0], pcs);
+							de.ShowDialog(this);
+						}
+					}
+					if (polytype.StartsWith("Volume"))
+					{
+						using (ChunkModelVolumeDataEditor de = new ChunkModelVolumeDataEditor(polyData))
+						{
+							de.ShowDialog(this);
+						}
+					}
+					else
+						return;
+				}
 			}
 		}
 	}

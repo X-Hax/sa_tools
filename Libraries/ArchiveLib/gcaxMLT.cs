@@ -152,11 +152,6 @@ namespace ArchiveLib
                     result.AddRange(Data);
                 return result.ToArray();
             }
-
-            public override Bitmap GetBitmap()
-            {
-                throw new NotImplementedException();
-            }
         }
 
         public gcaxMLTFile() { }

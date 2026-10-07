@@ -143,11 +143,6 @@ namespace ArchiveLib
                     result.AddRange(Data);
                 return result.ToArray();
             }
-
-            public override Bitmap GetBitmap()
-            {
-                throw new NotImplementedException();
-            }
         }
 
         public MLTFile(int version = 1, int revision = 1)

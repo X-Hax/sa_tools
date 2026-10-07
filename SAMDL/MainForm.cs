@@ -1,23 +1,24 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using PSO.PRS;
+using SAModel.Direct3D;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon;
+using SAModel.SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.UI;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SplitTools;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Newtonsoft.Json;
-using SharpDX;
-using SharpDX.Direct3D9;
-using SAModel.Direct3D;
-using SAModel.Direct3D.TextureSystem;
-using SAModel.SAEditorCommon;
-using SAModel.SAEditorCommon.UI;
+using TextureLib;
+using static SAModel.SAEditorCommon.SettingsFile;
 using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
-using SplitTools;
-using SAModel.SAEditorCommon.ProjectManagement;
-using static SAModel.SAEditorCommon.SettingsFile;
-using PSO.PRS;
 
 namespace SAModel.SAMDL
 {
@@ -55,8 +56,8 @@ namespace SAModel.SAMDL
 		string TexturePackName; // Name of the last loaded PVM/texture pack, used for texture enum export
 		NJS_TEXLIST TexList; // Current texlist
 		NJS_TEXLIST TempTexList; // Texture name list loaded through the model, ex. An .nj NJTL. Use if next loaded texture archive has no names. Clear after each texture load attempt.
-		BMPInfo[] TextureInfo; // Textures in the whole PVM/texture pack
-		BMPInfo[] TextureInfoCurrent; // TextureInfo updated for the current texlist. Used for Material Editor, texture remapping, C++ export etc.
+		GenericTexture[] TextureInfo; // Textures in the whole PVM/texture pack
+		GenericTexture[] TextureInfoCurrent; // TextureInfo updated for the current texlist. Used for Material Editor, texture remapping, C++ export etc.
 		Texture[] Textures; // Created from TextureInfoCurrent; used for rendering
 
 		// Rendering related
@@ -464,7 +465,7 @@ namespace SAModel.SAMDL
 		}
 		*/
 
-		private void LoadFile(string filename, bool cmdLoad = false)
+		private void LoadFile(string filename, bool cmdLoad = false, bool chaodata = false)
 		{
 			string extension = Path.GetExtension(filename).ToLowerInvariant();
 
@@ -486,7 +487,7 @@ namespace SAModel.SAMDL
 				try
 #endif
 				{
-					ModelFile modelFile = new ModelFile(filename);
+					ModelFile modelFile = new ModelFile(filename, chaodata);
 					if (!string.IsNullOrEmpty(modelFile.Description))
 						modelDescription = modelFile.Description;
 					if (!string.IsNullOrEmpty(modelFile.Author))
@@ -922,6 +923,7 @@ namespace SAModel.SAMDL
 					filterString = "SA2B MDL Files|*.sa2bmdl|Ginja|*.gj|Ginja (Big Endian)|*.gj";
 					break;
 				case ModelFormat.Chunk:
+				case ModelFormat.ChaoChunk:
 					filterString = "SA2 MDL Files|*.sa2mdl|Ninja Binary|*.nj|Ninja Binary (Big Endian)|*.nj";
 					break;
 				case ModelFormat.BasicDX:
@@ -933,7 +935,7 @@ namespace SAModel.SAMDL
 			filterString += "|All files *.*|*.*";
 			using (SaveFileDialog a = new SaveFileDialog()
 			{
-				DefaultExt = (outfmt == ModelFormat.GC ? "sa2b" : (outfmt == ModelFormat.Chunk ? "sa2" : "sa1")) + "mdl",
+				DefaultExt = (outfmt == ModelFormat.GC ? "sa2b" : ((outfmt == ModelFormat.Chunk || outfmt == ModelFormat.ChaoChunk) ? "sa2" : "sa1")) + "mdl",
 				Filter = filterString
 			})
 			{
@@ -988,7 +990,7 @@ namespace SAModel.SAMDL
 					Dictionary<uint, byte[]> texDict = new Dictionary<uint, byte[]>();
 					if (TextureInfoCurrent != null)
 					{
-						foreach (BMPInfo tex in TextureInfoCurrent)
+						foreach (GenericTexture tex in TextureInfoCurrent)
 						{
 							if (tex != null)
 							{
@@ -1400,12 +1402,12 @@ namespace SAModel.SAMDL
 						}
 					}
 				}
-				if (gcatt.vertexSkinData.Count > 0)
-					for (int i = 0; i < gcatt.vertexSkinData.Count; i++)
+				if (gcatt.VertexSkinData.Count > 0)
+					for (int i = 0; i < gcatt.VertexSkinData.Count; i++)
 					{
-						for (int j = 0; j < gcatt.vertexSkinData[i].posNrms.Count; j++)
+						for (int j = 0; j < gcatt.VertexSkinData[i].posNrms.Count; j++)
 						{
-							Vertex vtx = gcatt.vertexSkinData[i].posNrms[j].pos.ToVertex();
+							Vertex vtx = gcatt.VertexSkinData[i].posNrms[j].pos.ToVertex();
 							Vector3 v3 = Vector3.TransformCoordinate(vtx.ToVector3(), transform.Top);
 							Vector3 screenCoordinates = viewport.Project(v3, projection, view, Matrix.Identity);
 							EditorOptions.OnscreenFont.DrawText(OnScreenDisplay.textSprite, i.ToString() + "(" + j.ToString() + ")", (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
@@ -1801,7 +1803,7 @@ namespace SAModel.SAMDL
 			if (TexList != null)
 			{
 				List<Texture> textures = new List<Texture>();
-				List<BMPInfo> texinfo = new List<BMPInfo>();
+				List<GenericTexture> texinfo = new List<GenericTexture>();
 				List<string> dupnames = new List<string>();
 				for (int i = 0; i < TexList.TextureNames.Length; i++)
 					for (int j = 0; j < TextureInfo.Length; j++)
@@ -1817,7 +1819,7 @@ namespace SAModel.SAMDL
 			}
 			else
 			{
-				TextureInfoCurrent = new BMPInfo[TextureInfo.Length];
+				TextureInfoCurrent = new GenericTexture[TextureInfo.Length];
 				for (int i = 0; i < TextureInfo.Length; i++)
 					TextureInfoCurrent[i] = TextureInfo[i];
 				Textures = new Texture[TextureInfoCurrent.Length];
@@ -1996,6 +1998,7 @@ namespace SAModel.SAMDL
 				case ModelFormat.BasicDX:
 					return typeof(BasicAttach);
 				case ModelFormat.Chunk:
+				case ModelFormat.ChaoChunk:
 					return typeof(ChunkAttach);
 				case ModelFormat.GC:
 					return typeof(GC.GCAttach);
@@ -2122,7 +2125,7 @@ namespace SAModel.SAMDL
 						m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
 					}
 					gatt.VertexSkinName = "vertexskin_" + Extensions.GenerateIdentifier();
-					foreach (GC.GCSkinVertexSet m in gatt.vertexSkinData)
+					foreach (GC.GCSkinVertexSet m in gatt.VertexSkinData)
 					{
 						m.DataNamePos = "weightpoint_" + Extensions.GenerateIdentifier();
 						m.DataNameWeight = "weightdata_" + Extensions.GenerateIdentifier();
@@ -2224,7 +2227,7 @@ namespace SAModel.SAMDL
 			mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
 			using (GCMaterialEditor dlg = new GCMaterialEditor(mats, TextureInfoCurrent, matname))
 			{
-				dlg.FormUpdated += (s, ev) => NeedRedraw = true;
+				dlg.FormUpdated += (s, ev) => UpdateMaterials(mats);
 				dlg.ShowDialog(this);
 			}
 			switch (selectedObject.Attach)
@@ -2410,8 +2413,12 @@ namespace SAModel.SAMDL
 					List<string> labels = new List<string>() { model.Name };
 					using (StreamWriter sw = File.CreateText(sd.FileName))
 					{
+						string tlsname = string.Empty;
 						if (TexList != null)
+						{
 							TexList.ToNJA(sw, labels);
+							tlsname = TexList.Name;
+						}
 						else if (TexturePackName != null)
 						{
 							string[] texnames = new string[TextureInfoCurrent.Length];
@@ -2421,8 +2428,9 @@ namespace SAModel.SAMDL
 							tls.Name = "texlist_" + TexturePackName;
 							tls.TexnameArrayName = "textures_" + TexturePackName;
 							tls.ToNJA(sw, labels);
+							tlsname = tls.Name;
 						}
-						model.ToNJA(sw, labels, labels.ToArray());
+						model.ToNJA(sw, labels, labels.ToArray(), texlistname: tlsname);
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
 							foreach (NJS_MOTION anim in animationList)
@@ -2540,7 +2548,7 @@ namespace SAModel.SAMDL
 			{
 				// Save textures
 				List<string> textureNames = new List<string>();
-				foreach (BMPInfo bmp in TextureInfoCurrent)
+				foreach (GenericTexture bmp in TextureInfoCurrent)
 				{
 					textureNames.Add(bmp.Name);
 					string savePath = Path.Combine(rootPath, bmp.Name + ".png");
@@ -3848,7 +3856,7 @@ namespace SAModel.SAMDL
 							gcatt.VertexSkinName = FixLabel(gcatt.VertexSkinName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
-							foreach (GC.GCSkinVertexSet v in gcatt.vertexSkinData)
+							foreach (GC.GCSkinVertexSet v in gcatt.VertexSkinData)
 							{
 								v.DataNamePos = FixLabel(v.DataNamePos, checkingLabels, out dup);
 								if (!string.IsNullOrEmpty(dup))
@@ -3943,7 +3951,7 @@ namespace SAModel.SAMDL
 							gcatt.VertexSkinName = "vertexskin_" + Extensions.GenerateIdentifier();
 							if (gcatt.TranslucentMeshes.Count != 0)
 							{
-								foreach (GC.GCSkinVertexSet w in gcatt.vertexSkinData)
+								foreach (GC.GCSkinVertexSet w in gcatt.VertexSkinData)
 								{
 									w.DataNamePos = "weightpoint_" + Extensions.GenerateIdentifier();
 									w.DataNameWeight = "weightdata_" + Extensions.GenerateIdentifier();
@@ -4018,7 +4026,7 @@ namespace SAModel.SAMDL
 
 		private void AddSingleTexture(string filename)
 		{
-			List<BMPInfo> result = new List<BMPInfo>();
+			List<GenericTexture> result = new List<GenericTexture>();
 			if (TextureInfo != null && TextureInfo.Length > 0)
 				result.AddRange(TextureInfo);
 			result.AddRange(TextureArchive.GetTextures(filename, out bool hasNames));
@@ -4028,7 +4036,7 @@ namespace SAModel.SAMDL
 
 		private void AddTextures(string[] filenames, string paletteFile = null)
 		{
-			List<BMPInfo> result = new List<BMPInfo>();
+			List<GenericTexture> result = new List<GenericTexture>();
 			if (TextureInfo != null && TextureInfo.Length > 0)
 				result.AddRange(TextureInfo);
 			for (int i = 0; i < filenames.Length; i++)
@@ -4331,7 +4339,7 @@ namespace SAModel.SAMDL
 				return;
 			// Load model file
 			if (info.ModelFilePath != "" && File.Exists(info.ModelFilePath))
-				LoadFile(info.ModelFilePath);
+				LoadFile(info.ModelFilePath, chaodata: info.ChaoData);
 			// Load textures
 			if (info.TextureArchives != null)
 			{
@@ -4440,7 +4448,7 @@ namespace SAModel.SAMDL
 			{
 				case BasicAttach:
 					{
-						ModelDataEditor me = new ModelDataEditor(model, idx);
+						ModelDataEditor me = new ModelDataEditor(model, TextureInfoCurrent, idx);
 						if (me.ShowDialog(this) == DialogResult.OK)
 						{
 							model = me.editedHierarchy.Clone();
@@ -4606,11 +4614,45 @@ namespace SAModel.SAMDL
 			using (SaveFileDialog sd = new SaveFileDialog() { FileName = outfn, DefaultExt = "nja", Filter = "Ninja Ascii Files|*.nja" })
 				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
+					string tlsname = string.Empty;
 					List<string> labels = new List<string>() { model.Name };
 					using (StreamWriter sw = File.CreateText(sd.FileName))
 					{
+						sw.WriteLine("/* NJA 1.0.00 NinjaAsciiDataMix (SI) */");
+						sw.WriteLine("/* Generated by SAMDL */");
+						sw.WriteLine(Environment.NewLine + $"/* ROOT OBJECT : {model.Name} n({model.GetObjects().Length}) d(10) */");
 						if (TexList != null)
+						{
+							sw.WriteLine($"/* TEXLIST     : {TexList.Name} n({TexList.NumTextures}) */");
+							tlsname = TexList.Name;
+						}
+						else if (TexturePackName != null)
+						{
+							string[] texnames = new string[TextureInfoCurrent.Length];
+							for (int i = 0; i < TextureInfoCurrent.Length; i++)
+								texnames[i] = string.Format("{0}", TextureInfoCurrent[i].Name);
+							NJS_TEXLIST tls = new NJS_TEXLIST(texnames);
+							tls.Name = "texlist_" + TexturePackName;
+							sw.WriteLine($"/* TEXLIST     : {tls.Name} n({tls.NumTextures}) */");
+							tlsname = tls.Name;
+						}
+						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
+						{
+							string motiontype = "MOTION";
+							foreach (NJS_MOTION anim in animationList)
+							{
+								if (anim.IsShapeMotion())
+									motiontype = "SHAPE MOTION";
+								if (anim.IsCameraMotion())
+									motiontype = "CAMERA MOTION";
+								sw.WriteLine($"/* {motiontype} : {anim.Name} */");
+							}
+						}
+						sw.WriteLine(Environment.NewLine);
+						if (TexList != null)
+						{
 							TexList.ToNJA(sw, labels);
+						}
 						else if (TexturePackName != null)
 						{
 							string[] texnames = new string[TextureInfoCurrent.Length];
@@ -4621,7 +4663,21 @@ namespace SAModel.SAMDL
 							tls.TexnameArrayName = "textures_" + TexturePackName;
 							tls.ToNJA(sw, labels);
 						}
-						model.ToNJA(sw, labels, labels.ToArray());
+						if (TexList != null)
+						{
+							TexList.ToNJA(sw, labels);
+						}
+						else if (TexturePackName != null)
+						{
+							string[] texnames = new string[TextureInfoCurrent.Length];
+							for (int i = 0; i < TextureInfoCurrent.Length; i++)
+								texnames[i] = string.Format("{0}", TextureInfoCurrent[i].Name);
+							NJS_TEXLIST tls = new NJS_TEXLIST(texnames);
+							tls.Name = "texlist_" + TexturePackName;
+							tls.TexnameArrayName = "textures_" + TexturePackName;
+							tls.ToNJA(sw, labels);
+						}
+						model.ToNJA(sw, labels, labels.ToArray(), texlistname: tlsname);
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
 							foreach (NJS_MOTION anim in animationList)
@@ -4639,11 +4695,63 @@ namespace SAModel.SAMDL
 			using (SaveFileDialog sd = new SaveFileDialog() { FileName = outfn, DefaultExt = "nja", Filter = "Ninja Ascii Files|*.nja" })
 				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
+					string tlsname = string.Empty;
 					List<string> labels = new List<string>() { model.Name };
 					using (StreamWriter sw = File.CreateText(sd.FileName))
 					{
+						string objtype = string.Empty;
+						switch (model.GetModelFormat())
+						{
+							case ModelFormat.Basic:
+							case ModelFormat.BasicDX:
+							default:
+								objtype = "Model";
+								break;
+							case ModelFormat.Chunk:
+								objtype = "CnkModel";
+								break;
+							case ModelFormat.GC:
+								objtype = "GjModel";
+								break;
+							case ModelFormat.XJ:
+								objtype = "XjModel";
+								break;
+						}
+						sw.WriteLine($"/* NJA 2.0.00 Ninja2AsciiDataMix {objtype} (SI) */");
+						sw.WriteLine("/* Generated by SAMDL */");
+						sw.WriteLine(Environment.NewLine + $"/* ROOT OBJECT : {model.Name} n({model.GetObjects().Length}) d(10) v({model.CountAllVertices()}) */");
 						if (TexList != null)
+						{
+							sw.WriteLine($"/* TEXLIST     : {TexList.Name} n({TexList.NumTextures}) */");
+							tlsname = TexList.Name;
+						}
+						else if (TexturePackName != null)
+						{
+							string[] texnames = new string[TextureInfoCurrent.Length];
+							for (int i = 0; i < TextureInfoCurrent.Length; i++)
+								texnames[i] = string.Format("{0}", TextureInfoCurrent[i].Name);
+							NJS_TEXLIST tls = new NJS_TEXLIST(texnames);
+							tls.Name = "texlist_" + TexturePackName;
+							sw.WriteLine($"/* TEXLIST     : {tls.Name} n({tls.NumTextures}) */");
+							tlsname = tls.Name;
+						}
+						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
+						{
+							string motiontype = "MOTION";
+							foreach (NJS_MOTION anim in animationList)
+							{
+								if (anim.IsShapeMotion())
+									motiontype = "SHAPE MOTION";
+								if (anim.IsCameraMotion())
+									motiontype = "CAMERA MOTION";
+								sw.WriteLine($"/* {motiontype} : {anim.Name} */");
+							}
+						}
+						sw.WriteLine(Environment.NewLine);
+						if (TexList != null)
+						{
 							TexList.ToNJA(sw, labels);
+						}
 						else if (TexturePackName != null)
 						{
 							string[] texnames = new string[TextureInfoCurrent.Length];
@@ -4654,12 +4762,12 @@ namespace SAModel.SAMDL
 							tls.TexnameArrayName = "textures_" + TexturePackName;
 							tls.ToNJA(sw, labels);
 						}
-						model.ToNJA(sw, labels, labels.ToArray(), isNinja2: true);
+						model.ToNJA(sw, labels, labels.ToArray(), isNinja2: true, texlistname: tlsname);
 						if (exportAnimationsToolStripMenuItem.Checked && animationList != null)
 						{
 							foreach (NJS_MOTION anim in animationList)
 							{
-								anim.ToNJA(sw, labels);
+								anim.ToNJA(sw, labels, isNinja2: true);
 							}
 						}
 					}

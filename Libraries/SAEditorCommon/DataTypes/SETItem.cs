@@ -1,16 +1,16 @@
-﻿using SharpDX;
-using SharpDX.Direct3D9;
-using SAModel.Direct3D;
+﻿using SAModel.Direct3D;
+using SAModel.SAEditorCommon.Import;
 using SAModel.SAEditorCommon.SETEditing;
 using SAModel.SAEditorCommon.UI;
+using SharpDX;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.IO;
-using SAModel.Direct3D.TextureSystem;
-using SAModel.SAEditorCommon.Import;
 using System.Linq;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.DataTypes
 {
@@ -121,7 +121,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			{
 				// Get texture names
 				string[] textureNames = null;
-				BMPInfo[] textures = objdef.ExportTextures(this);
+				GenericTexture[] textures = objdef.ExportTextures(this);
 				if (textures != null)
 				{
 					textureNames = new string[textures.Length];

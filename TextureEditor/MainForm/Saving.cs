@@ -37,7 +37,7 @@ namespace TextureEditor
 					case TextureArchiveFormat.GVM:
 						if (textures[i] is GvrTexture)
 							continue;
-						textures[i] = textures[i].ToGvr(preferHighQualityToolStripMenuItem.Checked && highQualityGVMsToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked);
+						textures[i] = textures[i].ToGvr(preferHighQualityToolStripMenuItem.Checked && highQualityGVMsToolStripMenuItem.Checked, allowCompressedFormatsToolStripMenuItem.Checked, forceGCIX: useGCIXHeaderToolStripMenuItem.Checked);
 						break;
 					case TextureArchiveFormat.XVM:
 						if (textures[i] is XvrTexture)

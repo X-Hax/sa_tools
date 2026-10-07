@@ -107,10 +107,8 @@ namespace SA2ObjectDefinitions.Common
 		}
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
-
-			new PropertySpec("Time (in frames) before disappearing", typeof(byte), "Extended", null, null, (o) => o.Rotation.X & 0xFF,
-			(o, v) => { o.Rotation.X &= 0xFF00; o.Rotation.X |= (byte)v; }),
-			new PropertySpec("Oscillation Amount", typeof(int), "Extended", null, 1, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (int)v > 0 ? (int)v : 999999),
+			new PropertySpec("Visible Time", typeof(int), "Extended", "This value is multiplied by 10 in the game's code.", null, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v),
+			new PropertySpec("Oscillation Strength", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
 			new PropertySpec("Oscillation Speed", typeof(int), "Extended", null, 1, (o) => o.Rotation.Z, (o, v) => o.Rotation.Z = (int)v > 0 ? (int)v : 999999),
 			new PropertySpec("Vision Radius", typeof(float), "Extended", null, 10.0f, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v > 0 ? (float)v : 999.0f)
 		};

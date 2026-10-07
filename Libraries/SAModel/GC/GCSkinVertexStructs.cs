@@ -47,11 +47,11 @@ namespace SAModel.GC
 		{
 			var result = new StringBuilder("{ ");
 
-			result.Append(XF);
+			result.Append(XF.ToString("F6"));
 			result.Append(", ");
-			result.Append(YF);
+			result.Append(YF.ToString("F6"));
 			result.Append(", ");
-			result.Append(ZF);
+			result.Append(ZF.ToString("F6"));
 			result.Append(" }");
 
 			return result.ToString();

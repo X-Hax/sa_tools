@@ -258,6 +258,9 @@ namespace SAModel.SAEditorCommon
 		{
 			[DefaultValue(false)]
 			public bool HighQualityGVM { get; set; }
+			
+			[DefaultValue(false)]
+			public bool ForceGCIX { get; set; }
 
 			[DefaultValue(true)]
 			public bool SACompatiblePalettes { get; set; }
@@ -292,6 +295,7 @@ namespace SAModel.SAEditorCommon
 			public Settings_TextureEditor()
 			{
 				HighQualityGVM = false;
+				ForceGCIX = false;
 				SACompatiblePalettes = true;
 				EnableFiltering = true;
 				UseDDSforPAK = true;

@@ -1,25 +1,24 @@
-﻿using System.Windows.Forms;
+﻿using SAModel.GC;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using System;
-using SAModel.GC;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
-using SharpDX.Direct3D9;
-using SAModel.Direct3D.TextureSystem;
+using System.Windows.Forms;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.UI
 {
 	public partial class GCModelDataEditor : Form
 	{
 		public NJS_OBJECT editedHierarchy;
+		private NJS_OBJECT currentObject;
 
 		private Attach editedModel;
 		private Attach originalModel;
 		private bool freeze;
 		private int previousNodeIndex;
-		private readonly BMPInfo[] textures;
+		private readonly GenericTexture[] textures;
 
-		public GCModelDataEditor(NJS_OBJECT objectOriginal, BMPInfo[] textures, int index = 0)
+		public GCModelDataEditor(NJS_OBJECT objectOriginal, GenericTexture[] textures, int index = 0)
 		{
 			if (objectOriginal == null)
 				return;
@@ -35,6 +34,30 @@ namespace SAModel.SAEditorCommon.UI
 			BuildTranslucentMeshList();
 			this.textures = textures;
 			freeze = false;
+		}
+
+		private void updateObjectSettings(NJS_OBJECT obj)
+		{
+			NJS_OBJECT[] objs = editedHierarchy.GetObjects();
+			ObjectFlags flags = obj.Flags;
+			objs[comboBoxNode.SelectedIndex].Position = obj.Position;
+			objs[comboBoxNode.SelectedIndex].Rotation = obj.Rotation;
+			objs[comboBoxNode.SelectedIndex].Scale = obj.Scale;
+			objs[comboBoxNode.SelectedIndex].Flags = flags;
+			objs[comboBoxNode.SelectedIndex].IgnorePosition = (flags & ObjectFlags.NoPosition) == ObjectFlags.NoPosition;
+			objs[comboBoxNode.SelectedIndex].IgnoreRotation = (flags & ObjectFlags.NoRotate) == ObjectFlags.NoRotate;
+			objs[comboBoxNode.SelectedIndex].IgnoreScale = (flags & ObjectFlags.NoScale) == ObjectFlags.NoScale;
+			objs[comboBoxNode.SelectedIndex].SkipDraw = (flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay;
+			objs[comboBoxNode.SelectedIndex].SkipChildren = (flags & ObjectFlags.NoChildren) == ObjectFlags.NoChildren;
+			objs[comboBoxNode.SelectedIndex].RotateZYX = (flags & ObjectFlags.RotateZYX) == ObjectFlags.RotateZYX;
+			objs[comboBoxNode.SelectedIndex].Animate = (flags & ObjectFlags.NoAnimate) == 0;
+			objs[comboBoxNode.SelectedIndex].Morph = (flags & ObjectFlags.NoMorph) == 0;
+			objs[comboBoxNode.SelectedIndex].Clip = (flags & ObjectFlags.Clip) == ObjectFlags.Clip;
+			objs[comboBoxNode.SelectedIndex].Modifier = (flags & ObjectFlags.Modifier) == ObjectFlags.Modifier;
+			objs[comboBoxNode.SelectedIndex].Quaternion = (flags & ObjectFlags.Quaternion) == ObjectFlags.Quaternion;
+			objs[comboBoxNode.SelectedIndex].RotateBase = (flags & ObjectFlags.RotateBase) == ObjectFlags.RotateBase;
+			objs[comboBoxNode.SelectedIndex].RotateSet = (flags & ObjectFlags.RotateSet) == ObjectFlags.RotateSet;
+			objs[comboBoxNode.SelectedIndex].Envelope = (flags & ObjectFlags.Envelope) == ObjectFlags.Envelope;
 		}
 
 		#region Mesh management
@@ -246,6 +269,74 @@ namespace SAModel.SAEditorCommon.UI
 			for (int i = 0; i < objs.Length; i++)
 				comboBoxNode.Items.Add(i.ToString() + ": " + objs[i].Name.ToString());
 		}
+		private void BuildObjectDataList()
+		{
+			listViewObjectData.Items.Clear();
+			string flagnames = string.Empty;
+			string objpos = "";
+			string objang = "";
+			string objscl = "";
+			ObjectFlags flg = currentObject.Flags;
+			bool nopos = (flg & ObjectFlags.NoPosition) != 0;
+			bool norot = (flg & ObjectFlags.NoRotate) != 0;
+			bool noscl = (flg & ObjectFlags.NoScale) != 0;
+			bool nodraw = (flg & ObjectFlags.NoDisplay) != 0;
+			bool nochild = (flg & ObjectFlags.NoChildren) != 0;
+			bool zyxrot = (flg & ObjectFlags.RotateZYX) != 0;
+			bool noanim = (flg & ObjectFlags.NoAnimate) != 0;
+			bool noshape = (flg & ObjectFlags.NoMorph) != 0;
+			bool clip = (flg & ObjectFlags.Clip) != 0;
+			bool modifier = (flg & ObjectFlags.Modifier) != 0;
+			bool quaternion = (flg & ObjectFlags.Quaternion) != 0;
+			bool rotatebase = (flg & ObjectFlags.RotateBase) != 0;
+			bool rotateset = (flg & ObjectFlags.RotateSet) != 0;
+			bool envelope = (flg & ObjectFlags.Envelope) != 0;
+			if (nopos || norot || noscl)
+			{
+				flagnames += "UNIT_";
+				flagnames += nopos ? "POS" : "";
+				flagnames += norot ? "ROT" : "";
+				flagnames += noscl ? "SCL" : "";
+				flagnames += ", ";
+			}
+			if (nodraw)
+				flagnames += "HIDE, ";
+			if (nochild)
+				flagnames += "BREAK, ";
+			if (zyxrot)
+				flagnames += "ZYX_ANG,";
+			if (noanim)
+				flagnames += "ANIM_SKIP, ";
+			if (noshape)
+				flagnames += "SHAPE_SKIP, ";
+			if (clip)
+				flagnames += "CLIP, ";
+			if (modifier)
+				flagnames += "MOD, ";
+			if (quaternion)
+				flagnames += "QUAT, ";
+			if (rotatebase)
+				flagnames += "ROTBASE, ";
+			if (rotateset)
+				flagnames += "ROTSET, ";
+			if (envelope)
+				flagnames += "ENVELOPE, ";
+			if (flagnames == string.Empty)
+				flagnames = "NONE";
+			else
+				flagnames = flagnames.Remove(flagnames.Length - 2);
+			ListViewItem objdata = new ListViewItem(flagnames);
+			objpos = currentObject.Position.ToString();
+			objang = currentObject.Rotation.ToString();
+			objscl = currentObject.Scale.ToString();
+			objdata.SubItems.Add(objpos);
+			objdata.SubItems.Add(objang);
+			objdata.SubItems.Add(objscl);
+			listViewObjectData.Items.Add(objdata);
+			listViewObjectData.SelectedIndices.Clear();
+			listViewObjectData.SelectedItems.Clear();
+			listViewObjectData.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+		}
 		private void BuildVertexList()
 		{
 			listViewVertices.Items.Clear();
@@ -354,13 +445,13 @@ namespace SAModel.SAEditorCommon.UI
 			groupBoxWeightList.Enabled = false;
 			if (editedModel is GC.GCAttach gcmodel)
 			{
-				if (gcmodel.vertexSkinData.Count > 0)
+				if (gcmodel.VertexSkinData.Count > 0)
 				{
 					groupBoxWeightList.Enabled = true;
 					Dictionary<int, GCSkinVertexSet> vertdata = new Dictionary<int, GCSkinVertexSet>();
-					for (int i = 0; i < gcmodel.vertexSkinData.Count; i++)
+					for (int i = 0; i < gcmodel.VertexSkinData.Count; i++)
 					{
-						vertdata.Add(i, gcmodel.vertexSkinData[i]);
+						vertdata.Add(i, gcmodel.VertexSkinData[i]);
 					}
 					foreach (KeyValuePair<int, GCSkinVertexSet> weights in vertdata)
 					{
@@ -463,8 +554,11 @@ namespace SAModel.SAEditorCommon.UI
 			buttonDeleteOMesh.Enabled = ((GC.GCAttach)editedModel).OpaqueMeshes.Count > 0;
 			buttonMoveOMeshUp.Enabled = ((GC.GCAttach)editedModel).OpaqueMeshes.IndexOf(selectedMesh) > 0;
 			buttonMoveOMeshDown.Enabled = ((GC.GCAttach)editedModel).OpaqueMeshes.IndexOf(selectedMesh) < ((GC.GCAttach)editedModel).OpaqueMeshes.Count - 1;
+			openOParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerOToolStripMenuItem.Visible = true;
+			openTParameterViewerToolStripMenuItem.Enabled = openPrimitiveViewerTToolStripMenuItem.Enabled = false;
+			openTParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerTToolStripMenuItem.Visible = false;
 			openOParameterViewerToolStripMenuItem.Enabled = selectedMesh.Parameters.Count > 0;
-			openTParameterViewerToolStripMenuItem.Enabled = false;
+			openPrimitiveViewerOToolStripMenuItem.Enabled = selectedMesh.Primitives.Count > 0;
 			string meshParamAddr = selectedMesh.ParameterName;
 			string meshParamCount = selectedMesh.Parameters.Count.ToString();
 			string meshPrimName = selectedMesh.PrimitiveName;
@@ -503,8 +597,11 @@ namespace SAModel.SAEditorCommon.UI
 			buttonDeleteTMesh.Enabled = ((GC.GCAttach)editedModel).TranslucentMeshes.Count > 0;
 			buttonMoveTMeshUp.Enabled = ((GC.GCAttach)editedModel).TranslucentMeshes.IndexOf(selectedMesh) > 0;
 			buttonMoveTMeshDown.Enabled = ((GC.GCAttach)editedModel).TranslucentMeshes.IndexOf(selectedMesh) < ((GC.GCAttach)editedModel).TranslucentMeshes.Count - 1;
+			openTParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerTToolStripMenuItem.Visible = true;
+			openOParameterViewerToolStripMenuItem.Enabled = openPrimitiveViewerOToolStripMenuItem.Enabled = false;
+			openOParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerOToolStripMenuItem.Visible = false;
 			openTParameterViewerToolStripMenuItem.Enabled = selectedMesh.Parameters.Count > 0;
-			openOParameterViewerToolStripMenuItem.Enabled = false;
+			openPrimitiveViewerTToolStripMenuItem.Enabled = selectedMesh.Primitives.Count > 0;
 			string meshParamAddr = selectedMesh.ParameterName;
 			string meshParamCount = selectedMesh.Parameters.Count.ToString();
 			string meshPrimName = selectedMesh.PrimitiveName;
@@ -533,12 +630,18 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void listViewOMeshes_MouseClick(object sender, MouseEventArgs e)
 		{
+			openOParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerOToolStripMenuItem.Visible = true;
+			openTParameterViewerToolStripMenuItem.Enabled = openPrimitiveViewerTToolStripMenuItem.Enabled = false;
+
 			if (e.Button == MouseButtons.Right && listViewOMeshes.SelectedIndices.Count != 0)
 				contextMenuStripParamEdit.Show(listViewOMeshes, e.Location);
 		}
 
 		private void listViewTMeshes_MouseClick(object sender, MouseEventArgs e)
 		{
+			openTParameterViewerToolStripMenuItem.Visible = openPrimitiveViewerTToolStripMenuItem.Visible = true;
+			openOParameterViewerToolStripMenuItem.Enabled = openPrimitiveViewerOToolStripMenuItem.Enabled = false;
+
 			if (e.Button == MouseButtons.Right && listViewTMeshes.SelectedIndices.Count != 0)
 				contextMenuStripParamEdit.Show(listViewTMeshes, e.Location);
 		}
@@ -555,6 +658,7 @@ namespace SAModel.SAEditorCommon.UI
 			if (index == -1)
 				return;
 			NJS_OBJECT[] objs = editedHierarchy.GetObjects();
+			currentObject = objs[index].Clone();
 			// Apply changes
 			if (!freeze)
 				objs[previousNodeIndex].Name = textBoxObjectName.Text;
@@ -599,6 +703,7 @@ namespace SAModel.SAEditorCommon.UI
 			BuildVertexWeightList();
 			BuildOpaqueMeshList();
 			BuildTranslucentMeshList();
+			BuildObjectDataList();
 		}
 
 		private void buttonClose_Click(object sender, EventArgs e)
@@ -647,7 +752,7 @@ namespace SAModel.SAEditorCommon.UI
 				return;
 			}
 			viewVertexDataToolStripMenuItem.Enabled = true;
-			GCSkinVertexSet selectedVerts = ((GC.GCAttach)editedModel).vertexSkinData[listViewWeights.SelectedItems[0].Index];
+			GCSkinVertexSet selectedVerts = ((GC.GCAttach)editedModel).VertexSkinData[listViewWeights.SelectedItems[0].Index];
 			string weighttype = selectedVerts.elementType.ToString();
 			string weightsizetotal = selectedVerts.totalVertIndices.ToString();
 			string weightstart = selectedVerts.startingIndex.ToString();
@@ -700,7 +805,15 @@ namespace SAModel.SAEditorCommon.UI
 				vde.ShowDialog(this);
 			}
 		}
-
+		private void editObjectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+			{
+				ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+				ose.ShowDialog(this);
+			}
+			BuildObjectDataList();
+		}
 		private void OMeshData_DoubleClick(object sender, EventArgs e)
 		{
 			if (listViewOMeshes.SelectedItems.Count > 0)
@@ -716,8 +829,20 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			if (listViewTMeshes.SelectedItems.Count > 0)
 			{
-				GCMesh tMeshData = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewOMeshes.SelectedIndices[0]];
+				GCMesh tMeshData = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewTMeshes.SelectedIndices[0]];
 				using (GCModelParameterDataEditor de = new GCModelParameterDataEditor(tMeshData, textures))
+				{
+					de.ShowDialog(this);
+				}
+			}
+		}
+
+		private void VertexData_DoubleClick(object sender, EventArgs e)
+		{
+			if (listViewVertices.SelectedItems.Count > 0)
+			{
+				GCVertexSet vData = ((GC.GCAttach)editedModel).VertexData[listViewVertices.SelectedIndices[0]];
+				using (GCModelVertexDataEditor de = new GCModelVertexDataEditor(vData))
 				{
 					de.ShowDialog(this);
 				}
@@ -727,7 +852,7 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			if (listViewWeights.SelectedItems.Count > 0)
 			{
-				GCSkinVertexSet weightData = ((GC.GCAttach)editedModel).vertexSkinData[listViewWeights.SelectedIndices[0]];
+				GCSkinVertexSet weightData = ((GC.GCAttach)editedModel).VertexSkinData[listViewWeights.SelectedIndices[0]];
 				using (GCModelWeightDataEditor de = new GCModelWeightDataEditor(weightData))
 				{
 					de.ShowDialog(this);
@@ -735,13 +860,104 @@ namespace SAModel.SAEditorCommon.UI
 			}
 		}
 
-		private void openPrimitiveViewerToolStripMenuItem_Click(object sender, EventArgs e)
+		private void openPrimitiveViewerOToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			GCMesh oMeshData = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
-
 			using (GCModelPrimitiveDataEditor de = new GCModelPrimitiveDataEditor(oMeshData))
 			{
 				de.ShowDialog(this);
+			}
+		}
+
+		private void openPrimitiveViewerTToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			GCMesh tMeshData = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewTMeshes.SelectedIndices[0]];
+			using (GCModelPrimitiveDataEditor de = new GCModelPrimitiveDataEditor(tMeshData))
+			{
+				de.ShowDialog(this);
+			}
+		}
+
+		private void listViewObjectData_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right && listViewObjectData.SelectedIndices.Count != 0)
+				contextMenuStripObjSet.Show(listViewObjectData, e.Location);
+		}
+		private void ObjectData_DoubleClick(object sender, EventArgs e)
+		{
+			using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+			{
+				ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+				ose.ShowDialog(this);
+			}
+			BuildObjectDataList();
+		}
+		private void ObjectData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == (char)Keys.Enter)
+			{
+				using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+				{
+					ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+					ose.ShowDialog(this);
+				}
+				BuildObjectDataList();
+			}
+		}
+		private void VertexData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewVertices.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					GCVertexSet vData = ((GC.GCAttach)editedModel).VertexData[listViewVertices.SelectedIndices[0]];
+					using (GCModelVertexDataEditor de = new GCModelVertexDataEditor(vData))
+					{
+						de.ShowDialog(this);
+					}
+				}
+			}
+		}
+		private void WeightData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewWeights.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					GCSkinVertexSet weightData = ((GC.GCAttach)editedModel).VertexSkinData[listViewWeights.SelectedIndices[0]];
+					using (GCModelWeightDataEditor de = new GCModelWeightDataEditor(weightData))
+					{
+						de.ShowDialog(this);
+					}
+				}
+			}
+		}
+		private void OMeshesData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewOMeshes.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					GCMesh oMeshData = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+					using (GCModelParameterDataEditor de = new GCModelParameterDataEditor(oMeshData, textures))
+					{
+						de.ShowDialog(this);
+					}
+				}
+			}
+		}
+		private void TMeshesData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (listViewTMeshes.SelectedItems.Count > 0)
+			{
+				if (e.KeyChar == (char)Keys.Enter)
+				{
+					GCMesh tMeshData = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewTMeshes.SelectedIndices[0]];
+					using (GCModelParameterDataEditor de = new GCModelParameterDataEditor(tMeshData, textures))
+					{
+						de.ShowDialog(this);
+					}
+				}
 			}
 		}
 	}

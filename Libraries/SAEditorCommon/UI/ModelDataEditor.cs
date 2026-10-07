@@ -1,20 +1,23 @@
-﻿using System.Windows.Forms;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System;
+using System.Windows.Forms;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.UI
 {
 	public partial class ModelDataEditor : Form
 	{
 		public NJS_OBJECT editedHierarchy;
+		private NJS_OBJECT currentObject;
 
-		private Attach editedModel;
-		private Attach originalModel;
+		private BasicAttach editedModel;
+		private BasicAttach originalModel;
 		private bool freeze;
+		private readonly GenericTexture[] textures;
 		private int previousNodeIndex;
 
-		public ModelDataEditor(NJS_OBJECT objectOriginal, int index = 0)
+		public ModelDataEditor(NJS_OBJECT objectOriginal, GenericTexture[] textures, int index = 0)
 		{
 			if (objectOriginal == null)
 				return;
@@ -27,6 +30,10 @@ namespace SAModel.SAEditorCommon.UI
 			BuildNodeList();
 			comboBoxNode.SelectedIndex = index;
 			BuildMeshsetList();
+			BuildObjectDataList();
+			BuildMaterialList();
+			UpdateVertexData();
+			this.textures = textures;
 			freeze = false;
 		}
 
@@ -248,7 +255,7 @@ namespace SAModel.SAEditorCommon.UI
 			((BasicAttach)editedModel).Mesh.RemoveAt(index);
 			FixLabels();
 			BuildMeshsetList();
-			SelectMesh(Math.Min(listViewMeshes.Items.Count -1, index + 1));
+			SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
 		}
 
 		private void SelectMesh(int index)
@@ -361,7 +368,253 @@ namespace SAModel.SAEditorCommon.UI
 			for (int i = 0; i < objs.Length; i++)
 				comboBoxNode.Items.Add(i.ToString() + ": " + objs[i].Name.ToString());
 		}
+		private void updateObjectSettings(NJS_OBJECT obj)
+		{
+			NJS_OBJECT[] objs = editedHierarchy.GetObjects();
+			ObjectFlags flags = obj.Flags;
+			objs[comboBoxNode.SelectedIndex].Position = obj.Position;
+			objs[comboBoxNode.SelectedIndex].Rotation = obj.Rotation;
+			objs[comboBoxNode.SelectedIndex].Scale = obj.Scale;
+			objs[comboBoxNode.SelectedIndex].Flags = flags;
+			objs[comboBoxNode.SelectedIndex].IgnorePosition = (flags & ObjectFlags.NoPosition) == ObjectFlags.NoPosition;
+			objs[comboBoxNode.SelectedIndex].IgnoreRotation = (flags & ObjectFlags.NoRotate) == ObjectFlags.NoRotate;
+			objs[comboBoxNode.SelectedIndex].IgnoreScale = (flags & ObjectFlags.NoScale) == ObjectFlags.NoScale;
+			objs[comboBoxNode.SelectedIndex].SkipDraw = (flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay;
+			objs[comboBoxNode.SelectedIndex].SkipChildren = (flags & ObjectFlags.NoChildren) == ObjectFlags.NoChildren;
+			objs[comboBoxNode.SelectedIndex].RotateZYX = (flags & ObjectFlags.RotateZYX) == ObjectFlags.RotateZYX;
+			objs[comboBoxNode.SelectedIndex].Animate = (flags & ObjectFlags.NoAnimate) == 0;
+			objs[comboBoxNode.SelectedIndex].Morph = (flags & ObjectFlags.NoMorph) == 0;
+			objs[comboBoxNode.SelectedIndex].Clip = (flags & ObjectFlags.Clip) == ObjectFlags.Clip;
+			objs[comboBoxNode.SelectedIndex].Modifier = (flags & ObjectFlags.Modifier) == ObjectFlags.Modifier;
+			objs[comboBoxNode.SelectedIndex].Quaternion = (flags & ObjectFlags.Quaternion) == ObjectFlags.Quaternion;
+			objs[comboBoxNode.SelectedIndex].RotateBase = (flags & ObjectFlags.RotateBase) == ObjectFlags.RotateBase;
+			objs[comboBoxNode.SelectedIndex].RotateSet = (flags & ObjectFlags.RotateSet) == ObjectFlags.RotateSet;
+			objs[comboBoxNode.SelectedIndex].Envelope = (flags & ObjectFlags.Envelope) == ObjectFlags.Envelope;
+		}
+		private void UpdateVertexData()
+		{
+			BasicAttach bsatt = (BasicAttach)editedModel;
+			labelVertexCount.Text = "0";
+			labelNormalCount.Text = "0";
+			if (bsatt.Vertex != null)
+				labelVertexCount.Text = bsatt.Vertex.Length.ToString();
+			if (bsatt.Normal != null)
+				labelNormalCount.Text = bsatt.Normal.Length.ToString();
+		}
+		private void UpdateMaterialData()
+		{
 
+		}
+		private void BuildObjectDataList()
+		{
+			listViewObjectData.Items.Clear();
+			string flagnames = string.Empty;
+			string objpos = "";
+			string objang = "";
+			string objscl = "";
+			ObjectFlags flg = currentObject.Flags;
+			bool nopos = (flg & ObjectFlags.NoPosition) != 0;
+			bool norot = (flg & ObjectFlags.NoRotate) != 0;
+			bool noscl = (flg & ObjectFlags.NoScale) != 0;
+			bool nodraw = (flg & ObjectFlags.NoDisplay) != 0;
+			bool nochild = (flg & ObjectFlags.NoChildren) != 0;
+			bool zyxrot = (flg & ObjectFlags.RotateZYX) != 0;
+			bool noanim = (flg & ObjectFlags.NoAnimate) != 0;
+			bool noshape = (flg & ObjectFlags.NoMorph) != 0;
+			bool clip = (flg & ObjectFlags.Clip) != 0;
+			bool modifier = (flg & ObjectFlags.Modifier) != 0;
+			bool quaternion = (flg & ObjectFlags.Quaternion) != 0;
+			bool rotatebase = (flg & ObjectFlags.RotateBase) != 0;
+			bool rotateset = (flg & ObjectFlags.RotateSet) != 0;
+			bool envelope = (flg & ObjectFlags.Envelope) != 0;
+			if (nopos || norot || noscl)
+			{
+				flagnames += "UNIT_";
+				flagnames += nopos ? "POS" : "";
+				flagnames += norot ? "ROT" : "";
+				flagnames += noscl ? "SCL" : "";
+				flagnames += ", ";
+			}
+			if (nodraw)
+				flagnames += "HIDE, ";
+			if (nochild)
+				flagnames += "BREAK, ";
+			if (zyxrot)
+				flagnames += "ZYX_ANG,";
+			if (noanim)
+				flagnames += "ANIM_SKIP, ";
+			if (noshape)
+				flagnames += "SHAPE_SKIP, ";
+			if (clip)
+				flagnames += "CLIP, ";
+			if (modifier)
+				flagnames += "MOD, ";
+			if (quaternion)
+				flagnames += "QUAT, ";
+			if (rotatebase)
+				flagnames += "ROTBASE, ";
+			if (rotateset)
+				flagnames += "ROTSET, ";
+			if (envelope)
+				flagnames += "ENVELOPE, ";
+			if (flagnames == string.Empty)
+				flagnames = "NONE";
+			else
+				flagnames = flagnames.Remove(flagnames.Length - 2);
+			ListViewItem objdata = new ListViewItem(flagnames);
+			objpos = currentObject.Position.ToString();
+			objang = currentObject.Rotation.ToString();
+			objscl = currentObject.Scale.ToString();
+			objdata.SubItems.Add(objpos);
+			objdata.SubItems.Add(objang);
+			objdata.SubItems.Add(objscl);
+			listViewObjectData.Items.Add(objdata);
+			listViewObjectData.SelectedIndices.Clear();
+			listViewObjectData.SelectedItems.Clear();
+			listViewObjectData.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+		}
+		private void BuildMaterialList()
+		{
+			listViewMaterials.Items.Clear();
+			groupBoxMaterialList.Enabled = editedModel != null;
+			if (editedModel is BasicAttach batt)
+			{
+				foreach (NJS_MATERIAL mat in batt.Material)
+				{
+					ListViewItem newmat = new ListViewItem(batt.Material.IndexOf(mat).ToString());
+					newmat.SubItems.Add(mat.DiffuseColor.ToNJA());
+					newmat.SubItems.Add(mat.SpecularColor.ToNJA());
+					string datasets = string.Empty;
+					string texid = string.Empty;
+					string stripflags = string.Empty;
+					string texdata = string.Empty;
+					string blenddata = string.Empty;
+					string clamp = "CL(";
+					string flip = "FL(";
+					string filter = "FM(";
+					if (mat.UseTexture)
+						texdata += $"TID({mat.TextureID}), ";
+					if (mat.UseAlpha)
+						stripflags += "UA, ";
+					if (mat.EnvironmentMap)
+						stripflags += "ENV, ";
+					if (mat.DoubleSided)
+						stripflags += "DS, ";
+					if (mat.FlatShading)
+						stripflags += "FS, ";
+					if (mat.IgnoreLighting)
+						stripflags += "IL, ";
+					if (mat.IgnoreSpecular)
+						stripflags += "IS, ";
+
+					if (mat.PickStatus)
+						texdata += "PS, ";
+					if (mat.SuperSample)
+						texdata += "SS, ";
+					if (mat.ClampU)
+						clamp += "U";
+					if (mat.ClampV)
+						clamp += "V";
+					clamp += "), ";
+					if (mat.FlipU)
+						flip += "U";
+					if (mat.FlipV)
+						flip += "V";
+					flip += "), ";
+					if (mat.ClampU || mat.ClampV)
+						texdata += clamp;
+					if (mat.FlipU || mat.FlipV)
+						texdata += flip;
+					switch (mat.FilterMode)
+					{
+					
+						case FilterMode.PointSampled:
+							filter += "PS";
+							break;
+						case FilterMode.Bilinear:
+							filter += "BF";
+							break;
+						case FilterMode.Trilinear:
+							filter += "TFA";
+							break;
+						case FilterMode.Reserved:
+							filter += "TFB";
+							break;
+					}
+					texdata += filter + "), ";
+
+					switch (mat.SourceAlpha)
+					{
+						case AlphaInstruction.Zero:
+							blenddata += "ZER, ";
+							break;
+						case AlphaInstruction.One:
+							blenddata += "ONE, ";
+							break;
+						case AlphaInstruction.OtherColor:
+							blenddata += "OC, ";
+							break;
+						case AlphaInstruction.InverseOtherColor:
+							blenddata += "IOC, ";
+							break;
+						case AlphaInstruction.SourceAlpha:
+							blenddata += "SA, ";
+							break;
+						case AlphaInstruction.InverseSourceAlpha:
+							blenddata += "ISA, ";
+							break;
+						case AlphaInstruction.DestinationAlpha:
+							blenddata += "DA, ";
+							break;
+						case AlphaInstruction.InverseDestinationAlpha:
+							blenddata += "IDA, ";
+							break;
+					}
+					switch (mat.DestinationAlpha)
+					{
+						case AlphaInstruction.Zero:
+							blenddata += "ZER";
+							break;
+						case AlphaInstruction.One:
+							blenddata += "ONE";
+							break;
+						case AlphaInstruction.OtherColor:
+							blenddata += "OC";
+							break;
+						case AlphaInstruction.InverseOtherColor:
+							blenddata += "IOC";
+							break;
+						case AlphaInstruction.SourceAlpha:
+							blenddata += "SA";
+							break;
+						case AlphaInstruction.InverseSourceAlpha:
+							blenddata += "ISA";
+							break;
+						case AlphaInstruction.DestinationAlpha:
+							blenddata += "DA";
+							break;
+						case AlphaInstruction.InverseDestinationAlpha:
+							blenddata += "IDA";
+							break;
+					}
+
+					if (!string.IsNullOrEmpty(stripflags))
+						stripflags = stripflags.Remove(stripflags.Length - 2);
+					else
+						stripflags += "NONE";
+					newmat.SubItems.Add(stripflags);
+					if (!string.IsNullOrEmpty(texdata))
+						texdata = texdata.Remove(texdata.Length - 2);
+					newmat.SubItems.Add(texdata);
+					newmat.SubItems.Add(blenddata);
+					listViewMaterials.Items.Add(newmat);
+				}
+			}
+			listViewMaterials.SelectedIndices.Clear();
+			listViewMaterials.SelectedItems.Clear();
+			//listViewMeshes_SelectedIndexChanged(null, null);
+			listViewMaterials.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+		}
 		private void BuildMeshsetList()
 		{
 			listViewMeshes.Items.Clear();
@@ -384,7 +637,7 @@ namespace SAModel.SAEditorCommon.UI
 				}
 				if (invalidMaterials > 0)
 					MessageBox.Show(this, invalidMaterials.ToString() + " materials were using invalid material IDs. " +
-						"Those material IDs have been reset to the value " + 
+						"Those material IDs have been reset to the value " +
 						(batt.Material.Count - 1).ToString() + ".", "Model Data Editor Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 			listViewMeshes.SelectedIndices.Clear();
@@ -427,6 +680,11 @@ namespace SAModel.SAEditorCommon.UI
 			if (e.Button == MouseButtons.Right && listViewMeshes.SelectedIndices.Count != 0)
 				contextMenuStripLabels.Show(listViewMeshes, e.Location);
 		}
+		private void listViewObjectData_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right && listViewObjectData.SelectedIndices.Count != 0)
+				contextMenuStripObjSet.Show(listViewObjectData, e.Location);
+		}
 
 		private void comboBoxNode_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -434,6 +692,7 @@ namespace SAModel.SAEditorCommon.UI
 			if (index == -1)
 				return;
 			NJS_OBJECT[] objs = editedHierarchy.GetObjects();
+			currentObject = objs[index].Clone();
 			// Apply changes
 			if (!freeze)
 				objs[previousNodeIndex].Name = textBoxObjectName.Text;
@@ -443,8 +702,8 @@ namespace SAModel.SAEditorCommon.UI
 			// Load new stuff
 			if (objs[index].Attach != null)
 			{
-				editedModel = objs[index].Attach.Clone();
-				originalModel = objs[index].Attach.Clone();
+				editedModel = (BasicAttach)objs[index].Attach.Clone();
+				originalModel = (BasicAttach)objs[index].Attach.Clone();
 				textBoxModelName.Enabled = true;
 				textBoxModelName.Text = editedModel.Name;
 				textBoxModelRadius.Enabled = true;
@@ -468,21 +727,79 @@ namespace SAModel.SAEditorCommon.UI
 					groupBoxMeshList.Enabled = true;
 					BuildMeshsetList();
 				}
+				groupBoxVertexList.Enabled = true;
+				UpdateVertexData();
 			}
 			else
 			{
 				textBoxMaterialName.Enabled = textBoxMeshsetName.Enabled = textBoxNormalName.Enabled = textBoxVertexName.Enabled = textBoxModelName.Enabled = textBoxModelRadius.Enabled = textBoxModelX.Enabled = textBoxModelY.Enabled = textBoxModelZ.Enabled = false;
 				textBoxModelName.Text = textBoxMaterialName.Text = textBoxMeshsetName.Text = textBoxNormalName.Text = textBoxVertexName.Text = textBoxModelName.Text = textBoxModelRadius.Text = textBoxModelX.Text = textBoxModelY.Text = textBoxModelZ.Text = "";
 				editedModel = null;
+				groupBoxVertexList.Enabled = false;
 			}
+
 			previousNodeIndex = comboBoxNode.SelectedIndex;
 			BuildMeshsetList();
+			BuildObjectDataList();
+			BuildMaterialList();
 		}
-
+		private void editObjectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+			{
+				ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+				ose.ShowDialog(this);
+			}
+			BuildObjectDataList();
+		}
+		private void ObjectData_DoubleClick(object sender, EventArgs e)
+		{
+			using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+			{
+				ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+				ose.ShowDialog(this);
+			}
+			BuildObjectDataList();
+		}
+		private void ObjectData_EnterKey(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == (char)Keys.Enter)
+			{
+				using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+				{
+					ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+					ose.ShowDialog(this);
+				}
+				BuildObjectDataList();
+			}
+		}
 		private void buttonClose_Click(object sender, EventArgs e)
 		{
 			comboBoxNode_SelectedIndexChanged(sender, e);
 		}
 		#endregion
+
+		private void buttonViewVertexData_Click(object sender, EventArgs e)
+		{
+			using (VertexNormalDataViewer vne = new VertexNormalDataViewer(editedModel.Vertex, editedModel.Normal))
+			{
+				//de.FormUpdated += (s, ev) => updateStripData(selectedObj, matID, pcs);
+				vne.ShowDialog(this);
+			}
+		}
+
+		private void buttonMaterialEditor_Click(object sender, EventArgs e)
+		{
+			using (MaterialEditor me = new MaterialEditor(editedModel.Material, textures))
+			{
+				me.ShowDialog(this);
+			}
+			BuildMaterialList();
+		}
+
+		private void statusStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+
+		}
 	}
 }

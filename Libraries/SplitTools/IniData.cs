@@ -529,6 +529,11 @@ namespace SplitTools
 			return IniSerializer.Deserialize<Dictionary<SA2LevelIDs, SA2StartPosInfo>>(filename);
 		}
 
+		public static Dictionary<SA2DCLevelIDs, SA2StartPosInfo> LoadDC(string filename)
+		{
+			return IniSerializer.Deserialize<Dictionary<SA2DCLevelIDs, SA2StartPosInfo>>(filename);
+		}
+
 		public static Dictionary<SA2LevelIDs, SA2StartPosInfo> Load(byte[] file, int address)
 		{
 			var result = new Dictionary<SA2LevelIDs, SA2StartPosInfo>();
@@ -540,8 +545,23 @@ namespace SplitTools
 			}
 			return result;
 		}
+		public static Dictionary<SA2DCLevelIDs, SA2StartPosInfo> LoadDC(byte[] file, int address)
+		{
+			var result = new Dictionary<SA2DCLevelIDs, SA2StartPosInfo>();
+			while (ByteConverter.ToUInt16(file, address) != (ushort)SA2DCLevelIDs.Invalid)
+			{
+				var objgrp = new SA2StartPosInfo(file, address + 2);
+				result.Add((SA2DCLevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
+				address += Size;
+			}
+			return result;
+		}
 
 		public static void Save(this Dictionary<SA2LevelIDs, SA2StartPosInfo> startpos, string filename)
+		{
+			IniSerializer.Serialize(startpos, filename);
+		}
+		public static void SaveDC(this Dictionary<SA2DCLevelIDs, SA2StartPosInfo> startpos, string filename)
 		{
 			IniSerializer.Serialize(startpos, filename);
 		}
@@ -591,117 +611,6 @@ namespace SplitTools
 		}
 
 		public SA2StartPosInfo(byte[] file, int address)
-		{
-			YRotation = ByteConverter.ToUInt16(file, address);
-			address += sizeof(ushort);
-			P1YRotation = ByteConverter.ToUInt16(file, address);
-			address += sizeof(ushort);
-			P2YRotation = ByteConverter.ToUInt16(file, address);
-			address += sizeof(ushort);
-			Position = new Vertex(file, address);
-			address += Vertex.Size;
-			P1Position = new Vertex(file, address);
-			address += Vertex.Size;
-			P2Position = new Vertex(file, address);
-			address += Vertex.Size;
-		}
-
-		[TypeConverter(typeof(UInt16HexConverter))]
-		public ushort YRotation { get; set; }
-		[TypeConverter(typeof(UInt16HexConverter))]
-		public ushort P1YRotation { get; set; }
-		[TypeConverter(typeof(UInt16HexConverter))]
-		public ushort P2YRotation { get; set; }
-		public Vertex Position { get; set; }
-		public Vertex P1Position { get; set; }
-		public Vertex P2Position { get; set; }
-
-		public static int Size => (Vertex.Size + sizeof(ushort)) * 3;
-
-		public byte[] GetBytes()
-		{
-			var result = new List<byte>(Size);
-			result.AddRange(ByteConverter.GetBytes(YRotation));
-			result.AddRange(ByteConverter.GetBytes(P1YRotation));
-			result.AddRange(ByteConverter.GetBytes(P2YRotation));
-			result.AddRange(Position.GetBytes());
-			result.AddRange(P1Position.GetBytes());
-			result.AddRange(P2Position.GetBytes());
-			return result.ToArray();
-		}
-	}
-
-	public static class SA2DCStartPosList
-	{
-		public static int Size => SA2DCStartPosInfo.Size + 2;
-
-		public static Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> Load(string filename)
-		{
-			return IniSerializer.Deserialize<Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo>>(filename);
-		}
-
-		public static Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> Load(byte[] file, int address)
-		{
-			var result = new Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo>();
-			while (ByteConverter.ToUInt16(file, address) != (ushort)SA2DCLevelIDs.Invalid)
-			{
-				var objgrp = new SA2DCStartPosInfo(file, address + 2);
-				result.Add((SA2DCLevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
-				address += Size;
-			}
-			return result;
-		}
-
-		public static void Save(this Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> startpos, string filename)
-		{
-			IniSerializer.Serialize(startpos, filename);
-		}
-
-		public static byte[] GetBytes(this Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> startpos)
-		{
-			var result = new List<byte>(Size * (startpos.Count + 1));
-			foreach (var item in startpos)
-			{
-				result.AddRange(ByteConverter.GetBytes((ushort)item.Key));
-				result.AddRange(item.Value.GetBytes());
-			}
-			result.AddRange(ByteConverter.GetBytes((ushort)SA2DCLevelIDs.Invalid));
-			result.AddRange(new byte[SA2DCStartPosInfo.Size]);
-			return result.ToArray();
-		}
-
-		public static string ToStruct(this KeyValuePair<SA2DCLevelIDs, SA2DCStartPosInfo> startpos)
-		{
-			var result = new StringBuilder("{ ");
-			result.Append(startpos.Key.ToC("LevelIDs"));
-			result.Append(", ");
-			result.Append(startpos.Value.YRotation.ToCHex());
-			result.Append(", ");
-			result.Append(startpos.Value.P1YRotation.ToCHex());
-			result.Append(", ");
-			result.Append(startpos.Value.P2YRotation.ToCHex());
-			result.Append(", ");
-			result.Append(startpos.Value.Position.ToStruct());
-			result.Append(", ");
-			result.Append(startpos.Value.P1Position.ToStruct());
-			result.Append(", ");
-			result.Append(startpos.Value.P2Position.ToStruct());
-			result.Append(" }");
-			return result.ToString();
-		}
-	}
-
-	[Serializable]
-	public class SA2DCStartPosInfo
-	{
-		public SA2DCStartPosInfo()
-		{
-			Position = new Vertex();
-			P1Position = new Vertex();
-			P2Position = new Vertex();
-		}
-
-		public SA2DCStartPosInfo(byte[] file, int address)
 		{
 			YRotation = ByteConverter.ToUInt16(file, address);
 			address += sizeof(ushort);
@@ -946,7 +855,8 @@ namespace SplitTools
 				tw.WriteLine("TextureNum  {0},", NumTextures);
 				tw.WriteLine("END");
 				tw.WriteLine();
-				tw.WriteLine("TEXTURE_END");
+				tw.WriteLine("TEXTURE_END" + Environment.NewLine);
+				tw.WriteLine(Environment.NewLine);
 				labels.Add(Name);
 			}
 		}
@@ -3256,33 +3166,88 @@ namespace SplitTools
 		}
 	}
 
-	public static class SA2EndPosList
+	public static class SA2MiniPosList
 	{
-		public static int Size => SA2EndPosInfo.Size + 2;
+		public static int Size => SA2MiniPosInfo.Size + 2;
 
-		public static Dictionary<SA2LevelIDs, SA2EndPosInfo> Load(string filename)
+		public static Dictionary<SA2LevelIDs, SA2EndPosInfo> LoadEnd(string filename)
 		{
 			return IniSerializer.Deserialize<Dictionary<SA2LevelIDs, SA2EndPosInfo>>(filename);
 		}
+		public static Dictionary<SA2LevelIDs, SA2MultiPosInfo> LoadMulti(string filename)
+		{
+			return IniSerializer.Deserialize<Dictionary<SA2LevelIDs, SA2MultiPosInfo>>(filename);
+		}
+		public static Dictionary<SA2DCLevelIDs, SA2MiniPosInfo> LoadDC(string filename)
+		{
+			return IniSerializer.Deserialize<Dictionary<SA2DCLevelIDs, SA2MiniPosInfo>>(filename);
+		}
 
-		public static Dictionary<SA2LevelIDs, SA2EndPosInfo> Load(byte[] file, int address)
+		public static Dictionary<SA2LevelIDs, SA2EndPosInfo> LoadEnd(byte[] file, int address)
 		{
 			var result = new Dictionary<SA2LevelIDs, SA2EndPosInfo>();
+			
 			while (ByteConverter.ToUInt16(file, address) != (ushort)SA2LevelIDs.Invalid)
 			{
-				var objgrp = new SA2EndPosInfo(file, address + 2);
+				var objgrp = SA2MiniPosInfo.LoadEnd(file, address + 2);
 				result.Add((SA2LevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
 				address += Size;
 			}
 			return result;
 		}
+		public static Dictionary<SA2LevelIDs, SA2MultiPosInfo> LoadMulti(byte[] file, int address)
+		{
+			var result = new Dictionary<SA2LevelIDs, SA2MultiPosInfo>();
 
-		public static void Save(this Dictionary<SA2LevelIDs, SA2EndPosInfo> EndPos, string filename)
+			while (ByteConverter.ToUInt16(file, address) != (ushort)SA2LevelIDs.Invalid)
+			{
+				var objgrp = SA2MiniPosInfo.LoadMulti(file, address + 2);
+				result.Add((SA2LevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
+				address += Size;
+			}
+			return result;
+		}
+		public static Dictionary<SA2DCLevelIDs, SA2EndPosInfo> LoadDCEnd(byte[] file, int address)
+		{
+			var result = new Dictionary<SA2DCLevelIDs, SA2EndPosInfo>();
+			while (ByteConverter.ToUInt16(file, address) != (ushort)SA2DCLevelIDs.Invalid)
+			{
+				var objgrp = SA2MiniPosInfo.LoadEnd(file, address + 2);
+				result.Add((SA2DCLevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
+				address += Size;
+			}
+			return result;
+		}
+		public static Dictionary<SA2DCLevelIDs, SA2MultiPosInfo> LoadDCMulti(byte[] file, int address)
+		{
+			var result = new Dictionary<SA2DCLevelIDs, SA2MultiPosInfo>();
+			while (ByteConverter.ToUInt16(file, address) != (ushort)SA2DCLevelIDs.Invalid)
+			{
+				var objgrp = SA2MiniPosInfo.LoadMulti(file, address + 2);
+				result.Add((SA2DCLevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
+				address += Size;
+			}
+			return result;
+		}
+
+		public static void SaveMulti(this Dictionary<SA2LevelIDs, SA2MultiPosInfo> MultiPos, string filename)
+		{
+			IniSerializer.Serialize(MultiPos, filename);
+		}
+		public static void SaveEnd(this Dictionary<SA2LevelIDs, SA2EndPosInfo> EndPos, string filename)
+		{
+			IniSerializer.Serialize(EndPos, filename);
+		}
+		public static void SaveMultiDC(this Dictionary<SA2DCLevelIDs, SA2MultiPosInfo> MultiPos, string filename)
+		{
+			IniSerializer.Serialize(MultiPos, filename);
+		}
+		public static void SaveEndDC(this Dictionary<SA2DCLevelIDs, SA2EndPosInfo> EndPos, string filename)
 		{
 			IniSerializer.Serialize(EndPos, filename);
 		}
 
-		public static byte[] GetBytes(this Dictionary<SA2LevelIDs, SA2EndPosInfo> EndPos)
+		public static byte[] GetBytes(this Dictionary<SA2LevelIDs, SA2MiniPosInfo> EndPos)
 		{
 			var result = new List<byte>(Size * (EndPos.Count + 1));
 			foreach (var item in EndPos)
@@ -3291,20 +3256,42 @@ namespace SplitTools
 				result.AddRange(item.Value.GetBytes());
 			}
 			result.AddRange(ByteConverter.GetBytes((ushort)SA2LevelIDs.Invalid));
-			result.AddRange(new byte[SA2EndPosInfo.Size]);
+			result.AddRange(new byte[SA2MiniPosInfo.Size]);
 			return result.ToArray();
 		}
 
-		public static string ToStruct(this KeyValuePair<SA2LevelIDs, SA2EndPosInfo> item)
+		public static string ToStructEnd(this KeyValuePair<SA2LevelIDs, SA2EndPosInfo> item)
 		{
-			return string.Format("{{ {0}, {1}, {2}, {3}, {4}, {5} }}", item.Key.ToC("LevelIDs"), item.Value.Mission2YRotation.ToCHex(),
+				return string.Format("{{ {0}, {1}, {2}, {3}, {4}, {5} }}", item.Key.ToC("LevelIDs"), item.Value.Mission2YRotation.ToCHex(),
 				item.Value.Mission3YRotation.ToCHex(), item.Value.Unknown.ToCHex(), item.Value.Mission2Position.ToStruct(),
 				item.Value.Mission3Position.ToStruct());
 		}
-	}
+		public static string ToStructMulti(this KeyValuePair<SA2LevelIDs, SA2MultiPosInfo> item)
+		{
+				return string.Format("{{ {0}, {1}, {2}, {3}, {4}, {5} }}", item.Key.ToC("LevelIDs"), item.Value.Player1YRotation.ToCHex(),
+				item.Value.Player2YRotation.ToCHex(), item.Value.Unknown.ToCHex(), item.Value.Player1Position.ToStruct(),
+				item.Value.Player2Position.ToStruct());
+		}
 
+	}
 	[Serializable]
-	public class SA2EndPosInfo
+	public abstract class SA2MiniPosInfo
+	{
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort Unknown { get; set; }
+		public static int Size => (sizeof(ushort) * 3) + (Vertex.Size * 2);
+		public static SA2EndPosInfo LoadEnd(byte[] file, int address)
+		{ 
+			return new SA2EndPosInfo(file, address);
+		}
+		public static SA2MultiPosInfo LoadMulti(byte[] file, int address)
+		{
+			return new SA2MultiPosInfo(file, address);
+		}
+		public abstract byte[] GetBytes();
+	}
+	[Serializable]
+	public class SA2EndPosInfo : SA2MiniPosInfo
 	{
 		public SA2EndPosInfo()
 		{
@@ -3330,14 +3317,10 @@ namespace SplitTools
 		public ushort Mission2YRotation { get; set; }
 		[TypeConverter(typeof(UInt16HexConverter))]
 		public ushort Mission3YRotation { get; set; }
-		[TypeConverter(typeof(UInt16HexConverter))]
-		public ushort Unknown { get; set; }
 		public Vertex Mission2Position { get; set; }
 		public Vertex Mission3Position { get; set; }
 
-		public static int Size => (sizeof(ushort) * 3) + (Vertex.Size * 2);
-
-		public byte[] GetBytes()
+		public override byte[] GetBytes()
 		{
 			var result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(Mission2YRotation));
@@ -3345,6 +3328,47 @@ namespace SplitTools
 			result.AddRange(ByteConverter.GetBytes(Unknown));
 			result.AddRange(Mission2Position.GetBytes());
 			result.AddRange(Mission3Position.GetBytes());
+			return result.ToArray();
+		}
+	}
+	[Serializable]
+	public class SA2MultiPosInfo : SA2MiniPosInfo
+	{
+		public SA2MultiPosInfo()
+		{
+			Player1Position = new Vertex();
+			Player2Position = new Vertex();
+		}
+
+		public SA2MultiPosInfo(byte[] file, int address)
+		{
+			Player1YRotation = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			Player2YRotation = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			Unknown = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			Player1Position = new Vertex(file, address);
+			address += Vertex.Size;
+			Player2Position = new Vertex(file, address);
+			address += Vertex.Size;
+		}
+
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort Player1YRotation { get; set; }
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort Player2YRotation { get; set; }
+		public Vertex Player1Position { get; set; }
+		public Vertex Player2Position { get; set; }
+
+		public override byte[] GetBytes()
+		{
+			var result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(Player1YRotation));
+			result.AddRange(ByteConverter.GetBytes(Player2YRotation));
+			result.AddRange(ByteConverter.GetBytes(Unknown));
+			result.AddRange(Player1Position.GetBytes());
+			result.AddRange(Player2Position.GetBytes());
 			return result.ToArray();
 		}
 	}
@@ -3638,6 +3662,20 @@ namespace SplitTools
 			}
 			return result;
 		}
+		public static List<PathData> LoadCount(byte[] file, int address, uint imageBase, int count)
+		{
+			var result = new List<PathData>();
+			var ptr = ByteConverter.ToInt32(file, address);
+			address += 4;
+			for (var i = 0; i < count; i++)
+			{
+				ptr = (int)((uint)ptr - imageBase);
+				result.Add(new PathData(file, ptr, imageBase));
+				ptr = ByteConverter.ToInt32(file, address);
+				address += 4;
+			}
+			return result;
+		}
 
 		public static void Save(this List<PathData> paths, string directory, out string[] hashes)
 		{
@@ -3775,6 +3813,124 @@ namespace SplitTools
 		{
 			return string.Format("{{ {0}, {1}, {2}, {3} }}", XRotation.ToCHex(), ZRotation.ToCHex(), Distance.ToC(),
 				Position.ToStruct());
+		}
+	}
+
+	public static class CarPathList
+	{
+		public static List<CarPathData> Load(string directory)
+		{
+			var result = new List<CarPathData>();
+			var i = 0;
+			var filename = Path.Combine(directory, string.Format("{0}.ini", i++));
+			while (File.Exists(filename))
+			{
+				result.Add(CarPathData.Load(filename));
+				filename = Path.Combine(directory, string.Format("{0}.ini", i++));
+			}
+			return result;
+		}
+		public static List<CarPathData> LoadCount(byte[] file, int address, uint imageBase, int count)
+		{
+			var result = new List<CarPathData>();
+			var ptr = ByteConverter.ToInt32(file, address);
+			address += 4;
+			for (var i = 0; i < count; i++)
+			{
+				ptr = (int)((uint)ptr - imageBase);
+				result.Add(new CarPathData(file, ptr, imageBase));
+				ptr = ByteConverter.ToInt32(file, address);
+				address += 4;
+			}
+			return result;
+		}
+
+		public static void Save(this List<CarPathData> paths, string directory, out string[] hashes)
+		{
+			Directory.CreateDirectory(directory);
+			hashes = new string[paths.Count];
+			for (var i = 0; i < paths.Count; i++)
+			{
+				var filename = Path.Combine(directory, string.Format("{0}.ini", i));
+				IniSerializer.Serialize(paths[i], filename);
+				hashes[i] = HelperFunctions.FileHash(filename);
+			}
+		}
+
+		public static byte[] GetBytes(this List<CarPathData> paths, uint imageBase, out uint dataaddr)
+		{
+			var result = new List<byte>();
+			var pointers = new List<uint>();
+			foreach (var path in paths)
+			{
+				result.AddRange(path.GetBytes(imageBase, out var ptr));
+				pointers.Add(ptr);
+			}
+			dataaddr = imageBase + (uint)result.Count;
+			foreach (var item in pointers)
+				result.AddRange(ByteConverter.GetBytes(item));
+			result.AddRange(new byte[4]);
+			return result.ToArray();
+		}
+	}
+
+	[Serializable]
+	public class CarPathData
+	{
+		public short Unknown { get; set; }
+		public float TotalDistance { get; set; }
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public List<Vertex> Path { get; set; }
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint Code { get; set; }
+
+		public CarPathData() { Path = new List<Vertex>(); }
+
+		public static CarPathData Load(string filename)
+		{
+			return IniSerializer.Deserialize<CarPathData>(filename);
+		}
+
+		public CarPathData(byte[] file, int address, uint imageBase)
+		{
+			Unknown = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			var count = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			TotalDistance = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			Path = new List<Vertex>();
+			var ptr = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			if (ptr != 0)
+			{
+				ptr = (int)((uint)ptr - imageBase);
+				for (var i = 0; i < count; i++)
+				{
+					Path.Add(new Vertex(file, ptr));
+					ptr += Vertex.Size;
+				}
+			}
+			Code = ByteConverter.ToUInt32(file, address);
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public byte[] GetBytes(uint imageBase, out uint dataaddr)
+		{
+			var result = new List<byte>(Vertex.Size * Path.Count);
+			foreach (var entry in Path)
+				result.AddRange(entry.GetBytes());
+			dataaddr = imageBase + (uint)result.Count;
+			result.AddRange(ByteConverter.GetBytes(Unknown));
+			result.AddRange(ByteConverter.GetBytes((ushort)result.Count));
+			result.AddRange(ByteConverter.GetBytes(TotalDistance));
+			result.AddRange(ByteConverter.GetBytes(imageBase));
+			result.AddRange(ByteConverter.GetBytes(Code));
+			return result.ToArray();
 		}
 	}
 
@@ -4122,12 +4278,65 @@ namespace SplitTools
 		Z
 	}
 
+	public struct ChunkUV
+	{
+		[IniAlwaysInclude]
+		public short U { get; set; }
+		[IniAlwaysInclude]
+		public short V { get; set; }
+
+		public ChunkUV(byte[] file, int address)
+			: this()
+		{
+			U = ByteConverter.ToInt16(file, address);
+			V = ByteConverter.ToInt16(file, address + 2);
+		}
+	}
+	public class SA2ModelTexanimFrames
+	{
+		public SA2ModelTexanimFrames(byte[] file, int address)
+		{
+			Offset = ByteConverter.ToInt16(file, address);
+			UVCount = ByteConverter.ToInt16(file, address + 2);
+			UVData = new List<ChunkUV>(UVCount);
+			for (int i = 0; i < UVCount; i++)
+			{
+				Console.WriteLine($"UV set {i}");
+				UVData.Add(new ChunkUV(file, address + 4 + (i * 4)));
+			}
+
+		}
+		public short Offset { get; set; }
+		public short UVCount { get; set; }
+		public List<ChunkUV> UVData { get; set; }
+	}
+
+	public class SA2ModelTexanimData
+	{
+		public SA2ModelTexanimData(byte[] file, int address)
+		{
+			int endpoint = 0;
+			Count = ByteConverter.ToInt16(file, address);
+			FrameTime = ByteConverter.ToInt16(file, address + 2);
+			EditData = new List<SA2ModelTexanimFrames>(Count);
+			for (int i = 0; i < Count; i++)
+			{
+				Console.WriteLine($"Data set {i}");
+				EditData.Add(new SA2ModelTexanimFrames(file, address + 4 + endpoint));
+				endpoint += EditData[i].UVCount * 4 + 4;
+			}
+		}
+		public short Count { get; set; }
+		public short FrameTime { get; set; }
+		public List<SA2ModelTexanimFrames> EditData { get; set; }
+	}
+
 	[Serializable]
 	public class SA2ModelTexanimInfo
 	{
 		public SA2ModelTexanimInfo() { }
 
-		public SA2ModelTexanimInfo(byte[] file, int address, uint imageBase, int count)
+		public SA2ModelTexanimInfo(byte[] file, int address, uint imageBase)
 		{
 			Type = ByteConverter.ToInt32(file, address);
 			//This would have been an all-purpose variable, but the game never uses
@@ -4142,12 +4351,7 @@ namespace SplitTools
 			{
 				var ptr = (int)(uvptr - imageBase);
 				UVEditDataName = "uvdata_" + ptr.ToString("X8");
-				UVEditData = new List<short>(count);
-				for (var i = 0; i < count; i++)
-				{
-					UVEditData.Add(ByteConverter.ToInt16(file, ptr));
-					ptr += sizeof(short);
-				}
+				UVEditData = new SA2ModelTexanimData(file, ptr);
 			}
 			Unk2 = ByteConverter.ToInt32(file, address + 0x14);
 			Unk3 = ByteConverter.ToInt32(file, address + 0x18);
@@ -4165,8 +4369,8 @@ namespace SplitTools
 		public int SpeedDivider { get; set; }
 		[IniAlwaysInclude]
 		public int Unk1 { get; set; }
-		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
-		public List<short> UVEditData { get; set; }
+		[IniAlwaysInclude]
+		public SA2ModelTexanimData UVEditData { get; set; }
 		public string UVEditDataName { get; set; }
 		[IniAlwaysInclude]
 		public int Unk2 { get; set; }
@@ -4221,7 +4425,7 @@ namespace SplitTools
 	{
 		public SA2ModelTexanimArrayA() { }
 
-		public SA2ModelTexanimArrayA(byte[] file, int address, uint imageBase, int count)
+		public SA2ModelTexanimArrayA(byte[] file, int address, uint imageBase)
 		{
 			var modelptr = ByteConverter.ToUInt32(file, address);
 			if (modelptr != 0)
@@ -4233,7 +4437,7 @@ namespace SplitTools
 			if (uvptr != 0)
 			{
 				var ptr = (int)(uvptr - imageBase);
-				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase);
 				TexanimName = "texdata_" + ptr.ToString("X8");
 			}
 			Unk = ByteConverter.ToInt32(file, address + 8);
@@ -4281,7 +4485,7 @@ namespace SplitTools
 	{
 		public SA2ModelTexanimArrayB() { }
 
-		public SA2ModelTexanimArrayB(byte[] file, int address, uint imageBase, int count)
+		public SA2ModelTexanimArrayB(byte[] file, int address, uint imageBase)
 		{
 			Type = ByteConverter.ToInt32(file, address);
 			var modelptr = ByteConverter.ToUInt32(file, address + 4);
@@ -4294,7 +4498,7 @@ namespace SplitTools
 			if (uvptr != 0)
 			{
 				var ptr = (int)(uvptr - imageBase);
-				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase);
 				TexanimName = "texdata_" + ptr.ToString("X8");
 			}
 			Unk1 = ByteConverter.ToInt32(file, address + 0xC);
@@ -4351,7 +4555,7 @@ namespace SplitTools
 	{
 		public SA2ModelTexanimArrayC() { }
 
-		public SA2ModelTexanimArrayC(byte[] file, int address, uint imageBase, int count)
+		public SA2ModelTexanimArrayC(byte[] file, int address, uint imageBase)
 		{
 			var modelptr = ByteConverter.ToUInt32(file, address);
 			if (modelptr != 0)
@@ -4363,7 +4567,7 @@ namespace SplitTools
 			if (uvptr != 0)
 			{
 				var ptr = (int)(uvptr - imageBase);
-				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase);
 				TexanimName = "texdata_" + ptr.ToString("X8");
 			}
 			Unk1 = ByteConverter.ToInt32(file, address + 8);
@@ -4410,7 +4614,85 @@ namespace SplitTools
 			return result.ToString();
 		}
 	}
+	[Serializable]
+	public struct UVScrollData
+	{
+		[IniAlwaysInclude]
+		public string UVAddress { get; set; }
+		[IniAlwaysInclude]
+		public short U { get; set; }
+		[IniAlwaysInclude]
+		public short V { get; set; }
 
+		public UVScrollData() { }
+
+		public UVScrollData(byte[] file, int address, uint imageBase)
+		{
+			var uvAddr = ByteConverter.ToUInt32(file, address);
+			var ptr = (int)(uvAddr - imageBase);
+
+			UVAddress = "uv_" + ptr.ToString("X8");
+			U = ByteConverter.ToInt16(file, address + 4);
+			V = ByteConverter.ToInt16(file, address + 6);
+		}
+	}
+
+	public struct UVScrollTable
+	{
+		public UVScrollTable() { }
+		public UVScrollTable(byte[] file, int address, uint imageBase)
+		{
+			var nameOffset = ByteConverter.ToUInt32(file, address);
+			var nameAddr = (int)(nameOffset - imageBase);
+			UVScrollAddr = "0x" + nameAddr.ToString("X8");
+
+			TextureID = ByteConverter.ToInt32(file, nameAddr);
+
+			var materialOffset = ByteConverter.ToUInt32(file, nameAddr + 4);
+			var materialAddr = (int)(materialOffset - imageBase);
+			MaterialTexAddress = "0x" + materialAddr.ToString("X8");
+			UVEditEntries = ByteConverter.ToInt32(file, nameAddr + 8);
+
+			var texAnimArrayOffset = ByteConverter.ToUInt32(file, nameAddr + 0xC);
+			var texAnimArrayAddr = (int)(texAnimArrayOffset - imageBase);
+			TexAnimArrayAddress = "0x" + texAnimArrayAddr.ToString("X8");
+
+			UVEditData = [];
+
+			if (texAnimArrayOffset == 0)
+			{
+				return;
+			}
+
+			for (var i = 0; i < UVEditEntries; i++)
+			{
+				UVEditData.Add(new UVScrollData(file, file.GetPointer(nameAddr + 0xC, imageBase) + (i * 8), imageBase));
+				//texAnimArrayAddr += 0x8;
+			}
+		}
+		public string UVScrollAddr { get; set; }
+		[IniAlwaysInclude]
+		public int TextureID { get; set; }
+		public string MaterialTexAddress { get; set; }
+		[IniAlwaysInclude]
+		public int UVEditEntries { get; set; }
+		public string TexAnimArrayAddress { get; set; }
+		public List<UVScrollData> UVEditData { get; set; }
+	}
+	public class UVScrollDataHeader
+	{
+		public UVScrollDataHeader() { }
+		public UVScrollDataHeader(byte[] file, int address, uint imageBase)
+		{
+
+			Entries = ByteConverter.ToUInt32(file, address + 4);
+		}
+		public string Model { get; set; }
+		public uint Entries { get; set; }
+		public string ScrollAddress { get; set; }
+		public List<UVScrollTable> ScrollTables { get; set; }
+
+	}
 	public static class BlackMarketItemAttributesList
 	{
 		public static Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>> Load(string filename)

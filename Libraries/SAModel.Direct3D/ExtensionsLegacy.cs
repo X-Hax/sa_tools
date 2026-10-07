@@ -1,10 +1,10 @@
 ﻿using SharpDX;
-using SAModel.Direct3D.TextureSystem;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Color = System.Drawing.Color;
+using TextureLib;
 
 namespace SAModel.Direct3D
 {
@@ -903,7 +903,7 @@ namespace SAModel.Direct3D
 		}
 
 		// Old OBJ export from SAMDL. Keeps original vertex order.
-		public static void ExporObjLegacy(string objFileName, string TexturePackName, NJS_OBJECT obj, BMPInfo[] TextureInfo)
+		public static void ExporObjLegacy(string objFileName, string TexturePackName, NJS_OBJECT obj, GenericTexture[] TextureInfo)
 		{
 			using (StreamWriter objstream = new StreamWriter(objFileName, false))
 			{

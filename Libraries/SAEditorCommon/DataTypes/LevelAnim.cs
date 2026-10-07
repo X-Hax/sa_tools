@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using Newtonsoft.Json;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon.UI;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SAModel.Direct3D;
-using SAModel.Direct3D.TextureSystem;
-using SAModel.SAEditorCommon.UI;
-using Mesh = SAModel.Direct3D.Mesh;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using Newtonsoft.Json;
+using TextureLib;
+using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SAModel.SAEditorCommon.DataTypes
 {
@@ -241,7 +241,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 					}
 					for (int i = 0; i < numSteps; i++)
 					{
-						BMPInfo bmp = LevelData.TextureBitmaps[LevelData.leveltexs][i];
+						GenericTexture bmp = LevelData.TextureBitmaps[LevelData.leveltexs][i];
 						texturePaths.Add(System.IO.Path.Combine(rootPath, bmp.Name + ".png"));
 						bmp.Image.Save(System.IO.Path.Combine(rootPath, bmp.Name + ".png"));
 					}

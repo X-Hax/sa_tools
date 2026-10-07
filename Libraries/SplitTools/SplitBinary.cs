@@ -250,6 +250,7 @@ namespace SplitTools.Split
 				case "basicmodel":
 				case "basicdxmodel":
 				case "chunkmodel":
+				case "chaochunkmodel":
 				case "gcmodel":
 					{
 						ModelFormat mdlformat;
@@ -279,7 +280,16 @@ namespace SplitTools.Split
 						if (data.CustomProperties.ContainsKey("reverse"))
 							ByteConverter.Reverse = true;
 						//if (data.CustomProperties.ContainsKey("includetls"))
-							//writetls = true;
+						//writetls = true;
+						string chunkmodeltype = string.Empty;
+						if (customProperties.ContainsKey("chunktype"))
+						{
+							if (customProperties["chunktype"] == "ChaoChunk")
+							{
+								chunkmodeltype = "ChaoChunk";
+								mdlformat = ModelFormat.ChaoChunk;
+							}
+						}
 						var mdl = new NJS_OBJECT(datafile, address, imageBase, mdlformat, labels, new Dictionary<int, Attach>(), ninja2);
 						var mdlanis = new List<string>();
 						string[] mdlanisfiles;
@@ -322,7 +332,8 @@ namespace SplitTools.Split
 							mdlmorphs = customProperties["morphs"].Split(',');
 							mdlanis.AddRange(mdlmorphs);
 						}
-						ModelFile.CreateFile(fileOutputPath, mdl, mdlanis.ToArray(), null, itemName, null, mdlformat, splitFlags.HasFlag(SplitFlags.NoMeta));
+						
+						ModelFile.CreateFile(fileOutputPath, mdl, mdlanis.ToArray(), null, itemName, null, mdlformat, splitFlags.HasFlag(SplitFlags.NoMeta), flags: chunkmodeltype);
 						if (data.CustomProperties.ContainsKey("reverse")) 
 							ByteConverter.Reverse = rev;
 					}
@@ -644,6 +655,7 @@ namespace SplitTools.Split
 					}
 					break;
 				case "startpos":
+				case "startendpos":
 					{
 						var cc = 255;
 						if (customProperties.ContainsKey("count"))
@@ -651,7 +663,7 @@ namespace SplitTools.Split
 						switch (game)
 						{
 							case Game.SA2:
-								SA2DCStartPosList.Load(datafile, address).Save(fileOutputPath);
+								SA2StartPosList.LoadDC(datafile, address).SaveDC(fileOutputPath);
 								break;
 							case Game.SA2B:
 								SA2StartPosList.Load(datafile, address).Save(fileOutputPath);
@@ -697,10 +709,7 @@ namespace SplitTools.Split
 					break;
 				case "modeltexanim":
 					{
-						var cnt = 4;
-						if (customProperties.ContainsKey("uvlength"))
-							cnt = int.Parse(customProperties["uvlength"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
-						new SA2ModelTexanimInfo(datafile, address, imageBase, cnt).Save(fileOutputPath);
+						new SA2ModelTexanimInfo(datafile, address, imageBase).Save(fileOutputPath);
 					}
 					break;
 				case "leveltexlist":
@@ -947,7 +956,23 @@ namespace SplitTools.Split
 					KartRankTimesList.Load(datafile, address, data.Length).Save(fileOutputPath);
 					break;
 				case "endpos":
-					SA2EndPosList.Load(datafile, address).Save(fileOutputPath);
+				case "shortpos":
+					if (game == Game.SA2)
+					{
+						if (type == "endpos")
+							SA2MiniPosList.LoadDCMulti(datafile, address).SaveMultiDC(fileOutputPath);
+						else
+							SA2MiniPosList.LoadDCEnd(datafile, address).SaveEndDC(fileOutputPath);
+
+					}
+					else
+					{
+						if (type == "shortpos")
+							SA2MiniPosList.LoadMulti(datafile, address).SaveMulti(fileOutputPath);
+						else
+							SA2MiniPosList.LoadEnd(datafile, address).SaveEnd(fileOutputPath);
+							
+					}
 					break;
 				case "animationlist":
 				case "sa1actionlist":
@@ -1393,7 +1418,25 @@ namespace SplitTools.Split
 					break;
 				case "pathlist":
 					{
+						if (customProperties.ContainsKey("count"))
+						{
+							var pcnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+							PathList.LoadCount(datafile, address, imageBase, pcnt).Save(fileOutputPath, out var hashes);
+							data.MD5Hash = string.Join(",", hashes.ToArray());
+							nohash = true;
+						}
+						else
+						{
 						PathList.Load(datafile, address, imageBase).Save(fileOutputPath, out var hashes);
+						data.MD5Hash = string.Join(",", hashes.ToArray());
+						nohash = true;
+					}
+					}
+					break;
+				case "carpathlist":
+					{
+						var pcnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+						CarPathList.LoadCount(datafile, address, imageBase, pcnt).Save(fileOutputPath, out var hashes);
 						data.MD5Hash = string.Join(",", hashes.ToArray());
 						nohash = true;
 					}
@@ -1443,7 +1486,9 @@ namespace SplitTools.Split
 						Directory.CreateDirectory(fileOutputPath);
 						var hashes = new List<string>();
 						int i = ByteConverter.ToInt16(datafile, address);
-						string animmeta = null;
+						string animmeta = string.Empty;
+						string animname = string.Empty;
+						Dictionary<int, string> animpairs = new Dictionary<int, string>();
 						while (i != -1)
 						{
 							if (customProperties.ContainsKey("meta" + i + "_a"))
@@ -1452,11 +1497,18 @@ namespace SplitTools.Split
 								{
 									Description = animmeta
 								};
-							animdata.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim", splitFlags.HasFlag(SplitFlags.NoMeta));
-							hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
+							if (customProperties.ContainsKey("filename" + i))
+								animname = Path.GetFileNameWithoutExtension(customProperties["filename" + i]);
+							else
+								animname = i.ToString(NumberFormatInfo.InvariantInfo);
+							animdata.Save(fileOutputPath + "/" + animname + ".saanim", splitFlags.HasFlag(SplitFlags.NoMeta));
+							hashes.Add(animname + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + animname + ".saanim"));
+							animpairs.Add(i, animname + ".saanim");
 							address += 8;
 							i = ByteConverter.ToInt16(datafile, address);
 						}
+						IniSerializer.Serialize(animpairs, Path.Combine(fileOutputPath, "info.ini"));
+						hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
 						data.MD5Hash = string.Join("|", hashes.ToArray());
 						nohash = true;
 					}

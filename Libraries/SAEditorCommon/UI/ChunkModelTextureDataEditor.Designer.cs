@@ -59,11 +59,10 @@
 			// 
 			// doneButton
 			// 
-			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(397, 391);
+			doneButton.Location = new System.Drawing.Point(225, 254);
 			doneButton.Margin = new System.Windows.Forms.Padding(4);
 			doneButton.Name = "doneButton";
-			doneButton.Size = new System.Drawing.Size(132, 40);
+			doneButton.Size = new System.Drawing.Size(84, 26);
 			doneButton.TabIndex = 10;
 			doneButton.Text = "Done";
 			doneButton.UseVisualStyleBackColor = true;
@@ -77,11 +76,10 @@
 			// 
 			// resetButton
 			// 
-			resetButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			resetButton.Location = new System.Drawing.Point(238, 391);
+			resetButton.Location = new System.Drawing.Point(128, 254);
 			resetButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			resetButton.Name = "resetButton";
-			resetButton.Size = new System.Drawing.Size(132, 40);
+			resetButton.Size = new System.Drawing.Size(86, 26);
 			resetButton.TabIndex = 9;
 			resetButton.Text = "Reset";
 			toolTip.SetToolTip(resetButton, "Reset the poly data to the state it was when this dialog opened.");
@@ -91,10 +89,10 @@
 			// clampUCheck
 			// 
 			clampUCheck.AutoSize = true;
-			clampUCheck.Location = new System.Drawing.Point(243, 64);
+			clampUCheck.Location = new System.Drawing.Point(161, 40);
 			clampUCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			clampUCheck.Name = "clampUCheck";
-			clampUCheck.Size = new System.Drawing.Size(106, 29);
+			clampUCheck.Size = new System.Drawing.Size(72, 19);
 			clampUCheck.TabIndex = 3;
 			clampUCheck.Text = "Clamp U";
 			toolTip.SetToolTip(clampUCheck, "Enable/Disable tiling on the U Axis.");
@@ -104,10 +102,10 @@
 			// clampVCheck
 			// 
 			clampVCheck.AutoSize = true;
-			clampVCheck.Location = new System.Drawing.Point(243, 96);
+			clampVCheck.Location = new System.Drawing.Point(161, 62);
 			clampVCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			clampVCheck.Name = "clampVCheck";
-			clampVCheck.Size = new System.Drawing.Size(105, 29);
+			clampVCheck.Size = new System.Drawing.Size(71, 19);
 			clampVCheck.TabIndex = 4;
 			clampVCheck.Text = "Clamp V";
 			toolTip.SetToolTip(clampVCheck, "Enable/Disable tiling on the V Axis.");
@@ -117,10 +115,10 @@
 			// flipUCheck
 			// 
 			flipUCheck.AutoSize = true;
-			flipUCheck.Location = new System.Drawing.Point(243, 128);
+			flipUCheck.Location = new System.Drawing.Point(161, 84);
 			flipUCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flipUCheck.Name = "flipUCheck";
-			flipUCheck.Size = new System.Drawing.Size(104, 29);
+			flipUCheck.Size = new System.Drawing.Size(70, 19);
 			flipUCheck.TabIndex = 5;
 			flipUCheck.Text = "Mirror U";
 			toolTip.SetToolTip(flipUCheck, "If checked, tiling on the U Axis is mirrored.");
@@ -130,10 +128,10 @@
 			// flipVCheck
 			// 
 			flipVCheck.AutoSize = true;
-			flipVCheck.Location = new System.Drawing.Point(243, 160);
+			flipVCheck.Location = new System.Drawing.Point(161, 106);
 			flipVCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flipVCheck.Name = "flipVCheck";
-			flipVCheck.Size = new System.Drawing.Size(103, 29);
+			flipVCheck.Size = new System.Drawing.Size(69, 19);
 			flipVCheck.TabIndex = 6;
 			flipVCheck.Text = "Mirror V";
 			toolTip.SetToolTip(flipVCheck, "If checked, tiling on the V Axis is mirrored.");
@@ -145,10 +143,10 @@
 			filterModeDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			filterModeDropDown.FormattingEnabled = true;
 			filterModeDropDown.Items.AddRange(new object[] { "Point Sampled", "Bilinear", "Trilinear A", "Trilinear B" });
-			filterModeDropDown.Location = new System.Drawing.Point(243, 220);
+			filterModeDropDown.Location = new System.Drawing.Point(161, 157);
 			filterModeDropDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			filterModeDropDown.Name = "filterModeDropDown";
-			filterModeDropDown.Size = new System.Drawing.Size(244, 33);
+			filterModeDropDown.Size = new System.Drawing.Size(122, 23);
 			filterModeDropDown.TabIndex = 7;
 			toolTip.SetToolTip(filterModeDropDown, "Determines the texture filter mode used by the poly data.\r\nWhile this value is read in SA2B, all settings are treated as if they were Trilinear A without the Render Fix mod enabled.");
 			filterModeDropDown.SelectionChangeCommitted += filterModeDropDown_SelectionChangeCommitted;
@@ -158,9 +156,9 @@
 			mipmapDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			mipmapDropDown.FormattingEnabled = true;
 			mipmapDropDown.Items.AddRange(new object[] { "0 (Invalid)", "0.25", "0.50", "0.75", "1.00", "1.25", "1.50", "1.75", "2.00", "2.25", "2.50", "2.75", "3.00", "3.25", "3.50", "3.75" });
-			mipmapDropDown.Location = new System.Drawing.Point(243, 290);
+			mipmapDropDown.Location = new System.Drawing.Point(161, 210);
 			mipmapDropDown.Name = "mipmapDropDown";
-			mipmapDropDown.Size = new System.Drawing.Size(135, 33);
+			mipmapDropDown.Size = new System.Drawing.Size(89, 23);
 			mipmapDropDown.TabIndex = 8;
 			toolTip.SetToolTip(mipmapDropDown, "This value adjusts the depth threshold for mipmap generation by using this value as a multiplier.\r\nA value of 0 is not valid.\r\nDoes nothing in SA2B without the Render Fix mod. ");
 			mipmapDropDown.SelectionChangeCommitted += mipmapDropDown_SelectionChangeCommitted;
@@ -168,10 +166,10 @@
 			// superSampleCheck
 			// 
 			superSampleCheck.AutoSize = true;
-			superSampleCheck.Location = new System.Drawing.Point(243, 32);
+			superSampleCheck.Location = new System.Drawing.Point(161, 18);
 			superSampleCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			superSampleCheck.Name = "superSampleCheck";
-			superSampleCheck.Size = new System.Drawing.Size(148, 29);
+			superSampleCheck.Size = new System.Drawing.Size(98, 19);
 			superSampleCheck.TabIndex = 2;
 			superSampleCheck.Text = "Super Sample";
 			superSampleCheck.UseVisualStyleBackColor = true;
@@ -181,10 +179,10 @@
 			// 
 			textureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			textureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			textureBox.Location = new System.Drawing.Point(21, 36);
+			textureBox.Location = new System.Drawing.Point(11, 20);
 			textureBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			textureBox.Name = "textureBox";
-			textureBox.Size = new System.Drawing.Size(203, 203);
+			textureBox.Size = new System.Drawing.Size(136, 136);
 			textureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			textureBox.TabIndex = 4;
 			textureBox.TabStop = false;
@@ -193,10 +191,10 @@
 			// filterModeLabel
 			// 
 			filterModeLabel.AutoSize = true;
-			filterModeLabel.Location = new System.Drawing.Point(243, 192);
+			filterModeLabel.Location = new System.Drawing.Point(161, 137);
 			filterModeLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			filterModeLabel.Name = "filterModeLabel";
-			filterModeLabel.Size = new System.Drawing.Size(106, 25);
+			filterModeLabel.Size = new System.Drawing.Size(70, 15);
 			filterModeLabel.TabIndex = 9;
 			filterModeLabel.Text = "Filter Mode:";
 			// 
@@ -214,11 +212,11 @@
 			generalSettingBox.Controls.Add(filterModeDropDown);
 			generalSettingBox.Controls.Add(clampUCheck);
 			generalSettingBox.Controls.Add(superSampleCheck);
-			generalSettingBox.Location = new System.Drawing.Point(15, 13);
+			generalSettingBox.Location = new System.Drawing.Point(11, 9);
 			generalSettingBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			generalSettingBox.Name = "generalSettingBox";
 			generalSettingBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			generalSettingBox.Size = new System.Drawing.Size(504, 354);
+			generalSettingBox.Size = new System.Drawing.Size(301, 240);
 			generalSettingBox.TabIndex = 0;
 			generalSettingBox.TabStop = false;
 			generalSettingBox.Enter += generalSettingBox_Enter;
@@ -226,36 +224,37 @@
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new System.Drawing.Point(243, 258);
+			label2.Location = new System.Drawing.Point(161, 190);
 			label2.Name = "label2";
-			label2.Size = new System.Drawing.Size(171, 25);
+			label2.Size = new System.Drawing.Size(113, 15);
 			label2.TabIndex = 12;
 			label2.Text = "Mipmap \"D\" Adjust:";
 			// 
 			// label1
 			// 
 			label1.AutoSize = true;
-			label1.Location = new System.Drawing.Point(9, 256);
+			label1.Location = new System.Drawing.Point(9, 167);
 			label1.Name = "label1";
-			label1.Size = new System.Drawing.Size(94, 25);
+			label1.Size = new System.Drawing.Size(62, 15);
 			label1.TabIndex = 11;
 			label1.Text = "Texture ID:";
 			// 
 			// textureIDNumeric
 			// 
-			textureIDNumeric.Location = new System.Drawing.Point(110, 254);
+			textureIDNumeric.Location = new System.Drawing.Point(77, 165);
 			textureIDNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			textureIDNumeric.Name = "textureIDNumeric";
-			textureIDNumeric.Size = new System.Drawing.Size(66, 31);
+			textureIDNumeric.Size = new System.Drawing.Size(56, 23);
 			textureIDNumeric.TabIndex = 1;
 			textureIDNumeric.ValueChanged += textureIDNumeric_ValueChanged;
 			// 
 			// ChunkModelTextureDataEditor
 			// 
 			AcceptButton = doneButton;
-			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+			AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(544, 452);
+			ClientSize = new System.Drawing.Size(324, 303);
 			ControlBox = false;
 			Controls.Add(resetButton);
 			Controls.Add(doneButton);

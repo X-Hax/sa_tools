@@ -83,7 +83,7 @@
 			buttonClose.Margin = new System.Windows.Forms.Padding(2);
 			buttonClose.Name = "buttonClose";
 			buttonClose.Size = new System.Drawing.Size(84, 24);
-			buttonClose.TabIndex = 17;
+			buttonClose.TabIndex = 4;
 			buttonClose.Text = "Close";
 			buttonClose.UseVisualStyleBackColor = true;
 			buttonClose.Click += buttonClose_Click;
@@ -121,7 +121,7 @@
 			groupBoxPrimList.Name = "groupBoxPrimList";
 			groupBoxPrimList.Padding = new System.Windows.Forms.Padding(2);
 			groupBoxPrimList.Size = new System.Drawing.Size(325, 343);
-			groupBoxPrimList.TabIndex = 29;
+			groupBoxPrimList.TabIndex = 2;
 			groupBoxPrimList.TabStop = false;
 			groupBoxPrimList.Text = "Primitive Data";
 			// 
@@ -156,7 +156,7 @@
 			listViewVertices.Name = "listViewVertices";
 			listViewVertices.ShowGroups = false;
 			listViewVertices.Size = new System.Drawing.Size(314, 236);
-			listViewVertices.TabIndex = 11;
+			listViewVertices.TabIndex = 3;
 			listViewVertices.UseCompatibleStateImageBehavior = false;
 			listViewVertices.View = System.Windows.Forms.View.Details;
 			listViewVertices.SelectedIndexChanged += listViewVertices_SelectedIndexChanged;
@@ -208,7 +208,7 @@
 			numericUpDownPrimSet.Location = new System.Drawing.Point(73, 12);
 			numericUpDownPrimSet.Name = "numericUpDownPrimSet";
 			numericUpDownPrimSet.Size = new System.Drawing.Size(55, 23);
-			numericUpDownPrimSet.TabIndex = 32;
+			numericUpDownPrimSet.TabIndex = 1;
 			numericUpDownPrimSet.ValueChanged += numericUpDown1_ValueChanged;
 			// 
 			// GCModelPrimitiveDataEditor

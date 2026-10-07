@@ -46,6 +46,7 @@ namespace TextureEditor
 			// Edit menu - GVR settings
 			highQualityGVMsToolStripMenuItem.Checked = settingsfile.HighQualityGVM;
 			compatibleGVPToolStripMenuItem.Checked = settingsfile.SACompatiblePalettes;
+			useGCIXHeaderToolStripMenuItem.Checked = settingsfile.ForceGCIX;
 			// Edit menu - Texture conversion settings
 			allowCompressedFormatsToolStripMenuItem.Checked = settingsfile.TexEncodeUseCompressed;
 			preferHighQualityToolStripMenuItem.Checked = settingsfile.TexEncodeAutoHighQuality;
@@ -543,6 +544,10 @@ namespace TextureEditor
 				{
 					UpdateTextureInformation();
 				}
+		}
+		private void useGCIXHeaderToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ForceGCIX = useGCIXHeaderToolStripMenuItem.Checked;
 		}
 
 		private void preferHighQualityToolStripMenuItem_Click(object sender, EventArgs e)

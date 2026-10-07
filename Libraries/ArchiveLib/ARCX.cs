@@ -138,11 +138,6 @@ namespace ArchiveLib
 				Folder = folder;
 				Data = data;
             }
-
-            public override Bitmap GetBitmap()
-            {
-				throw new NotImplementedException();
-			}
         }
 
 		/// <summary>ARCX entry data.</summary>

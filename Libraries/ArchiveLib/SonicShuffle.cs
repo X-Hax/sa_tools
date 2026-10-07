@@ -10,20 +10,10 @@ namespace ArchiveLib
 	/// <summary>MDL arhives from Sonic Shuffle.</summary>
 	public class MDLArchive : GenericArchive
 	{
-		public override void CreateIndexFile(string path)
-		{
-			CreateDefaultIndexFile(path);
-		}
-
 		public class MDLArchiveEntry : GenericArchiveEntry
 		{
 			public MDLEntryType Type;
-
-			public override Bitmap GetBitmap()
-			{
-				throw new NotImplementedException();
-			}
-
+			
 			public MDLArchiveEntry(byte[] data, string name)
 			{
 				Name = name;
@@ -119,18 +109,8 @@ namespace ArchiveLib
 		const uint Magic_SMLT = 0x544C4D53; // SMLT
 		const uint Magic_SOSB = 0x42534F53; // SOSB
 
-		public override void CreateIndexFile(string path)
-		{
-			CreateDefaultIndexFile(path);
-		}
-
 		public class MDTArchiveEntry : GenericArchiveEntry
 		{
-			public override Bitmap GetBitmap()
-			{
-				throw new NotImplementedException();
-			}
-
 			public MDTArchiveEntry(byte[] data, string name)
 			{
 				Name = name;

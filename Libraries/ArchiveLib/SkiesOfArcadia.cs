@@ -15,19 +15,8 @@ namespace ArchiveLib
 	/// </summary>
 	public class MLDArchive : GenericArchive
 	{
-		public override void CreateIndexFile(string path)
-		{
-			CreateDefaultIndexFile(path);
-		}
-
 		public class MLDArchiveEntry : GenericArchiveEntry
-		{
-
-			public override Bitmap GetBitmap()
-			{
-				throw new NotImplementedException();
-			}
-
+		{	
 			public MLDArchiveEntry(byte[] data, string name)
 			{
 				Name = name;

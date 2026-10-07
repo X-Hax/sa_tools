@@ -84,9 +84,13 @@ namespace SAModel
 			set { Flags = (uint)((Flags & ~0x80000) | (value ? 0x80000u : 0)); }
 		}
 
-		// The following two are Chunk only
+		// The following two are Chunk and Ginja only
 		public bool IgnoreAmbient { get; set; }
-		public bool NoAlphaTest { get; set; }
+		public bool NoPunchthrough { get; set; }
+
+		// These two are Ginja only
+		public bool VertexMaterial { get; set; }
+		public bool VertexAmbient { get; set; }
 
 		public bool UseAlpha
 		{
@@ -156,6 +160,11 @@ namespace SAModel
 			DoubleSided = false;
 			FlatShading = false;
 			IgnoreLighting = false;
+			IgnoreAmbient = false;
+			IgnoreSpecular = false;
+			VertexMaterial = false;
+			VertexAmbient = false;
+			NoPunchthrough = false;
 			ClampU = false;
 			ClampV = false;
 			FlipU = false;
@@ -328,7 +337,7 @@ namespace SAModel
 					IgnoreAmbient = str.IgnoreAmbient;
 					UseAlpha = str.UseAlpha;
 					UseTexture = EnvironmentMap;
-					NoAlphaTest = str.NoAlphaTest;
+					NoPunchthrough = str.NoPunchthrough;
 					switch (chunk.Type)
 					{
 						case ChunkType.Strip_StripUVN:
@@ -340,6 +349,56 @@ namespace SAModel
 							UseTexture = true;
 							break;
 					}
+					break;
+			}
+		}
+		public void UpdateFromGCMesh(GC.GCParameter meshdata)
+		{
+			switch (meshdata.Type)
+			{
+				case GC.ParameterType.StripFlags1:
+					var sflags = meshdata as GC.StripFlagsParameter;
+					IgnoreLighting = sflags.IgnoreLight;
+					IgnoreSpecular = sflags.IgnoreSpecular;
+					IgnoreAmbient = sflags.IgnoreAmbient;
+					NoPunchthrough = sflags.NoPunchthrough;
+					DoubleSided = sflags.DoubleSided;
+					VertexMaterial = sflags.VertexDiffuse;
+					VertexAmbient = sflags.VertexAmbient;
+					UseAlpha = sflags.UseAlpha;
+					break;
+				case GC.ParameterType.BlendAlpha:
+					var blend = meshdata as GC.BlendAlphaParameter;
+					SourceAlpha = blend.NJSourceAlpha;
+					DestinationAlpha = blend.NJDestAlpha;
+					break;
+				case GC.ParameterType.DiffuseColor:
+					var diffuseCol = meshdata as GC.DiffuseColorParameter;
+					DiffuseColor = diffuseCol.DiffuseColor.SystemCol;
+					break;
+				case GC.ParameterType.AmbientColor:
+					var ambiCol = meshdata as GC.AmbientColorParameter;
+					AmbientColor = ambiCol.AmbientColor.SystemCol;
+					break;
+				case GC.ParameterType.SpecularColor:
+					var specCol = meshdata as GC.SpecularColorParameter;
+					SpecularColor = specCol.SpecularColor.SystemCol;
+					break;
+				case GC.ParameterType.Texture:
+					var tex = meshdata as GC.TextureParameter;
+					TextureID = tex.TextureId;
+					FlipU = tex.Tile.HasFlag(GC.GCTileMode.MirrorU);
+					FlipV = tex.Tile.HasFlag(GC.GCTileMode.MirrorV);
+					ClampU = tex.Tile.HasFlag(GC.GCTileMode.WrapU);
+					ClampV = tex.Tile.HasFlag(GC.GCTileMode.WrapV);
+
+					// No idea why, but ok
+					ClampU &= tex.Tile.HasFlag(GC.GCTileMode.Unk_1);
+					ClampV &= tex.Tile.HasFlag(GC.GCTileMode.Unk_1);
+					break;
+				case GC.ParameterType.TexCoordGen:
+					var gen = meshdata as GC.TexCoordGenParameter;
+					EnvironmentMap = gen.TexGenSrc == GC.GCTexGenSrc.Normal;
 					break;
 			}
 		}

@@ -117,6 +117,21 @@ namespace SAModel.GC
 			DataType = dataType;
 			StructType = structType;
 			Data = [];
+			switch (attribute)
+			{
+				case GCVertexAttribute.Position:
+					DataName = "position_" + Extensions.GenerateIdentifier();
+					break;
+				case GCVertexAttribute.Normal:
+					DataName = "normal_" + Extensions.GenerateIdentifier();
+					break;
+				case GCVertexAttribute.Color0:
+					DataName = "vcolor_" + Extensions.GenerateIdentifier();
+					break;
+				case GCVertexAttribute.Tex0:
+					DataName = "uv_" + Extensions.GenerateIdentifier();
+					break;
+			}
 		}
 
 		public GCVertexSet(byte[] file, uint address, uint imageBase)
@@ -172,9 +187,9 @@ namespace SAModel.GC
 					}
 					break;
 				case GCVertexAttribute.Normal:
-					if (labels.TryGetValue(tempAddr, out var noramlName))
+					if (labels.TryGetValue(tempAddr, out var normalName))
 					{
-						DataName = noramlName;
+						DataName = normalName;
 					}
 					else
 					{
@@ -312,7 +327,6 @@ namespace SAModel.GC
 			return result.ToString();
 		}
 
-		// WIP
 		public void ToNJA(TextWriter writer)
 		{
 			string vertType = null;

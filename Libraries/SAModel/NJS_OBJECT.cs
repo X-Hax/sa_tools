@@ -454,6 +454,7 @@ namespace SAModel
                 case ModelFormat.BasicDX:
                     return GetObjects().Where(a => a.Animate).Select(a => (a.Attach as BasicAttach)?.Vertex?.Length ?? 0).ToArray();
                 case ModelFormat.Chunk:
+				case ModelFormat.ChaoChunk:
                     return GetObjects().Where(a => a.Animate).Select(a =>
                     {
                         ChunkAttach cnkatt = a.Attach as ChunkAttach;
@@ -466,6 +467,61 @@ namespace SAModel
             }
           
         }
+
+		public int CountAllVertices()
+		{
+			int total = 0;
+			switch (GetModelFormat())
+			{
+				case ModelFormat.Basic:
+				case ModelFormat.BasicDX:
+					foreach (NJS_OBJECT obj in GetObjects())
+					{
+						BasicAttach bsatt = obj.Attach as BasicAttach;
+						if (bsatt != null && bsatt.Vertex != null)
+							total += bsatt.Vertex.Length;
+					}
+					break;
+				case ModelFormat.Chunk:
+				case ModelFormat.ChaoChunk:
+					foreach (NJS_OBJECT obj in GetObjects())
+					{
+						ChunkAttach cnkatt = obj.Attach as ChunkAttach;
+						if (cnkatt != null && cnkatt.Vertex != null)
+						{
+							foreach (VertexChunk vcnk in cnkatt.Vertex)
+							{
+								if (vcnk.WeightStatus != WeightStatus.Middle)
+								total += vcnk.VertexCount;
+							}
+						}
+					}
+					break;
+				case ModelFormat.GC:
+					foreach (NJS_OBJECT obj in GetObjects())
+					{
+						GCAttach gcatt = obj.Attach as GCAttach;
+						if (gcatt != null && gcatt.VertexData.Count > 0)
+						{
+							var positions = gcatt.VertexData.Find(x => x.Attribute == GCVertexAttribute.Position)?.Data;
+							if (positions != null)
+								total += positions.Count;
+						}
+						if (gcatt != null && gcatt.VertexSkinData.Count > 0)
+						{
+							foreach (GCSkinVertexSet gcw in gcatt.VertexSkinData)
+							{
+								if (gcw.elementType != GCSkinAttribute.PartialWeight)
+								total += gcw.indexCount;
+							}
+						}
+					}
+					break;
+				default:
+					break;
+			}
+			return total;
+		}
 
 		public int CountAll()
 		{
@@ -675,13 +731,12 @@ namespace SAModel
 			return result.ToString();
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null, bool isDup = false, bool exportDefaults = true, bool isNinja2 = false)
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null, bool isDup = false, bool exportDefaults = true, bool isNinja2 = false, string texlistname = null)
 		{
 			NJS_OBJECT mdl = this;
 			while (mdl.Parent != null)
 				mdl = mdl.Parent;
 			NJS_OBJECT[] mdls = mdl.GetObjects();
-			int weightpower = 0;
 			bool shortweight = false;
 
 			for (int i = 1; i < Children.Count; i++)
@@ -717,7 +772,7 @@ namespace SAModel
 				isXinja = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is XJ.XJAttach;
 			}
 			//Because this uses different calculations for weights if one vertex has a value that's too high
-			if (isChunk || isGinja)
+			if (isChunk)
 			{
 				foreach (NJS_OBJECT main in mdls)
 				{
@@ -732,7 +787,9 @@ namespace SAModel
 									for (int i = 0; i < item.VertexCount; ++i)
 									{
 										if ((item.NinjaFlags[i] >> 16) > 255)
-											weightpower++;
+										{
+											shortweight = true;
+											break;
 									}
 								}
 							}
@@ -740,10 +797,7 @@ namespace SAModel
 					}
 				}
 			}
-			if (weightpower > 0)
-				shortweight = true;
-			else
-				shortweight = false;
+			}
 
 			if (!Name.StartsWith("DO_NOT_EXPORT"))
 			{
@@ -849,7 +903,7 @@ namespace SAModel
 				else if (isGinja)
 					writer.WriteLine("GjModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
 				else if (isXinja)
-					writer.WriteLine("XINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+					writer.WriteLine("XjModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
 				writer.WriteLine("OPosition  {0},", Position.ToNJA());
 				if (isNinja2 && Quaternion)
 					writer.WriteLine("OAngle     (  0x" + Rotation.X.ToCHex() + ", 0x" + Rotation.Y.ToCHex() + ", 0x" + Rotation.Z.ToCHex() + " ),");
@@ -873,11 +927,18 @@ namespace SAModel
 
 				if (exportDefaults && Parent == null)
 				{
-					writer.WriteLine(Environment.NewLine + "DEFAULT_START");
+					writer.WriteLine(Environment.NewLine + Environment.NewLine + "DEFAULT_START");
 					writer.WriteLine(Environment.NewLine + "#ifndef DEFAULT_OBJECT_NAME");
 					writer.WriteLine("#define DEFAULT_OBJECT_NAME " + Name.MakeIdentifier());
 					writer.WriteLine("#endif");
+					if (!string.IsNullOrEmpty(texlistname))
+					{
+						writer.WriteLine("#ifndef DEFAULT_TEXLIST_NAME");
+						writer.WriteLine("#define DEFAULT_TEXLIST_NAME " + texlistname);
+						writer.WriteLine("#endif");
+					}
 					writer.Write(Environment.NewLine + "DEFAULT_END");
+					writer.WriteLine(Environment.NewLine);
 				}
 			}
 		}

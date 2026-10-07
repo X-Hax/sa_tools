@@ -5,7 +5,7 @@ using System.Drawing;
 // Archive library for SA Tools
 
 namespace ArchiveLib
-{	
+{
 	/// <summary>
 	/// Class for archives supported by SA Tools. This is a generic class that doesn't access format-specific properties.
 	/// </summary>
@@ -31,7 +31,7 @@ namespace ArchiveLib
 			XVM,
 			PVMX,
 			MLD,
-			MDL,		
+			MDL,
 			MDT
 		}
 
@@ -53,7 +53,7 @@ namespace ArchiveLib
 			{ ArchiveFileType.MLT, (".mlt","MLT (Dreamcast)") },
 			{ ArchiveFileType.gcaxMLT, (".mlt","MLT (Gamecube)") },
 			{ ArchiveFileType.KAT, (".kat","KAT (Dreamcast)") },
-			{ ArchiveFileType.njUtil, (".bin","njUtil (Dreamcast/Gamecube)") },			
+			{ ArchiveFileType.njUtil, (".bin","njUtil (Dreamcast/Gamecube)") },
 			{ ArchiveFileType.MDL, (".mdl","MDL (Sonic Shuffle)") },
 			{ ArchiveFileType.MDT, (".mdt","MDT (Sonic Shuffle)") },
 			{ ArchiveFileType.MLD, (".mld", "MLD (Skies of Arcadia)") },
@@ -85,9 +85,12 @@ namespace ArchiveLib
 		/// <returns>Array of bytes.</returns>
 		public abstract byte[] GetBytes();
 
-		/// <summary>Creates a default format index file used by ArchiveTool for building archives.</summary>
+		/// <summary>
+		/// Creates a format-specific index file used by ArchiveTool for building archives.
+		/// If the format does not require a specific index file but the file order is still important, this function should call CreateDefaultIndexFile().
+		/// </summary>
 		/// <param name="path">Path to the output index file.</param>
-		internal void CreateDefaultIndexFile(string path)
+		public virtual void CreateIndexFile(string path)
 		{
 			using (TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
 			{
@@ -99,13 +102,6 @@ namespace ArchiveLib
 				texList.Close();
 			}
 		}
-
-		/// <summary>
-		/// Creates a format-specific index file used by ArchiveTool for building archives.
-		/// If the format does not require a specific index file but the file order is still important, this function should call CreateDefaultIndexFile().
-		/// </summary>
-		/// <param name="path">Path to the output index file.</param>
-		public abstract void CreateIndexFile(string path);
 
 		/// <summary>Individual entry in the archive.
 		/// The common properties are Name (numeric ID if the actual name is not defined) and Data as a byte array.
@@ -126,7 +122,10 @@ namespace ArchiveLib
 			/// Can be used to retrieve texture preview images.
 			/// </summary>
 			/// <returns>Bitmap containing the texture image.</returns>
-			public abstract Bitmap GetBitmap();
+			public virtual Bitmap GetBitmap()
+			{
+				return null;
+			}
 
 			public GenericArchiveEntry()
 			{

@@ -10,8 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Xml;
-using static ArchiveLib.nmldGround;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.DataTypes
 {
@@ -38,7 +37,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public static List<LandTable> secondgeos = [];
 		public static List<string> leveltexssecond = [];
 		public static string leveltexs;
-		public static Dictionary<string, BMPInfo[]> TextureBitmaps;
+		public static Dictionary<string, GenericTexture[]> TextureBitmaps;
 		public static Dictionary<string, Texture[]> Textures;
 		public static readonly string[] Characters = { "Sonic", "Tails", "Knuckles", "Amy", "Gamma", "Big" };
 		public static readonly string[] SETChars = { "S", "M", "K", "A", "E", "B" };
@@ -497,9 +496,9 @@ namespace SAModel.SAEditorCommon.DataTypes
 					for (int u = 0; u < dicc.Value.Length; u++)
 						dicc.Value[u].Dispose();
 			if (TextureBitmaps != null)
-				foreach (KeyValuePair<string, BMPInfo[]> dicc2 in TextureBitmaps)
+				foreach (KeyValuePair<string, GenericTexture[]> dicc2 in TextureBitmaps)
 					for (int u = 0; u < dicc2.Value.Length; u++)
-						dicc2.Value[u].Image.Dispose();
+						dicc2.Value[u].Image.Dispose(); // Maybe not necessary?
 			TextureBitmaps = null;
 			Textures = null;
 		}

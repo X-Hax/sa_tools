@@ -280,19 +280,19 @@ namespace TextureLib
 		/// <param name="data">Byte array to load.</param>
 		/// <param name="offset">Offset to load.</param>
 		/// <returns></returns>
-		public static GenericTexture LoadTexture(byte[] data, int offset = 0)
+		public static GenericTexture LoadTexture(byte[] data, int offset = 0, string name = "")
 		{
 			if (PvrTexture.Identify(data, offset))
-				return new PvrTexture(data, offset);
+				return new PvrTexture(data, offset, name);
 			else if (GvrTexture.Identify(data, offset))
-				return new GvrTexture(data, offset);
+				return new GvrTexture(data, offset, name);
 			else if (XvrTexture.Identify(data, offset))
-				return new XvrTexture(data, offset);
+				return new XvrTexture(data, offset, name);
 			else if (DdsTexture.Identify(data, offset))
-				return new DdsTexture(data, offset);
+				return new DdsTexture(data, offset, name: name);
 			else if (GdiTexture.Identify(data, offset))
-				return new GdiTexture(data, offset);
-			return new InvalidTexture(data, offset);
+				return new GdiTexture(data, offset, name: name);
+			return new InvalidTexture(data, offset, name: name);
 		}
 
 		/// <summary>
@@ -349,16 +349,17 @@ namespace TextureLib
 		/// <param name="forceMipmaps">Force add mipmaps if the input texture doesn't have them.</param>
 		/// <param name="useCompressed">Allow usage of the DXT1 compression format.</param>
 		/// <param name="maxQuality">Use higher quality formats to avoid data loss.</param>
+		/// <param name="forceGCIX">Use GCIX header instead of GBIX.</param>
 		/// <returns>A GVR texture.</returns>
 		/// <exception cref="Exception"></exception>
-		public GvrTexture ToGvr(bool maxQuality = false, bool useCompressed = false, bool forceMipmaps = false)
+		public GvrTexture ToGvr(bool maxQuality = false, bool useCompressed = false, bool forceMipmaps = false, bool forceGCIX = false)
 		{
 			return this switch
 			{
 				GvrTexture => (GvrTexture)this,
-				PvrTexture pvr => new GvrTexture(pvr, forceMipmaps, useCompressed, maxQuality),
-				DdsTexture gvr => new GvrTexture(gvr, forceMipmaps, maxQuality),
-				GdiTexture gdi => new GvrTexture(gdi),
+				PvrTexture pvr => new GvrTexture(pvr, forceMipmaps, useCompressed, maxQuality, forceGCIX),
+				DdsTexture gvr => new GvrTexture(gvr, forceMipmaps, maxQuality, forceGCIX),
+				GdiTexture gdi => new GvrTexture(gdi, forceGCIX: forceGCIX),
 				_ => throw new Exception("Cannot convert texture to GVR"),
 			};
 		}

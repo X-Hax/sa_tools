@@ -28,538 +28,738 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModelDataEditor));
-            this.buttonMoveMeshUp = new System.Windows.Forms.Button();
-            this.buttonMoveMeshDown = new System.Windows.Forms.Button();
-            this.listViewMeshes = new System.Windows.Forms.ListView();
-            this.columnHeaderIndex = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderMatID = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderType = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderPoly = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderUV = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderVcolor = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderPolynormals = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderTrans = new System.Windows.Forms.ColumnHeader();
-            this.buttonCloneMesh = new System.Windows.Forms.Button();
-            this.buttonDeleteMesh = new System.Windows.Forms.Button();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabelInfo = new System.Windows.Forms.ToolStripStatusLabel();
-            this.labelModelName = new System.Windows.Forms.Label();
-            this.labelMeshsetName = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBoxMaterialName = new System.Windows.Forms.TextBox();
-            this.textBoxMeshsetName = new System.Windows.Forms.TextBox();
-            this.textBoxModelName = new System.Windows.Forms.TextBox();
-            this.textBoxModelY = new System.Windows.Forms.TextBox();
-            this.textBoxModelZ = new System.Windows.Forms.TextBox();
-            this.textBoxModelX = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.groupBoxLabels = new System.Windows.Forms.GroupBox();
-            this.textBoxObjectName = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBoxNormalName = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.textBoxVertexName = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.groupBoxBounds = new System.Windows.Forms.GroupBox();
-            this.textBoxModelRadius = new System.Windows.Forms.TextBox();
-            this.labelR = new System.Windows.Forms.Label();
-            this.groupBoxMeshList = new System.Windows.Forms.GroupBox();
-            this.buttonResetMeshes = new System.Windows.Forms.Button();
-            this.buttonClose = new System.Windows.Forms.Button();
-            this.contextMenuStripLabels = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItemEditPolyName = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemEditUVName = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemEditVcolorName = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemEditPolynormalName = new System.Windows.Forms.ToolStripMenuItem();
-            this.comboBoxNode = new System.Windows.Forms.ComboBox();
-            this.toolStripMenuItemEditMaterialID = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.statusStrip1.SuspendLayout();
-            this.groupBoxLabels.SuspendLayout();
-            this.groupBoxBounds.SuspendLayout();
-            this.groupBoxMeshList.SuspendLayout();
-            this.contextMenuStripLabels.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // buttonMoveMeshUp
-            // 
-            this.buttonMoveMeshUp.Enabled = false;
-            this.buttonMoveMeshUp.Location = new System.Drawing.Point(714, 21);
-            this.buttonMoveMeshUp.Name = "buttonMoveMeshUp";
-            this.buttonMoveMeshUp.Size = new System.Drawing.Size(24, 24);
-            this.buttonMoveMeshUp.TabIndex = 12;
-            this.buttonMoveMeshUp.Text = "↑";
-            this.buttonMoveMeshUp.UseVisualStyleBackColor = true;
-            this.buttonMoveMeshUp.Click += new System.EventHandler(this.buttonMoveMeshUp_Click);
-            // 
-            // buttonMoveMeshDown
-            // 
-            this.buttonMoveMeshDown.Enabled = false;
-            this.buttonMoveMeshDown.Location = new System.Drawing.Point(714, 51);
-            this.buttonMoveMeshDown.Name = "buttonMoveMeshDown";
-            this.buttonMoveMeshDown.Size = new System.Drawing.Size(24, 24);
-            this.buttonMoveMeshDown.TabIndex = 13;
-            this.buttonMoveMeshDown.Text = "↓";
-            this.buttonMoveMeshDown.UseVisualStyleBackColor = true;
-            this.buttonMoveMeshDown.Click += new System.EventHandler(this.buttonMoveMeshDown_Click);
-            // 
-            // listViewMeshes
-            // 
-            this.listViewMeshes.AutoArrange = false;
-            this.listViewMeshes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeaderIndex,
-            this.columnHeaderMatID,
-            this.columnHeaderType,
-            this.columnHeaderPoly,
-            this.columnHeaderUV,
-            this.columnHeaderVcolor,
-            this.columnHeaderPolynormals,
-            this.columnHeaderTrans});
-            this.listViewMeshes.FullRowSelect = true;
-            this.listViewMeshes.GridLines = true;
-            this.listViewMeshes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.listViewMeshes.HideSelection = false;
-            this.listViewMeshes.Location = new System.Drawing.Point(5, 19);
-            this.listViewMeshes.MultiSelect = false;
-            this.listViewMeshes.Name = "listViewMeshes";
-            this.listViewMeshes.ShowGroups = false;
-            this.listViewMeshes.Size = new System.Drawing.Size(703, 236);
-            this.listViewMeshes.TabIndex = 11;
-            this.listViewMeshes.UseCompatibleStateImageBehavior = false;
-            this.listViewMeshes.View = System.Windows.Forms.View.Details;
-            this.listViewMeshes.SelectedIndexChanged += new System.EventHandler(this.listViewMeshes_SelectedIndexChanged);
-            this.listViewMeshes.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listViewMeshes_MouseClick);
-            // 
-            // columnHeaderIndex
-            // 
-            this.columnHeaderIndex.Text = "Index";
-            // 
-            // columnHeaderMatID
-            // 
-            this.columnHeaderMatID.Text = "Material";
-            // 
-            // columnHeaderType
-            // 
-            this.columnHeaderType.Text = "Type";
-            // 
-            // columnHeaderPoly
-            // 
-            this.columnHeaderPoly.Text = "Polys";
-            // 
-            // columnHeaderUV
-            // 
-            this.columnHeaderUV.Text = "UVs";
-            // 
-            // columnHeaderVcolor
-            // 
-            this.columnHeaderVcolor.Text = "Vertex Colors";
-            // 
-            // columnHeaderPolynormals
-            // 
-            this.columnHeaderPolynormals.Text = "Polynormals";
-            // 
-            // columnHeaderTrans
-            // 
-            this.columnHeaderTrans.Text = "Uses Alpha?";
-            // 
-            // buttonCloneMesh
-            // 
-            this.buttonCloneMesh.Enabled = false;
-            this.buttonCloneMesh.Location = new System.Drawing.Point(5, 261);
-            this.buttonCloneMesh.Name = "buttonCloneMesh";
-            this.buttonCloneMesh.Size = new System.Drawing.Size(90, 24);
-            this.buttonCloneMesh.TabIndex = 14;
-            this.buttonCloneMesh.Text = "Clone Mesh";
-            this.buttonCloneMesh.UseVisualStyleBackColor = true;
-            this.buttonCloneMesh.Click += new System.EventHandler(this.buttonCloneMesh_Click);
-            // 
-            // buttonDeleteMesh
-            // 
-            this.buttonDeleteMesh.Enabled = false;
-            this.buttonDeleteMesh.Location = new System.Drawing.Point(100, 261);
-            this.buttonDeleteMesh.Name = "buttonDeleteMesh";
-            this.buttonDeleteMesh.Size = new System.Drawing.Size(90, 24);
-            this.buttonDeleteMesh.TabIndex = 15;
-            this.buttonDeleteMesh.Text = "Delete Mesh";
-            this.buttonDeleteMesh.UseVisualStyleBackColor = true;
-            this.buttonDeleteMesh.Click += new System.EventHandler(this.buttonDeleteMesh_Click);
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabelInfo});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 487);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(758, 22);
-            this.statusStrip1.SizingGrip = false;
-            this.statusStrip1.TabIndex = 11;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // toolStripStatusLabelInfo
-            // 
-            this.toolStripStatusLabelInfo.Name = "toolStripStatusLabelInfo";
-            this.toolStripStatusLabelInfo.Size = new System.Drawing.Size(343, 17);
-            this.toolStripStatusLabelInfo.Text = "Click a mesh to display its information. Right click to edit labels.";
-            // 
-            // labelModelName
-            // 
-            this.labelModelName.AutoSize = true;
-            this.labelModelName.Location = new System.Drawing.Point(16, 48);
-            this.labelModelName.Name = "labelModelName";
-            this.labelModelName.Size = new System.Drawing.Size(79, 15);
-            this.labelModelName.TabIndex = 12;
-            this.labelModelName.Text = "Model Name:";
-            // 
-            // labelMeshsetName
-            // 
-            this.labelMeshsetName.AutoSize = true;
-            this.labelMeshsetName.Location = new System.Drawing.Point(266, 21);
-            this.labelMeshsetName.Name = "labelMeshsetName";
-            this.labelMeshsetName.Size = new System.Drawing.Size(89, 15);
-            this.labelMeshsetName.TabIndex = 13;
-            this.labelMeshsetName.Text = "Meshset Name:";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 75);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(88, 15);
-            this.label1.TabIndex = 15;
-            this.label1.Text = "Material Name:";
-            // 
-            // textBoxMaterialName
-            // 
-            this.textBoxMaterialName.Location = new System.Drawing.Point(100, 72);
-            this.textBoxMaterialName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxMaterialName.Name = "textBoxMaterialName";
-            this.textBoxMaterialName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxMaterialName.TabIndex = 3;
-            this.textBoxMaterialName.TextChanged += new System.EventHandler(this.textBoxMaterialName_TextChanged);
-            // 
-            // textBoxMeshsetName
-            // 
-            this.textBoxMeshsetName.Location = new System.Drawing.Point(360, 18);
-            this.textBoxMeshsetName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxMeshsetName.Name = "textBoxMeshsetName";
-            this.textBoxMeshsetName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxMeshsetName.TabIndex = 4;
-            this.textBoxMeshsetName.TextChanged += new System.EventHandler(this.textBoxMeshsetName_TextChanged);
-            // 
-            // textBoxModelName
-            // 
-            this.textBoxModelName.Location = new System.Drawing.Point(100, 45);
-            this.textBoxModelName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxModelName.Name = "textBoxModelName";
-            this.textBoxModelName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxModelName.TabIndex = 2;
-            this.textBoxModelName.TextChanged += new System.EventHandler(this.textBoxModelName_TextChanged);
-            // 
-            // textBoxModelY
-            // 
-            this.textBoxModelY.Location = new System.Drawing.Point(36, 45);
-            this.textBoxModelY.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxModelY.Name = "textBoxModelY";
-            this.textBoxModelY.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelY.TabIndex = 8;
-            this.textBoxModelY.TextChanged += new System.EventHandler(this.textBoxModelY_TextChanged);
-            // 
-            // textBoxModelZ
-            // 
-            this.textBoxModelZ.Location = new System.Drawing.Point(36, 72);
-            this.textBoxModelZ.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxModelZ.Name = "textBoxModelZ";
-            this.textBoxModelZ.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelZ.TabIndex = 9;
-            this.textBoxModelZ.TextChanged += new System.EventHandler(this.textBoxModelZ_TextChanged);
-            // 
-            // textBoxModelX
-            // 
-            this.textBoxModelX.Location = new System.Drawing.Point(36, 18);
-            this.textBoxModelX.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxModelX.Name = "textBoxModelX";
-            this.textBoxModelX.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelX.TabIndex = 7;
-            this.textBoxModelX.TextChanged += new System.EventHandler(this.textBoxModelX_TextChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(14, 21);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(17, 15);
-            this.label4.TabIndex = 23;
-            this.label4.Text = "X:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(14, 48);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(17, 15);
-            this.label5.TabIndex = 24;
-            this.label5.Text = "Y:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(14, 75);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(17, 15);
-            this.label6.TabIndex = 25;
-            this.label6.Text = "Z:";
-            // 
-            // groupBoxLabels
-            // 
-            this.groupBoxLabels.Controls.Add(this.textBoxObjectName);
-            this.groupBoxLabels.Controls.Add(this.label7);
-            this.groupBoxLabels.Controls.Add(this.textBoxNormalName);
-            this.groupBoxLabels.Controls.Add(this.label3);
-            this.groupBoxLabels.Controls.Add(this.textBoxVertexName);
-            this.groupBoxLabels.Controls.Add(this.label2);
-            this.groupBoxLabels.Controls.Add(this.textBoxModelName);
-            this.groupBoxLabels.Controls.Add(this.labelModelName);
-            this.groupBoxLabels.Controls.Add(this.labelMeshsetName);
-            this.groupBoxLabels.Controls.Add(this.label1);
-            this.groupBoxLabels.Controls.Add(this.textBoxMaterialName);
-            this.groupBoxLabels.Controls.Add(this.textBoxMeshsetName);
-            this.groupBoxLabels.Location = new System.Drawing.Point(8, 40);
-            this.groupBoxLabels.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBoxLabels.Name = "groupBoxLabels";
-            this.groupBoxLabels.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBoxLabels.Size = new System.Drawing.Size(509, 104);
-            this.groupBoxLabels.TabIndex = 26;
-            this.groupBoxLabels.TabStop = false;
-            this.groupBoxLabels.Text = "Labels";
-            // 
-            // textBoxObjectName
-            // 
-            this.textBoxObjectName.Location = new System.Drawing.Point(100, 18);
-            this.textBoxObjectName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxObjectName.Name = "textBoxObjectName";
-            this.textBoxObjectName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxObjectName.TabIndex = 1;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(15, 21);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(80, 15);
-            this.label7.TabIndex = 23;
-            this.label7.Text = "Object Name:";
-            // 
-            // textBoxNormalName
-            // 
-            this.textBoxNormalName.Location = new System.Drawing.Point(360, 72);
-            this.textBoxNormalName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxNormalName.Name = "textBoxNormalName";
-            this.textBoxNormalName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxNormalName.TabIndex = 6;
-            this.textBoxNormalName.TextChanged += new System.EventHandler(this.textBoxNormalName_TextChanged);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(265, 75);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(90, 15);
-            this.label3.TabIndex = 21;
-            this.label3.Text = "Normals Name:";
-            // 
-            // textBoxVertexName
-            // 
-            this.textBoxVertexName.Location = new System.Drawing.Point(360, 45);
-            this.textBoxVertexName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxVertexName.Name = "textBoxVertexName";
-            this.textBoxVertexName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxVertexName.TabIndex = 5;
-            this.textBoxVertexName.TextChanged += new System.EventHandler(this.textBoxVertexName_TextChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(270, 48);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(85, 15);
-            this.label2.TabIndex = 19;
-            this.label2.Text = "Vertices Name:";
-            // 
-            // groupBoxBounds
-            // 
-            this.groupBoxBounds.Controls.Add(this.textBoxModelRadius);
-            this.groupBoxBounds.Controls.Add(this.labelR);
-            this.groupBoxBounds.Controls.Add(this.textBoxModelX);
-            this.groupBoxBounds.Controls.Add(this.textBoxModelY);
-            this.groupBoxBounds.Controls.Add(this.label6);
-            this.groupBoxBounds.Controls.Add(this.textBoxModelZ);
-            this.groupBoxBounds.Controls.Add(this.label5);
-            this.groupBoxBounds.Controls.Add(this.label4);
-            this.groupBoxBounds.Location = new System.Drawing.Point(522, 40);
-            this.groupBoxBounds.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBoxBounds.Name = "groupBoxBounds";
-            this.groupBoxBounds.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBoxBounds.Size = new System.Drawing.Size(232, 104);
-            this.groupBoxBounds.TabIndex = 27;
-            this.groupBoxBounds.TabStop = false;
-            this.groupBoxBounds.Text = "Model Bounds";
-            // 
-            // textBoxModelRadius
-            // 
-            this.textBoxModelRadius.Location = new System.Drawing.Point(128, 45);
-            this.textBoxModelRadius.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxModelRadius.Name = "textBoxModelRadius";
-            this.textBoxModelRadius.Size = new System.Drawing.Size(93, 23);
-            this.textBoxModelRadius.TabIndex = 10;
-            this.textBoxModelRadius.TextChanged += new System.EventHandler(this.textBoxModelRadius_TextChanged);
-            // 
-            // labelR
-            // 
-            this.labelR.AutoSize = true;
-            this.labelR.Location = new System.Drawing.Point(128, 21);
-            this.labelR.Name = "labelR";
-            this.labelR.Size = new System.Drawing.Size(45, 15);
-            this.labelR.TabIndex = 31;
-            this.labelR.Text = "Radius:";
-            // 
-            // groupBoxMeshList
-            // 
-            this.groupBoxMeshList.Controls.Add(this.buttonResetMeshes);
-            this.groupBoxMeshList.Controls.Add(this.buttonMoveMeshUp);
-            this.groupBoxMeshList.Controls.Add(this.buttonMoveMeshDown);
-            this.groupBoxMeshList.Controls.Add(this.listViewMeshes);
-            this.groupBoxMeshList.Controls.Add(this.buttonDeleteMesh);
-            this.groupBoxMeshList.Controls.Add(this.buttonCloneMesh);
-            this.groupBoxMeshList.Location = new System.Drawing.Point(8, 160);
-            this.groupBoxMeshList.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBoxMeshList.Name = "groupBoxMeshList";
-            this.groupBoxMeshList.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBoxMeshList.Size = new System.Drawing.Size(745, 294);
-            this.groupBoxMeshList.TabIndex = 28;
-            this.groupBoxMeshList.TabStop = false;
-            this.groupBoxMeshList.Text = "Mesh List";
-            // 
-            // buttonResetMeshes
-            // 
-            this.buttonResetMeshes.Location = new System.Drawing.Point(618, 261);
-            this.buttonResetMeshes.Name = "buttonResetMeshes";
-            this.buttonResetMeshes.Size = new System.Drawing.Size(90, 24);
-            this.buttonResetMeshes.TabIndex = 16;
-            this.buttonResetMeshes.Text = "Reset Meshes";
-            this.buttonResetMeshes.UseVisualStyleBackColor = true;
-            this.buttonResetMeshes.Click += new System.EventHandler(this.buttonResetMeshes_Click);
-            // 
-            // buttonClose
-            // 
-            this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonClose.Location = new System.Drawing.Point(670, 458);
-            this.buttonClose.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(84, 24);
-            this.buttonClose.TabIndex = 17;
-            this.buttonClose.Text = "Close";
-            this.buttonClose.UseVisualStyleBackColor = true;
-            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
-            // 
-            // contextMenuStripLabels
-            // 
-            this.contextMenuStripLabels.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.contextMenuStripLabels.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemEditMaterialID,
-            this.toolStripSeparator1,
-            this.toolStripMenuItemEditPolyName,
-            this.toolStripMenuItemEditUVName,
-            this.toolStripMenuItemEditVcolorName,
-            this.toolStripMenuItemEditPolynormalName});
-            this.contextMenuStripLabels.Name = "contextMenuStripLabels";
-            this.contextMenuStripLabels.Size = new System.Drawing.Size(203, 142);
-            // 
-            // toolStripMenuItemEditPolyName
-            // 
-            this.toolStripMenuItemEditPolyName.Name = "toolStripMenuItemEditPolyName";
-            this.toolStripMenuItemEditPolyName.Size = new System.Drawing.Size(202, 22);
-            this.toolStripMenuItemEditPolyName.Text = "Edit Polys Name...";
-            this.toolStripMenuItemEditPolyName.Click += new System.EventHandler(this.toolStripMenuItemEditPolyName_Click);
-            // 
-            // toolStripMenuItemEditUVName
-            // 
-            this.toolStripMenuItemEditUVName.Name = "toolStripMenuItemEditUVName";
-            this.toolStripMenuItemEditUVName.Size = new System.Drawing.Size(202, 22);
-            this.toolStripMenuItemEditUVName.Text = "Edit UVs Name...";
-            this.toolStripMenuItemEditUVName.Click += new System.EventHandler(this.toolStripMenuItemEditUVName_Click);
-            // 
-            // toolStripMenuItemEditVcolorName
-            // 
-            this.toolStripMenuItemEditVcolorName.Name = "toolStripMenuItemEditVcolorName";
-            this.toolStripMenuItemEditVcolorName.Size = new System.Drawing.Size(202, 22);
-            this.toolStripMenuItemEditVcolorName.Text = "Edit VColor Name...";
-            this.toolStripMenuItemEditVcolorName.Click += new System.EventHandler(this.toolStripMenuItemEditVcolorName_Click);
-            // 
-            // toolStripMenuItemEditPolynormalName
-            // 
-            this.toolStripMenuItemEditPolynormalName.Name = "toolStripMenuItemEditPolynormalName";
-            this.toolStripMenuItemEditPolynormalName.Size = new System.Drawing.Size(202, 22);
-            this.toolStripMenuItemEditPolynormalName.Text = "Edit Polynormal Name...";
-            this.toolStripMenuItemEditPolynormalName.Click += new System.EventHandler(this.toolStripMenuItemEditPolynormalName_Click);
-            // 
-            // comboBoxNode
-            // 
-            this.comboBoxNode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxNode.FormattingEnabled = true;
-            this.comboBoxNode.Location = new System.Drawing.Point(8, 12);
-            this.comboBoxNode.Name = "comboBoxNode";
-            this.comboBoxNode.Size = new System.Drawing.Size(355, 23);
-            this.comboBoxNode.TabIndex = 0;
-            this.comboBoxNode.SelectedIndexChanged += new System.EventHandler(this.comboBoxNode_SelectedIndexChanged);
-            // 
-            // toolStripMenuItemEditMaterialID
-            // 
-            this.toolStripMenuItemEditMaterialID.Name = "toolStripMenuItemEditMaterialID";
-            this.toolStripMenuItemEditMaterialID.Size = new System.Drawing.Size(202, 22);
-            this.toolStripMenuItemEditMaterialID.Text = "Edit Material ID...";
-            this.toolStripMenuItemEditMaterialID.Click += new System.EventHandler(this.toolStripMenuItemEditMaterialID_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(199, 6);
-            // 
-            // ModelDataEditor
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(758, 509);
-            this.Controls.Add(this.comboBoxNode);
-            this.Controls.Add(this.buttonClose);
-            this.Controls.Add(this.groupBoxMeshList);
-            this.Controls.Add(this.groupBoxBounds);
-            this.Controls.Add(this.groupBoxLabels);
-            this.Controls.Add(this.statusStrip1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "ModelDataEditor";
-            this.ShowInTaskbar = false;
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Model Data Editor";
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
-            this.groupBoxLabels.ResumeLayout(false);
-            this.groupBoxLabels.PerformLayout();
-            this.groupBoxBounds.ResumeLayout(false);
-            this.groupBoxBounds.PerformLayout();
-            this.groupBoxMeshList.ResumeLayout(false);
-            this.contextMenuStripLabels.ResumeLayout(false);
-            this.ResumeLayout(false);
-            this.PerformLayout();
+			components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModelDataEditor));
+			buttonMoveMeshUp = new System.Windows.Forms.Button();
+			buttonMoveMeshDown = new System.Windows.Forms.Button();
+			listViewMeshes = new System.Windows.Forms.ListView();
+			columnHeaderIndex = new System.Windows.Forms.ColumnHeader();
+			columnHeaderMatID = new System.Windows.Forms.ColumnHeader();
+			columnHeaderType = new System.Windows.Forms.ColumnHeader();
+			columnHeaderPoly = new System.Windows.Forms.ColumnHeader();
+			columnHeaderUV = new System.Windows.Forms.ColumnHeader();
+			columnHeaderVcolor = new System.Windows.Forms.ColumnHeader();
+			columnHeaderPolynormals = new System.Windows.Forms.ColumnHeader();
+			columnHeaderTrans = new System.Windows.Forms.ColumnHeader();
+			buttonCloneMesh = new System.Windows.Forms.Button();
+			buttonDeleteMesh = new System.Windows.Forms.Button();
+			statusStrip1 = new System.Windows.Forms.StatusStrip();
+			toolStripStatusLabelInfo = new System.Windows.Forms.ToolStripStatusLabel();
+			labelModelName = new System.Windows.Forms.Label();
+			labelMeshsetName = new System.Windows.Forms.Label();
+			label1 = new System.Windows.Forms.Label();
+			textBoxMaterialName = new System.Windows.Forms.TextBox();
+			textBoxMeshsetName = new System.Windows.Forms.TextBox();
+			textBoxModelName = new System.Windows.Forms.TextBox();
+			textBoxModelY = new System.Windows.Forms.TextBox();
+			textBoxModelZ = new System.Windows.Forms.TextBox();
+			textBoxModelX = new System.Windows.Forms.TextBox();
+			label4 = new System.Windows.Forms.Label();
+			label5 = new System.Windows.Forms.Label();
+			label6 = new System.Windows.Forms.Label();
+			groupBoxLabels = new System.Windows.Forms.GroupBox();
+			textBoxObjectName = new System.Windows.Forms.TextBox();
+			label7 = new System.Windows.Forms.Label();
+			textBoxNormalName = new System.Windows.Forms.TextBox();
+			label3 = new System.Windows.Forms.Label();
+			textBoxVertexName = new System.Windows.Forms.TextBox();
+			label2 = new System.Windows.Forms.Label();
+			groupBoxBounds = new System.Windows.Forms.GroupBox();
+			textBoxModelRadius = new System.Windows.Forms.TextBox();
+			labelR = new System.Windows.Forms.Label();
+			groupBoxMeshList = new System.Windows.Forms.GroupBox();
+			buttonMaterialEditor = new System.Windows.Forms.Button();
+			buttonResetMeshes = new System.Windows.Forms.Button();
+			groupBoxMaterialList = new System.Windows.Forms.GroupBox();
+			listViewMaterials = new System.Windows.Forms.ListView();
+			columnHeader1 = new System.Windows.Forms.ColumnHeader();
+			columnHeader2 = new System.Windows.Forms.ColumnHeader();
+			columnHeader3 = new System.Windows.Forms.ColumnHeader();
+			columnHeader4 = new System.Windows.Forms.ColumnHeader();
+			columnHeader5 = new System.Windows.Forms.ColumnHeader();
+			columnHeader6 = new System.Windows.Forms.ColumnHeader();
+			buttonClose = new System.Windows.Forms.Button();
+			contextMenuStripLabels = new System.Windows.Forms.ContextMenuStrip(components);
+			toolStripMenuItemEditMaterialID = new System.Windows.Forms.ToolStripMenuItem();
+			toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			toolStripMenuItemEditPolyName = new System.Windows.Forms.ToolStripMenuItem();
+			toolStripMenuItemEditUVName = new System.Windows.Forms.ToolStripMenuItem();
+			toolStripMenuItemEditVcolorName = new System.Windows.Forms.ToolStripMenuItem();
+			toolStripMenuItemEditPolynormalName = new System.Windows.Forms.ToolStripMenuItem();
+			comboBoxNode = new System.Windows.Forms.ComboBox();
+			groupBox1 = new System.Windows.Forms.GroupBox();
+			listViewObjectData = new System.Windows.Forms.ListView();
+			columnHeaderEval = new System.Windows.Forms.ColumnHeader();
+			columnHeaderPos = new System.Windows.Forms.ColumnHeader();
+			columnHeaderRot = new System.Windows.Forms.ColumnHeader();
+			columnHeaderScl = new System.Windows.Forms.ColumnHeader();
+			contextMenuStripObjSet = new System.Windows.Forms.ContextMenuStrip(components);
+			editObjectSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			groupBoxVertexList = new System.Windows.Forms.GroupBox();
+			labelNormalCount = new System.Windows.Forms.Label();
+			labelVertexCount = new System.Windows.Forms.Label();
+			buttonViewVertexData = new System.Windows.Forms.Button();
+			label9 = new System.Windows.Forms.Label();
+			label8 = new System.Windows.Forms.Label();
+			statusStrip1.SuspendLayout();
+			groupBoxLabels.SuspendLayout();
+			groupBoxBounds.SuspendLayout();
+			groupBoxMeshList.SuspendLayout();
+			groupBoxMaterialList.SuspendLayout();
+			contextMenuStripLabels.SuspendLayout();
+			groupBox1.SuspendLayout();
+			contextMenuStripObjSet.SuspendLayout();
+			groupBoxVertexList.SuspendLayout();
+			SuspendLayout();
+			// 
+			// buttonMoveMeshUp
+			// 
+			buttonMoveMeshUp.Enabled = false;
+			buttonMoveMeshUp.Location = new System.Drawing.Point(714, 21);
+			buttonMoveMeshUp.Name = "buttonMoveMeshUp";
+			buttonMoveMeshUp.Size = new System.Drawing.Size(24, 24);
+			buttonMoveMeshUp.TabIndex = 19;
+			buttonMoveMeshUp.Text = "↑";
+			buttonMoveMeshUp.UseVisualStyleBackColor = true;
+			buttonMoveMeshUp.Click += buttonMoveMeshUp_Click;
+			// 
+			// buttonMoveMeshDown
+			// 
+			buttonMoveMeshDown.Enabled = false;
+			buttonMoveMeshDown.Location = new System.Drawing.Point(714, 51);
+			buttonMoveMeshDown.Name = "buttonMoveMeshDown";
+			buttonMoveMeshDown.Size = new System.Drawing.Size(24, 24);
+			buttonMoveMeshDown.TabIndex = 20;
+			buttonMoveMeshDown.Text = "↓";
+			buttonMoveMeshDown.UseVisualStyleBackColor = true;
+			buttonMoveMeshDown.Click += buttonMoveMeshDown_Click;
+			// 
+			// listViewMeshes
+			// 
+			listViewMeshes.AutoArrange = false;
+			listViewMeshes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeaderIndex, columnHeaderMatID, columnHeaderType, columnHeaderPoly, columnHeaderUV, columnHeaderVcolor, columnHeaderPolynormals, columnHeaderTrans });
+			listViewMeshes.FullRowSelect = true;
+			listViewMeshes.GridLines = true;
+			listViewMeshes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			listViewMeshes.Location = new System.Drawing.Point(5, 19);
+			listViewMeshes.MultiSelect = false;
+			listViewMeshes.Name = "listViewMeshes";
+			listViewMeshes.ShowGroups = false;
+			listViewMeshes.Size = new System.Drawing.Size(703, 236);
+			listViewMeshes.TabIndex = 18;
+			listViewMeshes.UseCompatibleStateImageBehavior = false;
+			listViewMeshes.View = System.Windows.Forms.View.Details;
+			listViewMeshes.SelectedIndexChanged += listViewMeshes_SelectedIndexChanged;
+			listViewMeshes.MouseClick += listViewMeshes_MouseClick;
+			// 
+			// columnHeaderIndex
+			// 
+			columnHeaderIndex.Text = "Index";
+			// 
+			// columnHeaderMatID
+			// 
+			columnHeaderMatID.Text = "Material";
+			// 
+			// columnHeaderType
+			// 
+			columnHeaderType.Text = "Type";
+			// 
+			// columnHeaderPoly
+			// 
+			columnHeaderPoly.Text = "Polys";
+			// 
+			// columnHeaderUV
+			// 
+			columnHeaderUV.Text = "UVs";
+			// 
+			// columnHeaderVcolor
+			// 
+			columnHeaderVcolor.Text = "Vertex Colors";
+			// 
+			// columnHeaderPolynormals
+			// 
+			columnHeaderPolynormals.Text = "Polynormals";
+			// 
+			// columnHeaderTrans
+			// 
+			columnHeaderTrans.Text = "Uses Alpha?";
+			// 
+			// buttonCloneMesh
+			// 
+			buttonCloneMesh.Enabled = false;
+			buttonCloneMesh.Location = new System.Drawing.Point(5, 261);
+			buttonCloneMesh.Name = "buttonCloneMesh";
+			buttonCloneMesh.Size = new System.Drawing.Size(90, 24);
+			buttonCloneMesh.TabIndex = 21;
+			buttonCloneMesh.Text = "Clone Mesh";
+			buttonCloneMesh.UseVisualStyleBackColor = true;
+			buttonCloneMesh.Click += buttonCloneMesh_Click;
+			// 
+			// buttonDeleteMesh
+			// 
+			buttonDeleteMesh.Enabled = false;
+			buttonDeleteMesh.Location = new System.Drawing.Point(100, 261);
+			buttonDeleteMesh.Name = "buttonDeleteMesh";
+			buttonDeleteMesh.Size = new System.Drawing.Size(90, 24);
+			buttonDeleteMesh.TabIndex = 22;
+			buttonDeleteMesh.Text = "Delete Mesh";
+			buttonDeleteMesh.UseVisualStyleBackColor = true;
+			buttonDeleteMesh.Click += buttonDeleteMesh_Click;
+			// 
+			// statusStrip1
+			// 
+			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+			statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabelInfo });
+			statusStrip1.Location = new System.Drawing.Point(0, 667);
+			statusStrip1.Name = "statusStrip1";
+			statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
+			statusStrip1.Size = new System.Drawing.Size(916, 22);
+			statusStrip1.SizingGrip = false;
+			statusStrip1.TabIndex = 11;
+			statusStrip1.Text = "statusStrip1";
+			statusStrip1.ItemClicked += statusStrip1_ItemClicked;
+			// 
+			// toolStripStatusLabelInfo
+			// 
+			toolStripStatusLabelInfo.Name = "toolStripStatusLabelInfo";
+			toolStripStatusLabelInfo.Size = new System.Drawing.Size(343, 17);
+			toolStripStatusLabelInfo.Text = "Click a mesh to display its information. Right click to edit labels.";
+			// 
+			// labelModelName
+			// 
+			labelModelName.AutoSize = true;
+			labelModelName.Location = new System.Drawing.Point(16, 48);
+			labelModelName.Name = "labelModelName";
+			labelModelName.Size = new System.Drawing.Size(79, 15);
+			labelModelName.TabIndex = 12;
+			labelModelName.Text = "Model Name:";
+			// 
+			// labelMeshsetName
+			// 
+			labelMeshsetName.AutoSize = true;
+			labelMeshsetName.Location = new System.Drawing.Point(266, 21);
+			labelMeshsetName.Name = "labelMeshsetName";
+			labelMeshsetName.Size = new System.Drawing.Size(89, 15);
+			labelMeshsetName.TabIndex = 13;
+			labelMeshsetName.Text = "Meshset Name:";
+			// 
+			// label1
+			// 
+			label1.AutoSize = true;
+			label1.Location = new System.Drawing.Point(7, 75);
+			label1.Name = "label1";
+			label1.Size = new System.Drawing.Size(88, 15);
+			label1.TabIndex = 15;
+			label1.Text = "Material Name:";
+			// 
+			// textBoxMaterialName
+			// 
+			textBoxMaterialName.Location = new System.Drawing.Point(100, 72);
+			textBoxMaterialName.Margin = new System.Windows.Forms.Padding(2);
+			textBoxMaterialName.Name = "textBoxMaterialName";
+			textBoxMaterialName.Size = new System.Drawing.Size(145, 23);
+			textBoxMaterialName.TabIndex = 4;
+			textBoxMaterialName.TextChanged += textBoxMaterialName_TextChanged;
+			// 
+			// textBoxMeshsetName
+			// 
+			textBoxMeshsetName.Location = new System.Drawing.Point(360, 18);
+			textBoxMeshsetName.Margin = new System.Windows.Forms.Padding(2);
+			textBoxMeshsetName.Name = "textBoxMeshsetName";
+			textBoxMeshsetName.Size = new System.Drawing.Size(145, 23);
+			textBoxMeshsetName.TabIndex = 5;
+			textBoxMeshsetName.TextChanged += textBoxMeshsetName_TextChanged;
+			// 
+			// textBoxModelName
+			// 
+			textBoxModelName.Location = new System.Drawing.Point(100, 45);
+			textBoxModelName.Margin = new System.Windows.Forms.Padding(2);
+			textBoxModelName.Name = "textBoxModelName";
+			textBoxModelName.Size = new System.Drawing.Size(145, 23);
+			textBoxModelName.TabIndex = 3;
+			textBoxModelName.TextChanged += textBoxModelName_TextChanged;
+			// 
+			// textBoxModelY
+			// 
+			textBoxModelY.Location = new System.Drawing.Point(36, 45);
+			textBoxModelY.Margin = new System.Windows.Forms.Padding(2);
+			textBoxModelY.Name = "textBoxModelY";
+			textBoxModelY.Size = new System.Drawing.Size(80, 23);
+			textBoxModelY.TabIndex = 10;
+			textBoxModelY.TextChanged += textBoxModelY_TextChanged;
+			// 
+			// textBoxModelZ
+			// 
+			textBoxModelZ.Location = new System.Drawing.Point(36, 72);
+			textBoxModelZ.Margin = new System.Windows.Forms.Padding(2);
+			textBoxModelZ.Name = "textBoxModelZ";
+			textBoxModelZ.Size = new System.Drawing.Size(80, 23);
+			textBoxModelZ.TabIndex = 11;
+			textBoxModelZ.TextChanged += textBoxModelZ_TextChanged;
+			// 
+			// textBoxModelX
+			// 
+			textBoxModelX.Location = new System.Drawing.Point(36, 18);
+			textBoxModelX.Margin = new System.Windows.Forms.Padding(2);
+			textBoxModelX.Name = "textBoxModelX";
+			textBoxModelX.Size = new System.Drawing.Size(80, 23);
+			textBoxModelX.TabIndex = 9;
+			textBoxModelX.TextChanged += textBoxModelX_TextChanged;
+			// 
+			// label4
+			// 
+			label4.AutoSize = true;
+			label4.Location = new System.Drawing.Point(14, 21);
+			label4.Name = "label4";
+			label4.Size = new System.Drawing.Size(17, 15);
+			label4.TabIndex = 23;
+			label4.Text = "X:";
+			// 
+			// label5
+			// 
+			label5.AutoSize = true;
+			label5.Location = new System.Drawing.Point(14, 48);
+			label5.Name = "label5";
+			label5.Size = new System.Drawing.Size(17, 15);
+			label5.TabIndex = 24;
+			label5.Text = "Y:";
+			// 
+			// label6
+			// 
+			label6.AutoSize = true;
+			label6.Location = new System.Drawing.Point(14, 75);
+			label6.Name = "label6";
+			label6.Size = new System.Drawing.Size(17, 15);
+			label6.TabIndex = 25;
+			label6.Text = "Z:";
+			// 
+			// groupBoxLabels
+			// 
+			groupBoxLabels.Controls.Add(textBoxObjectName);
+			groupBoxLabels.Controls.Add(label7);
+			groupBoxLabels.Controls.Add(textBoxNormalName);
+			groupBoxLabels.Controls.Add(label3);
+			groupBoxLabels.Controls.Add(textBoxVertexName);
+			groupBoxLabels.Controls.Add(label2);
+			groupBoxLabels.Controls.Add(textBoxModelName);
+			groupBoxLabels.Controls.Add(labelModelName);
+			groupBoxLabels.Controls.Add(labelMeshsetName);
+			groupBoxLabels.Controls.Add(label1);
+			groupBoxLabels.Controls.Add(textBoxMaterialName);
+			groupBoxLabels.Controls.Add(textBoxMeshsetName);
+			groupBoxLabels.Location = new System.Drawing.Point(8, 40);
+			groupBoxLabels.Margin = new System.Windows.Forms.Padding(2);
+			groupBoxLabels.Name = "groupBoxLabels";
+			groupBoxLabels.Padding = new System.Windows.Forms.Padding(2);
+			groupBoxLabels.Size = new System.Drawing.Size(509, 104);
+			groupBoxLabels.TabIndex = 1;
+			groupBoxLabels.TabStop = false;
+			groupBoxLabels.Text = "Labels";
+			// 
+			// textBoxObjectName
+			// 
+			textBoxObjectName.Location = new System.Drawing.Point(100, 18);
+			textBoxObjectName.Margin = new System.Windows.Forms.Padding(2);
+			textBoxObjectName.Name = "textBoxObjectName";
+			textBoxObjectName.Size = new System.Drawing.Size(145, 23);
+			textBoxObjectName.TabIndex = 2;
+			// 
+			// label7
+			// 
+			label7.AutoSize = true;
+			label7.Location = new System.Drawing.Point(15, 21);
+			label7.Name = "label7";
+			label7.Size = new System.Drawing.Size(80, 15);
+			label7.TabIndex = 23;
+			label7.Text = "Object Name:";
+			// 
+			// textBoxNormalName
+			// 
+			textBoxNormalName.Location = new System.Drawing.Point(360, 72);
+			textBoxNormalName.Margin = new System.Windows.Forms.Padding(2);
+			textBoxNormalName.Name = "textBoxNormalName";
+			textBoxNormalName.Size = new System.Drawing.Size(145, 23);
+			textBoxNormalName.TabIndex = 7;
+			textBoxNormalName.TextChanged += textBoxNormalName_TextChanged;
+			// 
+			// label3
+			// 
+			label3.AutoSize = true;
+			label3.Location = new System.Drawing.Point(265, 75);
+			label3.Name = "label3";
+			label3.Size = new System.Drawing.Size(90, 15);
+			label3.TabIndex = 21;
+			label3.Text = "Normals Name:";
+			// 
+			// textBoxVertexName
+			// 
+			textBoxVertexName.Location = new System.Drawing.Point(360, 45);
+			textBoxVertexName.Margin = new System.Windows.Forms.Padding(2);
+			textBoxVertexName.Name = "textBoxVertexName";
+			textBoxVertexName.Size = new System.Drawing.Size(145, 23);
+			textBoxVertexName.TabIndex = 6;
+			textBoxVertexName.TextChanged += textBoxVertexName_TextChanged;
+			// 
+			// label2
+			// 
+			label2.AutoSize = true;
+			label2.Location = new System.Drawing.Point(270, 48);
+			label2.Name = "label2";
+			label2.Size = new System.Drawing.Size(85, 15);
+			label2.TabIndex = 19;
+			label2.Text = "Vertices Name:";
+			// 
+			// groupBoxBounds
+			// 
+			groupBoxBounds.Controls.Add(textBoxModelRadius);
+			groupBoxBounds.Controls.Add(labelR);
+			groupBoxBounds.Controls.Add(textBoxModelX);
+			groupBoxBounds.Controls.Add(textBoxModelY);
+			groupBoxBounds.Controls.Add(label6);
+			groupBoxBounds.Controls.Add(textBoxModelZ);
+			groupBoxBounds.Controls.Add(label5);
+			groupBoxBounds.Controls.Add(label4);
+			groupBoxBounds.Location = new System.Drawing.Point(522, 40);
+			groupBoxBounds.Margin = new System.Windows.Forms.Padding(2);
+			groupBoxBounds.Name = "groupBoxBounds";
+			groupBoxBounds.Padding = new System.Windows.Forms.Padding(2);
+			groupBoxBounds.Size = new System.Drawing.Size(232, 104);
+			groupBoxBounds.TabIndex = 8;
+			groupBoxBounds.TabStop = false;
+			groupBoxBounds.Text = "Model Bounds";
+			// 
+			// textBoxModelRadius
+			// 
+			textBoxModelRadius.Location = new System.Drawing.Point(128, 45);
+			textBoxModelRadius.Margin = new System.Windows.Forms.Padding(2);
+			textBoxModelRadius.Name = "textBoxModelRadius";
+			textBoxModelRadius.Size = new System.Drawing.Size(93, 23);
+			textBoxModelRadius.TabIndex = 12;
+			textBoxModelRadius.TextChanged += textBoxModelRadius_TextChanged;
+			// 
+			// labelR
+			// 
+			labelR.AutoSize = true;
+			labelR.Location = new System.Drawing.Point(128, 21);
+			labelR.Name = "labelR";
+			labelR.Size = new System.Drawing.Size(45, 15);
+			labelR.TabIndex = 31;
+			labelR.Text = "Radius:";
+			// 
+			// groupBoxMeshList
+			// 
+			groupBoxMeshList.Controls.Add(buttonMaterialEditor);
+			groupBoxMeshList.Controls.Add(buttonResetMeshes);
+			groupBoxMeshList.Controls.Add(groupBoxMaterialList);
+			groupBoxMeshList.Controls.Add(buttonMoveMeshUp);
+			groupBoxMeshList.Controls.Add(buttonMoveMeshDown);
+			groupBoxMeshList.Controls.Add(listViewMeshes);
+			groupBoxMeshList.Controls.Add(buttonDeleteMesh);
+			groupBoxMeshList.Controls.Add(buttonCloneMesh);
+			groupBoxMeshList.Location = new System.Drawing.Point(11, 244);
+			groupBoxMeshList.Margin = new System.Windows.Forms.Padding(2);
+			groupBoxMeshList.Name = "groupBoxMeshList";
+			groupBoxMeshList.Padding = new System.Windows.Forms.Padding(2);
+			groupBoxMeshList.Size = new System.Drawing.Size(745, 417);
+			groupBoxMeshList.TabIndex = 17;
+			groupBoxMeshList.TabStop = false;
+			groupBoxMeshList.Text = "Mesh List";
+			// 
+			// buttonMaterialEditor
+			// 
+			buttonMaterialEditor.Location = new System.Drawing.Point(198, 261);
+			buttonMaterialEditor.Name = "buttonMaterialEditor";
+			buttonMaterialEditor.Size = new System.Drawing.Size(154, 24);
+			buttonMaterialEditor.TabIndex = 23;
+			buttonMaterialEditor.Text = "Open Material Editor";
+			buttonMaterialEditor.UseVisualStyleBackColor = true;
+			buttonMaterialEditor.Click += buttonMaterialEditor_Click;
+			// 
+			// buttonResetMeshes
+			// 
+			buttonResetMeshes.Location = new System.Drawing.Point(618, 261);
+			buttonResetMeshes.Name = "buttonResetMeshes";
+			buttonResetMeshes.Size = new System.Drawing.Size(90, 24);
+			buttonResetMeshes.TabIndex = 24;
+			buttonResetMeshes.Text = "Reset Meshes";
+			buttonResetMeshes.UseVisualStyleBackColor = true;
+			buttonResetMeshes.Click += buttonResetMeshes_Click;
+			// 
+			// groupBoxMaterialList
+			// 
+			groupBoxMaterialList.Controls.Add(listViewMaterials);
+			groupBoxMaterialList.Location = new System.Drawing.Point(5, 288);
+			groupBoxMaterialList.Name = "groupBoxMaterialList";
+			groupBoxMaterialList.Size = new System.Drawing.Size(714, 125);
+			groupBoxMaterialList.TabIndex = 25;
+			groupBoxMaterialList.TabStop = false;
+			groupBoxMaterialList.Text = "Material List";
+			// 
+			// listViewMaterials
+			// 
+			listViewMaterials.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4, columnHeader5, columnHeader6 });
+			listViewMaterials.FullRowSelect = true;
+			listViewMaterials.GridLines = true;
+			listViewMaterials.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			listViewMaterials.Location = new System.Drawing.Point(5, 22);
+			listViewMaterials.MultiSelect = false;
+			listViewMaterials.Name = "listViewMaterials";
+			listViewMaterials.Size = new System.Drawing.Size(698, 96);
+			listViewMaterials.TabIndex = 26;
+			listViewMaterials.UseCompatibleStateImageBehavior = false;
+			listViewMaterials.View = System.Windows.Forms.View.Details;
+			// 
+			// columnHeader1
+			// 
+			columnHeader1.Text = "ID";
+			// 
+			// columnHeader2
+			// 
+			columnHeader2.Text = "Diffuse";
+			// 
+			// columnHeader3
+			// 
+			columnHeader3.Text = "Specular";
+			// 
+			// columnHeader4
+			// 
+			columnHeader4.Text = "Strip Flags";
+			// 
+			// columnHeader5
+			// 
+			columnHeader5.Text = "Texture Flags";
+			// 
+			// columnHeader6
+			// 
+			columnHeader6.Text = "Blend Modes";
+			// 
+			// buttonClose
+			// 
+			buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
+			buttonClose.Location = new System.Drawing.Point(826, 638);
+			buttonClose.Margin = new System.Windows.Forms.Padding(2);
+			buttonClose.Name = "buttonClose";
+			buttonClose.Size = new System.Drawing.Size(84, 24);
+			buttonClose.TabIndex = 27;
+			buttonClose.Text = "Close";
+			buttonClose.UseVisualStyleBackColor = true;
+			buttonClose.Click += buttonClose_Click;
+			// 
+			// contextMenuStripLabels
+			// 
+			contextMenuStripLabels.ImageScalingSize = new System.Drawing.Size(24, 24);
+			contextMenuStripLabels.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItemEditMaterialID, toolStripSeparator1, toolStripMenuItemEditPolyName, toolStripMenuItemEditUVName, toolStripMenuItemEditVcolorName, toolStripMenuItemEditPolynormalName });
+			contextMenuStripLabels.Name = "contextMenuStripLabels";
+			contextMenuStripLabels.Size = new System.Drawing.Size(203, 120);
+			// 
+			// toolStripMenuItemEditMaterialID
+			// 
+			toolStripMenuItemEditMaterialID.Name = "toolStripMenuItemEditMaterialID";
+			toolStripMenuItemEditMaterialID.Size = new System.Drawing.Size(202, 22);
+			toolStripMenuItemEditMaterialID.Text = "Edit Material ID...";
+			toolStripMenuItemEditMaterialID.Click += toolStripMenuItemEditMaterialID_Click;
+			// 
+			// toolStripSeparator1
+			// 
+			toolStripSeparator1.Name = "toolStripSeparator1";
+			toolStripSeparator1.Size = new System.Drawing.Size(199, 6);
+			// 
+			// toolStripMenuItemEditPolyName
+			// 
+			toolStripMenuItemEditPolyName.Name = "toolStripMenuItemEditPolyName";
+			toolStripMenuItemEditPolyName.Size = new System.Drawing.Size(202, 22);
+			toolStripMenuItemEditPolyName.Text = "Edit Polys Name...";
+			toolStripMenuItemEditPolyName.Click += toolStripMenuItemEditPolyName_Click;
+			// 
+			// toolStripMenuItemEditUVName
+			// 
+			toolStripMenuItemEditUVName.Name = "toolStripMenuItemEditUVName";
+			toolStripMenuItemEditUVName.Size = new System.Drawing.Size(202, 22);
+			toolStripMenuItemEditUVName.Text = "Edit UVs Name...";
+			toolStripMenuItemEditUVName.Click += toolStripMenuItemEditUVName_Click;
+			// 
+			// toolStripMenuItemEditVcolorName
+			// 
+			toolStripMenuItemEditVcolorName.Name = "toolStripMenuItemEditVcolorName";
+			toolStripMenuItemEditVcolorName.Size = new System.Drawing.Size(202, 22);
+			toolStripMenuItemEditVcolorName.Text = "Edit VColor Name...";
+			toolStripMenuItemEditVcolorName.Click += toolStripMenuItemEditVcolorName_Click;
+			// 
+			// toolStripMenuItemEditPolynormalName
+			// 
+			toolStripMenuItemEditPolynormalName.Name = "toolStripMenuItemEditPolynormalName";
+			toolStripMenuItemEditPolynormalName.Size = new System.Drawing.Size(202, 22);
+			toolStripMenuItemEditPolynormalName.Text = "Edit Polynormal Name...";
+			toolStripMenuItemEditPolynormalName.Click += toolStripMenuItemEditPolynormalName_Click;
+			// 
+			// comboBoxNode
+			// 
+			comboBoxNode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			comboBoxNode.FormattingEnabled = true;
+			comboBoxNode.Location = new System.Drawing.Point(8, 12);
+			comboBoxNode.Name = "comboBoxNode";
+			comboBoxNode.Size = new System.Drawing.Size(355, 23);
+			comboBoxNode.TabIndex = 0;
+			comboBoxNode.SelectedIndexChanged += comboBoxNode_SelectedIndexChanged;
+			// 
+			// groupBox1
+			// 
+			groupBox1.Controls.Add(listViewObjectData);
+			groupBox1.Location = new System.Drawing.Point(9, 149);
+			groupBox1.Name = "groupBox1";
+			groupBox1.Size = new System.Drawing.Size(892, 90);
+			groupBox1.TabIndex = 15;
+			groupBox1.TabStop = false;
+			groupBox1.Text = "Object Data";
+			// 
+			// listViewObjectData
+			// 
+			listViewObjectData.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeaderEval, columnHeaderPos, columnHeaderRot, columnHeaderScl });
+			listViewObjectData.FullRowSelect = true;
+			listViewObjectData.GridLines = true;
+			listViewObjectData.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			listViewObjectData.Location = new System.Drawing.Point(5, 18);
+			listViewObjectData.MultiSelect = false;
+			listViewObjectData.Name = "listViewObjectData";
+			listViewObjectData.ShowGroups = false;
+			listViewObjectData.Size = new System.Drawing.Size(871, 60);
+			listViewObjectData.TabIndex = 16;
+			listViewObjectData.UseCompatibleStateImageBehavior = false;
+			listViewObjectData.View = System.Windows.Forms.View.Details;
+			listViewObjectData.DoubleClick += ObjectData_DoubleClick;
+			listViewObjectData.KeyPress += ObjectData_EnterKey;
+			listViewObjectData.MouseClick += listViewObjectData_MouseClick;
+			// 
+			// columnHeaderEval
+			// 
+			columnHeaderEval.Text = "Eval Flags                                                                       ";
+			columnHeaderEval.Width = 300;
+			// 
+			// columnHeaderPos
+			// 
+			columnHeaderPos.Text = "Position                                   ";
+			columnHeaderPos.Width = 200;
+			// 
+			// columnHeaderRot
+			// 
+			columnHeaderRot.Text = "Rotation                                   ";
+			columnHeaderRot.Width = 200;
+			// 
+			// columnHeaderScl
+			// 
+			columnHeaderScl.Text = "Scale";
+			// 
+			// contextMenuStripObjSet
+			// 
+			contextMenuStripObjSet.ImageScalingSize = new System.Drawing.Size(24, 24);
+			contextMenuStripObjSet.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editObjectSettingsToolStripMenuItem });
+			contextMenuStripObjSet.Name = "contextMenuStripObjSet";
+			contextMenuStripObjSet.Size = new System.Drawing.Size(178, 26);
+			// 
+			// editObjectSettingsToolStripMenuItem
+			// 
+			editObjectSettingsToolStripMenuItem.Name = "editObjectSettingsToolStripMenuItem";
+			editObjectSettingsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			editObjectSettingsToolStripMenuItem.Text = "Edit Object Settings";
+			editObjectSettingsToolStripMenuItem.Click += editObjectSettingsToolStripMenuItem_Click;
+			// 
+			// groupBoxVertexList
+			// 
+			groupBoxVertexList.Controls.Add(labelNormalCount);
+			groupBoxVertexList.Controls.Add(labelVertexCount);
+			groupBoxVertexList.Controls.Add(buttonViewVertexData);
+			groupBoxVertexList.Controls.Add(label9);
+			groupBoxVertexList.Controls.Add(label8);
+			groupBoxVertexList.Location = new System.Drawing.Point(759, 41);
+			groupBoxVertexList.Name = "groupBoxVertexList";
+			groupBoxVertexList.Size = new System.Drawing.Size(152, 104);
+			groupBoxVertexList.TabIndex = 13;
+			groupBoxVertexList.TabStop = false;
+			groupBoxVertexList.Text = "Vertex List";
+			// 
+			// labelNormalCount
+			// 
+			labelNormalCount.AutoSize = true;
+			labelNormalCount.Location = new System.Drawing.Point(66, 45);
+			labelNormalCount.Name = "labelNormalCount";
+			labelNormalCount.Size = new System.Drawing.Size(13, 15);
+			labelNormalCount.TabIndex = 4;
+			labelNormalCount.Text = "0";
+			// 
+			// labelVertexCount
+			// 
+			labelVertexCount.AutoSize = true;
+			labelVertexCount.Location = new System.Drawing.Point(62, 21);
+			labelVertexCount.Name = "labelVertexCount";
+			labelVertexCount.Size = new System.Drawing.Size(13, 15);
+			labelVertexCount.TabIndex = 3;
+			labelVertexCount.Text = "0";
+			// 
+			// buttonViewVertexData
+			// 
+			buttonViewVertexData.Location = new System.Drawing.Point(7, 71);
+			buttonViewVertexData.Name = "buttonViewVertexData";
+			buttonViewVertexData.Size = new System.Drawing.Size(135, 23);
+			buttonViewVertexData.TabIndex = 14;
+			buttonViewVertexData.Text = "View Point Data";
+			buttonViewVertexData.UseVisualStyleBackColor = true;
+			buttonViewVertexData.Click += buttonViewVertexData_Click;
+			// 
+			// label9
+			// 
+			label9.AutoSize = true;
+			label9.Location = new System.Drawing.Point(7, 45);
+			label9.Name = "label9";
+			label9.Size = new System.Drawing.Size(55, 15);
+			label9.TabIndex = 1;
+			label9.Text = "Normals:";
+			// 
+			// label8
+			// 
+			label8.AutoSize = true;
+			label8.Location = new System.Drawing.Point(7, 21);
+			label8.Name = "label8";
+			label8.Size = new System.Drawing.Size(53, 15);
+			label8.TabIndex = 0;
+			label8.Text = "Vertices: ";
+			// 
+			// ModelDataEditor
+			// 
+			AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			ClientSize = new System.Drawing.Size(916, 689);
+			Controls.Add(groupBoxVertexList);
+			Controls.Add(groupBox1);
+			Controls.Add(comboBoxNode);
+			Controls.Add(buttonClose);
+			Controls.Add(groupBoxMeshList);
+			Controls.Add(groupBoxBounds);
+			Controls.Add(groupBoxLabels);
+			Controls.Add(statusStrip1);
+			FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+			MaximizeBox = false;
+			MinimizeBox = false;
+			Name = "ModelDataEditor";
+			ShowInTaskbar = false;
+			SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+			StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+			Text = "Model Data Editor";
+			statusStrip1.ResumeLayout(false);
+			statusStrip1.PerformLayout();
+			groupBoxLabels.ResumeLayout(false);
+			groupBoxLabels.PerformLayout();
+			groupBoxBounds.ResumeLayout(false);
+			groupBoxBounds.PerformLayout();
+			groupBoxMeshList.ResumeLayout(false);
+			groupBoxMaterialList.ResumeLayout(false);
+			contextMenuStripLabels.ResumeLayout(false);
+			groupBox1.ResumeLayout(false);
+			contextMenuStripObjSet.ResumeLayout(false);
+			groupBoxVertexList.ResumeLayout(false);
+			groupBoxVertexList.PerformLayout();
+			ResumeLayout(false);
+			PerformLayout();
 
 		}
 
@@ -612,5 +812,28 @@
 		private System.Windows.Forms.ComboBox comboBoxNode;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEditMaterialID;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.ListView listViewObjectData;
+		private System.Windows.Forms.ColumnHeader columnHeaderEval;
+		private System.Windows.Forms.ColumnHeader columnHeaderPos;
+		private System.Windows.Forms.ColumnHeader columnHeaderRot;
+		private System.Windows.Forms.ColumnHeader columnHeaderScl;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStripObjSet;
+		private System.Windows.Forms.ToolStripMenuItem editObjectSettingsToolStripMenuItem;
+		private System.Windows.Forms.GroupBox groupBoxVertexList;
+		private System.Windows.Forms.Label labelVertexCount;
+		private System.Windows.Forms.Button buttonViewVertexData;
+		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.Label label8;
+		private System.Windows.Forms.Label labelNormalCount;
+		private System.Windows.Forms.GroupBox groupBoxMaterialList;
+		private System.Windows.Forms.ListView listViewMaterials;
+		private System.Windows.Forms.ColumnHeader columnHeader1;
+		private System.Windows.Forms.ColumnHeader columnHeader2;
+		private System.Windows.Forms.Button buttonMaterialEditor;
+		private System.Windows.Forms.ColumnHeader columnHeader3;
+		private System.Windows.Forms.ColumnHeader columnHeader4;
+		private System.Windows.Forms.ColumnHeader columnHeader5;
+		private System.Windows.Forms.ColumnHeader columnHeader6;
 	}
 }

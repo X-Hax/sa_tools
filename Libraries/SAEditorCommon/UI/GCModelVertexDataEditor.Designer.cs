@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
 			components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChunkModelVertexDataEditor));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GCModelVertexDataEditor));
 			statusStrip1 = new System.Windows.Forms.StatusStrip();
 			toolStripStatusLabelInfo = new System.Windows.Forms.ToolStripStatusLabel();
 			buttonClose = new System.Windows.Forms.Button();
@@ -55,10 +55,10 @@
 			// 
 			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
 			statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabelInfo });
-			statusStrip1.Location = new System.Drawing.Point(0, 519);
+			statusStrip1.Location = new System.Drawing.Point(0, 345);
 			statusStrip1.Name = "statusStrip1";
-			statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 15, 0);
-			statusStrip1.Size = new System.Drawing.Size(777, 32);
+			statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
+			statusStrip1.Size = new System.Drawing.Size(518, 22);
 			statusStrip1.SizingGrip = false;
 			statusStrip1.TabIndex = 11;
 			statusStrip1.Text = "statusStrip1";
@@ -66,17 +66,18 @@
 			// toolStripStatusLabelInfo
 			// 
 			toolStripStatusLabelInfo.Name = "toolStripStatusLabelInfo";
-			toolStripStatusLabelInfo.Size = new System.Drawing.Size(713, 25);
+			toolStripStatusLabelInfo.Size = new System.Drawing.Size(477, 17);
 			toolStripStatusLabelInfo.Text = "Click a vertex piece to display its information here. Right-click to edit pieces, if applicable.";
 			// 
 			// buttonClose
 			// 
 			buttonClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
 			buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-			buttonClose.Location = new System.Drawing.Point(645, 474);
+			buttonClose.Location = new System.Drawing.Point(430, 316);
+			buttonClose.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			buttonClose.Name = "buttonClose";
-			buttonClose.Size = new System.Drawing.Size(126, 36);
-			buttonClose.TabIndex = 17;
+			buttonClose.Size = new System.Drawing.Size(84, 24);
+			buttonClose.TabIndex = 5;
 			buttonClose.Text = "Close";
 			buttonClose.UseVisualStyleBackColor = true;
 			buttonClose.Click += buttonClose_Click;
@@ -86,51 +87,55 @@
 			contextMenuStripMatEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
 			contextMenuStripMatEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editPCMatToolStripMenuItem, editTextureIDToolStripMenuItem, editStripAlphaToolStripMenuItem });
 			contextMenuStripMatEdit.Name = "contextMenuStripMatEdit";
-			contextMenuStripMatEdit.Size = new System.Drawing.Size(73, 76);
+			contextMenuStripMatEdit.Size = new System.Drawing.Size(68, 70);
 			contextMenuStripMatEdit.Opening += contextMenuStrip2_Opening;
 			// 
 			// editPCMatToolStripMenuItem
 			// 
 			editPCMatToolStripMenuItem.Name = "editPCMatToolStripMenuItem";
-			editPCMatToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
+			editPCMatToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
 			// 
 			// editTextureIDToolStripMenuItem
 			// 
 			editTextureIDToolStripMenuItem.Name = "editTextureIDToolStripMenuItem";
-			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
+			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
 			// 
 			// editStripAlphaToolStripMenuItem
 			// 
 			editStripAlphaToolStripMenuItem.Name = "editStripAlphaToolStripMenuItem";
-			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(72, 24);
+			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
 			// 
 			// groupBoxVertList
 			// 
 			groupBoxVertList.Controls.Add(buttonDeleteVertex);
 			groupBoxVertList.Controls.Add(buttonResetVertices);
 			groupBoxVertList.Controls.Add(listViewVertices);
-			groupBoxVertList.Location = new System.Drawing.Point(12, 22);
+			groupBoxVertList.Location = new System.Drawing.Point(8, 15);
+			groupBoxVertList.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			groupBoxVertList.Name = "groupBoxVertList";
-			groupBoxVertList.Size = new System.Drawing.Size(744, 443);
-			groupBoxVertList.TabIndex = 29;
+			groupBoxVertList.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			groupBoxVertList.Size = new System.Drawing.Size(496, 295);
+			groupBoxVertList.TabIndex = 1;
 			groupBoxVertList.TabStop = false;
 			groupBoxVertList.Text = "Vertex Data";
 			// 
 			// buttonDeleteVertex
 			// 
-			buttonDeleteVertex.Location = new System.Drawing.Point(587, 392);
+			buttonDeleteVertex.Location = new System.Drawing.Point(391, 261);
+			buttonDeleteVertex.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			buttonDeleteVertex.Name = "buttonDeleteVertex";
-			buttonDeleteVertex.Size = new System.Drawing.Size(140, 34);
-			buttonDeleteVertex.TabIndex = 13;
+			buttonDeleteVertex.Size = new System.Drawing.Size(93, 23);
+			buttonDeleteVertex.TabIndex = 4;
 			buttonDeleteVertex.Text = "Delete Vertex";
 			buttonDeleteVertex.UseVisualStyleBackColor = true;
 			// 
 			// buttonResetVertices
 			// 
-			buttonResetVertices.Location = new System.Drawing.Point(439, 392);
+			buttonResetVertices.Location = new System.Drawing.Point(293, 261);
+			buttonResetVertices.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			buttonResetVertices.Name = "buttonResetVertices";
-			buttonResetVertices.Size = new System.Drawing.Size(142, 34);
-			buttonResetVertices.TabIndex = 12;
+			buttonResetVertices.Size = new System.Drawing.Size(95, 23);
+			buttonResetVertices.TabIndex = 3;
 			buttonResetVertices.Text = "Reset Vertices";
 			buttonResetVertices.UseVisualStyleBackColor = true;
 			// 
@@ -141,12 +146,13 @@
 			listViewVertices.FullRowSelect = true;
 			listViewVertices.GridLines = true;
 			listViewVertices.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			listViewVertices.Location = new System.Drawing.Point(6, 28);
+			listViewVertices.Location = new System.Drawing.Point(4, 19);
+			listViewVertices.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			listViewVertices.MultiSelect = false;
 			listViewVertices.Name = "listViewVertices";
 			listViewVertices.ShowGroups = false;
-			listViewVertices.Size = new System.Drawing.Size(721, 352);
-			listViewVertices.TabIndex = 11;
+			listViewVertices.Size = new System.Drawing.Size(482, 236);
+			listViewVertices.TabIndex = 2;
 			listViewVertices.UseCompatibleStateImageBehavior = false;
 			listViewVertices.View = System.Windows.Forms.View.Details;
 			listViewVertices.SelectedIndexChanged += listViewVertices_SelectedIndexChanged;
@@ -164,28 +170,27 @@
 			contextMenuStripVertCol.ImageScalingSize = new System.Drawing.Size(24, 24);
 			contextMenuStripVertCol.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { showVertexCollectionToolStripMenuItem });
 			contextMenuStripVertCol.Name = "contextMenuStripVertCol";
-			contextMenuStripVertCol.Size = new System.Drawing.Size(265, 36);
+			contextMenuStripVertCol.Size = new System.Drawing.Size(195, 26);
 			// 
 			// showVertexCollectionToolStripMenuItem
 			// 
 			showVertexCollectionToolStripMenuItem.Name = "showVertexCollectionToolStripMenuItem";
-			showVertexCollectionToolStripMenuItem.Size = new System.Drawing.Size(264, 32);
+			showVertexCollectionToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
 			showVertexCollectionToolStripMenuItem.Text = "Show Vertex Collection";
 			// 
-			// ChunkModelVertexDataEditor
+			// GCModelVertexDataEditor
 			// 
-			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+			AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-			ClientSize = new System.Drawing.Size(777, 551);
+			ClientSize = new System.Drawing.Size(518, 367);
 			Controls.Add(groupBoxVertList);
 			Controls.Add(buttonClose);
 			Controls.Add(statusStrip1);
 			FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-			Margin = new System.Windows.Forms.Padding(4);
 			MaximizeBox = false;
 			MinimizeBox = false;
-			Name = "ChunkModelVertexDataEditor";
+			Name = "GCModelVertexDataEditor";
 			ShowInTaskbar = false;
 			SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

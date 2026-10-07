@@ -39,6 +39,7 @@ namespace SA2ObjectDefinitions.CityEscape
 		protected NJS_OBJECT[] carmodelarray;
 		protected List<Mesh[]> carmeshes;
 		protected Mesh[][] carmesharray;
+		protected List<string> texpacks = [];
 
 		public override void Init(ObjectData data, string name)
 		{

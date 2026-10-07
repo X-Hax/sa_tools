@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace SAModel.GC
@@ -29,7 +30,21 @@ namespace SAModel.GC
 		public List<GCSkinVertexSetPosNrm> posNrms = new List<GCSkinVertexSetPosNrm>();
 		public List<GCSkinVertexSetWeight> weightData = new List<GCSkinVertexSetWeight>();
 
-		public GCSkinVertexSet() { }
+		public GCSkinVertexSet() 
+		{
+			posNrms = [];
+			DataNamePos = $"weightpoint_{Extensions.GenerateIdentifier()}";
+		}
+		public GCSkinVertexSet(bool isPartialWeight)
+		{
+			posNrms = [];
+			DataNamePos = $"weightpoint_{Extensions.GenerateIdentifier()}";
+			if (isPartialWeight)
+			{
+				weightData = [];
+				DataNameWeight = $"weightdata_{Extensions.GenerateIdentifier()}";
+			}
+		}
 
 		public GCSkinVertexSet(byte[] file, int address, uint imageBase, Dictionary<int, string> labels)
 		{

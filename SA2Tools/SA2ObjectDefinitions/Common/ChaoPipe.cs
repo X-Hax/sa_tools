@@ -1,14 +1,15 @@
-using SharpDX;
-using SharpDX.Direct3D9;
 using SAModel;
 using SAModel.Direct3D;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SplitTools;
+using System;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
-using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
@@ -86,7 +87,12 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
-		
+
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Spawn Animal Type", typeof(float), "Extended", "Values correspond to animal sets that are specific to each stage.", null, (o) => o.Scale.X,
+				(o, v) => o.Scale.X = (float)v),
+		};
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 		public override string Name { get { return "Animal Pipe"; } }
 
 		public override float DefaultXScale { get { return 0; } }

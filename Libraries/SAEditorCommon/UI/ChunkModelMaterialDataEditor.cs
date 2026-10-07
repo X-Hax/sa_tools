@@ -174,14 +174,14 @@ namespace SAModel.SAEditorCommon.UI
 		private void checkSettingsOnClose()
 		{
 			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
-			if (diffuseSettingBox.Enabled)
+			if (diffuseSettingBox.Enabled || useDiffuseCheckBox.Checked)
 				pcm.Diffuse = diffuseColorBox.BackColor;
 			else
 				pcm.Diffuse = null;
-			if (ambientSettingBox.Enabled)
+			if (ambientSettingBox.Enabled || useAmbientCheckBox.Checked)
 				pcm.Ambient = ambientColorBox.BackColor;
 			else pcm.Ambient = null;
-			if (specularSettingBox.Enabled)
+			if (specularSettingBox.Enabled || useSpecularCheckBox.Checked)
 			{
 				pcm.Specular = specColorBox.BackColor;
 				ValidateExponent();
@@ -215,7 +215,20 @@ namespace SAModel.SAEditorCommon.UI
 			}
 			else
 			{
-				pcm.SpecularExponent = (byte)expParse;
+				if (expParse > 15)
+				{
+					MessageBox.Show("Specular exponent was too high - setting to max value");
+					pcm.SpecularExponent = 15;
+					exponentTextBox.Text = "15";
+				}
+				else if (expParse < 0)
+				{
+					MessageBox.Show("Specular exponent was too low - setting to 0");
+					pcm.SpecularExponent = 0;
+					exponentTextBox.Text = "0";
+				}
+				else
+					pcm.SpecularExponent = (byte)expParse;
 			}
 		}
 
@@ -340,6 +353,7 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				diffuseSettingBox.Enabled = false;
 			}
+			RaiseFormUpdated();
 			////Prevent the user from creating a material with no diffuse, ambient, or specular values.
 			//if (useAmbientCheckBox.Checked && !useDiffuseCheckBox.Checked && !useSpecularCheckBox.Checked)
 			//	useAmbientCheckBox.Enabled = false;
@@ -367,6 +381,7 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				ambientSettingBox.Enabled = false;
 			}
+			RaiseFormUpdated();
 			////Prevent the user from creating a material with no diffuse, ambient, or specular values.
 			//if (useDiffuseCheckBox.Checked && !useAmbientCheckBox.Checked && !useSpecularCheckBox.Checked)
 			//	useDiffuseCheckBox.Enabled = false;
@@ -395,6 +410,7 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				specularSettingBox.Enabled = false;
 			}
+			RaiseFormUpdated();
 			////Prevent the user from creating a material with no diffuse, ambient, or specular values.
 			//if (useDiffuseCheckBox.Checked && !useAmbientCheckBox.Checked && !useSpecularCheckBox.Checked)
 			//	useDiffuseCheckBox.Enabled = false;

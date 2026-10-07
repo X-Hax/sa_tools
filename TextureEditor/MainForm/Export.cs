@@ -57,7 +57,7 @@ namespace TextureEditor
 									exportData = tex.ToPvr(settingsfile.TexEncodeAutoHighQuality, settingsfile.TexEncodeUseCompressed).RawData;
 									break;
 								case TextureFileFormat.Gvr:
-									exportData = tex.ToGvr(settingsfile.TexEncodeAutoHighQuality && settingsfile.HighQualityGVM, settingsfile.TexEncodeUseCompressed).RawData;
+									exportData = tex.ToGvr(settingsfile.TexEncodeAutoHighQuality && settingsfile.HighQualityGVM, settingsfile.TexEncodeUseCompressed, forceGCIX: settingsfile.ForceGCIX).RawData;
 									break;
 								case TextureFileFormat.Xvr:
 									exportData = tex.ToXvr(settingsfile.TexEncodeAutoHighQuality, settingsfile.TexEncodeUseCompressed).RawData;

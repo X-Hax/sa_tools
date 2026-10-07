@@ -65,7 +65,9 @@ namespace SAModel
 		Intensity  = 0x400,
 		Spot       = 0x800,
 		Point      = 0x1000,
-		Quaternion = 0x2000
+		Quaternion = 0x2000,
+		ShapeID    = 0x4000,
+		Event      = 0x8000,
 	}
 
 	[Flags]
@@ -185,6 +187,7 @@ namespace SAModel
 		Basic,
 		BasicDX,
 		Chunk,
+		ChaoChunk,
 		GC,
 		XJ
 	}

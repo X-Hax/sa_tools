@@ -18,8 +18,8 @@ namespace SAModel.GC
 	{
 		VtxAttrFmt = 0,
 		IndexAttributeFlags = 1,
-		Lighting = 2,
-		StripFlags = 3,
+		StripFlags1 = 2,
+		StripFlags2 = 3,
 		BlendAlpha = 4,
 		DiffuseColor = 5,
 		AmbientColor = 6,
@@ -28,7 +28,7 @@ namespace SAModel.GC
 		TextureTEVMode = 9,
 		TexCoordGen = 10,
 	}
-	
+
 	/// <summary>
 	/// Base class for all GC parameter types. <br/>
 	/// Used to store geometry information (like materials).
@@ -71,9 +71,11 @@ namespace SAModel.GC
 			{
 				ParameterType.VtxAttrFmt => new VtxAttrFmtParameter(GCVertexAttribute.Null),
 				ParameterType.IndexAttributeFlags => new IndexAttributeParameter(),
-				ParameterType.Lighting => new LightingParameter(),
+				ParameterType.StripFlags1 => new StripFlagsParameter(),
 				ParameterType.BlendAlpha => new BlendAlphaParameter(),
 				ParameterType.DiffuseColor => new DiffuseColorParameter(),
+				ParameterType.AmbientColor => new AmbientColorParameter(),
+				ParameterType.SpecularColor => new SpecularColorParameter(),
 				ParameterType.Texture => new TextureParameter(),
 				ParameterType.TextureTEVMode => new TexTEVModeParameter(),
 				ParameterType.TexCoordGen => new TexCoordGenParameter(),
@@ -98,25 +100,25 @@ namespace SAModel.GC
 		public byte[] GetBytes()
 		{
 			List<byte> result = [];
-			
+
 			result.Add((byte)Type);
 			result.AddRange(new byte[3]);
 			result.AddRange(ByteConverter.GetBytes(Data));
-			
+
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
 			var result = new StringBuilder("{ ");
-			
+
 			result.Append((byte)Type);
 			result.Append(", ");
 			result.Append("0, 0, 0");
 			result.Append(", ");
 			result.AppendFormat(Data.ToCHex());
 			result.Append(" }");
-			
+
 			return result.ToString();
 		}
 		object ICloneable.Clone() => Clone();
@@ -129,7 +131,22 @@ namespace SAModel.GC
 
 		public virtual void ToNJA(TextWriter writer)
 		{
-			writer.WriteLine($"GjMat     ( {(uint)Type}, {(uint)Data} ),");
+			string type_str = Type switch
+			{
+				ParameterType.VtxAttrFmt => "GJ_MT_VTXATTR",
+				ParameterType.IndexAttributeFlags => "GJ_MT_VCD",
+				ParameterType.StripFlags1 => "GJ_MT_FST1",
+				ParameterType.StripFlags2 => "GJ_MT_FST2",
+				ParameterType.BlendAlpha => "GJ_MT_BLEND",
+				ParameterType.DiffuseColor => "GJ_MT_DIFFUSE",
+				ParameterType.AmbientColor => "GJ_MT_AMBIENT",
+				ParameterType.SpecularColor => "GJ_MT_SPECULAR",
+				ParameterType.Texture => "GJ_MT_TEXTURE",
+				ParameterType.TextureTEVMode => "GJ_MT_TEVORDER",
+				ParameterType.TexCoordGen => "GJ_MT_TEXGEN",
+				_ => $"{(uint)Type}"
+			};
+			writer.WriteLine($"GjMaterial ( {type_str}, 0x{(uint)Data:X} ),");
 		}
 	}
 
@@ -269,7 +286,7 @@ namespace SAModel.GC
 				_ => $"{compsize}"
 			};
 
-			writer.WriteLine($"GjVtxAttr ( {attr_str}, {comptype_str}, {compsize_str}, {(uint)UVScale} ),");
+			writer.WriteLine($"GjVtxAttr  ( {attr_str}, {comptype_str}, {compsize_str}, {(uint)UVScale} ),");
 		}
 	}
 
@@ -340,38 +357,96 @@ namespace SAModel.GC
 						_ => $"{src}"
 					};
 
-					list.Add($"GjVtxDescAttr ( {attr_str}, {src_str} )");
+					list.Add($"GjVtxIdxAttr ( {attr_str}, {src_str} )");
 				}
 			}
 
 			if (list.Count == 0)
 			{
-				writer.WriteLine("GjVtxDesc ( NULL ),");
+				writer.WriteLine("GjVtxDesc  ( NULL ),");
 			}
 			else
 			{
-				writer.WriteLine($"GjVtxDesc ( {string.Join(" | ", list)} ),");
+				writer.WriteLine($"GjVtxDesc  ( {string.Join(" | ", list)} ),");
 			}
 		}
 	}
 
 	/// <summary>
-	/// Holds lighting information
+	/// Holds strip information
 	/// </summary>
 	[Serializable]
-	public class LightingParameter : GCParameter
+	public class StripFlagsParameter : GCParameter
 	{
-		/// <summary>
-		/// Lighting flags. Pretty much unknown how they work
-		/// </summary>
-		public ushort LightingFlags
+		public byte ChannelNum
 		{
-			get => (ushort)(Data & 0xFFFF);
+			get => (byte)(Data & 0x3);
 			set
 			{
-				Data &= 0xFFFF0000;
+				Data &= 0xFFFFFFF0;
+				Data |= (uint)((value & 0x3));
+			}
+		}
+		public byte TexGenCount
+		{
+			get => (byte)((Data >> 4) & 0xF);
+			set
+			{
+				Data &= 0xFFFFFF0F;
+				Data |= (uint)((value & 0xF) << 4);
+			}
+		}
+		/// <summary>
+		/// Strip flags. Many of these are analogous with Ninja strip flags
+		/// </summary>
+		public byte StripFlags
+		{
+			get => (byte)(Data >> 8);
+			set
+			{
+				Data &= 0xFFFF00FF;
 				Data |= value;
 			}
+		}
+		public bool IgnoreLight
+		{
+			get { return (StripFlags & 0x1) == 0x1; }
+			set { StripFlags = (byte)((StripFlags & ~0x1) | (value ? 0x1 : 0)); }
+		}
+		public bool IgnoreSpecular
+		{
+			get { return (StripFlags & 0x2) == 0x2; }
+			set { StripFlags = (byte)((StripFlags & ~0x2) | (value ? 0x2 : 0)); }
+		}
+		public bool IgnoreAmbient
+		{
+			get { return (StripFlags & 0x4) == 0x4; }
+			set { StripFlags = (byte)((StripFlags & ~0x4) | (value ? 0x4 : 0)); }
+		}
+		public bool VertexDiffuse
+		{
+			get { return (StripFlags & 0x8) == 0x8; }
+			set { StripFlags = (byte)((StripFlags & ~0x8) | (value ? 0x8 : 0)); }
+		}
+		public bool VertexAmbient
+		{
+			get { return (StripFlags & 0x10) == 0x10; }
+			set { StripFlags = (byte)((StripFlags & ~0x10) | (value ? 0x10 : 0)); }
+		}
+		public bool UseAlpha
+		{
+			get { return (StripFlags & 0x20) == 0x20; }
+			set { StripFlags = (byte)((StripFlags & ~0x20) | (value ? 0x20 : 0)); }
+		}
+		public bool NoPunchthrough
+		{
+			get { return (StripFlags & 0x40) == 0x40; }
+			set { StripFlags = (byte)((StripFlags & ~0x40) | (value ? 0x40 : 0)); }
+		}
+		public bool DoubleSided
+		{
+			get { return (StripFlags & 0x80) == 0x80; }
+			set { StripFlags = (byte)((StripFlags & ~0x80) | (value ? 0x80 : 0)); }
 		}
 
 		/// <summary>
@@ -406,27 +481,53 @@ namespace SAModel.GC
 				Data &= 0xFFF0FFFF;
 				Data |= (uint)(value << 24);
 			}
-		} 
+		}
 
 		/// <summary>
-		/// Creates a lighting parameter with the default data
+		/// Creates a strip parameter with the default data
 		/// </summary>
-		public LightingParameter() : base(ParameterType.Lighting)
+		public StripFlagsParameter() : base(ParameterType.StripFlags1)
 		{
-			// Default value
-			LightingFlags = 0xB11;
+			ChannelNum = 1;
+			TexGenCount = 1;
+			// Default value: Ignore Light, Ignore Ambient, Ignore Specular, Vertex Material
+			StripFlags = 0xB0;
 			ShadowStencil = 1;
 		}
 
-		public LightingParameter(ushort lightingFlags, byte shadowStencil) : base(ParameterType.Lighting)
+		public StripFlagsParameter(byte stripFlags, byte shadowStencil) : base(ParameterType.StripFlags1)
 		{
-			LightingFlags = lightingFlags;
+			StripFlags = stripFlags;
+			ChannelNum = 1;
+			TexGenCount = 1;
 			ShadowStencil = shadowStencil;
 		}
 
 		public override void ToNJA(TextWriter writer)
 		{
-			writer.WriteLine($"GjLight   ( {Data} ),");
+			string flags = string.Empty;
+
+			if (IgnoreLight)
+				flags += "GJ_FST_IL|";
+			if (IgnoreSpecular)
+				flags += "GJ_FST_IS|";
+			if (IgnoreAmbient)
+				flags += "GJ_FST_IA|";
+			if (VertexDiffuse)
+				flags += "GJ_FST_VM|";
+			if (VertexAmbient)
+				flags += "GJ_FST_VA|";
+			if (UseAlpha)
+				flags += "GJ_FST_UA|";
+			if (NoPunchthrough)
+				flags += "GJ_FST_NPT|";
+			if (DoubleSided)
+				flags += "GJ_FST_DB|";
+			if (flags == string.Empty)
+				flags = "0x0";
+			else
+				flags = flags.Remove(flags.Length - 1);
+			writer.WriteLine($"GjFst1     ( GJD_FST_CHAN( {ChannelNum} ), GJD_FST_TEXGEN( {TexGenCount} ), {flags}, GJD_FST_TEVSTG( {ShadowStencil} ) ),");
 		}
 	}
 
@@ -526,15 +627,15 @@ namespace SAModel.GC
 				GCBlendModeControl.InverseSrcAlpha => "GJ_BL_INVSRCALPHA",
 				GCBlendModeControl.DstAlpha => "GJ_BL_DSTALPHA",
 				GCBlendModeControl.InverseDstAlpha => "GJ_BL_INVDSTALPHA",
-				_ => $"{(uint)SourceAlpha}"
+				_ => $"{(uint)DestAlpha}"
 			};
 
-			writer.WriteLine($"GjBlend   ( {mode_str}, {src_str}, {dst_str} ),");
+			writer.WriteLine($"GjBlend    ( {mode_str}, {src_str}, {dst_str} ),");
 		}
 	}
 
 	/// <summary>
-	/// Ambient color of the geometry
+	/// Diffuse color of the geometry
 	/// </summary>
 	[Serializable]
 	public class DiffuseColorParameter : GCParameter
@@ -550,7 +651,7 @@ namespace SAModel.GC
 				{
 					ARGB = Data
 				};
-				
+
 				return col;
 			}
 			set => Data = value.ARGB;
@@ -562,7 +663,73 @@ namespace SAModel.GC
 		}
 		public override void ToNJA(TextWriter writer)
 		{
-			writer.WriteLine($"GjDiffuse ( {DiffuseColor.Alpha}, {DiffuseColor.Red}, {DiffuseColor.Green}, {DiffuseColor.Blue} ),");
+			writer.WriteLine($"GjDiffuse  ( {DiffuseColor.Alpha}, {DiffuseColor.Red}, {DiffuseColor.Green}, {DiffuseColor.Blue} ),");
+		}
+	}
+
+	/// <summary>
+	/// Ambient color of the geometry
+	/// </summary>
+	[Serializable]
+	public class AmbientColorParameter : GCParameter
+	{
+		/// <summary>
+		/// The Color of the geometry
+		/// </summary>
+		public Color AmbientColor
+		{
+			get
+			{
+				var col = new Color
+				{
+					ARGB = Data
+				};
+
+				return col;
+			}
+			set => Data = value.ARGB;
+		}
+
+		public AmbientColorParameter() : base(ParameterType.DiffuseColor)
+		{
+			Data = uint.MinValue;
+		}
+		public override void ToNJA(TextWriter writer)
+		{
+			writer.WriteLine($"GjAmbient  ( {AmbientColor.Alpha}, {AmbientColor.Red}, {AmbientColor.Green}, {AmbientColor.Blue} ),");
+		}
+	}
+
+	/// <summary>
+	/// Specular color of the geometry
+	/// </summary>
+	[Serializable]
+	public class SpecularColorParameter : GCParameter
+	{
+		/// <summary>
+		/// The Color of the geometry
+		/// </summary>
+		public Color SpecularColor
+		{
+			get
+			{
+				var col = new Color
+				{
+					ARGB = Data
+				};
+
+				return col;
+			}
+			set => Data = value.ARGB;
+		}
+
+		public SpecularColorParameter() : base(ParameterType.DiffuseColor)
+		{
+			Data = uint.MinValue;
+		}
+		public override void ToNJA(TextWriter writer)
+		{
+			writer.WriteLine($"GjSpecular ( {SpecularColor.Alpha}, {SpecularColor.Red}, {SpecularColor.Green}, {SpecularColor.Blue} ),");
 		}
 	}
 
@@ -630,7 +797,7 @@ namespace SAModel.GC
 				_ => $"{wrap_t}"
 			};
 
-			writer.WriteLine($"GjTexID   ( {TextureId}, {wrap_s_str}, {wrap_t_str}, {(Data >> 13) & 3} ),");
+			writer.WriteLine($"GjTexture  ( {TextureId}, {wrap_s_str}, {wrap_t_str}, {(Data >> 13) & 3} ),");
 		}
 	}
 
@@ -675,36 +842,61 @@ namespace SAModel.GC
 
 		public override void ToNJA(TextWriter writer)
 		{
-			uint type = (Data >> 4) >> 0xF;
-			string type_str = type switch
+			uint tevstage = Data >> 12;
+			string tevstage_str = tevstage switch
 			{
-				0 => "GJ_TG_MTX3x4",
-				_ => $"{type}"
+				0 => "GJ_TEVSTAGE0",
+				1 => "GJ_TEVSTAGE1",
+				2 => "GJ_TEVSTAGE2",
+				3 => "GJ_TEVSTAGE3",
+				4 => "GJ_TEVSTAGE4",
+				5 => "GJ_TEVSTAGE5",
+				6 => "GJ_TEVSTAGE6",
+				7 => "GJ_TEVSTAGE7",
+				8 => "GJ_TEVSTAGE8",
+				9 => "GJ_TEVSTAGE9",
+				10 => "GJ_TEVSTAGE10",
+				11 => "GJ_TEVSTAGE11",
+				12 => "GJ_TEVSTAGE12",
+				13 => "GJ_TEVSTAGE13",
+				14 => "GJ_TEVSTAGE14",
+				15 => "GJ_TEVSTAGE15",
+				_ => $"{tevstage}"
 			};
 
-			uint src = Data & 0xF;
-			string src_str = src switch
-			{
-				4 => "GJ_TG_TEX0",
-				_ => $"{src}"
-			};
-
-			uint texcoord = Data >> 12;
+			uint texcoord = (Data >> 8) & 0xF;
 			string texcoord_str = texcoord switch
 			{
 				0 => "GJ_TEXCOORD0",
+				1 => "GJ_TEXCOORD1",
+				2 => "GJ_TEXCOORD2",
+				3 => "GJ_TEXCOORD3",
+				4 => "GJ_TEXCOORD4",
+				5 => "GJ_TEXCOORD5",
+				6 => "GJ_TEXCOORD6",
+				7 => "GJ_TEXCOORD7",
+				255 => "GJ_TEXCOORDNULL",
 				_ => $"{texcoord}"
 			};
 
-			uint mtxsrc = Data >> 12;
-			string mtxsrc_str = mtxsrc switch
+			uint texmap = (Data >> 4) & 0xF;
+			string texmap_str = texmap switch
 			{
-				0 => "GJ_TEXMTX0",
-				10 => "GJ_IDENTITY",
-				_ => $"{mtxsrc}"
+				0 => "GJ_TEXMAP0",
+				1 => "GJ_TEXMAP1",
+				2 => "GJ_TEXMAP2",
+				3 => "GJ_TEXMAP3",
+				4 => "GJ_TEXMAP4",
+				5 => "GJ_TEXMAP5",
+				6 => "GJ_TEXMAP6",
+				7 => "GJ_TEXMAP7",
+				255 => "GJ_TEXMAPNULL",
+				_ => $"{texmap}"
 			};
 
-			writer.WriteLine($"GjTexGen  ( {texcoord_str}, {type_str}, {src_str}, {mtxsrc_str} ),");
+			uint unk = Data & 0xF;
+
+			writer.WriteLine($"GjTevOrder ( {tevstage_str}, {texcoord_str}, {texmap_str}, {unk} ),");
 		}
 	}
 
@@ -785,12 +977,21 @@ namespace SAModel.GC
 			TexGenSrc = texGenSrc;
 			MatrixId = matrixId;
 		}
-		
+
 		public override void ToNJA(TextWriter writer)
 		{
 			string matrixid_str = MatrixId switch
 			{
 				GCTexGenMatrix.Matrix0 => "GJ_TEXMTX0",
+				GCTexGenMatrix.Matrix1 => "GJ_TEXMTX1",
+				GCTexGenMatrix.Matrix2 => "GJ_TEXMTX2",
+				GCTexGenMatrix.Matrix3 => "GJ_TEXMTX3",
+				GCTexGenMatrix.Matrix4 => "GJ_TEXMTX4",
+				GCTexGenMatrix.Matrix5 => "GJ_TEXMTX5",
+				GCTexGenMatrix.Matrix6 => "GJ_TEXMTX6",
+				GCTexGenMatrix.Matrix7 => "GJ_TEXMTX7",
+				GCTexGenMatrix.Matrix8 => "GJ_TEXMTX8",
+				GCTexGenMatrix.Matrix9 => "GJ_TEXMTX9",
 				GCTexGenMatrix.Identity => "GJ_IDENTITY",
 				_ => $"{(uint)MatrixId}"
 			};
@@ -798,23 +999,33 @@ namespace SAModel.GC
 			string texcoordid_str = TexCoordId switch
 			{
 				GCTexCoordID.TexCoord0 => "GJ_TEXCOORD0",
+				GCTexCoordID.TexCoord1 => "GJ_TEXCOORD1",
+				GCTexCoordID.TexCoord2 => "GJ_TEXCOORD2",
+				GCTexCoordID.TexCoord3 => "GJ_TEXCOORD3",
+				GCTexCoordID.TexCoord4 => "GJ_TEXCOORD4",
+				GCTexCoordID.TexCoord5 => "GJ_TEXCOORD5",
+				GCTexCoordID.TexCoord6 => "GJ_TEXCOORD6",
+				GCTexCoordID.TexCoord7 => "GJ_TEXCOORD7",
+				GCTexCoordID.TexCoordNull => "GJ_TEXCOORDNULL",
 				_ => $"{(uint)TexCoordId}"
 			};
 
 			string texgensrc_str = TexGenSrc switch
 			{
+				GCTexGenSrc.Position => "GJ_TG_POS",
+				GCTexGenSrc.Normal => "GJ_TG_NRM",
 				GCTexGenSrc.Tex0 => "GJ_TG_TEX0",
 				_ => $"{(uint)TexGenSrc}"
 			};
 
 			string texgentype_str = TexGenType switch
 			{
-				GCTexGenType.Matrix3x4 => "GJ_MTX3x4",
-				GCTexGenType.Matrix2x4 => "GJ_MTX2x4",
+				GCTexGenType.Matrix3x4 => "GJ_TG_MTX3x4",
+				GCTexGenType.Matrix2x4 => "GJ_TG_MTX2x4",
 				_ => $"{(uint)TexGenType}"
 			};
 
-			writer.WriteLine($"GjTexMtx  ( {matrixid_str}, {texcoordid_str}, {texgensrc_str}, {texgentype_str} ),");
+			writer.WriteLine($"GjTexGen   ( {texcoordid_str}, {texgentype_str}, {texgensrc_str}, {matrixid_str} ),");
 		}
 	}
 }

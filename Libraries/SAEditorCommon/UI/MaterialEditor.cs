@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using SAModel.Direct3D.TextureSystem;
+using TextureLib;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -17,9 +17,9 @@ namespace SAModel.SAEditorCommon.UI
 
 		private List<NJS_MATERIAL> materials; // Material list that is being edited
 		private readonly List<NJS_MATERIAL> materialsOriginal; // Original material list at the time of opening the dialog
-		private readonly BMPInfo[] textures;
+		private readonly GenericTexture[] textures;
 
-		public MaterialEditor(List<NJS_MATERIAL> mats, BMPInfo[] textures, string matsName = null)
+		public MaterialEditor(List<NJS_MATERIAL> mats, GenericTexture[] textures, string matsName = null)
 		{
 			materials = mats;
 			materialsOriginal = new List<NJS_MATERIAL>();
@@ -86,6 +86,7 @@ namespace SAModel.SAEditorCommon.UI
 			filterModeDropDown.SelectedIndex = (int)materials[index].FilterMode;
 			srcAlphaCombo.SelectedIndex = (int)materials[index].SourceAlpha;
 			dstAlphaCombo.SelectedIndex = (int)materials[index].DestinationAlpha;
+			numericUpDownTexID.Value = materials[index].TextureID;
 
 			// Setting flags
 			pickStatusCheck.Checked = materials[index].PickStatus;
@@ -196,6 +197,7 @@ namespace SAModel.SAEditorCommon.UI
 				if (texPicker.ShowDialog(this) == DialogResult.OK)
 				{
 					materials[comboMaterial.SelectedIndex].TextureID = texPicker.SelectedValue;
+					numericUpDownTexID.Value = texPicker.SelectedValue;
 					textureBox.Image = DrawPreviewImage(textures[materials[comboMaterial.SelectedIndex].TextureID].Image);
 
 					RaiseFormUpdated();
@@ -265,10 +267,16 @@ namespace SAModel.SAEditorCommon.UI
 			specColorBox.BackColor = materials[comboMaterial.SelectedIndex].SpecularColor;
 			RaiseFormUpdated();
 		}
+		private void numericUpDownTexID_ValueChanged(object sender, EventArgs e)
+		{
+			materials[comboMaterial.SelectedIndex].TextureID = (int)numericUpDownTexID.Value;
+			if (textures != null && materials[comboMaterial.SelectedIndex].TextureID < textures.Length) textureBox.Image = DrawPreviewImage(textures[materials[comboMaterial.SelectedIndex].TextureID].Image);
+			RaiseFormUpdated();
+		}
 
 		#endregion
 
-		#region Flag Check Event Methods
+			#region Flag Check Event Methods
 
 		private void pickStatusCheck_Click(object sender, EventArgs e)
 		{

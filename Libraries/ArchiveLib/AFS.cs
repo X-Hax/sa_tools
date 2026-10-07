@@ -334,10 +334,5 @@ namespace ArchiveLib
 		}
 
 		public AFSEntry() {	}
-
-		public override Bitmap GetBitmap()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

@@ -10,21 +10,35 @@ namespace SAModel
         public static bool BigEndian { get; set; }
         public static bool Reverse { get; set; }
 
+		private static bool Locked;
+
         private static readonly List<bool> bigEndianStack = [];
 
-        public static void SetBigEndian(bool value)
-        {
-            BackupBigEndian();
-            BigEndian = value;
-        }
+		public static void SetBigEndian(bool value)
+		{
+			BackupBigEndian();
+			BigEndian = value;
+		}
 
         public static void BackupBigEndian()
         {
-            bigEndianStack.Add(BigEndian);
+			// Because ByteConverter is a static class, loading multiple models or motions that require different Endianness in parallel can break it.
+			// Below is probably one of the dumbest hacks but it's meant to prevent errors during multi-threaded operations, such as loading models in object definitions.
+			// Whenever the Big Endian setting is modified via this method, the Locked variable is set to true until Endianness is reset.
+			// If another attempt is made to set the Big Endian value while Locked is still true, it will wait until Locked is false.
+			// The real solution would be to replace the way we deal with Endianness and/or read and write binary data.
+			if (Locked)
+			{
+				while (Locked)
+					System.Threading.Thread.Sleep(1);
+			}
+			Locked = true;
+			bigEndianStack.Add(BigEndian);
         }
 
         public static void RestoreBigEndian()
         {
+			Locked = false;
             if (bigEndianStack.Count == 0)
                 return;
             BigEndian = bigEndianStack[bigEndianStack.Count - 1];
