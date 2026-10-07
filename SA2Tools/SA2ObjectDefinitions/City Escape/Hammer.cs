@@ -1,86 +1,117 @@
-using SharpDX;
-using SharpDX.Direct3D9;
-using SAModel;
+﻿using SAModel;
 using SAModel.Direct3D;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SplitTools;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
-using SplitTools;
 
 namespace SA2ObjectDefinitions.CityEscape
 {
 	public class Hammer : ObjectDefinition
 	{
-		protected NJS_OBJECT model;
-		protected Mesh[] meshes;
-		protected NJS_TEXLIST texarr;
-		protected Texture[] texs;
-		protected List<string> texpacks = [];
+		protected NJS_OBJECT object_hammer;
+		protected NJS_TEXLIST texlist_hammer;
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("stg13_cityescape/models/HAMMER.sa2mdl");
-			meshes = ObjectHelper.GetMeshes(model);
-			texarr = NJS_TEXLIST.Load("stg13_cityescape/tls/HAMMER.satex");
-			texpacks.Add("landtx13");
-			texpacks.Add("objtex_stg13");
+			object_hammer = ObjectHelper.LoadModel("stg13_cityescape/models/HAMMER.sa2mdl");
+
+			texlist_hammer = NJS_TEXLIST.Load("stg13_cityescape/tls/HAMMER.satex");
 		}
 
-		public override Matrix GetHandleMatrix(SETItem item)
+		public override string Name { get { return "Moving Pillar"; } }
+
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
-			Matrix matrix = Matrix.Identity;
+			List<RenderInfo> result = new List<RenderInfo>();
 
-			MatrixFunctions.Translate(ref matrix, item.Position);
-			MatrixFunctions.RotateObject(ref matrix, item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			float oscInten;
 
-			return matrix;
-		}
+			if ((item.Rotation.X & 0xFF00) != 0)
+			{
+				oscInten = item.Scale.Z;
+			}
+			else
+			{
+				oscInten = -item.Scale.Z;
+			}
 
-		public override void SetOrientation(SETItem item, Vertex direction)
-		{
-			int x; int z; direction.GetRotation(out x, out z);
-			item.Rotation.X = x + 0x4000;
-			item.Rotation.Z = -z;
+			transform.Push();
+			{
+				transform.NJTranslate(item.Position);
+				transform.NJRotateY(item.Rotation.Y);
+
+				transform.NJScale((item.Scale.X + 1.0f), (item.Scale.Y + 1.0f), (item.Scale.X + 1.0f));
+
+				result.AddRange(
+					object_hammer.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode),
+					transform,
+					ObjectHelper.GetTextures(new List<string> { "landtx13", "objtex_stg13" }, texlist_hammer, dev),
+					ObjectHelper.GetMeshes(object_hammer),
+					EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+
+				if (item.Selected)
+				{
+					result.AddRange(object_hammer.DrawModelTreeInvert(transform, ObjectHelper.GetMeshes(object_hammer)));
+				}
+			}
+			transform.Pop();
+
+			transform.Push();
+			{
+				transform.NJTranslate(item.Position);
+				transform.NJTranslate(0.0f, oscInten, 0.0f);
+
+				transform.NJRotateY(item.Rotation.Y);
+
+				transform.NJScale((item.Scale.X + 1.0f), (item.Scale.Y + 1.0f), (item.Scale.X + 1.0f));
+
+				result.AddRange(object_hammer.DrawModelTreeInvert(transform, ObjectHelper.GetMeshes(object_hammer)));
+			}
+			transform.Pop();
+
+			return result;
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
+			HitResult result;
+
 			transform.Push();
-			transform.NJTranslate(item.Position);
-			if (item.Rotation.Y != 0)
+			{
+				transform.NJTranslate(item.Position);
 				transform.NJRotateY(item.Rotation.Y);
-			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
+
+				transform.NJScale((item.Scale.X + 1.0f), (item.Scale.Y + 1.0f), (item.Scale.X + 1.0f));
+
+				result = object_hammer.CheckHit(Near, Far, Viewport, Projection, View, transform, ObjectHelper.GetMeshes(object_hammer));
+			}
 			transform.Pop();
+
 			return result;
 		}
-
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
-		{ 
-			List<RenderInfo> result = new List<RenderInfo>();
-			if (texs == null)
-				texs = ObjectHelper.GetTextures(texpacks, texarr, dev);
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			if (item.Rotation.Y != 0)
-				transform.NJRotateY(item.Rotation.Y);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-			if (item.Selected)
-				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
-			transform.Pop();
-			return result;
-		}
-
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
 			List<ModelTransform> result = new List<ModelTransform>();
+
 			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateZYX(0, item.Rotation.Y, 0);
-			result.Add(new ModelTransform(model, transform.Top));
+			{
+				transform.NJTranslate(item.Position);
+				transform.NJRotateY(item.Rotation.Y);
+
+				transform.NJScale((item.Scale.X + 1.0f), (item.Scale.Y + 1.0f), (item.Scale.X + 1.0f));
+
+				result.Add(new ModelTransform(object_hammer, transform.Top));
+			}
 			transform.Pop();
+
 			return result;
 		}
 
@@ -88,33 +119,46 @@ namespace SA2ObjectDefinitions.CityEscape
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateZYX(0, item.Rotation.Y, 0);
-			return ObjectHelper.GetModelBounds(model, transform);
-		}
-		private readonly PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Cycle Wait Period", typeof(int), "Extended", null, null, (o) => o.Rotation.X & 0xFF,
-			(o, v) => { o.Rotation.X &= 0xFF00; o.Rotation.X |= (byte)v; }),
-			new PropertySpec("Cycle Start Position", typeof(HammerPosition), "Extended", null, null, (o) => (HammerPosition)((o.Rotation.X >> 8) & 0xF),
-			(o, v) => { o.Rotation.X &= 0xF0FF; o.Rotation.X |= (byte)v << 8; }),
-			new PropertySpec("Oscillation Strength", typeof(float), "Extended", null, null, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v),
-			new PropertySpec("Oscillation Speed", typeof(int), "Extended", null, 1, (o) => o.Rotation.Z, (o, v) => o.Rotation.Z = (int)v > 0 ? (int)v : 999999),
-			new PropertySpec("Cycle Offset", typeof(byte), "Extended", null, null, (o) => o.Rotation.Y & 0xFF,
-			(o, v) => { o.Rotation.Y &= 0xFF00; o.Rotation.Y |= (byte)v; }),
-		};
+			transform.NJRotateY(item.Rotation.Y);
 
+			transform.NJScale((item.Scale.X + 1.0f), (item.Scale.Y + 1.0f), (item.Scale.X + 1.0f));
+
+			return ObjectHelper.GetModelBounds(object_hammer, transform);
+		}
+
+		public override Matrix GetHandleMatrix(SETItem item)
+		{
+			Matrix matrix = Matrix.Identity;
+
+			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateY(ref matrix, item.Rotation.Y);
+			MatrixFunctions.Scale(ref matrix, (item.Scale.X + 1.0f), (item.Scale.Y + 1.0f), (item.Scale.X + 1.0f));
+
+			return matrix;
+		}
+
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Rest Time (in frames)", typeof(int), "Movement Stats", null, null, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v),
+			new PropertySpec("Oscillation Speed", typeof(int), "Movement Stats", null, null, (o) => o.Rotation.Z, (o, v) => o.Rotation.Z = (int)v),
+			new PropertySpec("Oscillation Intensity", typeof(float), "Movement Stats", null, null, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v),
+			new PropertySpec("Oscillation Direction", typeof(HammerDirection), "Movement Stats", null, null,
+			(o) => ((o.Rotation.X & 0x100) != 0) ? 0 : 1,
+			(o, v) => {o.Rotation.X &= ~0x100; if ((byte)v == 0) o.Rotation.X |= 0x100;}),
+			new PropertySpec("Width", typeof(float), "Size", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
+			new PropertySpec("Height", typeof(float), "Size", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
+		};
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 
-		public enum HammerPosition : byte
-		{
-			Top,
-			Bottom
-		}
-		public override string Name { get { return "Vertical Cylinder"; } }
 		public override float DefaultXScale { get { return 0; } }
 
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
-	}
 
+		public enum HammerDirection
+		{
+			Up,
+			Down
+		}
+	}
 }

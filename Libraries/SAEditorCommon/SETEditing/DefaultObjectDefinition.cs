@@ -118,12 +118,12 @@ namespace SAModel.SAEditorCommon.SETEditing
 				// Get textures
 				if (texs == null)
 				{
-					// SA2 multi-textured. This takes priority over the normal variant if it exists.
+					// Regular
+					texs = ObjectHelper.GetTextures(texture, texnames, dev);
+
+					// SA2 multi-textured
 					if (texturesmulti.Count > 0)
 						texs = ObjectHelper.GetTextures(texturesmulti, texnames, dev);
-					else
-					// Regular
-						texs = ObjectHelper.GetTextures(texture, texnames, dev);
 				}
 				// Scale
 				Vector3 addscl = new Vector3(addxscl ?? 0, addyscl ?? 0, addzscl ?? 0);

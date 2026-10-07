@@ -14,48 +14,67 @@ namespace SA2ObjectDefinitions.Common
 {
 	public class EGOLD : ObjectDefinition
 	{
-		private NJS_OBJECT model;
-		private Mesh[] mesh;
+		private NJS_OBJECT object_e_gold;
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("enemy/kumi/E_KUMI_ESCAPER.sa2mdl");
-			mesh = ObjectHelper.GetMeshes(model);
+			object_e_gold = ObjectHelper.LoadModel("enemy/kumi/E_KUMI_ESCAPER.sa2mdl");
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
+			HitResult result;
+
 			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y, 0);
-			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, mesh);
+			{
+				transform.NJTranslate(item.Position);
+				transform.NJRotateY(item.Rotation.Y);
+
+				result = object_e_gold.CheckHit(Near, Far, Viewport, Projection, View, transform, ObjectHelper.GetMeshes(object_e_gold));
+			}
 			transform.Pop();
+
 			return result;
 		}
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
-			
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y, 0);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("e_goldtex"), mesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-			if (item.Selected)
 			{
-				result.AddRange(model.DrawModelTreeInvert(transform, mesh));
+				transform.NJTranslate(item.Position);
+				transform.NJRotateY(item.Rotation.Y);
+
+				result.AddRange(
+					object_e_gold.DrawModelTree(
+						dev.GetRenderState<FillMode>(RenderState.FillMode), 
+						transform, 
+						ObjectHelper.GetTextures("e_goldtex"), 
+						ObjectHelper.GetMeshes(object_e_gold), 
+						EditorOptions.IgnoreMaterialColors, 
+						EditorOptions.OverrideLighting
+					)
+				);
+
+				if (item.Selected)
+				{
+					result.AddRange(object_e_gold.DrawModelTreeInvert(transform, ObjectHelper.GetMeshes(object_e_gold)));
+				}
 			}
 			transform.Pop();
-				return result;
+			return result;
 		}
 
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y, 0);
-			result.Add(new ModelTransform(model, transform.Top));
+			{
+				transform.NJTranslate(item.Position);
+				transform.NJRotateY(item.Rotation.Y);
+			
+				result.Add(new ModelTransform(object_e_gold, transform.Top));
+			}
 			transform.Pop();
 			return result;
 		}
@@ -63,9 +82,11 @@ namespace SA2ObjectDefinitions.Common
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();
+
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(0, item.Rotation.Y, 0);
-			return ObjectHelper.GetModelBounds(model, transform);
+			transform.NJRotateY(item.Rotation.Y);
+
+			return ObjectHelper.GetModelBounds(object_e_gold, transform);
 		}
 
 		public override Matrix GetHandleMatrix(SETItem item)
