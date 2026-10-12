@@ -31,7 +31,12 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Z != 0)
+				transform.NJRotateZ(item.Rotation.Z);
+			if (item.Rotation.X != 0)
+				transform.NJRotateX(item.Rotation.X);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -44,7 +49,12 @@ namespace SA2ObjectDefinitions.Common
 				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Z != 0)
+				transform.NJRotateZ(item.Rotation.Z);
+			if (item.Rotation.X != 0)
+				transform.NJRotateX(item.Rotation.X);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
@@ -57,7 +67,12 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Z != 0)
+				transform.NJRotateZ(item.Rotation.Z);
+			if (item.Rotation.X != 0)
+				transform.NJRotateX(item.Rotation.X);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -67,7 +82,12 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Z != 0)
+				transform.NJRotateZ(item.Rotation.Z);
+			if (item.Rotation.X != 0)
+				transform.NJRotateX(item.Rotation.X);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 

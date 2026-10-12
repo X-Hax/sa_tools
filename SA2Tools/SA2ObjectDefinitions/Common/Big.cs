@@ -184,7 +184,12 @@ namespace SA2ObjectDefinitions.Common
 			transform.Push();
 			{
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation.X, item.Rotation.Y + ObjectHelper.DegToBAMS(90), item.Rotation.Z);
+				if (item.Rotation.Z != 0)
+					transform.NJRotateX(item.Rotation.Z);
+				if (item.Rotation.X != 0)
+					transform.NJRotateZ(item.Rotation.X);
+				if (item.Rotation.Y != -16384)
+					transform.NJRotateY(item.Rotation.Y + 0x4000);
 				result.AddRange(object_big.DrawModelTreeAnimated(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, pMesh, pMotion, 0.0f, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				if (item.Selected)
 					result.AddRange(object_big.DrawModelTreeAnimatedInvert(transform, pMesh, pMotion, 0.0f));

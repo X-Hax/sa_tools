@@ -1,4 +1,3 @@
-using Assimp;
 using SAModel;
 using SAModel.Direct3D;
 using SAModel.SAEditorCommon;
@@ -197,6 +196,7 @@ namespace SA2ObjectDefinitions.CityEscape
 
 			texpacks.Add("objtex_stg13");
 			texpacks.Add("landtx13");
+			texpacks.Add("objtex_common");
 
 			string pathfolder = "stg13_cityescape\\models\\TRUCK\\Paths";
 			if (Directory.Exists(pathfolder))
@@ -266,6 +266,29 @@ namespace SA2ObjectDefinitions.CityEscape
 					texs[i] = ObjectHelper.GetTextures(texpacks, texarrs[i]);
 			}
 			List<RenderInfo> result = new List<RenderInfo>();
+
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJScale(item.Scale.Y / 10F, item.Scale.Y / 10F, item.Scale.Y / 10F);
+			result.AddRange(points.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, pointsmesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+			if (item.Selected)
+				result.AddRange(points.DrawModelTreeInvert(transform, pointsmesh));
+			transform.Pop();
+
+			DefineSpline(0);
+
+			RenderInfo outputInfo = new RenderInfo(pathmesh, 0, Matrix.Identity, (item.Selected) ? SelectedMaterial : UnSelectedMaterial, null, EditorOptions.RenderFillMode, pathbounds);
+			result.Add(outputInfo);
+			for (int i = 0; i < truckpaths[0].Path.Count; i++)
+			{
+				transform.Push();
+				transform.NJTranslate(truckpaths[0].Path[i]);
+				result.AddRange(points.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, pointsmesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				if (item.Selected)
+					result.AddRange(points.DrawModelTreeInvert(transform, pointsmesh));
+				transform.Pop();
+			}
+
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
@@ -277,28 +300,6 @@ namespace SA2ObjectDefinitions.CityEscape
 			}
 			transform.Pop();
 
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJScale(item.Scale.Y / 10F, item.Scale.Y / 10F, item.Scale.Y / 10F);
-			result.AddRange(points.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs[0], pointsmesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-			if (item.Selected)
-				result.AddRange(points.DrawModelTreeInvert(transform, pointsmesh));
-			transform.Pop();
-
-			DefineSpline(0);
-
-			RenderInfo outputInfo = new RenderInfo(pathmesh, 0, Matrix.Identity, (item.Selected) ? SelectedMaterial : UnSelectedMaterial, null, EditorOptions.RenderFillMode, new BoundingSphere(pathbounds.Center.X, pathbounds.Center.Y,
-				pathbounds.Center.Z, 1000F));
-			result.Add(outputInfo);
-			for (int i = 0; i < truckpaths[0].Path.Count; i++)
-			{
-				transform.Push();
-				transform.NJTranslate(truckpaths[0].Path[i]);
-				result.AddRange(points.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs[Math.Min(i, 4)], pointsmesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-				if (item.Selected)
-					result.AddRange(points.DrawModelTreeInvert(transform, pointsmesh));
-				transform.Pop();
-			}
 			return result;
 		}
 

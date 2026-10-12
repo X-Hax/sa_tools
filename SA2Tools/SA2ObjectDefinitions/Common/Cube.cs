@@ -58,7 +58,7 @@ namespace SA2ObjectDefinitions.Common
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale((item.Scale.X + 10) * 2, (item.Scale.Y + 10) * 2, (item.Scale.Z + 10) * 2);
-			return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max(item.Scale.X + 20, item.Scale.Y + 20), item.Scale.Z + 20));
+			return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max((item.Scale.X + 10) * 2, (item.Scale.Y + 10) * 2), (item.Scale.Z + 10) * 2));
 		}
 
 		public override Matrix GetHandleMatrix(SETItem item)

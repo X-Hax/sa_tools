@@ -260,14 +260,9 @@ namespace SA2ObjectDefinitions.CityEscape
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
+			if (texs1 == null)
+				texs1 = ObjectHelper.GetTextures("texpacks", texarr1);
 			List<RenderInfo> result = new List<RenderInfo>();
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateY(item.Rotation.Y);
-			result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs1, mesh1, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-			if (item.Selected)
-				result.AddRange(model1.DrawModelTreeInvert(transform, mesh1));
-			transform.Pop();
 
 			DefineSpline((int)item.Scale.Z);
 
@@ -280,6 +275,13 @@ namespace SA2ObjectDefinitions.CityEscape
 				result.AddRange(points.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, pointsmesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				if (item.Selected)
 					result.AddRange(points.DrawModelTreeInvert(transform, pointsmesh));
+				transform.Pop();
+				transform.Push();
+				transform.NJTranslate(item.Position);
+				transform.NJRotateY(item.Rotation.Y);
+				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs1, mesh1, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				if (item.Selected)
+					result.AddRange(model1.DrawModelTreeInvert(transform, mesh1));
 				transform.Pop();
 			}
 			return result;
@@ -439,6 +441,7 @@ namespace SA2ObjectDefinitions.CityEscape
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
+			camera.DrawDistance = 70000;
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);

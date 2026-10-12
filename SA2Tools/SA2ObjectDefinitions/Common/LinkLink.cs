@@ -34,7 +34,10 @@ namespace SA2ObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			if (coltype == 0)
+			{
+				transform.NJRotateZ(item.Rotation.Z & 0xFFFFFF);
 				transform.NJScale(item.Scale.X * 2, item.Scale.Y * 2, item.Scale.Z * 2);
+			}
 			if (coltype == 1)
 				transform.NJScale(item.Scale.X / 10F, item.Scale.X / 10F, item.Scale.X / 10F);
 			HitResult result = models[coltype].CheckHit(Near, Far, Viewport, Projection, View, transform, meshes[coltype]);
@@ -49,7 +52,11 @@ namespace SA2ObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			if (coltype == 0)
+			{
+				transform.NJRotateY(item.Rotation.Y & 0xFFFFFF);
+				transform.NJRotateZ(item.Rotation.Z & 0xFFFFFF);
 				transform.NJScale(item.Scale.X * 2, item.Scale.Y * 2, item.Scale.Z * 2);
+			}
 			if (coltype == 1)
 				transform.NJScale(item.Scale.X / 10F, item.Scale.X / 10F, item.Scale.X / 10F);
 			result.AddRange(models[coltype].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes[coltype], boundsByMesh: true));
@@ -70,7 +77,11 @@ namespace SA2ObjectDefinitions.Common
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position);
 			if (coltype == 0)
+			{
+				transform.NJRotateY(item.Rotation.Y & 0xFFFFFF);
+				transform.NJRotateZ(item.Rotation.Z & 0xFFFFFF);
 				transform.NJScale(item.Scale.X * 2, item.Scale.Y * 2, item.Scale.Z * 2);
+			}
 			if (coltype == 1)
 				transform.NJScale(item.Scale.X / 10F, item.Scale.X / 10F, item.Scale.X / 10F);
 			return ObjectHelper.GetModelBounds(models[coltype], transform, Math.Max(Math.Max((item.Scale.X + 10), (item.Scale.Y + 10)), (item.Scale.Z + 10)));
