@@ -261,7 +261,7 @@ namespace SA2ObjectDefinitions.CityEscape
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (texs1 == null)
-				texs1 = ObjectHelper.GetTextures("texpacks", texarr1);
+				texs1 = ObjectHelper.GetTextures(texpacks, texarr1);
 			List<RenderInfo> result = new List<RenderInfo>();
 
 			DefineSpline((int)item.Scale.Z);

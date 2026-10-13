@@ -281,6 +281,7 @@ namespace SAModel.SALVL
 
 			editLevelInfoToolStripMenuItem.Enabled = false;
 			advancedSaveSETFileToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = false;
+			advancedSavelevelToolStripMenuItem.Enabled = false;
 			saveAdvancedToolStripMenuItem.Enabled = false;
 			cAMFileToolStripMenuItem.Enabled = false;
 
@@ -2175,6 +2176,7 @@ namespace SAModel.SALVL
 
 					IsLevelOnly = true;
 					LevelPath = fileDialog.FileName;
+					advancedSavelevelToolStripMenuItem.Enabled = true;
 					LoadStage("");
 					LoadLandtable();
 					UncheckMenuItems(changeLevelToolStripMenuItem);

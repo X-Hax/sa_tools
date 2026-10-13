@@ -408,6 +408,14 @@ namespace SA2ObjectDefinitions.Common
 
 		public override float DefaultZScale { get { return 0; } }
 	}
+	public class DefaultMinimal : Minimal
+	{
+		public override void Init(ObjectData data, string name)
+		{
+			InitSetup(data, name);
+			SetAnimals(0);
+		}
+	}
 	public class GreenForestMinimal : Minimal
 	{
 		public override void Init(ObjectData data, string name)

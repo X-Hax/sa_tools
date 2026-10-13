@@ -657,6 +657,9 @@ namespace SAModel.SALVL
 				// Small Animals are normally pulled from archive files instead of the EXE/DLL.
 				// The variants seen in SALVL use their Chao World equivalents and require the corresponding texture file.
 				LoadPVM("AL_MINIMAL_TEX", systemPath);
+				// These texture packs are used for the Mystic Melody and Ancient Light field upgrades.
+				LoadPVM("LEVUPDAI_TMTEX", systemPath);
+				LoadPVM("LEVUPDAI_THTEX", systemPath);
 			}
 		}
 
@@ -1855,6 +1858,7 @@ namespace SAModel.SALVL
 			viewSETItemsToolStripMenuItem.Enabled = true;
 
 			// Advanced Save menu
+			advancedSavelevelToolStripMenuItem.Enabled = isGeometryPresent;
 			saveAdvancedToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = true;
 			cAMFileToolStripMenuItem.Enabled = isGeometryPresent && LevelData.geo.Format <= LandTableFormat.SADX && !LevelData.CAMItemsIsNull();
 			// Calculate All Bounds
@@ -1942,6 +1946,7 @@ namespace SAModel.SALVL
 			toolStrip1.Enabled = editLevelInfoToolStripMenuItem.Enabled = isStageLoaded;
 			LevelData.SuppressEvents = false;
 			LevelData.InvalidateRenderState();
+			advancedSavelevelToolStripMenuItem.Enabled = isGeometryPresent;
 			unloadTexturesToolStripMenuItem.Enabled = LevelData.Textures != null;
 			editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
 			addCAMItemToolStripMenuItem.Enabled = LevelData.CAMItems != null;
