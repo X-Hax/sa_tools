@@ -645,6 +645,7 @@ namespace SAModel.SALVL
 				LoadPVM("E_S_KUMITEX", systemPath);
 				LoadPVM("E_G_KUMITEX", systemPath);
 				LoadPVM("E_EMITEX", systemPath);
+				LoadPVM("E_T_EMITEX", systemPath);
 				LoadPVM("E_KYOKOTEX", systemPath);
 				LoadPVM("E_BIGTEX", systemPath);
 				LoadPVM("E_AKAHIGETEX", systemPath);
@@ -654,6 +655,8 @@ namespace SAModel.SALVL
 				LoadPVM("E_UNITEX", systemPath);
 				LoadPVM("E_NAMITEX", systemPath);
 				LoadPVM("E_CHAOSTEX", systemPath);
+				LoadPVM("E_PATHKUMITEX", systemPath);
+				LoadPVM("E_PATHKYOKOTEX", systemPath);
 				// Small Animals are normally pulled from archive files instead of the EXE/DLL.
 				// The variants seen in SALVL use their Chao World equivalents and require the corresponding texture file.
 				LoadPVM("AL_MINIMAL_TEX", systemPath);

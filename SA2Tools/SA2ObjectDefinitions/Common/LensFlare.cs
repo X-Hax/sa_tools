@@ -100,7 +100,7 @@ namespace SA2ObjectDefinitions.Common
 			transform.Push();
 			{
 				transform.NJTranslate(item.Position);
-				transform.NJScale(scalefromdiff, scalefromdiff, 1F);
+				transform.NJScale(scalefromdiff / 20, scalefromdiff / 20, 1F);
 				result = HitResult.Min(result, sunMesh.CheckHit(Near, Far, Viewport, Projection, View, transform));
 			}
 			transform.Pop();
@@ -145,7 +145,7 @@ namespace SA2ObjectDefinitions.Common
 			transform.Push();
 			{
 				transform.NJTranslate(item.Position);
-				transform.NJRotateY(item.Rotation.Y);
+				//transform.NJRotateY(item.Rotation.Y);
 				transform.NJScale(20F, 20F, 1F);
 				result.Add(new ModelTransform(object_sun, transform.Top));
 			}
@@ -158,7 +158,7 @@ namespace SA2ObjectDefinitions.Common
 			var scalefromdiff = Math.Max(item.Position.X - specialcam.Position.X, item.Position.Y - specialcam.Position.Y);
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateY(item.Rotation.Y);
+			//transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale(scalefromdiff, scalefromdiff, 1F);
 			return new BoundingSphere(item.Position.X, item.Position.Y, item.Position.Z, 1F);
 		}

@@ -37,7 +37,8 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -50,7 +51,8 @@ namespace SA2ObjectDefinitions.Common
 				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			result.AddRange(child.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("objtex_common"), meshesChild, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
@@ -67,7 +69,8 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -77,7 +80,8 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
@@ -101,8 +105,12 @@ namespace SA2ObjectDefinitions.Common
 			new PropertySpec("Path ID/2P X Scale", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
 			new PropertySpec("Hitbox Radius", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
 			new PropertySpec("Path Speed/2P Z Scale", typeof(float), "Extended", null, null, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v),
-			new PropertySpec("Piece ID (Big Endian)", typeof(string), "Extended", null, null, (o) => o.Rotation.XStr,
+			new PropertySpec("Piece ID (Full)", typeof(string), "Extended", null, null, (o) => o.Rotation.XStr,
 				(o, v) => o.Rotation.XStr = (string)v),
+			new PropertySpec("Emerald Type", typeof(EmeraldType), "Extended", null, null, (o) => (EmeraldType)((o.Rotation.X >> 8) & 0xF),
+				(o, v) => { o.Rotation.X &= 0xF0FF; o.Rotation.X |= (byte)(EmeraldType)v << 8; }),
+			new PropertySpec("Piece ID", typeof(byte), "Extended", null, null, (o) => (o.Rotation.X & 0xFF),
+				(o, v) => { o.Rotation.X &= 0xFF00; o.Rotation.X |= (byte)v; }),
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
@@ -123,7 +131,8 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -136,7 +145,8 @@ namespace SA2ObjectDefinitions.Common
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+			transform.NJRotateY(item.Rotation.Y);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			result.AddRange(child.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("objtex_common"), meshesChild, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
@@ -153,7 +163,8 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -163,7 +174,8 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
@@ -174,6 +186,10 @@ namespace SA2ObjectDefinitions.Common
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
+	}
+	public class MasterEmeraldShardF : Emerald
+	{
+		public override string Name { get { return "Master Emerald Shard (Far)"; } }
 	}
 	public class ChaosEmerald : Emerald 
 	{
@@ -187,7 +203,8 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -200,7 +217,8 @@ namespace SA2ObjectDefinitions.Common
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 			{
@@ -215,7 +233,8 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -225,7 +244,8 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 		public override string Name { get { return "Chaos Emerald"; } }
@@ -251,7 +271,8 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -264,7 +285,8 @@ namespace SA2ObjectDefinitions.Common
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			result.AddRange(child.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshesChild, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
@@ -281,7 +303,8 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -291,7 +314,8 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 		public override string Name { get { return "Gate Key"; } }
@@ -301,5 +325,19 @@ namespace SA2ObjectDefinitions.Common
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
+	}
+	public enum EmeraldType
+	{
+		NormalB,
+		NormalC,
+		HiddenB,
+		HiddenC,
+		UndergroundA,
+		UndergroundB,
+		Underground2P,
+		Path,
+		TeCH1P,
+		HardModeOrFinal,
+		InEnemy
 	}
 }
