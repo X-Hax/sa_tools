@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
 
-//TODO: Figure out how to manipulate the stone heads properly. The game's code suggests using
-//NJSin and NJCos along with using prior stored position manipulations.
 
 namespace SA2ObjectDefinitions.WildCanyon
 {
@@ -59,11 +57,32 @@ namespace SA2ObjectDefinitions.WildCanyon
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			HitResult result = HitResult.NoHit;
+			//MATH
 			float scaleconst = item.Scale.X + 1F;
-			float scaleconststone = scaleconst * -12F;
+			float scaleconstY = item.Scale.Y + 1F;
+			float scaleconst1 = scaleconst * 12F;
+			float scaleconstminus = scaleconst * 20F;
+			float scaleconst2 = (scaleconstY * scaleconstminus) - (scaleconstminus * 0.5F);
+			float sine1 = ObjectHelper.NJSin(item.Rotation.Y) * scaleconst1;
+			float sine2 = ObjectHelper.NJSin(item.Rotation.Y) * scaleconst2;
+			float cos1 = ObjectHelper.NJCos(item.Rotation.Y) * scaleconst1;
+			float cos2 = ObjectHelper.NJCos(item.Rotation.Y) * scaleconst2;
 
-			float stoneposX = (ObjectHelper.NJSin(item.Rotation.Z) * scaleconststone) + item.Position.X;
-			float stoneposZ = (ObjectHelper.NJCos(item.Rotation.Z) * scaleconststone) + item.Position.Z;
+			float newX1 = item.Position.X + sine1 + sine2;
+			float newZ1 = item.Position.Z + cos1 + cos2;
+
+			float newX2 = item.Position.X + sine1 - sine2;
+			float newZ2 = item.Position.Z + cos1 - cos2;
+
+			float fixedX = newX2 - newX1;
+			float fixedZ = newZ2 - newZ1;
+
+			float newposX = (fixedX / 255F) * (float)(item.Rotation.Z & 0xFF) + newX1;
+			float newposZ = (float)(item.Rotation.Z & 0xFF) * (fixedZ / 255F) + newZ1;
+
+			float scaleconststone = scaleconst * -12F;
+			float stonesine = ObjectHelper.NJSin(item.Rotation.Y) * scaleconststone;
+			float stonecos = ObjectHelper.NJCos(item.Rotation.Y) * scaleconststone;
 
 			transform.Push();
 			transform.NJTranslate(item.Position);
@@ -73,7 +92,7 @@ namespace SA2ObjectDefinitions.WildCanyon
 			result = HitResult.Min(result, pathmodel.CheckHit(Near, Far, Viewport, Projection, View, transform, pathmesh));
 			transform.Pop();
 			transform.Push();
-			transform.NJTranslate(stoneposX, item.Position.Y, stoneposZ);
+			transform.NJTranslate(newposX + stonesine, item.Position.Y, newposZ + stonecos);
 			if (item.Rotation.Y != 0)
 				transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale(scaleconst, scaleconst, scaleconst);
@@ -86,15 +105,32 @@ namespace SA2ObjectDefinitions.WildCanyon
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
+			//MATH
 			float scaleconst = item.Scale.X + 1F;
+			float scaleconstY = item.Scale.Y + 1F;
+			float scaleconst1 = scaleconst * 12F;
+			float scaleconstminus = scaleconst * 20F;
+			float scaleconst2 = (scaleconstY * scaleconstminus) - (scaleconstminus * 0.5F);
+			float sine1 = ObjectHelper.NJSin(item.Rotation.Y) * scaleconst1;
+			float sine2 = ObjectHelper.NJSin(item.Rotation.Y) * scaleconst2;
+			float cos1 = ObjectHelper.NJCos(item.Rotation.Y) * scaleconst1;
+			float cos2 = ObjectHelper.NJCos(item.Rotation.Y) * scaleconst2;
+
+			float newX1 = item.Position.X + sine1 + sine2;
+			float newZ1 = item.Position.Z + cos1 + cos2;
+
+			float newX2 = item.Position.X + sine1 - sine2;
+			float newZ2 = item.Position.Z + cos1 - cos2;
+
+			float fixedX = newX2 - newX1;
+			float fixedZ = newZ2 - newZ1;
+
+			float newposX = (fixedX / 255F) * (float)(item.Rotation.Z & 0xFF) + newX1;
+			float newposZ = (float)(item.Rotation.Z & 0xFF) * (fixedZ / 255F) + newZ1;
+
 			float scaleconststone = scaleconst * -12F;
-			//float stoneZ = scaleconststone - (((float)item.Rotation.Z / 256F) * (2 * scaleconststone));
-			float stonesineZ = ObjectHelper.NJSin(item.Rotation.Z) * scaleconststone;
-			float stonecosZ = ObjectHelper.NJCos(item.Rotation.Z) * scaleconststone;
-			float stonesineY = ObjectHelper.NJSin(item.Rotation.Y) * scaleconststone;
-			float stonecosY = ObjectHelper.NJCos(item.Rotation.Y) * scaleconststone;
-			//float stonesine = (float)Math.Sin((item.Rotation.Y / 256) * 90) * scaleconststone;
-			//float stonecos = (float)Math.Cos((item.Rotation.Z / 256) * 90) * scaleconststone;
+			float stonesine = ObjectHelper.NJSin(item.Rotation.Y) * scaleconststone;
+			float stonecos = ObjectHelper.NJCos(item.Rotation.Y) * scaleconststone;
 
 			if (texspath == null)
 				texspath = ObjectHelper.GetTextures(texpacks, texarrpath, dev);
@@ -113,8 +149,7 @@ namespace SA2ObjectDefinitions.WildCanyon
 			}
 			transform.Pop();
 			transform.Push();
-			//transform.NJTranslate(item.Position);
-			transform.NJTranslate(item.Position.X + stonesineY, item.Position.Y, item.Position.Z + stonecosY);
+			transform.NJTranslate(newposX + stonesine, item.Position.Y, newposZ + stonecos);
 			if (item.Rotation.Y != 0)
 				transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale(scaleconst, scaleconst, scaleconst);
@@ -129,10 +164,32 @@ namespace SA2ObjectDefinitions.WildCanyon
 
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
+			//MATH
 			float scaleconst = item.Scale.X + 1F;
+			float scaleconstY = item.Scale.Y + 1F;
+			float scaleconst1 = scaleconst * 12F;
+			float scaleconstminus = scaleconst * 20F;
+			float scaleconst2 = (scaleconstY * scaleconstminus) - (scaleconstminus * 0.5F);
+			float sine1 = ObjectHelper.NJSin(item.Rotation.Y) * scaleconst1;
+			float sine2 = ObjectHelper.NJSin(item.Rotation.Y) * scaleconst2;
+			float cos1 = ObjectHelper.NJCos(item.Rotation.Y) * scaleconst1;
+			float cos2 = ObjectHelper.NJCos(item.Rotation.Y) * scaleconst2;
+
+			float newX1 = item.Position.X + sine1 + sine2;
+			float newZ1 = item.Position.Z + cos1 + cos2;
+
+			float newX2 = item.Position.X + sine1 - sine2;
+			float newZ2 = item.Position.Z + cos1 - cos2;
+
+			float fixedX = newX2 - newX1;
+			float fixedZ = newZ2 - newZ1;
+
+			float newposX = (fixedX / 255F) * (float)(item.Rotation.Z & 0xFF) + newX1;
+			float newposZ = (float)(item.Rotation.Z & 0xFF) * (fixedZ / 255F) + newZ1;
+
 			float scaleconststone = scaleconst * -12F;
-			float stoneposX = (ObjectHelper.NJSin(item.Rotation.Z) * scaleconststone) + item.Position.X;
-			float stoneposZ = (ObjectHelper.NJCos(item.Rotation.Z) * scaleconststone) + item.Position.Z;
+			float stonesine = ObjectHelper.NJSin(item.Rotation.Y) * scaleconststone;
+			float stonecos = ObjectHelper.NJCos(item.Rotation.Y) * scaleconststone;
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
@@ -142,7 +199,7 @@ namespace SA2ObjectDefinitions.WildCanyon
 			result.Add(new ModelTransform(pathmodel, transform.Top));
 			transform.Pop();
 			transform.Push();
-			transform.NJTranslate(stoneposX, item.Position.Y, stoneposZ);
+			transform.NJTranslate(newposX + stonesine, item.Position.Y, newposZ + stonecos);
 			if (item.Rotation.Y != 0)
 				transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale(scaleconst, scaleconst, scaleconst);
@@ -153,10 +210,32 @@ namespace SA2ObjectDefinitions.WildCanyon
 
 		public override BoundingSphere GetBounds(SETItem item)
 		{
+			//MATH
 			float scaleconst = item.Scale.X + 1F;
+			float scaleconstY = item.Scale.Y + 1F;
+			float scaleconst1 = scaleconst * 12F;
+			float scaleconstminus = scaleconst * 20F;
+			float scaleconst2 = (scaleconstY * scaleconstminus) - (scaleconstminus * 0.5F);
+			float sine1 = ObjectHelper.NJSin(item.Rotation.Y) * scaleconst1;
+			float sine2 = ObjectHelper.NJSin(item.Rotation.Y) * scaleconst2;
+			float cos1 = ObjectHelper.NJCos(item.Rotation.Y) * scaleconst1;
+			float cos2 = ObjectHelper.NJCos(item.Rotation.Y) * scaleconst2;
+
+			float newX1 = item.Position.X + sine1 + sine2;
+			float newZ1 = item.Position.Z + cos1 + cos2;
+
+			float newX2 = item.Position.X + sine1 - sine2;
+			float newZ2 = item.Position.Z + cos1 - cos2;
+
+			float fixedX = newX2 - newX1;
+			float fixedZ = newZ2 - newZ1;
+
+			float newposX = (fixedX / 255F) * (float)(item.Rotation.Z & 0xFF) + newX1;
+			float newposZ = (float)(item.Rotation.Z & 0xFF) * (fixedZ / 255F) + newZ1;
+
 			float scaleconststone = scaleconst * -12F;
-			float stoneposX = (ObjectHelper.NJSin(item.Rotation.Z) * scaleconststone) + item.Position.X;
-			float stoneposZ = (ObjectHelper.NJCos(item.Rotation.Z) * scaleconststone) + item.Position.Z;
+			float stonesine = ObjectHelper.NJSin(item.Rotation.Y) * scaleconststone;
+			float stonecos = ObjectHelper.NJCos(item.Rotation.Y) * scaleconststone;
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
 			transform.NJTranslate(item.Position);
@@ -166,7 +245,7 @@ namespace SA2ObjectDefinitions.WildCanyon
 			BoundingSphere pathbounds = ObjectHelper.GetModelBounds(pathmodel, transform);
 			transform.Pop();
 			transform.Push();
-			transform.NJTranslate(stoneposX, item.Position.Y, stoneposZ);
+			transform.NJTranslate(newposX + stonesine, item.Position.Y, newposZ + stonecos);
 			if (item.Rotation.Y != 0)
 				transform.NJRotateY(item.Rotation.Y);
 			transform.NJScale(scaleconst, scaleconst, scaleconst);
@@ -188,7 +267,7 @@ namespace SA2ObjectDefinitions.WildCanyon
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Scale", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
 			new PropertySpec("Path Length", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
-			new PropertySpec("Stone Initial Position", typeof(int), "Extended", "Valid values are between 0 and 256, with a movement pattern similar to a volume slider.", null, (o) => o.Rotation.Z, (o, v) => o.Rotation.Z = (int)v),
+			new PropertySpec("Stone Initial Position", typeof(int), "Extended", "Valid values are between 0 and 255, with a movement pattern similar to a volume slider.", null, (o) => o.Rotation.Z, (o, v) => o.Rotation.Z = (int)v),
 		};
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 		public override string Name { get { return "Large Movable Block"; } }

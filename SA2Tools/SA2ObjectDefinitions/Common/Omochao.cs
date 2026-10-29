@@ -12,7 +12,7 @@ using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class OmoChao : ObjectDefinition
+	public abstract class OmoChaoBase : ObjectDefinition
 	{
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
@@ -101,5 +101,13 @@ namespace SA2ObjectDefinitions.Common
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
+	}
+	public class OmoChao : OmoChaoBase
+	{
+		public override string Name { get { return "Omochao"; } }
+	}
+	public class OmoChaoF : OmoChaoBase
+	{
+		public override string Name { get { return "Omochao (Far)"; } }
 	}
 }

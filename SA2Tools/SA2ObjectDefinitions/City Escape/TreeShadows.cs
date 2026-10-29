@@ -88,11 +88,10 @@ namespace SA2ObjectDefinitions.CityEscape
 
 		public override BoundingSphere GetBounds(SETItem item)
 		{
-			BoundingSphere completebounds = null;
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			BoundingSphere originbounds = ObjectHelper.GetModelBounds(origin, transform, 20F);
+			BoundingSphere originbounds = ObjectHelper.GetModelBounds(origin, transform);
 			transform.Pop();
 			for (int i = 0; i < 6; i++)
 			{
@@ -102,11 +101,11 @@ namespace SA2ObjectDefinitions.CityEscape
 					transform.NJRotateY(item.Rotation.Y);
 				transform.NJTranslate(treepositions[i]);
 				transform.NJScale(24.0F * 0.1F, 32.0F * 0.1F, 24.0F * 0.1F);
-				BoundingSphere shadowbounds = ObjectHelper.GetModelBounds(model, transform, 20F);
+				BoundingSphere shadowbounds = ObjectHelper.GetModelBounds(model, transform);
 				transform.Pop();
-				completebounds = SAModel.Direct3D.Extensions.Merge(shadowbounds, originbounds);
+				originbounds = SAModel.Direct3D.Extensions.Merge(shadowbounds, originbounds);
 			}
-			return completebounds;
+			return originbounds;
 		}
 
 		public override Matrix GetHandleMatrix(SETItem item)

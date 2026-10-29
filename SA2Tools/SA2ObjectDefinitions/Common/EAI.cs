@@ -12,7 +12,7 @@ using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class EAI : ObjectDefinition
+	public abstract class EAIBase : ObjectDefinition
 	{
 		private NJS_OBJECT object_eai_gun;
 		private NJS_OBJECT object_eai_laser;
@@ -213,17 +213,15 @@ namespace SA2ObjectDefinitions.Common
 		}
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Bullets Laser Type", typeof(float), "Extended", null, 1.0f, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v > 0 ? (int)v : 99),
+			new PropertySpec("Bullets Fired/Laser Length", typeof(float), "Extended", null, 1.0f, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v > 0 ? (int)v : 99),
 			new PropertySpec("Emerald/Item Link ID", typeof(byte), "Extended", null, null, (o) => o.Rotation.Y & 0xFF,
 			(o, v) => { o.Rotation.Y &= 0xFF00; o.Rotation.Y |= (byte)v; }),
 			new PropertySpec("Hunter Type", typeof(HunterType), "Extended", null, null, (o) => (HunterType)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v),
-			new PropertySpec("Bullet laser glue Speed", typeof(float), "Extended", null, 60.0f, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v > 0 ? (float)v : 60.0f),
+			new PropertySpec("Projectile Speed", typeof(float), "Extended", null, 60.0f, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v > 0 ? (float)v : 60.0f),
 			new PropertySpec("Vision Radius", typeof(float), "Extended", null, 60.0f, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v > 0 ? (float)v : 999.0f)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
-
-		public override string Name { get { return "GUN Hunter"; } }
 
 		public override float DefaultXScale { get { return 0; } }
 
@@ -231,16 +229,29 @@ namespace SA2ObjectDefinitions.Common
 
 		public override float DefaultZScale { get { return 0; } }
 
-		public enum HunterType
-		{
-			Activating,
-			Moving,
-			LaserGun,
-			MovingLaserGun,
-			GlueGun,
-			ShieldLaserGun,
-			Dropping,
-			DroppingLaserGun,
-		}
+	}
+	public class EAI : EAIBase
+	{
+		public override string Name { get { return "GUN Hunter"; } }
+	}
+	public class EAIN : EAIBase
+	{
+		public override string Name { get { return "GUN Hunter (Near)"; } }
+	}
+	public class EAIF : EAIBase
+	{
+		public override string Name { get { return "GUN Hunter (Far)"; } }
+	}
+
+	public enum HunterType
+	{
+		Activating,
+		Moving,
+		LaserGun,
+		MovingLaserGun,
+		GlueGun,
+		ShieldLaserGun,
+		Dropping,
+		DroppingLaserGun,
 	}
 }

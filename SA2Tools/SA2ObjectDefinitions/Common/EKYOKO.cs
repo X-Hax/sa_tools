@@ -13,7 +13,7 @@ using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class EKYOKO : ObjectDefinition
+	public abstract class EKYOKOBase : ObjectDefinition
 	{
 		private NJS_OBJECT object_kyoko;
 		private Mesh[] meshes;
@@ -114,26 +114,36 @@ namespace SA2ObjectDefinitions.Common
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 
-		public override string Name { get { return "GUN Hawk"; } }
-
 		public override float DefaultXScale { get { return 0; } }
 
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
+	}
+	public class EKYOKO : EKYOKOBase
+	{
+		public override string Name { get { return "GUN Hawk"; } }
+	}
+	public class EKYOKON : EKYOKOBase
+	{
+		public override string Name { get { return "GUN Hawk (Near)"; } }
+	}
+	public class EKYOKOF : EKYOKOBase
+	{
+		public override string Name { get { return "GUN Hawk (Far)"; } }
+	}
 
-		public enum HawkType : byte
-		{
-			Move,
-			Gun,
-			GunMove,
-			Laser,
-			GlueGun,
-			MoveAlt,
-			GunAlt,
-			GunMoveAlt,
-			LaserAlt,
-			GlueGunAlt,
-		}
+	public enum HawkType : byte
+	{
+		Move,
+		Gun,
+		GunMove,
+		Laser,
+		GlueGun,
+		MoveAlt,
+		GunAlt,
+		GunMoveAlt,
+		LaserAlt,
+		GlueGunAlt,
 	}
 }

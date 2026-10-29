@@ -343,7 +343,7 @@ namespace SA2ObjectDefinitions.CityEscape
 
 			//transform.NJTranslate(splineVertex.Position.X, splineVertex.Position.Y, splineVertex.Position.Z);
 
-			result = result = HitResult.Min(result, pathmesh.CheckHit(Near, Far, Viewport, Projection, View, transform));
+			result = HitResult.Min(result, pathmesh.CheckHit(Near, Far, Viewport, Projection, View, transform));
 
 			transform.Pop();
 			return result;

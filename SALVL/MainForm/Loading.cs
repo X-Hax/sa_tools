@@ -632,8 +632,12 @@ namespace SAModel.SALVL
 			else
 				LevelData.DeathZones = null;
 		}
-
-		private void LoadSA2EnemiesTextures(string systemPath)
+		/// <summary>
+		/// These texture packs are never called by a level's texture lookup table.
+		/// This ensures that common models that use these textures render properly.
+		/// </summary>
+		/// <param name="systemPath"></param>
+		private void LoadSA2CommonTextures(string systemPath)
 		{
 			LoadPVM("E_AITEX", systemPath);
 			LoadPVM("E_GOLDTEX", systemPath);
@@ -1399,7 +1403,7 @@ namespace SAModel.SALVL
 					LoadTextureList(level.BackgroundTextureList, modSystemFolder);
 
 				if (isSA2LVL())
-					LoadSA2EnemiesTextures(modSystemFolder);
+					LoadSA2CommonTextures(modSystemFolder);
 
 				progress.SetStep("Mission objects");
 				// Loads mission object textures

@@ -14,7 +14,7 @@ using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class EEMI : ObjectDefinition
+	public abstract class EEMIBase : ObjectDefinition
 	{
 		protected NJS_OBJECT[] rhinomodels;
 		protected Mesh[][] rhinomeshes;
@@ -216,28 +216,39 @@ namespace SA2ObjectDefinitions.Common
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 
-		public override string Name { get { return "GUN Rhino"; } }
-
 		public override float DefaultXScale { get { return 0; } }
 
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
+	}
+	public class EEMI : EEMIBase
+	{
+		public override string Name { get { return "GUN Rhino"; } }
+	}
+	public class EEMIN : EEMIBase
+	{
+		public override string Name { get { return "GUN Rhino (Near)"; } }
 
-		public enum RhinoType
-		{
-			Normal,
-			Spike,
-			NormalDebug,
-			Cannon,
-			Metal
-		}
-		public enum BombType
-		{
-			Delayed,
-			Immediate,
-			Large,
-			DelayedAlt
-		}
+	}
+	public class EEMIF : EEMIBase
+	{
+		public override string Name { get { return "GUN Rhino (Far)"; } }
+	}
+
+	public enum RhinoType
+	{
+		Normal,
+		Spike,
+		NormalDebug,
+		Cannon,
+		Metal
+	}
+	public enum BombType
+	{
+		Delayed,
+		Immediate,
+		Large,
+		DelayedAlt
 	}
 }

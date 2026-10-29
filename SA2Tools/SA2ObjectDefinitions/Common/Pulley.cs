@@ -123,6 +123,7 @@ namespace SA2ObjectDefinitions.Common
 			transform.NJTranslate(item.Position.ToVector3());
 			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, 0);
 			BoundingSphere pulleybounds =  ObjectHelper.GetModelBounds(model, transform);
+			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(item.Position.X, item.Position.Y + restA, item.Position.Z);
 			transform.NJRotateObject(0, item.Rotation.Y - 0x8000, 0);

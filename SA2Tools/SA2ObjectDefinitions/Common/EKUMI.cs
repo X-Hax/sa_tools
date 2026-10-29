@@ -13,7 +13,7 @@ using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class EKUMI : ObjectDefinition
+	public abstract class EKUMIBase : ObjectDefinition
 	{
 		private NJS_OBJECT object_kumi;
 		private Mesh[] mesh1;
@@ -224,29 +224,38 @@ namespace SA2ObjectDefinitions.Common
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 
-		public override string Name { get { return "GUN Beetle"; } }
-
 		public override float DefaultXScale { get { return 0; } }
 
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
-
-		public enum BeetleType
-		{
-			Normal,
-			Moving,
-			Electric,
-			ElectricAndMoving,
-			Gunned,
-			Appearing,
-			Spring,
-			Bombing,
-		}
-		public enum DrawType
-		{
-			Simple,
-			Direct
-		}
+	}
+	public class EKUMI : EKUMIBase
+	{
+		public override string Name { get { return "GUN Beetle"; } }
+	}
+	public class EKUMIN : EKUMIBase
+	{
+		public override string Name { get { return "GUN Beetle (Near)"; } }
+	}
+	public class EKUMIF : EKUMIBase
+	{
+		public override string Name { get { return "GUN Beetle (Far)"; } }
+	}
+	public enum BeetleType
+	{
+		Normal,
+		Moving,
+		Electric,
+		ElectricAndMoving,
+		Gunned,
+		Appearing,
+		Spring,
+		Bombing,
+	}
+	public enum DrawType
+	{
+		Simple,
+		Direct
 	}
 }
