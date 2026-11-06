@@ -659,6 +659,7 @@ namespace SAModel.SALVL
 				LoadPVM("E_UNITEX", systemPath);
 				LoadPVM("E_NAMITEX", systemPath);
 				LoadPVM("E_CHAOSTEX", systemPath);
+				LoadPVM("E_GHOSTEX", systemPath);
 				LoadPVM("E_PATHKUMITEX", systemPath);
 				LoadPVM("E_PATHKYOKOTEX", systemPath);
 				// Small Animals are normally pulled from archive files instead of the EXE/DLL.

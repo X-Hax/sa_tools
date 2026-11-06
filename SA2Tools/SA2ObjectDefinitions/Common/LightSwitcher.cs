@@ -11,7 +11,7 @@ using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class LightSwitcher : ObjectDefinition
+	public abstract class LightSwitcherBase : ObjectDefinition
 	{
 		private NJS_OBJECT[] models;
 		private Mesh[][] meshes;
@@ -56,9 +56,9 @@ namespace SA2ObjectDefinitions.Common
 				transform.NJScale(item.Scale.X, item.Scale.Y, item.Scale.X);
 			if (coltype == 2)
 				transform.NJScale((item.Scale.X + 10F) * 0.1F, (item.Scale.Y + 10F) * 0.1F, (item.Scale.X + 10F) * 0.1F);
-			result.AddRange(models[coltype].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes[coltype], boundsByMesh: true));
+			result.AddRange(models[coltype].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes[coltype]));
 			if (item.Selected)
-				result.AddRange(models[coltype].DrawModelTreeInvert(transform, meshes[coltype], boundsByMesh: true));
+				result.AddRange(models[coltype].DrawModelTreeInvert(transform, meshes[coltype]));
 			transform.Pop();
 			return result;
 		}
@@ -91,7 +91,9 @@ namespace SA2ObjectDefinitions.Common
 
 			return matrix;
 		}
-
+	}
+	public class LightSwitcher : LightSwitcherBase 
+	{
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Collision Type", typeof(CollisionType), "Extended", null, null, (o) => (CollisionType)(o.Rotation.Z & 0xF),
 			(o, v) => { o.Rotation.Z &= 0xFFF0; o.Rotation.Z |= (byte)v; }),
@@ -115,5 +117,21 @@ namespace SA2ObjectDefinitions.Common
 			TemporaryToDefault,
 		}
 		public override string Name { get { return "Light Switcher"; } }
+	}
+	public class GlobalLightSwitcher : LightSwitcherBase
+	{
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Collision Type", typeof(CollisionType), "Extended", null, null, (o) => (CollisionType)(o.Rotation.Z & 0xF),
+			(o, v) => { o.Rotation.Z &= 0xFFF0; o.Rotation.Z |= (byte)v; }),
+			new PropertySpec("Scale", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
+		};
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+		public enum CollisionType : byte
+		{
+			Cube,
+			Sphere,
+			Cylinder,
+		}
+		public override string Name { get { return "Light Switcher (Stage Preset)"; } }
 	}
 }

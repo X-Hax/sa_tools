@@ -48,7 +48,7 @@ namespace SA2ObjectDefinitions.CityEscape
 
 			float splineMeshRadius = 1F;
 
-			Vector3 up = new Vector3(0, 1, 0);
+			Vector3 up = new Vector3(0.5F, 1, 0);
 
 			#region Segment vert/face creation
 			short highestFaceIndex = 0;
@@ -200,7 +200,93 @@ namespace SA2ObjectDefinitions.CityEscape
 				}
 			}
 		}
+		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
+		{
+			DefineSpline((int)item.Scale.Z);
+			HitResult result = HitResult.NoHit;
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateZYX(item.Rotation);
+			result = HitResult.Min(result, model1.CheckHit(Near, Far, Viewport, Projection, View, transform, mesh1));
+			transform.Pop();
+			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
+			{
+				transform.Push();
+				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
+				result = HitResult.Min(result, points.CheckHit(Near, Far, Viewport, Projection, View, transform, pointsmesh));
+				transform.Pop();
+			}
+			transform.Push();
 
+			//transform.NJTranslate(splineVertex.Position.X, splineVertex.Position.Y, splineVertex.Position.Z);
+
+			result = HitResult.Min(result, pathmesh.CheckHit(Near, Far, Viewport, Projection, View, transform));
+
+			transform.Pop();
+			return result;
+
+		}
+
+		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
+		{
+			if (texs1 == null)
+				texs1 = ObjectHelper.GetTextures(texpacks, texarr1);
+			List<RenderInfo> result = new List<RenderInfo>();
+
+			DefineSpline((int)item.Scale.Z);
+
+			RenderInfo outputInfo = new RenderInfo(pathmesh, 0, Matrix.Identity, (item.Selected) ? SelectedMaterial : UnSelectedMaterial, null, EditorOptions.RenderFillMode, pathbounds);
+			result.Add(outputInfo);
+			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
+			{
+				transform.Push();
+				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
+				result.AddRange(points.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, pointsmesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				if (item.Selected)
+					result.AddRange(points.DrawModelTreeInvert(transform, pointsmesh));
+				transform.Pop();
+			}
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateY(item.Rotation.Y);
+			result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs1, mesh1, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+			if (item.Selected)
+				result.AddRange(model1.DrawModelTreeInvert(transform, mesh1));
+			transform.Pop();
+			return result;
+		}
+
+		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
+		{
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateZYX(item.Rotation);
+			result.Add(new ModelTransform(model1, transform.Top));
+			transform.Pop();
+			return result;
+		}
+
+		public override BoundingSphere GetBounds(SETItem item)
+		{
+			DefineSpline((int)item.Scale.Z);
+			BoundingSphere completebounds = null;
+			MatrixStack transform = new MatrixStack();
+			transform.Push();
+			transform.NJTranslate(item.Position.ToVector3());
+			transform.NJRotateZYX(item.Rotation);
+			BoundingSphere mainbounds = ObjectHelper.GetModelBounds(model1, transform);
+			transform.Pop();
+			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
+			{
+				transform.Push();
+				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
+				BoundingSphere pointbounds = ObjectHelper.GetModelBounds(points, transform, 100F);
+				transform.Pop();
+				completebounds = SAModel.Direct3D.Extensions.Merge(pointbounds, mainbounds);
+			}
+			return SAModel.Direct3D.Extensions.Merge(completebounds, pathbounds);
+		}
 		public override Matrix GetHandleMatrix(SETItem item)
 		{
 			Matrix matrix = Matrix.Identity;
@@ -231,273 +317,14 @@ namespace SA2ObjectDefinitions.CityEscape
 	}
 	public class CarPath : CarPathsBase
 	{
-		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
-		{
-			DefineSpline((int)item.Scale.Z);
-			HitResult result = HitResult.NoHit;
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateZYX(item.Rotation);
-			result = HitResult.Min(result, model1.CheckHit(Near, Far, Viewport, Projection, View, transform, mesh1));
-			transform.Pop();
-			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
-			{
-				transform.Push();
-				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
-				result = HitResult.Min(result, points.CheckHit(Near, Far, Viewport, Projection, View, transform, pointsmesh));
-				transform.Pop();
-			}
-			transform.Push();
-
-			//transform.NJTranslate(splineVertex.Position.X, splineVertex.Position.Y, splineVertex.Position.Z);
-
-			result = HitResult.Min(result, pathmesh.CheckHit(Near, Far, Viewport, Projection, View, transform));
-
-			transform.Pop();
-			return result;
-			
-		}
-
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
-		{
-			if (texs1 == null)
-				texs1 = ObjectHelper.GetTextures(texpacks, texarr1);
-			List<RenderInfo> result = new List<RenderInfo>();
-
-			DefineSpline((int)item.Scale.Z);
-
-			RenderInfo outputInfo = new RenderInfo(pathmesh, 0, Matrix.Identity, (item.Selected) ? SelectedMaterial : UnSelectedMaterial, null, EditorOptions.RenderFillMode, pathbounds);
-			result.Add(outputInfo);
-			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
-			{
-				transform.Push();
-				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
-				result.AddRange(points.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, pointsmesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-				if (item.Selected)
-					result.AddRange(points.DrawModelTreeInvert(transform, pointsmesh));
-				transform.Pop();
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateY(item.Rotation.Y);
-				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs1, mesh1, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-				if (item.Selected)
-					result.AddRange(model1.DrawModelTreeInvert(transform, mesh1));
-				transform.Pop();
-			}
-			return result;
-		}
-
-		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
-		{
-			List<ModelTransform> result = new List<ModelTransform>();
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateZYX(item.Rotation);
-			result.Add(new ModelTransform(model1, transform.Top));
-			transform.Pop();
-			return result;
-		}
-
-		public override BoundingSphere GetBounds(SETItem item)
-		{
-			DefineSpline((int)item.Scale.Z);
-			BoundingSphere completebounds = null;
-			MatrixStack transform = new MatrixStack();
-			transform.Push();
-			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateZYX(item.Rotation);
-			BoundingSphere mainbounds =  ObjectHelper.GetModelBounds(model1, transform);
-			transform.Pop();
-			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
-			{
-				transform.Push();
-				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
-				BoundingSphere pointbounds = ObjectHelper.GetModelBounds(points, transform);
-				transform.Pop();
-				completebounds = SAModel.Direct3D.Extensions.Merge(pointbounds, mainbounds);
-			}
-			return SAModel.Direct3D.Extensions.Merge(completebounds, pathbounds);
-		}
 		public override string Name { get { return "Car Path"; } }
 	}
-
 	public class CarPathC : CarPathsBase
 	{
-		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
-		{
-			DefineSpline((int)item.Scale.Z);
-			HitResult result = HitResult.NoHit;
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateZYX(item.Rotation);
-			result = HitResult.Min(result, model1.CheckHit(Near, Far, Viewport, Projection, View, transform, mesh1));
-			transform.Pop();
-			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
-			{
-				transform.Push();
-				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
-				result = HitResult.Min(result, points.CheckHit(Near, Far, Viewport, Projection, View, transform, pointsmesh));
-				transform.Pop();
-			}
-			transform.Push();
-
-			//transform.NJTranslate(splineVertex.Position.X, splineVertex.Position.Y, splineVertex.Position.Z);
-
-			result = HitResult.Min(result, pathmesh.CheckHit(Near, Far, Viewport, Projection, View, transform));
-
-			transform.Pop();
-			return result;
-
-		}
-
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
-		{
-			List<RenderInfo> result = new List<RenderInfo>();
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateY(item.Rotation.Y);
-			result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs1, mesh1, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-			if (item.Selected)
-				result.AddRange(model1.DrawModelTreeInvert(transform, mesh1));
-			transform.Pop();
-
-			DefineSpline((int)item.Scale.Z);
-
-			RenderInfo outputInfo = new RenderInfo(pathmesh, 0, Matrix.Identity, (item.Selected) ? SelectedMaterial : UnSelectedMaterial, null, EditorOptions.RenderFillMode, pathbounds);
-			result.Add(outputInfo);
-			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
-			{
-				transform.Push();
-				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
-				result.AddRange(points.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, pointsmesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-				if (item.Selected)
-					result.AddRange(points.DrawModelTreeInvert(transform, pointsmesh));
-				transform.Pop();
-			}
-			return result;
-		}
-
-		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
-		{
-			List<ModelTransform> result = new List<ModelTransform>();
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateZYX(item.Rotation);
-			result.Add(new ModelTransform(model1, transform.Top));
-			transform.Pop();
-			return result;
-		}
-
-		public override BoundingSphere GetBounds(SETItem item)
-		{
-			DefineSpline((int)item.Scale.Z);
-			BoundingSphere completebounds = null;
-			MatrixStack transform = new MatrixStack();
-			transform.Push();
-			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateZYX(item.Rotation);
-			BoundingSphere mainbounds = ObjectHelper.GetModelBounds(model1, transform);
-			transform.Pop();
-			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
-			{
-				transform.Push();
-				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
-				BoundingSphere pointbounds = ObjectHelper.GetModelBounds(points, transform);
-				transform.Pop();
-				completebounds = SAModel.Direct3D.Extensions.Merge(pointbounds, mainbounds);
-			}
-			return SAModel.Direct3D.Extensions.Merge(completebounds, pathbounds);
-		}
 		public override string Name { get { return "Car Path (Type C)"; } }
 	}
 	public class CarPathNear : CarPathsBase
 	{
-		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
-		{
-			DefineSpline((int)item.Scale.Z);
-			HitResult result = HitResult.NoHit;
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateZYX(item.Rotation);
-			result = HitResult.Min(result, model1.CheckHit(Near, Far, Viewport, Projection, View, transform, mesh1));
-			transform.Pop();
-			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
-			{
-				transform.Push();
-				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
-				result = HitResult.Min(result, points.CheckHit(Near, Far, Viewport, Projection, View, transform, pointsmesh));
-				transform.Pop();
-			}
-			transform.Push();
-
-			//transform.NJTranslate(splineVertex.Position.X, splineVertex.Position.Y, splineVertex.Position.Z);
-
-			result = result = HitResult.Min(result, pathmesh.CheckHit(Near, Far, Viewport, Projection, View, transform));
-
-			transform.Pop();
-			return result;
-
-		}
-
-		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
-		{
-			camera.DrawDistance = 70000;
-			List<RenderInfo> result = new List<RenderInfo>();
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateY(item.Rotation.Y);
-			result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs1, mesh1, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-			if (item.Selected)
-				result.AddRange(model1.DrawModelTreeInvert(transform, mesh1));
-			transform.Pop();
-
-			DefineSpline((int)item.Scale.Z);
-
-			RenderInfo outputInfo = new RenderInfo(pathmesh, 0, Matrix.Identity, (item.Selected) ? SelectedMaterial : UnSelectedMaterial, null, EditorOptions.RenderFillMode, pathbounds);
-			result.Add(outputInfo);
-			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
-			{
-				transform.Push();
-				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
-				result.AddRange(points.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, pointsmesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-				if (item.Selected)
-					result.AddRange(points.DrawModelTreeInvert(transform, pointsmesh));
-				transform.Pop();
-			}
-			return result;
-		}
-
-		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
-		{
-			List<ModelTransform> result = new List<ModelTransform>();
-			transform.Push();
-			transform.NJTranslate(item.Position);
-			transform.NJRotateZYX(item.Rotation);
-			result.Add(new ModelTransform(model1, transform.Top));
-			transform.Pop();
-			return result;
-		}
-
-		public override BoundingSphere GetBounds(SETItem item)
-		{
-			DefineSpline((int)item.Scale.Z);
-			BoundingSphere completebounds = null;
-			MatrixStack transform = new MatrixStack();
-			transform.Push();
-			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateZYX(item.Rotation);
-			BoundingSphere mainbounds = ObjectHelper.GetModelBounds(model1, transform);
-			transform.Pop();
-			for (int i = 0; i < carpaths[(int)item.Scale.Z].Path.Count; i++)
-			{
-				transform.Push();
-				transform.NJTranslate(carpaths[(int)item.Scale.Z].Path[i]);
-				BoundingSphere pointbounds = ObjectHelper.GetModelBounds(points, transform);
-				transform.Pop();
-				completebounds = SAModel.Direct3D.Extensions.Merge(pointbounds, mainbounds);
-			}
-			return SAModel.Direct3D.Extensions.Merge(completebounds, pathbounds);
-		}
 		public override string Name { get { return "Car Path (Near)"; } }
 	}
 }

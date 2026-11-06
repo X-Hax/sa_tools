@@ -331,12 +331,11 @@ namespace SA2ObjectDefinitions.CityEscape
 			{
 				transform.Push();
 				transform.NJTranslate(truckpaths[0].Path[i]);
-				BoundingSphere pointbounds = ObjectHelper.GetModelBounds(points, transform);
+				BoundingSphere pointbounds = ObjectHelper.GetModelBounds(points, transform, 100F);
 				transform.Pop();
 				completebounds = SAModel.Direct3D.Extensions.Merge(pointbounds, mainbounds);
 			}
-			return SAModel.Direct3D.Extensions.Merge(completebounds, new BoundingSphere(pathbounds.Center.X, pathbounds.Center.Y,
-				pathbounds.Center.Z, 10000F));
+			return completebounds;
 		}
 
 		public override Matrix GetHandleMatrix(SETItem item)

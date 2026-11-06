@@ -8,6 +8,7 @@ using SharpDX.Direct3D9;
 using SplitTools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
 
@@ -21,9 +22,150 @@ namespace SA2ObjectDefinitions.Common
 		private Mesh[] meshpoints;
 		private NJS_TEXLIST texarr;
 		private Texture[] texs;
+		[NonSerialized]
+		protected FVF_PositionColored[] vertices;
+		[NonSerialized]
+		protected short[] faceIndeces;
+
+		[NonSerialized]
+		protected BoundingSphere pathbounds;
+		protected Mesh pathmesh;
+
+		public static NJS_MATERIAL SelectedMaterial { get; set; }
+		public static NJS_MATERIAL UnSelectedMaterial { get; set; }
+
+		[NonSerialized]
+		protected static Mesh vertexHandleMesh;
+		[NonSerialized]
+		protected Sprite textSprite;
+
+		public void DefineSpline(Vertex rocketpos, Vertex endpoint, Device dev = null)
+		{
+			List<FVF_PositionColored> vertList = new List<FVF_PositionColored>();
+			List<short> faceIndexList = new List<short>();
+
+			float splineMeshRadius = 2F;
+
+			Vector3 up = new Vector3(0.5F, 1, 0);
+
+			#region Segment vert/face creation
+			short highestFaceIndex = 0;
+
+			Vector3 thisKnot = rocketpos.ToVector3();
+			Vector3 nextKnot = endpoint.ToVector3();
+
+			Vector3 directionToNextKnot = Vector3.Normalize(nextKnot - thisKnot);
+			Vector3 perpendicularDirection = Vector3.Cross(directionToNextKnot, up);
+
+			// verts for knot 1
+			FVF_PositionColored vert1_1; // top vert 1 (0)
+			FVF_PositionColored vert1_2; // top vert 2 (1)
+			FVF_PositionColored vert1_3; // bottom vert 1 (2)
+			FVF_PositionColored vert1_4; // bottom vert 2 (3)
+
+			// verts for knot 2
+			FVF_PositionColored vert2_1; // top vert 1 (4)
+			FVF_PositionColored vert2_2; // top vert 2 (5)
+			FVF_PositionColored vert2_3; // bottom vert 1 (6)
+			FVF_PositionColored vert2_4; // bottom vert 2 (7)
+
+			// move top verts
+			vert1_1 = new FVF_PositionColored((thisKnot + (perpendicularDirection * splineMeshRadius)), System.Drawing.Color.White);
+			vert1_2 = new FVF_PositionColored((thisKnot + (perpendicularDirection * (splineMeshRadius * -1))), System.Drawing.Color.White);
+
+			vert2_1 = new FVF_PositionColored((nextKnot + (perpendicularDirection * splineMeshRadius)), System.Drawing.Color.White);
+			vert2_2 = new FVF_PositionColored((nextKnot + (perpendicularDirection * (splineMeshRadius * -1))), System.Drawing.Color.White);
+
+			// move bottom verts
+			vert1_3 = new FVF_PositionColored(vert1_1.Position - (up * splineMeshRadius), System.Drawing.Color.White);
+			vert1_4 = new FVF_PositionColored(vert1_2.Position - (up * splineMeshRadius), System.Drawing.Color.White);
+
+			vert2_3 = new FVF_PositionColored(vert2_1.Position - (up * splineMeshRadius), System.Drawing.Color.White);
+			vert2_4 = new FVF_PositionColored(vert2_2.Position - (up * splineMeshRadius), System.Drawing.Color.White);
+
+			List<short> thisKnotFaceIndexes = new List<short>
+				{
+					// far side
+					4,0,6,
+					6,2,0,
+
+					// bottom
+					6,2,3,
+					3,7,6,
+
+					// our side
+					7,3,1,
+					7,5,1,
+
+					// top
+					1,5,4,
+					4,0,1
+				};
+
+			for (int faceIndx = 0; faceIndx < thisKnotFaceIndexes.Count(); faceIndx++)
+			{
+				thisKnotFaceIndexes[faceIndx] += (short)vertList.Count(); // this is the wrong approach because it's the verts we're indexing, not the faces!
+				if (thisKnotFaceIndexes[faceIndx] > highestFaceIndex) highestFaceIndex = thisKnotFaceIndexes[faceIndx];
+			}
+
+			// add verts to vert list and faces to face list
+			vertList.Add(vert1_1);
+			vertList.Add(vert1_2);
+			vertList.Add(vert1_3);
+			vertList.Add(vert1_4);
+			vertList.Add(vert2_1);
+			vertList.Add(vert2_2);
+			vertList.Add(vert2_3);
+			vertList.Add(vert2_4);
+
+			faceIndexList.AddRange(thisKnotFaceIndexes);
+			#endregion
+
+			vertices = vertList.ToArray();
+			faceIndeces = faceIndexList.ToArray();
+
+			// build bounding sphere
+			pathbounds = SharpDX.BoundingSphere.FromPoints(vertices.Select(a => a.Position).ToArray()).ToSAModel();
+
+			// build actual mesh from face index array and vbuf
+			//if (pathmesh == null)
+			pathmesh = new Mesh<FVF_PositionColored>(vertices, new short[][] { faceIndeces });
+
+			// create a vertexHandle
+			if (vertexHandleMesh == null)
+				vertexHandleMesh = Mesh.Box(1, 1, 1);
+
+			if (vertexHandleMesh == null) vertexHandleMesh = Mesh.Box(1, 1, 1);
+
+			if (dev != null)
+				textSprite = new Sprite(dev); // todo: do we really have to create this so often? Look into storing a cache list statically?
+		}
 
 		public override void Init(ObjectData data, string name)
 		{
+			SelectedMaterial = new NJS_MATERIAL
+			{
+				DiffuseColor = System.Drawing.Color.White,
+				SpecularColor = System.Drawing.Color.Black,
+				UseAlpha = false,
+				DoubleSided = true,
+				Exponent = 10,
+				IgnoreSpecular = false,
+				UseTexture = false,
+				IgnoreLighting = true
+			};
+
+			UnSelectedMaterial = new NJS_MATERIAL
+			{
+				DiffuseColor = System.Drawing.Color.Maroon,
+				SpecularColor = System.Drawing.Color.Black,
+				UseAlpha = false,
+				DoubleSided = true,
+				Exponent = 10,
+				IgnoreSpecular = false,
+				UseTexture = false,
+				IgnoreLighting = true
+			};
 			model = ObjectHelper.LoadModel("object/GC/OBJECT_UDREEL.sa2bmdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			points = ObjectHelper.LoadModel("OBJECT/SmallAnimalBubbleCollision.sa2mdl");
@@ -86,6 +228,9 @@ namespace SA2ObjectDefinitions.Common
 			if (item.Selected)
 				result.AddRange(points.DrawModelTreeInvert(transform, meshpoints));
 			transform.Pop();
+			DefineSpline(new Vertex(item.Position.X, item.Position.Y + restA, item.Position.Z), new Vertex(item.Position.X, item.Position.Y + restB, item.Position.Z), dev);
+			RenderInfo outputInfo = new RenderInfo(pathmesh, 0, transform.Top, (item.Selected) ? SelectedMaterial : UnSelectedMaterial, null, EditorOptions.RenderFillMode, pathbounds);
+			result.Add(outputInfo);
 			return result;
 		}
 

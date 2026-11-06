@@ -72,7 +72,7 @@ namespace SA2ObjectDefinitions.Common
 		}
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Block Type", typeof(float), "Extended", null, null, (o) => o.Rotation.X & 1, (o, v) => o.Rotation.X = (int)v),
+			new PropertySpec("Block Type", typeof(int), "Extended", null, null, (o) => o.Rotation.X & 2, (o, v) => o.Rotation.X = (int)v),
 		};
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 

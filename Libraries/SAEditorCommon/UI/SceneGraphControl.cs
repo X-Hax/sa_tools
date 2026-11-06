@@ -98,7 +98,10 @@ namespace SAModel.SAEditorCommon.UI
 			}
 			else if (parent == setNode)
 			{
-				return LevelData.GetSetItemAtIndex(LevelData.Character, node.Index);
+				if (LevelData.isSA2)
+					return LevelData.GetSetItemAtIndex(LevelData.SA2Set, node.Index);
+				else
+					return LevelData.GetSetItemAtIndex(LevelData.Character, node.Index);
 			}
 			else if (parent == camNode)
 			{
@@ -253,6 +256,8 @@ namespace SAModel.SAEditorCommon.UI
 			splineNode.Nodes.Clear();
 			missionSETNode.Nodes.Clear();
 
+			var setType = LevelData.isSA2 ? LevelData.SA2Set : LevelData.Character;
+
 			// Level Geometry
 			for (int i = 0; i < LevelData.LevelItems.Count(); i++)
 			{
@@ -333,11 +338,11 @@ namespace SAModel.SAEditorCommon.UI
 				}
 			}
 			// SET Items
-			if (!LevelData.SETItemsIsNull() && LevelData.CharHasSETItems(LevelData.Character))
+			if (!LevelData.SETItemsIsNull() && LevelData.CharHasSETItems(setType))
 			{
-				for (int i = 0; i < LevelData.SETItems(LevelData.Character).Count(); i++)
+				for (int i = 0; i < LevelData.SETItems(setType).Count(); i++)
 				{
-					SETItem setItem = LevelData.SETItems(LevelData.Character).ElementAt(i);
+					SETItem setItem = LevelData.SETItems(setType).ElementAt(i);
 					string setItemString = "";
 					bool prevItem = false;
 					if (EditorOptions.SceneGraphShowIndices)
