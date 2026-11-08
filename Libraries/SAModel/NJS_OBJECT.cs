@@ -467,10 +467,50 @@ namespace SAModel
             }
           
         }
-
+		public int GetObjectChildrenDepth(NJS_OBJECT model, int init)
+		{ 
+			if (model.Children.Count > 0)
+			{
+				init++;
+				init = GetObjectChildrenDepth(model.Children[0], init);
+			}
+			return init;
+		}
+		public int GetModelHierarchyDepth()
+		{
+			List<int> childdepth = [];
+			foreach (NJS_OBJECT obj in GetObjects())
+			{
+				var initial = 1;
+				if (obj.Children.Count > 0)
+				initial += GetObjectChildrenDepth(obj.Children[0], initial);
+				childdepth.Add(initial);
+			}
+			return childdepth.Max();
+		}
+		public Dictionary<string, int> CountUniqueModelData()
+		{
+			Dictionary<string, int> labelcounts = [];
+			List<string> newlabels = [];
+			foreach (NJS_OBJECT obj in GetObjects())
+			{
+				if (obj.Attach != null)
+				{
+					if (!newlabels.Contains(obj.Attach.Name))
+					{
+						newlabels.Add(obj.Attach.Name);
+						labelcounts.Add(obj.Attach.Name, 1);
+					}
+					if (newlabels.Contains(obj.Attach.Name))
+						labelcounts[obj.Attach.Name]++;
+				}
+			}
+			return labelcounts;
+		}
 		public int CountAllVertices()
 		{
 			int total = 0;
+			List<string> newlabels = [];
 			switch (GetModelFormat())
 			{
 				case ModelFormat.Basic:
@@ -478,8 +518,11 @@ namespace SAModel
 					foreach (NJS_OBJECT obj in GetObjects())
 					{
 						BasicAttach bsatt = obj.Attach as BasicAttach;
-						if (bsatt != null && bsatt.Vertex != null)
+						if (bsatt != null && bsatt.Vertex != null && !newlabels.Contains(bsatt.Name))
+						{
+							newlabels.Add(bsatt.Name);
 							total += bsatt.Vertex.Length;
+					}
 					}
 					break;
 				case ModelFormat.Chunk:
@@ -487,22 +530,26 @@ namespace SAModel
 					foreach (NJS_OBJECT obj in GetObjects())
 					{
 						ChunkAttach cnkatt = obj.Attach as ChunkAttach;
-						if (cnkatt != null && cnkatt.Vertex != null)
+						if (cnkatt != null && cnkatt.Vertex != null && !newlabels.Contains(cnkatt.Name))
 						{
+							newlabels.Add(cnkatt.Name);
 							foreach (VertexChunk vcnk in cnkatt.Vertex)
 							{
 								if (vcnk.WeightStatus != WeightStatus.Middle)
+								{
 								total += vcnk.VertexCount;
 							}
 						}
+					}
 					}
 					break;
 				case ModelFormat.GC:
 					foreach (NJS_OBJECT obj in GetObjects())
 					{
 						GCAttach gcatt = obj.Attach as GCAttach;
-						if (gcatt != null && gcatt.VertexData.Count > 0)
+						if (gcatt != null && gcatt.VertexData.Count > 0 && !newlabels.Contains(gcatt.Name))
 						{
+							newlabels.Add(gcatt.Name);
 							var positions = gcatt.VertexData.Find(x => x.Attribute == GCVertexAttribute.Position)?.Data;
 							if (positions != null)
 								total += positions.Count;

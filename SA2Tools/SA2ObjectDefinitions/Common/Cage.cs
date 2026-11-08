@@ -1,14 +1,15 @@
-using SharpDX;
-using SharpDX.Direct3D9;
 using SAModel;
 using SAModel.Direct3D;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SplitTools;
+using System;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
-using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
@@ -87,6 +88,7 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.Z = -z;
 		}
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Wall Bump", typeof(bool), "Extended", "Determines if the box is treated as a wall that knocks the player back.", null, (o) => Convert.ToBoolean(o.Rotation.X % 2), (o, v) => o.Rotation.X = Convert.ToInt32((bool)v)),
 			new PropertySpec("Missile ID", typeof(int), "Extended", null, null, (o) => o.Rotation.Z, (o, v) => o.Rotation.Z = (int)v),
 		};
 

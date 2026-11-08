@@ -1,18 +1,19 @@
-﻿using SharpDX;
-using SharpDX.Direct3D9;
-using SAModel;
+﻿using SAModel;
 using SAModel.Direct3D;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SplitTools;
+using System;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
-using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class Skull : ObjectDefinition
+	public abstract class SkullBase : ObjectDefinition
 	{
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
@@ -30,7 +31,8 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -43,7 +45,8 @@ namespace SA2ObjectDefinitions.Common
 				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+			transform.NJRotateY(item.Rotation.Y);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
@@ -56,7 +59,8 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -66,7 +70,8 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
 
@@ -87,12 +92,56 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.Z = -z;
 		}
 
-		public override string Name { get { return "Skull"; } }
-
 		public override float DefaultXScale { get { return 0; } }
 
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
+	}
+	public class Skull : SkullBase
+	{
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Spawn Animal", typeof(bool), "Extended", null, null, (o) => Convert.ToBoolean((o.Rotation.Z >> 4) == 10),
+				(o, v) => { o.Rotation.Z &= 0xFF0F; o.Rotation.Z |= (Convert.ToByte((bool)v) * 10) << 4; }),
+			new PropertySpec("Animal Group", typeof(byte), "Extended", null, null, (o) => o.Rotation.Z & 0xF,
+				(o, v) => { o.Rotation.Z &= 0xFFF0; o.Rotation.Z |= (byte)v; }),
+			new PropertySpec("Has Collision", typeof(bool), "Extended", null, null, (o) => Convert.ToBoolean(o.Scale.X >= 1F),
+				(o, v) => o.Scale.X = Convert.ToSingle(v)),
+		};
+
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+		public override string Name { get { return "Skull"; } }
+	}
+	public class KSkull : SkullBase
+	{
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Spawn Animal", typeof(bool), "Extended", null, null, (o) => Convert.ToBoolean((o.Rotation.Z >> 4) == 10),
+				(o, v) => { o.Rotation.Z &= 0xFF0F; o.Rotation.Z |= (Convert.ToByte((bool)v) * 10) << 4; }),
+			new PropertySpec("Animal Group", typeof(byte), "Extended", null, null, (o) => o.Rotation.Z & 0xF,
+				(o, v) => { o.Rotation.Z &= 0xFFF0; o.Rotation.Z |= (byte)v; }),
+			new PropertySpec("Has Collision", typeof(bool), "Extended", null, null, (o) => Convert.ToBoolean(o.Scale.X >= 1F),
+				(o, v) => o.Scale.X = Convert.ToSingle(!(bool)v))
+		};
+
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+		public override string Name { get { return "Skull (K Type)"; } }
+	}
+	public class PSkull : SkullBase
+	{
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Spawn Animal", typeof(bool), "Extended", null, null, (o) => Convert.ToBoolean((o.Rotation.Z >> 4) == 10),
+				(o, v) => { o.Rotation.Z &= 0xFF0F; o.Rotation.Z |= (Convert.ToByte((bool)v) * 10) << 4; }),
+			new PropertySpec("Animal Group", typeof(byte), "Extended", null, null, (o) => o.Rotation.Z & 0xF,
+				(o, v) => { o.Rotation.Z &= 0xFFF0; o.Rotation.Z |= (byte)v; }),
+			new PropertySpec("Has Collision", typeof(bool), "Extended", null, null, (o) => Convert.ToBoolean(o.Scale.X < 1F),
+				(o, v) => o.Scale.X = Convert.ToSingle(!(bool)v))
+		};
+
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+		public override string Name { get { return "Skull (P Type)"; } }
+	}
+	public class NoColSkull : SkullBase
+	{
+		public override string Name { get { return "Skull (Intangible)"; } }
 	}
 }
