@@ -43,7 +43,7 @@ namespace SplitTools
 						{
 							while (File.Exists(destination))
 							{
-								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+								destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
 						var land = LandTable.LoadFromFile(source);
@@ -120,7 +120,7 @@ namespace SplitTools
 						{
 							while (File.Exists(destination))
 							{
-								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+								destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
 						using (var sw = File.CreateText(destination))
@@ -299,7 +299,7 @@ namespace SplitTools
 						{
 							while (File.Exists(destination))
 							{
-								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+								destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
 						var js = new JsonSerializer { Culture = CultureInfo.InvariantCulture };
@@ -319,7 +319,7 @@ namespace SplitTools
 						{
 							while (File.Exists(destination))
 							{
-								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+								destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
 						using (var sw2 = File.CreateText(destination))
@@ -368,7 +368,7 @@ namespace SplitTools
 						{
 							while (File.Exists(destination))
 							{
-								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+								destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
 						using (var sw = File.CreateText(destination))
@@ -395,7 +395,7 @@ namespace SplitTools
 						{
 							while (File.Exists(destination))
 							{
-								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+								destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
 						using (var sw2 = File.CreateText(destination))

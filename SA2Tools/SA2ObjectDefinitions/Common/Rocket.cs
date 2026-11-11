@@ -204,6 +204,8 @@ namespace SA2ObjectDefinitions.Common
 			HitResult result = HitResult.NoHit;
 			transform.Push();
 			transform.NJTranslate(item.Position);
+			if (!isVertical)
+				transform.NJRotateY(0x4000);
 			if (item.Rotation.Y != 0)
 			transform.NJRotateY(item.Rotation.Y);
 			result = HitResult.Min(result, models[0].CheckHit(Near, Far, Viewport, Projection, View, transform, meshes[0]));
@@ -258,6 +260,8 @@ namespace SA2ObjectDefinitions.Common
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
+			if (!isVertical)
+			transform.NJRotateY(0x4000);
 			if (item.Rotation.Y != 0)
 				transform.NJRotateY(item.Rotation.Y);
 			result.AddRange(models[0].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs[0], meshes[0], EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
@@ -316,6 +320,8 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
+			if (!isVertical)
+				transform.NJRotateY(0x4000);
 			if (item.Rotation.Y != 0)
 				transform.NJRotateY(item.Rotation.Y);
 			result.Add(new ModelTransform(models[0], transform.Top));
@@ -359,6 +365,8 @@ namespace SA2ObjectDefinitions.Common
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
 			transform.NJTranslate(item.Position);
+			if (!isVertical)
+				transform.NJRotateY(0x4000);
 			if (item.Rotation.Y != 0)
 				transform.NJRotateY(item.Rotation.Y);
 			BoundingSphere panelbounds = ObjectHelper.GetModelBounds(models[0], transform);
