@@ -22,7 +22,6 @@ namespace SA2ObjectDefinitions.Level_Effects
 		Mesh[] mesh3;
 		NJS_TEXLIST watertls;
 		Texture[] texs2;
-		float waterPos = -1356.910034179688f;
 		
 		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
@@ -53,6 +52,10 @@ namespace SA2ObjectDefinitions.Level_Effects
 		}
 		public override void RenderLate(Device dev, EditorCamera cam)
 		{
+			float waterPos = -15.0F;
+			if (cam.Position.X > 4420.394F && cam.Position.Z > 4940.249F ||
+				cam.Position.X < 1017.0F && cam.Position.Y < -950.0F)
+				waterPos = -1356.910034179688F;
 			if (texs2 == null)
 				texs2 = ObjectHelper.GetTextures("landtx03_suimen", watertls, dev);
 			List<RenderInfo> result1 = new List<RenderInfo>();

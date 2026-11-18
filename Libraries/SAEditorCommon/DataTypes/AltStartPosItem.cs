@@ -84,7 +84,10 @@ namespace SAModel.SAEditorCommon.DataTypes
 			transform.NJTranslate(0, offset, 0);
 			transform.NJTranslate(Position);
 			transform.NJRotateY(YRotation);
-			return Model.CheckHit(Near, Far, Viewport, Projection, View, transform, Meshes);
+			if (hasWeight)
+				return Model.CheckHitWeighted(Near, Far, Viewport, Projection, View, transform.Top, Meshes);
+			else
+				return Model.CheckHit(Near, Far, Viewport, Projection, View, transform, Meshes);
 		}
 
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)

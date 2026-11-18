@@ -30,9 +30,15 @@ namespace SA2ObjectDefinitions.Common
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
+			var newYRot = item.Rotation.Y & 0xFFF0 * 0x10;
+			var newZRot = item.Rotation.Z & 0xFFF0 * 0x10;
 			var coltype = (item.Rotation.Z & 0xF);
 			transform.Push();
 			transform.NJTranslate(item.Position);
+			if (newYRot != 0)
+				transform.NJRotateY(newYRot);
+			if (newZRot != 0)
+				transform.NJRotateZ(newZRot);
 			if (coltype == 0)
 				transform.NJScale((item.Scale.X + 10) * 2, (item.Scale.Y + 10) * 2, (item.Scale.Z + 10) * 2);
 			if (coltype == 1)
@@ -47,9 +53,15 @@ namespace SA2ObjectDefinitions.Common
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			var coltype = (item.Rotation.Z & 0xF);
+			var newYRot = item.Rotation.Y & 0xFFF0 * 0x10;
+			var newZRot = item.Rotation.Z & 0xFFF0 * 0x10;
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
+			if (newYRot != 0)
+				transform.NJRotateY(newYRot);
+			if (newZRot != 0)
+				transform.NJRotateZ(newZRot);
 			if (coltype == 0)
 				transform.NJScale((item.Scale.X + 10) * 2, (item.Scale.Y + 10) * 2, (item.Scale.Z + 10) * 2);
 			if (coltype == 1)
@@ -71,8 +83,14 @@ namespace SA2ObjectDefinitions.Common
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			var coltype = (item.Rotation.Z & 0xF);
+			var newYRot = item.Rotation.Y & 0xFFF0 * 0x10;
+			var newZRot = item.Rotation.Z & 0xFFF0 * 0x10;
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position);
+			if (newYRot != 0)
+				transform.NJRotateY(newYRot);
+			if (newZRot != 0)
+				transform.NJRotateZ(newZRot);
 			if (coltype == 0)
 				transform.NJScale((item.Scale.X + 10) * 2, (item.Scale.Y + 10) * 2, (item.Scale.Z + 10) * 2);
 			if (coltype == 1)

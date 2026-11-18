@@ -138,7 +138,12 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateZYX(item.Rotation);
+			if (item.Rotation.Z != 0)
+			transform.NJRotateZ(item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
+			if (item.Rotation.X != 0)
+				transform.NJRotateX(item.Rotation.X);
 			HitResult result = conveyer.CheckHit(Near, Far, Viewport, Projection, View, transform, meshesConv);
 			transform.Pop();
 			return result;
@@ -153,7 +158,12 @@ namespace SA2ObjectDefinitions.Common
 				texsBase = ObjectHelper.GetTextures("objtex_common", texarrBase, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateZYX(item.Rotation);
+			if (item.Rotation.Z != 0)
+				transform.NJRotateZ(item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
+			if (item.Rotation.X != 0)
+				transform.NJRotateX(item.Rotation.X);
 			result.AddRange(conveyer.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texsConv, meshesConv, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			result.AddRange(panelbase.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texsBase, meshesBase, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
@@ -170,7 +180,12 @@ namespace SA2ObjectDefinitions.Common
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateZYX(item.Rotation);
+			if (item.Rotation.Z != 0)
+				transform.NJRotateZ(item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
+			if (item.Rotation.X != 0)
+				transform.NJRotateX(item.Rotation.X);
 			result.Add(new ModelTransform(conveyer, transform.Top));
 			transform.Pop();
 			return result;
@@ -180,7 +195,12 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateZYX(item.Rotation);
+			if (item.Rotation.Z != 0)
+				transform.NJRotateZ(item.Rotation.Z);
+			if (item.Rotation.Y != 0)
+				transform.NJRotateY(item.Rotation.Y);
+			if (item.Rotation.X != 0)
+				transform.NJRotateX(item.Rotation.X);
 			return ObjectHelper.GetModelBounds(conveyer, transform);
 		}
 

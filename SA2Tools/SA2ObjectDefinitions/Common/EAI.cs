@@ -37,7 +37,7 @@ namespace SA2ObjectDefinitions.Common
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
-			int hunterID = Math.Max((int)item.Scale.X, 0);
+			int hunterID = (int)item.Scale.X > 9 ? 0 : (int)item.Scale.X;
 
 			HitResult result;
 
@@ -73,7 +73,7 @@ namespace SA2ObjectDefinitions.Common
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
-			int hunterID = Math.Max((int)item.Scale.X, 0);
+			int hunterID = (int)item.Scale.X > 9 ? 0 : (int)item.Scale.X;
 
 			List<RenderInfo> result = new List<RenderInfo>();
 
@@ -136,7 +136,7 @@ namespace SA2ObjectDefinitions.Common
 
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
-			int hunterID = Math.Max((int)item.Scale.X, 0);
+			int hunterID = (int)item.Scale.X > 9 ? 0 : (int)item.Scale.X;
 
 			List<ModelTransform> result = new List<ModelTransform>();
 
@@ -169,7 +169,7 @@ namespace SA2ObjectDefinitions.Common
 
 		public override BoundingSphere GetBounds(SETItem item)
 		{
-			int hunterID = Math.Max((int)item.Scale.X, 0);
+			int hunterID = (int)item.Scale.X > 9 ? 0 : (int)item.Scale.X;
 
 			MatrixStack transform = new MatrixStack();
 
@@ -216,7 +216,7 @@ namespace SA2ObjectDefinitions.Common
 			new PropertySpec("Bullets Fired/Laser Length", typeof(float), "Extended", null, 1.0f, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v > 0 ? (int)v : 99),
 			new PropertySpec("Emerald/Item Link ID", typeof(byte), "Extended", null, null, (o) => o.Rotation.Y & 0xFF,
 			(o, v) => { o.Rotation.Y &= 0xFF00; o.Rotation.Y |= (byte)v; }),
-			new PropertySpec("Hunter Type", typeof(HunterType), "Extended", null, null, (o) => (HunterType)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v),
+			new PropertySpec("Hunter Type", typeof(HunterType), "Extended", null, null, (o) => (HunterType)((int)o.Scale.X > 9 ? 0 : (int)o.Scale.X), (o, v) => o.Scale.X = (int)(HunterType)v),
 			new PropertySpec("Projectile Speed", typeof(float), "Extended", null, 60.0f, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v > 0 ? (float)v : 60.0f),
 			new PropertySpec("Vision Radius", typeof(float), "Extended", null, 60.0f, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v > 0 ? (float)v : 999.0f)
 		};
@@ -253,5 +253,7 @@ namespace SA2ObjectDefinitions.Common
 		ShieldLaserGun,
 		Dropping,
 		DroppingLaserGun,
+		GlueGunAlt,
+		GunDebug
 	}
 }
